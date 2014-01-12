@@ -1,22 +1,23 @@
 
 class Simditor extends Widget
   @extend Simditor.Util
+  @extend Simditor.Input
+  @extend Simditor.Format
   @extend Simditor.Selection
 
   @count: 0
 
   opts:
     textarea: null
-    tabIndent: false
 
   _init: ->
     @textarea = $(@opts.textarea);
 
     unless @textarea.length
       throw new Error 'simditor: param textarea is required.'
-    return
+      return
 
-  editor = @textarea.data 'simditor'
+    editor = @textarea.data 'simditor'
     if editor?
       editor.destroy()
 
@@ -25,10 +26,11 @@ class Simditor extends Widget
 
     form = @textarea.closest 'form'
     if form.length
-      form.on 'submit.simditor-' + @id, =>
-        @sync()
-      form.on 'reset.simditor-' + @id, =>
-        @setValue ''
+      form
+        .on 'submit.simditor-' + @id, =>
+          @sync()
+        .on 'reset.simditor-' + @id, =>
+          @setValue ''
 
     if val = @textarea.val()
       @setValue val
@@ -59,4 +61,31 @@ class Simditor extends Widget
     @textarea.data 'simditor', this
     @body.attr 'tabindex', @textarea.attr('tabindex')
 
+  setValue: (val) ->
+    @textarea.val val
+    @body.html val
+    @_decorate()
+
+  getValue: () ->
+    @sync()
+
+  sync: ->
+    val = @_undecorate()
+    @textarea.val val
+    val
+
+  destroy: ->
+    @trigger('destroy')
+
+    @textarea.closest 'form'
+      .off '.simditor simditor-' + @id
+
+    @sel.removeAllRanges()
+
+    @textarea.insertBefore(@el)
+      .hide()
+      .val ''
+      .removeData 'simditor'
+
+    @el.remove()
 
