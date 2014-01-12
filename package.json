@@ -1,0 +1,23 @@
+{
+  "name": "simditor",
+  "version": "0.0.1",
+  "description": "A simple editor designed by mycolorway",
+  "main": "demo.html",
+  "scripts": {},
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:mycolorway/simditor.git"
+  },
+  "author": "farthinker",
+  "license": "GPL",
+  "bugs": {
+    "url": "https://github.com/mycolorway/simditor/issues"
+  },
+  "homepage": "https://github.com/mycolorway/simditor",
+  "devDependencies": {
+    "grunt": "~0.4.1",
+    "grunt-contrib-sass": "~0.5.0",
+    "grunt-contrib-watch": "~0.5.3",
+    "grunt-contrib-coffee": "~0.8.0"
+  }
+}
