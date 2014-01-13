@@ -33,7 +33,7 @@ class Simditor extends Widget
           @setValue ''
 
     if val = @textarea.val()
-      @setValue val
+      @setValue val ? ''
       setTimeout =>
         @trigger 'valuechanged'
       , 0
@@ -64,6 +64,8 @@ class Simditor extends Widget
   setValue: (val) ->
     @textarea.val val
     @body.html val
+
+    @format()
     @_decorate()
 
   getValue: () ->
