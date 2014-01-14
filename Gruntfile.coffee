@@ -11,13 +11,15 @@ module.exports = (grunt) ->
     coffee:
       scripts:
         options:
-          sourceMap: true
+          join: true
         files:
           'scripts/simditor.js': [
             'src/widget.coffee',
-            'src/simditor.coffee',
-            'src/simditor.selection.coffee',
-            'src/simditor.util.coffee'
+            'src/format.coffee',
+            'src/input.coffee',
+            'src/selection.coffee',
+            'src/util.coffee',
+            'src/simditor.coffee'
           ]
     watch:
       styles:

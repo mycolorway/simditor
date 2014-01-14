@@ -1,5 +1,5 @@
 
-Simditor.Util =
+Util =
 
   _load: ->
     if @browser.msie
@@ -23,7 +23,7 @@ Simditor.Util =
       version: ua.match(/(?:chrome|crios)\/(\d+(\.\d+)?)/i)[1]
     else if safari
       webkit: true
-      chrome: true
+      safari: true
       version: ua.match(/version\/(\d+(\.\d+)?)/i)[1]
     else if firefox
       mozilla: true
@@ -35,7 +35,7 @@ Simditor.Util =
 
   metaKey: (e) ->
     isMac = /Mac/.test navigator.userAgent
-    isMac ? e.metaKey : e.ctrlKey
+    if isMac then e.metaKey else e.ctrlKey
 
   isBlockNode: (node) ->
     node = $(node)[0]
@@ -44,6 +44,35 @@ Simditor.Util =
 
     /^(div|p|ul|ol|li|blockquote|hr|pre|h1|h2|h3|h4|h5|h6|table)$/.test node.nodeName.toLowerCase()
 
-  closestBlockNode: (node) ->
+  closestBlockEl: (node) ->
+    unless node?
+      range = @getRange()
+      node = range?.commonAncestorContainer
+
+    $node = $(node)
+
+    return null unless $node.length
+
+    blockEl = $node.parentsUntil(@body).addBack()
+    blockEl = blockEl.filter (i) =>
+      @isBlockNode blockEl.eq(i)
+
+    if blockEl.length then blockEl else null
+
+  getNodeLength: (node) ->
+    switch node.nodeType
+      when 7, 10 then 0
+      when 3, 8 then node.length
+      else node.childNodes.length
 
 
+  traverseUp:(callback, node) ->
+    unless node?
+      range = @getRange()
+      node = range?.commonAncestorContainer
+
+    if !node? or !$.contains(@body[0], node)
+      return
+
+    $(node).parentsUntil(@body).addBack().each (i, n) =>
+      callback n

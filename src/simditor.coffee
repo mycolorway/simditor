@@ -1,9 +1,9 @@
 
 class Simditor extends Widget
-  @extend Simditor.Util
-  @extend Simditor.Input
-  @extend Simditor.Format
-  @extend Simditor.Selection
+  @extend Util
+  @extend Input
+  @extend Format
+  @extend Selection
 
   @count: 0
 
@@ -22,15 +22,14 @@ class Simditor extends Widget
       editor.destroy()
 
     @id = ++ Simditor.count
-    @textarea.hide().blur()
+    @_render()
 
     form = @textarea.closest 'form'
     if form.length
-      form
-        .on 'submit.simditor-' + @id, =>
-          @sync()
-        .on 'reset.simditor-' + @id, =>
-          @setValue ''
+      form.on 'submit.simditor-' + @id, =>
+        @sync()
+      form.on 'reset.simditor-' + @id, =>
+        @setValue ''
 
     if val = @textarea.val()
       @setValue val ? ''
@@ -53,12 +52,15 @@ class Simditor extends Widget
   """
 
   _render: ->
-    @el = $(@_tpl)
+    @el = $(@_tpl).insertBefore @textarea
     @wrapper = @el.find '.simditor-wrapper'
     @body = @wrapper.find '.simditor-body'
 
-    @el.data 'simditor', this
-    @textarea.data 'simditor', this
+    @el.append(@textarea)
+      .data 'simditor', this
+    @textarea.data('simditor', this)
+      .hide()
+      .blur()
     @body.attr 'tabindex', @textarea.attr('tabindex')
 
   setValue: (val) ->
@@ -91,3 +93,6 @@ class Simditor extends Widget
 
     @el.remove()
 
+
+window.simditor = (opts) ->
+  return new Simditor opts

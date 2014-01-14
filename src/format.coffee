@@ -1,5 +1,5 @@
 
-Simditor.Format =
+Format =
 
   _allowedTags: ['p', 'ul', 'ol', 'li', 'blockquote', 'hr', 'pre', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'table']
 
@@ -68,8 +68,8 @@ Simditor.Format =
 
     for node in $el.contents()
       if @isBlockNode node
-        cleanNode blockNode if blockNode?
-        cleanNode node
+        @cleanNode blockNode if blockNode?
+        @cleanNode node
         blockNode = null
       else
         blockNode = $('<p/>').insertBefore(node) unless blockNode?
@@ -84,10 +84,10 @@ Simditor.Format =
     contents = $node.contents()
 
     if $node.is @_allowedTags.join(',')
-      # Clean attributes except `src` and `alt` on `img` tag or `href` and `target` on `a` tag
+      # Clean attributes except `src` `alt` on `img` tag and `href` `target` on `a` tag
       for attr in $.makeArray($node[0].attributes)
-        $node.removeAttr(attr.name)
-          if !($node.is 'img' and attr.name in ['src', 'alt']) and !($node.is 'a' and attr.name in ['href', 'target'])
+        if !($node.is 'img' and attr.name in ['src', 'alt']) and !($node.is 'a' and attr.name in ['href', 'target'])
+          $node.removeAttr(attr.name)
     else if $node[0].nodeType == 1 and !$node.is ':empty'
       $('<p/>').append(contents)
         .insertBefore($node)

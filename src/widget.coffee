@@ -7,6 +7,8 @@ class Widget
         @::_loadCallbacks.push val
       else if key is '_init'
         @::_initCallbacks.push val
+      else if key is 'opts'
+        $.extend(@::_extendOpts, val)
       else if key not in ['_loadCallbacks', '_initCallbacks', 'opts']
         @::[key] = val
 
@@ -14,15 +16,21 @@ class Widget
 
   _initCallbacks: []
 
+  _extendOpts: {}
+
+  _load: ->
+
+  _init: ->
+
   opts: {}
 
   constructor: (opts) ->
-    $.extend @opts, opts
+    $.extend @opts, @_extendOpts, opts
 
-    @load(@opts)
+    @_load(@opts)
     load.call(this) for load in @_loadCallbacks
 
-    @init(@opts)
+    @_init(@opts)
     init.call(this) for init in @_initCallbacks
 
   on: (args...) ->
