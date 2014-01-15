@@ -220,7 +220,11 @@
     _load: function() {},
     _init: function() {
       var _this = this;
-      this.body.on('keydown', $.proxy(this._onKeyDown, this)).on('mouseUp', $.proxy(this._onMouseUp, this)).on('focus', $.proxy(this._onFocus, this)).on('blur', $.proxy(this._onBlur, this)).on('paste', $.proxy(this._onPaste, this));
+      this._pasteArea = $('<textarea/>').attr('tabIndex', '-1').addClass('simditor-paste-area').appendTo(this.el);
+      this.on('destroy', function() {
+        return _this._pasteArea.remove();
+      });
+      this.body.on('keydown', $.proxy(this._onKeyDown, this)).on('keyup', $.proxy(this._onKeyUp, this)).on('mouseUp', $.proxy(this._onMouseUp, this)).on('focus', $.proxy(this._onFocus, this)).on('blur', $.proxy(this._onBlur, this)).on('paste', $.proxy(this._onPaste, this));
       if (this.textarea.attr('autofocus')) {
         return setTimeout(function() {
           return _this.body.focus();
@@ -260,7 +264,7 @@
         if (this.rangeAtEndOf($blockEl)) {
           this.insertNode($br);
           this.insertNode($('<br/>'));
-          this.setRangeBefore($br);
+          this.setCaretBefore($br);
         } else {
           this.insertNode($br);
         }
@@ -302,7 +306,7 @@
       });
     },
     _onKeyUp: function(e) {
-      var _ref;
+      var p, _ref;
       if (this.triggerHandler(e) === false) {
         return false;
       }
@@ -311,10 +315,74 @@
         return;
       }
       if (e.which === 8 && this.body.is(':empty')) {
-        $('<p/>').append(this._placeholderBr.appendTo(this.body));
+        p = $('<p/>').append(this._placeholderBr).appendTo(this.body);
+        this.setCaretAtStartOf(p);
       }
     },
-    _onPaste: function(e) {},
+    _onPaste: function(e) {
+      var $blockEl, codePaste,
+        _this = this;
+      if (this.triggerHandler(e) === false) {
+        return false;
+      }
+      $blockEl = this.closestBlockEl();
+      codePaste = $blockEl.is('pre');
+      this.deleteRangeContents();
+      this.saveSelection();
+      this._pasteArea.val('').focus();
+      return setTimeout(function() {
+        var el, els, insertPosition, node, pasteContent, range, re, result;
+        pasteContent = _this._pasteArea.val();
+        if (!codePaste) {
+          els = [];
+          re = /(.*)(\n*)/g;
+          while (result = re.exec(pasteContent)) {
+            if (!result[0]) {
+              break;
+            }
+            if (typeof el === "undefined" || el === null) {
+              el = $('<p/>');
+            }
+            el.append(result[1]);
+            if (result[2].length > 1) {
+              els.push(el[0]);
+              el = null;
+            } else if (result[2].length === 1) {
+              el.append('<br/>');
+            }
+          }
+          if (el != null) {
+            els.push(el[0]);
+          }
+          pasteContent = $(els);
+        }
+        range = _this.restoreSelection();
+        if (codePaste && pasteContent) {
+          node = document.createTextNode(pasteContent);
+          _this.insertNode(node, range);
+        } else if (pasteContent.length < 1) {
+          return;
+        } else if (pasteContent.length === 1) {
+          node = document.createTextNode(pasteContent.text());
+          _this.insertNode(node, range);
+        } else if (pasteContent.length > 1) {
+          if ($blockEl.is('li')) {
+            $blockEl = $blockEl.parent();
+          }
+          if (_this.rangeAtStartOf($blockEl, range)) {
+            insertPosition = 'before';
+          } else if (_this.rangeAtEndOf($blockEl, range)) {
+            insertPosition = 'after';
+          } else {
+            _this.breakBlockEl($blockEl, range);
+            insertPosition = 'before';
+          }
+          $blockEl[insertPosition](pasteContent);
+          _this.setCaretAtEndOf(pasteContent.last(), range);
+        }
+        return _this._pasteArea.val('');
+      }, 0);
+    },
     _inputHandlers: {
       13: {
         li: function($node) {},
@@ -334,6 +402,10 @@
         return null;
       }
       return this.sel.getRangeAt(0);
+    },
+    selectRange: function(range) {
+      this.sel.removeAllRanges();
+      return this.sel.addRange(range);
     },
     rangeAtEndOf: function(node, range) {
       var endNode, result,
@@ -406,9 +478,9 @@
       }
       node = $(node)[0];
       range.insertNode(node);
-      return this.setRangeAfter(node);
+      return this.setCaretAfter(node);
     },
-    setRangeAfter: function(node, range) {
+    setCaretAfter: function(node, range) {
       if (range == null) {
         range = this.getRange();
       }
@@ -418,10 +490,9 @@
       node = $(node)[0];
       range.setEndAfter(node);
       range.collapse();
-      this.sel.removeAllRanges();
-      return this.sel.addRange(range);
+      return this.selectRange(range);
     },
-    setRangeBefore: function(node, range) {
+    setCaretBefore: function(node, range) {
       if (range == null) {
         range = this.getRange();
       }
@@ -431,8 +502,93 @@
       node = $(node)[0];
       range.setEndBefore(node);
       range.collapse();
+      return this.selectRange(range);
+    },
+    setCaretAtStartOf: function(node, range) {
+      if (range == null) {
+        range = this.getRange();
+      }
+      node = $(node).get(0);
+      range.setEnd(node, 0);
+      range.collapse();
+      return this.selectRange(range);
+    },
+    setCaretAtEndOf: function(node, range) {
+      var nodeLength;
+      if (range == null) {
+        range = this.getRange();
+      }
+      node = $(node).get(0);
+      nodeLength = this.getNodeLength(node);
+      if (node.nodeType !== 3 && nodeLength > 0 && $(node).contents().last().is('br')) {
+        nodeLength -= 1;
+      }
+      range.setEnd(node, nodeLength);
+      range.collapse();
+      return this.selectRange(range);
+    },
+    deleteRangeContents: function(range) {
+      if (range == null) {
+        range = this.getRange();
+      }
+      return range.deleteContents();
+    },
+    breakBlockEl: function(el, range) {
+      var $el;
+      if (range == null) {
+        range = this.getRange();
+      }
+      $el = $(el);
+      if (!range.collapsed) {
+        return $el;
+      }
+      range.setStartBefore($el.get(0));
+      if (range.collapsed) {
+        return $el;
+      }
+      return $el.before(range.extractContents());
+    },
+    saveSelection: function() {
+      var endCaret, range, startCaret;
+      if (this._selectionSaved) {
+        return;
+      }
+      range = this.getRange();
+      startCaret = $('<span/>').addClass('simditor-caret-start');
+      endCaret = $('<span/>').addClass('simditor-caret-end');
+      range.insertNode(startCaret[0]);
+      range.collapse();
+      range.insertNode(endCaret[0]);
       this.sel.removeAllRanges();
-      return this.sel.addRange(range);
+      return this._selectionSaved = true;
+    },
+    restoreSelection: function() {
+      var endCaret, endContainer, endOffset, range, startCaret, startContainer, startOffset;
+      if (!this._selectionSaved) {
+        return false;
+      }
+      startCaret = this.body.find('.simditor-caret-start');
+      endCaret = this.body.find('.simditor-caret-end');
+      if (startCaret.length && endCaret.length) {
+        startContainer = startCaret.parent();
+        startOffset = startContainer.contents().index(startCaret);
+        endContainer = endCaret.parent();
+        endOffset = endContainer.contents().index(endCaret);
+        if (startContainer[0] === endContainer[0]) {
+          endOffset -= 1;
+        }
+        range = document.createRange();
+        range.setStart(startContainer.get(0), startOffset);
+        range.setEnd(endContainer.get(0), endOffset);
+        startCaret.remove();
+        endCaret.remove();
+        this.selectRange(range);
+      } else {
+        startCaret.remove();
+        endCaret.remove();
+      }
+      this._selectionSaved = false;
+      return range;
     }
   };
 
@@ -589,13 +745,9 @@
       }
       if (val = this.textarea.val()) {
         this.setValue(val != null ? val : '');
-        setTimeout(function() {
+        return setTimeout(function() {
           return _this.trigger('valuechanged');
         }, 0);
-      }
-      if (this.browser.mozilla) {
-        document.execCommand("enableObjectResizing", false, "false");
-        return document.execCommand("enableInlineTableEditing", false, "false");
       }
     };
 

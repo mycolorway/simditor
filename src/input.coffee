@@ -11,7 +11,17 @@ Input =
   _load: ->
 
   _init: ->
+
+    @_pasteArea = $('<textarea/>')
+      .attr('tabIndex', '-1')
+      .addClass('simditor-paste-area')
+      .appendTo(@el)
+
+    @on 'destroy', =>
+      @_pasteArea.remove()
+
     @body.on('keydown', $.proxy(@_onKeyDown, this))
+      .on('keyup', $.proxy(@_onKeyUp, this))
       .on('mouseUp', $.proxy(@_onMouseUp, this))
       .on('focus', $.proxy(@_onFocus, this))
       .on('blur', $.proxy(@_onBlur, this))
@@ -62,7 +72,7 @@ Input =
       if @rangeAtEndOf $blockEl
         @insertNode $br
         @insertNode $('<br/>')
-        @setRangeBefore $br
+        @setCaretBefore $br
       else
         @insertNode $br
 
@@ -109,11 +119,69 @@ Input =
       return
 
     if e.which == 8 and @body.is ':empty'
-      $('<p/>').append @_placeholderBr
-        .appendTo @body
+      p = $('<p/>').append(@_placeholderBr)
+        .appendTo(@body)
+      @setCaretAtStartOf p
       return
 
   _onPaste: (e) ->
+    if @triggerHandler(e) == false
+      return false
+
+    $blockEl = @closestBlockEl()
+    codePaste = $blockEl.is 'pre'
+    @deleteRangeContents()
+    @saveSelection()
+
+    @_pasteArea.val('').focus()
+
+    setTimeout =>
+      pasteContent = @_pasteArea.val()
+
+      # clean paste content
+      unless codePaste
+        els = []
+        re = /(.*)(\n*)/g
+        while result = re.exec(pasteContent)
+          break if !result[0]
+          el = $('<p/>') unless el?
+          el.append(result[1])
+          if result[2].length > 1
+            els.push(el[0])
+            el = null
+          else if result[2].length == 1
+            el.append('<br/>')
+
+        els.push el[0] if el?
+
+        pasteContent = $(els)
+
+      range = @restoreSelection()
+
+      if codePaste and pasteContent
+        node = document.createTextNode(pasteContent)
+        @insertNode node, range
+      else if pasteContent.length < 1
+        return
+      else if pasteContent.length == 1
+        node = document.createTextNode(pasteContent.text())
+        @insertNode node, range
+      else if pasteContent.length > 1
+        $blockEl = $blockEl.parent() if $blockEl.is 'li'
+
+        if @rangeAtStartOf($blockEl, range)
+          insertPosition = 'before'
+        else if @rangeAtEndOf($blockEl, range)
+          insertPosition = 'after'
+        else
+          @breakBlockEl($blockEl, range)
+          insertPosition = 'before'
+
+        $blockEl[insertPosition](pasteContent)
+        @setCaretAtEndOf(pasteContent.last(), range)
+
+      @_pasteArea.val ''
+    , 0
 
   _inputHandlers:
     13:
