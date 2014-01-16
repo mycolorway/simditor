@@ -1,6 +1,7 @@
 
 class Simditor extends Widget
   @extend Util
+  @extend Undo
   @extend Input
   @extend Format
   @extend Selection

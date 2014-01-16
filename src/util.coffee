@@ -74,5 +74,6 @@ Util =
     if !node? or !$.contains(@body[0], node)
       return
 
-    $(node).parentsUntil(@body).addBack().each (i, n) =>
-      callback n
+    nodes = $(node).parentsUntil(@body).get()
+    nodes.unshift node
+    callback n for n in nodes

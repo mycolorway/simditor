@@ -34,7 +34,7 @@ Format =
     findLinkNode = ($parentNode) ->
       $parentNode.contents().each (i, node) ->
         $node = $(node)
-        if $node.is('a') or el.closest('a', $el).length
+        if $node.is('a') or $node.closest('a', $el).length
           return
 
         if $node.contents().length

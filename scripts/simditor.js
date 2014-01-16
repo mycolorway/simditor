@@ -1,5 +1,5 @@
 (function() {
-  var Format, Input, Selection, Simditor, Util, Widget, _ref,
+  var Format, Input, Selection, Simditor, Undo, Util, Widget, _ref,
     __slice = [].slice,
     __indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; },
     __hasProp = {}.hasOwnProperty,
@@ -119,7 +119,7 @@
         return $parentNode.contents().each(function(i, node) {
           var $node, text;
           $node = $(node);
-          if ($node.is('a') || el.closest('a', $el).length) {
+          if ($node.is('a') || $node.closest('a', $el).length) {
             return;
           }
           if ($node.contents().length) {
@@ -254,10 +254,9 @@
       }
       metaKey = this.metaKey(e);
       $blockEl = this.closestBlockEl();
-      if (e.which === 13 && metaKey) {
-        e.preventDefault();
-        this.el.closest('form').find('button:submit').click();
-        return;
+      if (metaKey && this._shortcuts[e.which]) {
+        this._shortcuts[e.which].call(this, e);
+        return false;
       }
       if (this.browser.safari && e.which === 13 && e.shiftKey) {
         $br = $('<br/>');
@@ -389,6 +388,14 @@
         pre: function($node) {},
         blockquote: function($node) {}
       }
+    },
+    _shortcuts: {
+      13: function(e) {
+        return this.el.closest('form').find('button:submit').click();
+      }
+    },
+    addShortcut: function(keyCode, handler) {
+      return this._shortcuts[keyCode] = $.proxy(handler, this);
     }
   };
 
@@ -683,8 +690,7 @@
       }
     },
     traverseUp: function(callback, node) {
-      var range,
-        _this = this;
+      var n, nodes, range, _i, _len, _results;
       if (node == null) {
         range = this.getRange();
         node = range != null ? range.commonAncestorContainer : void 0;
@@ -692,9 +698,206 @@
       if ((node == null) || !$.contains(this.body[0], node)) {
         return;
       }
-      return $(node).parentsUntil(this.body).addBack().each(function(i, n) {
-        return callback(n);
+      nodes = $(node).parentsUntil(this.body).get();
+      nodes.unshift(node);
+      _results = [];
+      for (_i = 0, _len = nodes.length; _i < _len; _i++) {
+        n = nodes[_i];
+        _results.push(callback(n));
+      }
+      return _results;
+    }
+  };
+
+  Undo = {
+    _load: function() {},
+    _init: function() {
+      var _this = this;
+      this._undoStack = [];
+      this._undoIndex = -1;
+      this._undoCapacity = 50;
+      this._undoTimer = null;
+      this.addShortcut(90, function(e) {
+        if (e.shiftKey) {
+          return _this.redo();
+        } else {
+          return _this.undo();
+        }
       });
+      this.on('valuechanged', function(e, src) {
+        if (src === 'undo' || !_this.focused) {
+          return;
+        }
+        if (_this._undoTimer) {
+          clearTimeout(_this._undoTimer);
+          _this._undoTimer = null;
+        }
+        return _this._undoTimer = setTimeout(function() {
+          return _this._pushUndoState();
+        }, 300);
+      });
+      return this.body.on('focus', function() {
+        if (_this._undoIndex < 0) {
+          return setTimeout(function() {
+            return _this._pushUndoState();
+          }, 0);
+        }
+      });
+    },
+    _pushUndoState: function() {
+      var currentState, html;
+      if (this._undoStack.length && this._undoIndex > -1) {
+        currentState = this._undoStack[this._undoIndex];
+      }
+      html = this.body.html();
+      if (currentState && currentState.html === html) {
+        return;
+      }
+      this._undoIndex += 1;
+      this._undoStack.length = this._undoIndex;
+      this._undoStack.push({
+        html: html,
+        caret: this.caretPosition()
+      });
+      if (this._undoStack.length > this._undoCapacity) {
+        this._undoStack.shift();
+        this._undoIndex -= 1;
+      }
+      return console.log(this._undoStack);
+    },
+    undo: function() {
+      var state;
+      if (this._undoIndex < 1 || this._undoStack.length < 2) {
+        return;
+      }
+      this._undoIndex -= 1;
+      state = this._undoStack[this._undoIndex];
+      this.body.html(state.html);
+      this.sync();
+      this.caretPosition(state.caret);
+      this.trigger('valuechanged', ['undo']);
+      return this.trigger('selectionchanged', ['undo']);
+    },
+    redo: function() {
+      var state;
+      if (this._undoIndex < 0 || this._undoStack.length < this._undoIndex + 2) {
+        return;
+      }
+      this._undoIndex += 1;
+      state = this._undoStack[this._undoIndex];
+      this.body.html(state.html);
+      this.sync();
+      this.caretPosition(state.caret);
+      this.trigger('valuechanged', ['undo']);
+      return this.trigger('selectionchanged', ['undo']);
+    },
+    _getNodeOffset: function(node, index) {
+      var $parent, merging, offset,
+        _this = this;
+      if (index) {
+        $parent = $(node);
+      } else {
+        $parent = $(node).parent();
+      }
+      offset = 0;
+      merging = false;
+      $parent.contents().each(function(i, child) {
+        if (index === i || node === child) {
+          return false;
+        }
+        if (child.nodeType === 3) {
+          if (!merging) {
+            offset += 1;
+            merging = true;
+          }
+        } else {
+          offset += 1;
+          merging = false;
+        }
+        return null;
+      });
+      return offset;
+    },
+    _getNodePosition: function(node, offset) {
+      var position, prevNode,
+        _this = this;
+      if (node.nodeType === 3) {
+        prevNode = node.previousSibling;
+        while (prevNode && prevNode.nodeType === 3) {
+          node = prevNode;
+          offset += this.getNodeLength(prevNode);
+          prevNode = prevNode.previousSibling;
+        }
+      } else {
+        offset = this._getNodeOffset(node, offset);
+      }
+      position = [];
+      position.unshift(offset);
+      this.traverseUp(function(n) {
+        return position.unshift(_this._getNodeOffset(n));
+      }, node);
+      return position;
+    },
+    _getNodeByPosition: function(position) {
+      var childNodes, node, offset, _i, _len, _ref;
+      node = this.body[0];
+      _ref = position.slice(0, position.length - 1);
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        offset = _ref[_i];
+        childNodes = node.childNodes;
+        if (offset > childNodes.length - 1) {
+          debugger;
+          node = null;
+          break;
+        }
+        node = childNodes[offset];
+      }
+      return node;
+    },
+    caretPosition: function(caret) {
+      var endContainer, endOffset, range, startContainer, startOffset;
+      if (!caret) {
+        if (!this.focused) {
+          return {};
+        }
+        range = this.getRange();
+        caret = {
+          start: [],
+          end: null,
+          collapsed: true
+        };
+        caret.start = this._getNodePosition(range.startContainer, range.startOffset);
+        if (!range.collapsed) {
+          caret.end = this._getNodePosition(range.endContainer, range.endOffset);
+          caret.collapsed = false;
+        }
+        return caret;
+      } else {
+        if (!this.focused) {
+          this.body.focus();
+        }
+        if (!caret.start) {
+          this.body.blur();
+          return;
+        }
+        startContainer = this._getNodeByPosition(caret.start);
+        startOffset = caret.start[caret.start.length - 1];
+        if (caret.collapsed) {
+          endContainer = startContainer;
+          endOffset = startOffset;
+        } else {
+          endContainer = this._getNodeByPosition(caret.end);
+          endOffset = caret.start[caret.start.length - 1];
+        }
+        if (!startContainer || !endContainer) {
+          throw new Error('simditor: invalid caret state');
+          return;
+        }
+        range = document.createRange();
+        range.setStart(startContainer, startOffset);
+        range.setEnd(endContainer, endOffset);
+        return this.selectRange(range);
+      }
     }
   };
 
@@ -707,6 +910,8 @@
     }
 
     Simditor.extend(Util);
+
+    Simditor.extend(Undo);
 
     Simditor.extend(Input);
 

@@ -57,13 +57,10 @@ Input =
     metaKey = @metaKey e
     $blockEl = @closestBlockEl()
 
-    # meta + enter: submit current form
-    if e.which == 13 and metaKey
-      e.preventDefault()
-      @el.closest('form')
-        .find('button:submit')
-        .click()
-      return
+    # handle predefined shortcuts
+    if metaKey and @_shortcuts[e.which]
+      @_shortcuts[e.which].call(this, e)
+      return false
 
     # safari doesn't support shift + enter default behavior
     if @browser.safari and e.which == 13 and e.shiftKey
@@ -190,6 +187,16 @@ Input =
       pre: ($node) ->
 
       blockquote: ($node) ->
+
+  _shortcuts:
+    13: (e) ->
+      @el.closest('form')
+        .find('button:submit')
+        .click()
+
+  addShortcut: (keyCode, handler) ->
+    @_shortcuts[keyCode] = $.proxy(handler, this)
+
 
 
 

@@ -19,6 +19,7 @@ module.exports = (grunt) ->
             'src/input.coffee',
             'src/selection.coffee',
             'src/util.coffee',
+            'src/undo.coffee',
             'src/simditor.coffee'
           ]
     watch:
