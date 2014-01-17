@@ -76,4 +76,6 @@ Util =
 
     nodes = $(node).parentsUntil(@body).get()
     nodes.unshift node
-    callback n for n in nodes
+    for n in nodes
+      result = callback n
+      break if result == false

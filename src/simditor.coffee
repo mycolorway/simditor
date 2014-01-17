@@ -5,6 +5,7 @@ class Simditor extends Widget
   @extend Input
   @extend Format
   @extend Selection
+  @extend Toolbar
 
   @count: 0
 
@@ -83,7 +84,7 @@ class Simditor extends Widget
     @trigger('destroy')
 
     @textarea.closest 'form'
-      .off '.simditor simditor-' + @id
+      .off '.simditor .simditor-' + @id
 
     @sel.removeAllRanges()
 
@@ -93,6 +94,8 @@ class Simditor extends Widget
       .removeData 'simditor'
 
     @el.remove()
+    $(document).off '.simditor-' + @id
+    $(window).off '.simditor-' + @id
 
 
 window.simditor = (opts) ->

@@ -20,6 +20,7 @@ module.exports = (grunt) ->
             'src/selection.coffee',
             'src/util.coffee',
             'src/undo.coffee',
+            'src/toolbar.coffee',
             'src/simditor.coffee'
           ]
     watch:
