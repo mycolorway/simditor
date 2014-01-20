@@ -1,11 +1,10 @@
 
-Util =
+class Util
 
-  _load: ->
-    if @browser.msie
-      @_placeholderBr = ''
+  constructor: ->
+    @phBr = '' if @browser.msie
 
-  _placeholderBr: '<br/>'
+  phBr: '<br/>'
   
   browser: (->
     ua = navigator.userAgent
@@ -46,14 +45,14 @@ Util =
 
   closestBlockEl: (node) ->
     unless node?
-      range = @getRange()
+      range = @editor.selection.getRange()
       node = range?.commonAncestorContainer
 
     $node = $(node)
 
     return null unless $node.length
 
-    blockEl = $node.parentsUntil(@body).addBack()
+    blockEl = $node.parentsUntil(@editor.body).addBack()
     blockEl = blockEl.filter (i) =>
       @isBlockNode blockEl.eq(i)
 
@@ -68,13 +67,13 @@ Util =
 
   traverseUp:(callback, node) ->
     unless node?
-      range = @getRange()
+      range = @editor.selection.getRange()
       node = range?.commonAncestorContainer
 
-    if !node? or !$.contains(@body[0], node)
+    if !node? or !$.contains(@editor.body[0], node)
       return
 
-    nodes = $(node).parentsUntil(@body).get()
+    nodes = $(node).parentsUntil(@editor.body).get()
     nodes.unshift node
     for n in nodes
       result = callback n

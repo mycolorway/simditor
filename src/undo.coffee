@@ -1,82 +1,83 @@
 
-Undo =
+class UndoManager
+  @_stack: []
 
-  _load: ->
+  @_index: -1
 
-  _init: ->
-    @_undoStack = []
-    @_undoIndex = -1
-    @_undoCapacity = 50
-    @_undoTimer = null
+  @_capacity: 50
 
-    @addShortcut 90, (e) =>
+  @_timer: null
+
+  constructor: (@editor) ->
+
+    @editor.inputManager.addShortcut 90, (e) =>
       if e.shiftKey
         @redo()
       else
         @undo()
 
-    @on 'valuechanged', (e, src) =>
-      return if src == 'undo' or !@focused
+    @editor.on 'valuechanged', (e, src) =>
+      return if src == 'undo' or !@editor.inputManager.focused
 
-      if @_undoTimer
-        clearTimeout @_undoTimer
-        @_undoTimer = null
+      if @_timer
+        clearTimeout @_timer
+        @_timer = null
 
-      @_undoTimer = setTimeout =>
+      @_timer = setTimeout =>
         @_pushUndoState()
       , 300
 
-    @body.on 'focus', =>
-      if @_undoIndex < 0
+    @editor.body.on 'focus', =>
+      if @_index < 0
         setTimeout =>
           @_pushUndoState()
         , 0
 
   _pushUndoState: ->
-    if @_undoStack.length and @_undoIndex > -1
-      currentState = @_undoStack[@_undoIndex]
+    if @_stack.length and @_index > -1
+      currentState = @_stack[@_index]
 
-    html = @body.html()
+    html = @editor.body.html()
     return if currentState and currentState.html == html
 
-    @_undoIndex += 1
-    @_undoStack.length = @_undoIndex
+    @_index += 1
+    @_stack.length = @_index
 
-    @_undoStack.push
+    @_stack.push
       html: html
       caret: @caretPosition()
 
-    if @_undoStack.length > @_undoCapacity
-      @_undoStack.shift()
-      @_undoIndex -= 1
+    if @_stack.length > @_capacity
+      @_stack.shift()
+      @_index -= 1
 
-    console.log @_undoStack
+    console.log @_stack
 
   undo: ->
-    return if @_undoIndex < 1 or @_undoStack.length < 2
+    return if @_index < 1 or @_stack.length < 2
 
-    @_undoIndex -= 1
+    @_index -= 1
 
-    state = @_undoStack[@_undoIndex]
-    @body.html state.html
-    @sync()
+    state = @_stack[@_index]
+    @editor.body.html state.html
+    @editor.sync()
     @caretPosition state.caret
 
-    @trigger 'valuechanged', ['undo']
-    @trigger 'selectionchanged', ['undo']
+    @editor.trigger 'valuechanged', ['undo']
+    @editor.trigger 'selectionchanged', ['undo']
 
   redo: ->
-    return if @_undoIndex < 0 or @_undoStack.length < @_undoIndex + 2
+    return if @_index < 0 or @_stack.length < @_index + 2
 
-    @_undoIndex += 1
+    @_index += 1
 
-    state = @_undoStack[@_undoIndex]
-    @body.html state.html
-    @sync()
+    state = @_stack[@_index]
+    @editor.body.html state.html
+    @editor.sync()
     @caretPosition state.caret
 
-    @trigger 'valuechanged', ['undo']
-    @trigger 'selectionchanged', ['undo']
+    @editor.trigger 'valuechanged', ['undo']
+    @editor.trigger 'selectionchanged', ['undo']
 
   _getNodeOffset: (node, index) ->
     if index
@@ -107,21 +108,21 @@ Undo =
       prevNode = node.previousSibling
       while prevNode and prevNode.nodeType == 3
         node = prevNode
-        offset += @getNodeLength prevNode
+        offset += @editor.util.getNodeLength prevNode
         prevNode = prevNode.previousSibling
     else
       offset = @_getNodeOffset(node, offset)
 
     position = []
     position.unshift offset
-    @traverseUp (n) =>
+    @editor.util.traverseUp (n) =>
       position.unshift @_getNodeOffset(n)
     , node
 
     position
 
   _getNodeByPosition: (position) ->
-    node = @body[0]
+    node = @editor.body[0]
 
     for offset in position[0...position.length - 1]
       childNodes = node.childNodes
@@ -136,7 +137,7 @@ Undo =
   caretPosition: (caret) ->
     # calculate current caret state
     if !caret
-      return {} unless @focused
+      return {} unless @editor.inputManager.focused
 
       range = @getRange()
       caret =
@@ -154,10 +155,10 @@ Undo =
 
     # restore caret state
     else
-      @body.focus() unless @focused
+      @editor.body.focus() unless @editor.inputManager.focused
 
       unless caret.start
-        @body.blur()
+        @editor.body.blur()
         return
 
       startContainer = @_getNodeByPosition caret.start
@@ -178,7 +179,7 @@ Undo =
       range.setStart(startContainer, startOffset)
       range.setEnd(endContainer, endOffset)
 
-      @selectRange range
+      @editor.selection.selectRange range
 
 
 

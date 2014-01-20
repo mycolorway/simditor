@@ -1,9 +1,9 @@
 
 class Simditor extends Widget
   @extend Util
-  @extend Undo
-  @extend Input
-  @extend Format
+  @extend UndoManager
+  @extend InputManager
+  @extend Formatter
   @extend Selection
   @extend Toolbar
 
@@ -69,14 +69,14 @@ class Simditor extends Widget
     @textarea.val val
     @body.html val
 
-    @format()
-    @_decorate()
+    @formatter.format()
+    @formatter.decorate()
 
   getValue: () ->
     @sync()
 
   sync: ->
-    val = @_undecorate()
+    val = @formatter.undecorate()
     @textarea.val val
     val
 
@@ -86,7 +86,7 @@ class Simditor extends Widget
     @textarea.closest 'form'
       .off '.simditor .simditor-' + @id
 
-    @sel.removeAllRanges()
+    @selection.clear()
 
     @textarea.insertBefore(@el)
       .hide()
@@ -98,5 +98,4 @@ class Simditor extends Widget
     $(window).off '.simditor-' + @id
 
 
-window.simditor = (opts) ->
-  return new Simditor opts
+window.Simditor = Simditor

@@ -1,13 +1,13 @@
 
-Selection =
-
-  _load: ->
+class Selection
+  constructor: (@editor) ->
     @sel = document.getSelection()
 
-  _init: ->
+  clear: ->
+    @sel.removeAllRanges()
 
   getRange: ->
-    if !@focused or !@sel.rangeCount
+    if !@editor.inputManager.focused or !@sel.rangeCount
       return null
 
     return @sel.getRangeAt 0
@@ -23,7 +23,7 @@ Selection =
     endNode = range.endContainer
     #node.normalize()
 
-    if range.endOffset != @getNodeLength endNode
+    if range.endOffset != @editor.util.getNodeLength endNode
       return false
 
     if node == endNode
@@ -66,9 +66,9 @@ Selection =
 
     node = $(node)[0]
     range.insertNode node
-    @setCaretAfter node
+    @setRangeAfter node
 
-  setCaretAfter: (node, range = @getRange()) ->
+  setRangeAfter: (node, range = @getRange()) ->
     return unless range?
 
     node = $(node)[0]
@@ -76,7 +76,7 @@ Selection =
     range.collapse()
     @selectRange range
 
-  setCaretBefore: (node, range = @getRange()) ->
+  setRangeBefore: (node, range = @getRange()) ->
     return unless range?
 
     node = $(node)[0]
@@ -84,15 +84,15 @@ Selection =
     range.collapse()
     @selectRange range
 
-  setCaretAtStartOf: (node, range = @getRange()) ->
+  setRangeAtStartOf: (node, range = @getRange()) ->
     node = $(node).get(0)
     range.setEnd(node, 0)
     range.collapse()
     @selectRange range
 
-  setCaretAtEndOf: (node, range = @getRange()) ->
+  setRangeAtEndOf: (node, range = @getRange()) ->
     node = $(node).get(0)
-    nodeLength = @getNodeLength node
+    nodeLength = @editor.util.getNodeLength node
     nodeLength -= 1 if node.nodeType != 3 and nodeLength > 0 and $(node).contents().last().is('br')
     range.setEnd(node, nodeLength)
     range.collapse()
@@ -125,8 +125,8 @@ Selection =
   restoreSelection: () ->
     return false unless @_selectionSaved
 
-    startCaret = @body.find('.simditor-caret-start')
-    endCaret = @body.find('.simditor-caret-end')
+    startCaret = @editor.body.find('.simditor-caret-start')
+    endCaret = @editor.body.find('.simditor-caret-end')
 
     if startCaret.length and endCaret.length
       startContainer = startCaret.parent()

@@ -1,20 +1,17 @@
 
-Format =
+class Formatter
+
+  constructor: (@editor) ->
+    @editor.body.on 'click', 'a', (e) =>
+      false
 
   _allowedTags: ['p', 'ul', 'ol', 'li', 'blockquote', 'hr', 'pre', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'table']
 
-  _load: ->
+  decorate: ($el = @editor.body) ->
+    @editor.trigger 'decorate', [$el]
 
-  _init: ->
-
-    @body.on 'click', 'a', (e) =>
-      false
-
-  _decorate: ($el = @body) ->
-    @trigger 'decorate', [$el]
-
-  _undecorate: ($el = @body.clone()) ->
-    @trigger 'undecorate', [$el]
+  undecorate: ($el = @editor.body.clone()) ->
+    @editor.trigger 'undecorate', [$el]
 
     # generate `a` tag automatically
     @autolink $el
@@ -28,7 +25,7 @@ Format =
 
     $.trim $el.html()
 
-  autolink: ($el = @body) ->
+  autolink: ($el = @editor.body) ->
     linkNodes = []
 
     findLinkNode = ($parentNode) ->
@@ -61,13 +58,13 @@ Format =
 
     $el
 
-  format: ($el = @body) ->
+  format: ($el = @editor.body) ->
     if $el.is ':empty'
-      $el.append '<p>' + @_placeholderBr + '</p>'
+      $el.append '<p>' + @editor.util.phBr + '</p>'
       return $el
 
     for node in $el.contents()
-      if @isBlockNode node
+      if @editor.util.isBlockNode node
         @cleanNode blockNode if blockNode?
         @cleanNode node
         blockNode = null

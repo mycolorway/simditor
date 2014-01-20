@@ -1,5 +1,5 @@
 
-Input =
+class InputManager
 
   opts:
     tabIndent: true
@@ -8,54 +8,51 @@ Input =
 
   _arrowKeys: [37..40]
 
-  _load: ->
-
-  _init: ->
+  constructor: (@editor) ->
+    $.extend(@opts, @editor.opts)
 
     @_pasteArea = $('<textarea/>')
       .attr('tabIndex', '-1')
       .addClass('simditor-paste-area')
-      .appendTo(@el)
+      .appendTo(@.editor.el)
 
-    @on 'destroy', =>
+    @editor.on 'destroy', =>
       @_pasteArea.remove()
 
-    @body.on('keydown', $.proxy(@_onKeyDown, this))
+    @editor.body.on('keydown', $.proxy(@_onKeyDown, this))
       .on('keyup', $.proxy(@_onKeyUp, this))
       .on('mouseUp', $.proxy(@_onMouseUp, this))
       .on('focus', $.proxy(@_onFocus, this))
       .on('blur', $.proxy(@_onBlur, this))
       .on('paste', $.proxy(@_onPaste, this))
 
-    if @textarea.attr 'autofocus'
+    if @editor.textarea.attr 'autofocus'
       setTimeout =>
-        @body.focus()
+        @editor.body.focus()
       , 0
 
   _onFocus: (e) ->
-    @el.addClass('focus')
+    @editor.el.addClass('focus')
       .removeClass('error')
-
     @focused = true
-
-    @format()
+    @editor.formatter.format()
 
   _onBlur: (e) ->
-    @el.removeClass 'focus'
+    @editor.el.removeClass 'focus'
     @focused = false
 
   _onMouseUp: (e) ->
-    @trigger 'selectionchanged'
+    @editor.trigger 'selectionchanged'
 
   _onKeyDown: (e) ->
-    if @triggerHandler(e) == false
+    if @editor.triggerHandler(e) == false
       return false
 
     if e.which in @_modifierKeys or e.which in @_arrowKeys
       return
 
-    metaKey = @metaKey e
-    $blockEl = @closestBlockEl()
+    metaKey = @editor.util.metaKey e
+    $blockEl = @editor.util.closestBlockEl()
 
     # handle predefined shortcuts
     if metaKey and @_shortcuts[e.which]
@@ -63,39 +60,39 @@ Input =
       return false
 
     # safari doesn't support shift + enter default behavior
-    if @browser.safari and e.which == 13 and e.shiftKey
+    if @editor.util.browser.safari and e.which == 13 and e.shiftKey
       $br = $('<br/>')
 
-      if @rangeAtEndOf $blockEl
-        @insertNode $br
-        @insertNode $('<br/>')
-        @setCaretBefore $br
+      if @editor.selection.rangeAtEndOf $blockEl
+        @editor.selection.insertNode $br
+        @editor.selection.insertNode $('<br/>')
+        @editor.selection.setRangeBefore $br
       else
-        @insertNode $br
+        @editor.selection.insertNode $br
 
-      @trigger 'valuechanged'
+      @editor.trigger 'valuechanged'
       return false
 
     # Remove hr node
     if e.which == 8
       $prevBlockEl = $blockEl.prev()
-      if $prevBlockEl.is 'hr' and @rangeAtStartOf $blockEl
+      if $prevBlockEl.is 'hr' and @editor.selection.rangeAtStartOf $blockEl
         # TODO: need to test on IE
         $prevBlockEl.remove()
-        @trigger 'valuechanged'
+        @editor.trigger 'valuechanged'
         return false
 
     # Tab to indent
     if e.which == 9 and (@opts.tabIndent or $blockEl.is 'pre')
       spaces = if $blockEl.is 'pre' then '\u00A0\u00A0' else '\u00A0\u00A0\u00A0\u00A0'
       spaceNode = document.createTextNode spaces
-      @insertNode spaceNode
-      @trigger 'valuechanged'
+      @editor.selection.insertNode spaceNode
+      @editor.trigger 'valuechanged'
       return false
 
     # Check the condictional handlers
     if e.which of @_inputHandlers
-      @traverseUp (node) =>
+      @editor.util.traverseUp (node) =>
         return unless node.nodeType == 1
         handler = @_inputHandlers[e.which]?[node.tagName.toLowerCase()]
         handler?.call(this, $(node))
@@ -103,32 +100,32 @@ Input =
     clearTimeout @_typing if @_typing
 
     @_typing = setTimeout =>
-      @trigger 'valuechanged'
-      @trigger 'selectionchanged'
+      @editor.trigger 'valuechanged'
+      @editor.trigger 'selectionchanged'
       @_typing = false
 
   _onKeyUp: (e) ->
-    if @triggerHandler(e) == false
+    if @editor.triggerHandler(e) == false
       return false
 
     if e.which in @_arrowKeys
-      @trigger 'selectionchanged'
+      @editor.trigger 'selectionchanged'
       return
 
-    if e.which == 8 and @body.is ':empty'
-      p = $('<p/>').append(@_placeholderBr)
-        .appendTo(@body)
-      @setCaretAtStartOf p
+    if e.which == 8 and @editor.body.is ':empty'
+      p = $('<p/>').append(@editor.util.phBr)
+        .appendTo(@editor.body)
+      @editor.selection.setRangeAtStartOf p
       return
 
   _onPaste: (e) ->
-    if @triggerHandler(e) == false
+    if @editor.triggerHandler(e) == false
       return false
 
-    $blockEl = @closestBlockEl()
+    $blockEl = @editor.util.closestBlockEl()
     codePaste = $blockEl.is 'pre'
-    @deleteRangeContents()
-    @saveSelection()
+    @editor.selection.deleteRangeContents()
+    @editor.selection.save()
 
     @_pasteArea.val('').focus()
 
@@ -153,29 +150,29 @@ Input =
 
         pasteContent = $(els)
 
-      range = @restoreSelection()
+      range = @editor.selection.restore()
 
       if codePaste and pasteContent
         node = document.createTextNode(pasteContent)
-        @insertNode node, range
+        @editor.selection.insertNode node, range
       else if pasteContent.length < 1
         return
       else if pasteContent.length == 1
         node = document.createTextNode(pasteContent.text())
-        @insertNode node, range
+        @editor.selection.insertNode node, range
       else if pasteContent.length > 1
         $blockEl = $blockEl.parent() if $blockEl.is 'li'
 
-        if @rangeAtStartOf($blockEl, range)
+        if @editor.selection.rangeAtStartOf($blockEl, range)
           insertPosition = 'before'
-        else if @rangeAtEndOf($blockEl, range)
+        else if @editor.selection.rangeAtEndOf($blockEl, range)
           insertPosition = 'after'
         else
-          @breakBlockEl($blockEl, range)
+          @editor.selection.breakBlockEl($blockEl, range)
           insertPosition = 'before'
 
         $blockEl[insertPosition](pasteContent)
-        @setCaretAtEndOf(pasteContent.last(), range)
+        @editor.selection.setRangeAtEndOf(pasteContent.last(), range)
 
       @_pasteArea.val ''
     , 0
@@ -190,7 +187,7 @@ Input =
 
   _shortcuts:
     13: (e) ->
-      @el.closest('form')
+      @editor.el.closest('form')
         .find('button:submit')
         .click()
 
