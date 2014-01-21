@@ -9,6 +9,8 @@ class ItalicButton extends Button
 
   htmlTag: 'i'
 
+  shortcut: 73
+
   command: ->
     document.execCommand 'italic'
     @active = !@active

@@ -9,6 +9,8 @@ class BoldButton extends Button
 
   htmlTag: 'b, strong'
 
+  shortcut: 66
+
   command: ->
     document.execCommand 'bold'
     @active = !@active

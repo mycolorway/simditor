@@ -1,14 +1,14 @@
 
-class UndoManager
-  @_stack: []
+class UndoManager extends Plugin
+  _stack: []
 
-  @_index: -1
+  _index: -1
 
-  @_capacity: 50
+  _capacity: 50
 
-  @_timer: null
+  _timer: null
 
-  constructor: (@editor) ->
+  _init: ->
 
     @editor.inputManager.addShortcut 90, (e) =>
       if e.shiftKey
@@ -50,8 +50,6 @@ class UndoManager
     if @_stack.length > @_capacity
       @_stack.shift()
       @_index -= 1
-
-    console.log @_stack
 
   undo: ->
     return if @_index < 1 or @_stack.length < 2
@@ -139,7 +137,7 @@ class UndoManager
     if !caret
       return {} unless @editor.inputManager.focused
 
-      range = @getRange()
+      range = @editor.selection.getRange()
       caret =
         start: []
         end: null

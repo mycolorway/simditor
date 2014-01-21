@@ -1,6 +1,7 @@
 
-class Selection
+class Selection extends Plugin
   constructor: (@editor) ->
+    super @editor
     @sel = document.getSelection()
 
   clear: ->

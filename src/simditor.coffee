@@ -1,11 +1,11 @@
 
 class Simditor extends Widget
-  @extend Util
-  @extend UndoManager
-  @extend InputManager
-  @extend Formatter
-  @extend Selection
-  @extend Toolbar
+  @connect Util
+  @connect UndoManager
+  @connect InputManager
+  @connect Formatter
+  @connect Selection
+  @connect Toolbar
 
   @count: 0
 
@@ -99,3 +99,4 @@ class Simditor extends Widget
 
 
 window.Simditor = Simditor
+window.Simditor.Plugin = Plugin

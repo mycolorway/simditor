@@ -1,5 +1,5 @@
 
-class InputManager
+class InputManager extends Plugin
 
   opts:
     tabIndent: true
@@ -8,9 +8,7 @@ class InputManager
 
   _arrowKeys: [37..40]
 
-  constructor: (@editor) ->
-    $.extend(@opts, @editor.opts)
-
+  _init: ->
     @_pasteArea = $('<textarea/>')
       .attr('tabIndex', '-1')
       .addClass('simditor-paste-area')
@@ -19,12 +17,12 @@ class InputManager
     @editor.on 'destroy', =>
       @_pasteArea.remove()
 
-    @editor.body.on('keydown', $.proxy(@_onKeyDown, this))
-      .on('keyup', $.proxy(@_onKeyUp, this))
-      .on('mouseUp', $.proxy(@_onMouseUp, this))
-      .on('focus', $.proxy(@_onFocus, this))
-      .on('blur', $.proxy(@_onBlur, this))
-      .on('paste', $.proxy(@_onPaste, this))
+    @editor.body.on('keydown', $.proxy(@_onKeyDown, @))
+      .on('keyup', $.proxy(@_onKeyUp, @))
+      .on('mouseup', $.proxy(@_onMouseUp, @))
+      .on('focus', $.proxy(@_onFocus, @))
+      .on('blur', $.proxy(@_onBlur, @))
+      .on('paste', $.proxy(@_onPaste, @))
 
     if @editor.textarea.attr 'autofocus'
       setTimeout =>

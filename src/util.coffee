@@ -1,7 +1,8 @@
 
-class Util
+class Util extends Plugin
 
-  constructor: ->
+  constructor: (@editor) ->
+    super @editor
     @phBr = '' if @browser.msie
 
   phBr: '<br/>'

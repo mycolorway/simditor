@@ -15,20 +15,26 @@ module.exports = (grunt) ->
         files:
           'scripts/simditor.js': [
             'src/widget.coffee',
-            'src/format.coffee',
-            'src/input.coffee',
+            'src/plugin.coffee',
             'src/selection.coffee',
+            'src/formatter.coffee',
+            'src/inputManager.coffee',
+            'src/undoManager.coffee',
             'src/util.coffee',
-            'src/undo.coffee',
             'src/toolbar.coffee',
-            'src/simditor.coffee'
+            'src/simditor.coffee',
+            'src/buttons/button.coffee',
+            'src/buttons/bold.coffee',
+            'src/buttons/italic.coffee',
+            'src/buttons/underline.coffee',
+            'src/buttons/list.coffee'
           ]
     watch:
       styles:
         files: ['styles/*.scss']
         tasks: ['sass']
       scripts:
-        files: ['src/*.coffee']
+        files: ['src/*.coffee', 'src/buttons/*.coffee']
         tasks: ['coffee']
 
   grunt.loadNpmTasks 'grunt-contrib-sass'

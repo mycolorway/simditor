@@ -1,57 +1,69 @@
 (function() {
-  var Format, Input, Selection, Simditor, Undo, Util, Widget, _ref,
+  var BoldButton, Button, Formatter, InputManager, ItalicButton, ListButton, OrderListButton, Plugin, Selection, Simditor, Toolbar, UnderlineButton, UndoManager, UnorderListButton, Util, Widget, _ref, _ref1, _ref10, _ref2, _ref3, _ref4, _ref5, _ref6, _ref7, _ref8, _ref9,
     __slice = [].slice,
-    __indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; },
     __hasProp = {}.hasOwnProperty,
-    __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
+    __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
+    __indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
 
   Widget = (function() {
-    Widget.extend = function(opts) {
-      var key, val, _results;
-      _results = [];
-      for (key in opts) {
-        val = opts[key];
-        if (key === '_load') {
-          _results.push(this.prototype._loadCallbacks.push(val));
-        } else if (key === '_init') {
-          _results.push(this.prototype._initCallbacks.push(val));
-        } else if (key === 'opts') {
-          _results.push($.extend(this.prototype._extendOpts, val));
-        } else if (key !== '_loadCallbacks' && key !== '_initCallbacks' && key !== 'opts') {
-          _results.push(this.prototype[key] = val);
-        } else {
-          _results.push(void 0);
+    Widget.extend = function(obj) {
+      var key, val, _ref;
+      if (!((obj != null) && typeof obj === 'object')) {
+        return;
+      }
+      for (key in obj) {
+        val = obj[key];
+        if (key !== 'included' && key !== 'extended') {
+          this[key] = val;
         }
       }
-      return _results;
+      return (_ref = obj.extended) != null ? _ref.call(this) : void 0;
     };
 
-    Widget.prototype._loadCallbacks = [];
+    Widget.include = function(obj) {
+      var key, val, _ref;
+      if (!((obj != null) && typeof obj === 'object')) {
+        return;
+      }
+      for (key in obj) {
+        val = obj[key];
+        if (key !== 'included' && key !== 'extended') {
+          this.prototype[key] = val;
+        }
+      }
+      return (_ref = obj.included) != null ? _ref.call(this) : void 0;
+    };
 
-    Widget.prototype._initCallbacks = [];
+    Widget.connect = function(cls) {
+      if (!(typeof cls === 'function' && cls.name)) {
+        return;
+      }
+      this.prototype._connectedClasses.push(cls);
+      return this[cls.name] = cls;
+    };
 
-    Widget.prototype._extendOpts = {};
-
-    Widget.prototype._load = function() {};
+    Widget.prototype._connectedClasses = [];
 
     Widget.prototype._init = function() {};
 
-    Widget.prototype.opts = {};
-
     function Widget(opts) {
-      var init, load, _i, _j, _len, _len1, _ref, _ref1;
-      $.extend(this.opts, this._extendOpts, opts);
-      this._load(this.opts);
-      _ref = this._loadCallbacks;
-      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-        load = _ref[_i];
-        load.call(this);
-      }
-      this._init(this.opts);
-      _ref1 = this._initCallbacks;
-      for (_j = 0, _len1 = _ref1.length; _j < _len1; _j++) {
-        init = _ref1[_j];
-        init.call(this);
+      var cls, instance, instances, name, _i, _len;
+      $.extend(this.opts, opts);
+      instances = (function() {
+        var _i, _len, _ref, _results;
+        _ref = this._connectedClasses;
+        _results = [];
+        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+          cls = _ref[_i];
+          name = cls.name.charAt(0).toLowerCase() + cls.name.slice(1);
+          _results.push(this[name] = new cls(this));
+        }
+        return _results;
+      }).call(this);
+      this._init();
+      for (_i = 0, _len = instances.length; _i < _len; _i++) {
+        instance = instances[_i];
+        instance._init();
       }
     }
 
@@ -79,27 +91,275 @@
 
   })();
 
-  Format = {
-    _allowedTags: ['p', 'ul', 'ol', 'li', 'blockquote', 'hr', 'pre', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'table'],
-    _load: function() {},
-    _init: function() {
+  window.Widget = Widget;
+
+  Plugin = (function() {
+    Plugin.prototype.opts = {};
+
+    function Plugin(editor) {
+      this.editor = editor;
+      $.extend(this.opts, this.editor.opts);
+    }
+
+    Plugin.prototype._init = function() {};
+
+    return Plugin;
+
+  })();
+
+  Selection = (function(_super) {
+    __extends(Selection, _super);
+
+    function Selection(editor) {
+      this.editor = editor;
+      Selection.__super__.constructor.call(this, this.editor);
+      this.sel = document.getSelection();
+    }
+
+    Selection.prototype.clear = function() {
+      return this.sel.removeAllRanges();
+    };
+
+    Selection.prototype.getRange = function() {
+      if (!this.editor.inputManager.focused || !this.sel.rangeCount) {
+        return null;
+      }
+      return this.sel.getRangeAt(0);
+    };
+
+    Selection.prototype.selectRange = function(range) {
+      this.sel.removeAllRanges();
+      return this.sel.addRange(range);
+    };
+
+    Selection.prototype.rangeAtEndOf = function(node, range) {
+      var endNode, result,
+        _this = this;
+      if (range == null) {
+        range = this.getRange();
+      }
+      if (range == null) {
+        return;
+      }
+      node = $(node)[0];
+      endNode = range.endContainer;
+      if (range.endOffset !== this.editor.util.getNodeLength(endNode)) {
+        return false;
+      }
+      if (node === endNode) {
+        return true;
+      } else if (!$.contains(node, endNode)) {
+        return false;
+      }
+      result = true;
+      $(endNode).parentsUntil(node).addBack().each(function(i, n) {
+        var nodes;
+        nodes = $(n).parent().contents().filter(function() {
+          return !(this.nodeType === 3 && !this.nodeValue);
+        });
+        if (nodes.last().get(0) !== n) {
+          return result = false;
+        }
+      });
+      return result;
+    };
+
+    Selection.prototype.rangeAtStartOf = function(node, range) {
+      var result, startNode,
+        _this = this;
+      if (range == null) {
+        range = this.getRange();
+      }
+      if (range == null) {
+        return;
+      }
+      node = $(node)[0];
+      startNode = range.startContainer;
+      if (range.startOffset !== 0) {
+        return false;
+      }
+      if (node === startNode) {
+        return true;
+      } else if (!$.contains(node, startNode)) {
+        return false;
+      }
+      result = true;
+      $(startNode).parentsUntil(node).addBack().each(function(i, n) {
+        var nodes;
+        nodes = $(n).parent().contents().filter(function() {
+          return !(this.nodeType === 3 && !this.nodeValue);
+        });
+        if (nodes.first().get(0) !== n) {
+          return result = false;
+        }
+      });
+      return result;
+    };
+
+    Selection.prototype.insertNode = function(node, range) {
+      if (range == null) {
+        range = this.getRange();
+      }
+      if (range == null) {
+        return;
+      }
+      node = $(node)[0];
+      range.insertNode(node);
+      return this.setRangeAfter(node);
+    };
+
+    Selection.prototype.setRangeAfter = function(node, range) {
+      if (range == null) {
+        range = this.getRange();
+      }
+      if (range == null) {
+        return;
+      }
+      node = $(node)[0];
+      range.setEndAfter(node);
+      range.collapse();
+      return this.selectRange(range);
+    };
+
+    Selection.prototype.setRangeBefore = function(node, range) {
+      if (range == null) {
+        range = this.getRange();
+      }
+      if (range == null) {
+        return;
+      }
+      node = $(node)[0];
+      range.setEndBefore(node);
+      range.collapse();
+      return this.selectRange(range);
+    };
+
+    Selection.prototype.setRangeAtStartOf = function(node, range) {
+      if (range == null) {
+        range = this.getRange();
+      }
+      node = $(node).get(0);
+      range.setEnd(node, 0);
+      range.collapse();
+      return this.selectRange(range);
+    };
+
+    Selection.prototype.setRangeAtEndOf = function(node, range) {
+      var nodeLength;
+      if (range == null) {
+        range = this.getRange();
+      }
+      node = $(node).get(0);
+      nodeLength = this.editor.util.getNodeLength(node);
+      if (node.nodeType !== 3 && nodeLength > 0 && $(node).contents().last().is('br')) {
+        nodeLength -= 1;
+      }
+      range.setEnd(node, nodeLength);
+      range.collapse();
+      return this.selectRange(range);
+    };
+
+    Selection.prototype.deleteRangeContents = function(range) {
+      if (range == null) {
+        range = this.getRange();
+      }
+      return range.deleteContents();
+    };
+
+    Selection.prototype.breakBlockEl = function(el, range) {
+      var $el;
+      if (range == null) {
+        range = this.getRange();
+      }
+      $el = $(el);
+      if (!range.collapsed) {
+        return $el;
+      }
+      range.setStartBefore($el.get(0));
+      if (range.collapsed) {
+        return $el;
+      }
+      return $el.before(range.extractContents());
+    };
+
+    Selection.prototype.saveSelection = function() {
+      var endCaret, range, startCaret;
+      if (this._selectionSaved) {
+        return;
+      }
+      range = this.getRange();
+      startCaret = $('<span/>').addClass('simditor-caret-start');
+      endCaret = $('<span/>').addClass('simditor-caret-end');
+      range.insertNode(startCaret[0]);
+      range.collapse();
+      range.insertNode(endCaret[0]);
+      this.sel.removeAllRanges();
+      return this._selectionSaved = true;
+    };
+
+    Selection.prototype.restoreSelection = function() {
+      var endCaret, endContainer, endOffset, range, startCaret, startContainer, startOffset;
+      if (!this._selectionSaved) {
+        return false;
+      }
+      startCaret = this.editor.body.find('.simditor-caret-start');
+      endCaret = this.editor.body.find('.simditor-caret-end');
+      if (startCaret.length && endCaret.length) {
+        startContainer = startCaret.parent();
+        startOffset = startContainer.contents().index(startCaret);
+        endContainer = endCaret.parent();
+        endOffset = endContainer.contents().index(endCaret);
+        if (startContainer[0] === endContainer[0]) {
+          endOffset -= 1;
+        }
+        range = document.createRange();
+        range.setStart(startContainer.get(0), startOffset);
+        range.setEnd(endContainer.get(0), endOffset);
+        startCaret.remove();
+        endCaret.remove();
+        this.selectRange(range);
+      } else {
+        startCaret.remove();
+        endCaret.remove();
+      }
+      this._selectionSaved = false;
+      return range;
+    };
+
+    return Selection;
+
+  })(Plugin);
+
+  Formatter = (function(_super) {
+    __extends(Formatter, _super);
+
+    function Formatter() {
+      _ref = Formatter.__super__.constructor.apply(this, arguments);
+      return _ref;
+    }
+
+    Formatter.prototype._init = function() {
       var _this = this;
-      return this.body.on('click', 'a', function(e) {
+      return this.editor.body.on('click', 'a', function(e) {
         return false;
       });
-    },
-    _decorate: function($el) {
+    };
+
+    Formatter.prototype._allowedTags = ['p', 'ul', 'ol', 'li', 'blockquote', 'hr', 'pre', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'table'];
+
+    Formatter.prototype.decorate = function($el) {
       if ($el == null) {
-        $el = this.body;
+        $el = this.editor.body;
       }
-      return this.trigger('decorate', [$el]);
-    },
-    _undecorate: function($el) {
+      return this.editor.trigger('decorate', [$el]);
+    };
+
+    Formatter.prototype.undecorate = function($el) {
       var emptyP, lastP;
       if ($el == null) {
-        $el = this.body.clone();
+        $el = this.editor.body.clone();
       }
-      this.trigger('undecorate', [$el]);
+      this.editor.trigger('undecorate', [$el]);
       this.autolink($el);
       lastP = $el.children().last('p');
       while (lastP.is('p' && !lastP.text() && !lastP.find('img').length)) {
@@ -108,11 +368,12 @@
         emptyP.remove();
       }
       return $.trim($el.html());
-    },
-    autolink: function($el) {
+    };
+
+    Formatter.prototype.autolink = function($el) {
       var $node, findLinkNode, linkNodes, re, text, _i, _len;
       if ($el == null) {
-        $el = this.body;
+        $el = this.editor.body;
       }
       linkNodes = [];
       findLinkNode = function($parentNode) {
@@ -149,21 +410,22 @@
         }
       }
       return $el;
-    },
-    format: function($el) {
-      var blockNode, node, _i, _len, _ref, _results;
+    };
+
+    Formatter.prototype.format = function($el) {
+      var blockNode, node, _i, _len, _ref1, _results;
       if ($el == null) {
-        $el = this.body;
+        $el = this.editor.body;
       }
       if ($el.is(':empty')) {
-        $el.append('<p>' + this._placeholderBr + '</p>');
+        $el.append('<p>' + this.editor.util.phBr + '</p>');
         return $el;
       }
-      _ref = $el.contents();
+      _ref1 = $el.contents();
       _results = [];
-      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-        node = _ref[_i];
-        if (this.isBlockNode(node)) {
+      for (_i = 0, _len = _ref1.length; _i < _len; _i++) {
+        node = _ref1[_i];
+        if (this.editor.util.isBlockNode(node)) {
           if (typeof blockNode !== "undefined" && blockNode !== null) {
             this.cleanNode(blockNode);
           }
@@ -177,19 +439,20 @@
         }
       }
       return _results;
-    },
-    cleanNode: function(node, recursive) {
-      var $node, attr, contents, n, _i, _j, _len, _len1, _ref, _ref1, _ref2, _results;
+    };
+
+    Formatter.prototype.cleanNode = function(node, recursive) {
+      var $node, attr, contents, n, _i, _j, _len, _len1, _ref1, _ref2, _ref3, _results;
       $node = $(node);
       if ($node[0].nodeType === 3) {
         return;
       }
       contents = $node.contents();
       if ($node.is(this._allowedTags.join(','))) {
-        _ref = $.makeArray($node[0].attributes);
-        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-          attr = _ref[_i];
-          if (!($node.is('img' && ((_ref1 = attr.name) === 'src' || _ref1 === 'alt'))) && !($node.is('a' && ((_ref2 = attr.name) === 'href' || _ref2 === 'target')))) {
+        _ref1 = $.makeArray($node[0].attributes);
+        for (_i = 0, _len = _ref1.length; _i < _len; _i++) {
+          attr = _ref1[_i];
+          if (!($node.is('img' && ((_ref2 = attr.name) === 'src' || _ref2 === 'alt'))) && !($node.is('a' && ((_ref3 = attr.name) === 'href' || _ref3 === 'target')))) {
             $node.removeAttr(attr.name);
           }
         }
@@ -208,90 +471,106 @@
         }
         return _results;
       }
-    }
-  };
+    };
 
-  Input = {
-    opts: {
+    return Formatter;
+
+  })(Plugin);
+
+  InputManager = (function(_super) {
+    __extends(InputManager, _super);
+
+    function InputManager() {
+      _ref1 = InputManager.__super__.constructor.apply(this, arguments);
+      return _ref1;
+    }
+
+    InputManager.prototype.opts = {
       tabIndent: true
-    },
-    _modifierKeys: [16, 17, 18, 91, 93],
-    _arrowKeys: [37, 38, 39, 40],
-    _load: function() {},
-    _init: function() {
+    };
+
+    InputManager.prototype._modifierKeys = [16, 17, 18, 91, 93];
+
+    InputManager.prototype._arrowKeys = [37, 38, 39, 40];
+
+    InputManager.prototype._init = function() {
       var _this = this;
-      this._pasteArea = $('<textarea/>').attr('tabIndex', '-1').addClass('simditor-paste-area').appendTo(this.el);
-      this.on('destroy', function() {
+      this._pasteArea = $('<textarea/>').attr('tabIndex', '-1').addClass('simditor-paste-area').appendTo(this.editor.el);
+      this.editor.on('destroy', function() {
         return _this._pasteArea.remove();
       });
-      this.body.on('keydown', $.proxy(this._onKeyDown, this)).on('keyup', $.proxy(this._onKeyUp, this)).on('mouseUp', $.proxy(this._onMouseUp, this)).on('focus', $.proxy(this._onFocus, this)).on('blur', $.proxy(this._onBlur, this)).on('paste', $.proxy(this._onPaste, this));
-      if (this.textarea.attr('autofocus')) {
+      this.editor.body.on('keydown', $.proxy(this._onKeyDown, this)).on('keyup', $.proxy(this._onKeyUp, this)).on('mouseup', $.proxy(this._onMouseUp, this)).on('focus', $.proxy(this._onFocus, this)).on('blur', $.proxy(this._onBlur, this)).on('paste', $.proxy(this._onPaste, this));
+      if (this.editor.textarea.attr('autofocus')) {
         return setTimeout(function() {
-          return _this.body.focus();
+          return _this.editor.body.focus();
         }, 0);
       }
-    },
-    _onFocus: function(e) {
-      this.el.addClass('focus').removeClass('error');
+    };
+
+    InputManager.prototype._onFocus = function(e) {
+      this.editor.el.addClass('focus').removeClass('error');
       this.focused = true;
-      return this.format();
-    },
-    _onBlur: function(e) {
-      this.el.removeClass('focus');
+      return this.editor.formatter.format();
+    };
+
+    InputManager.prototype._onBlur = function(e) {
+      this.editor.el.removeClass('focus');
       return this.focused = false;
-    },
-    _onMouseUp: function(e) {
-      return this.trigger('selectionchanged');
-    },
-    _onKeyDown: function(e) {
-      var $blockEl, $br, $prevBlockEl, metaKey, spaceNode, spaces, _ref, _ref1,
+    };
+
+    InputManager.prototype._onMouseUp = function(e) {
+      return this.editor.trigger('selectionchanged');
+    };
+
+    InputManager.prototype._onKeyDown = function(e) {
+      var $blockEl, $br, $prevBlockEl, metaKey, spaceNode, spaces, _ref2, _ref3,
         _this = this;
-      if (this.triggerHandler(e) === false) {
+      if (this.editor.triggerHandler(e) === false) {
         return false;
       }
-      if ((_ref = e.which, __indexOf.call(this._modifierKeys, _ref) >= 0) || (_ref1 = e.which, __indexOf.call(this._arrowKeys, _ref1) >= 0)) {
+      if ((_ref2 = e.which, __indexOf.call(this._modifierKeys, _ref2) >= 0) || (_ref3 = e.which, __indexOf.call(this._arrowKeys, _ref3) >= 0)) {
         return;
       }
-      metaKey = this.metaKey(e);
-      $blockEl = this.closestBlockEl();
+      metaKey = this.editor.util.metaKey(e);
+      $blockEl = this.editor.util.closestBlockEl();
       if (metaKey && this._shortcuts[e.which]) {
         this._shortcuts[e.which].call(this, e);
         return false;
       }
-      if (this.browser.safari && e.which === 13 && e.shiftKey) {
+      if (this.editor.util.browser.safari && e.which === 13 && e.shiftKey) {
         $br = $('<br/>');
-        if (this.rangeAtEndOf($blockEl)) {
-          this.insertNode($br);
-          this.insertNode($('<br/>'));
-          this.setCaretBefore($br);
+        if (this.editor.selection.rangeAtEndOf($blockEl)) {
+          this.editor.selection.insertNode($br);
+          this.editor.selection.insertNode($('<br/>'));
+          this.editor.selection.setRangeBefore($br);
         } else {
-          this.insertNode($br);
+          this.editor.selection.insertNode($br);
         }
-        this.trigger('valuechanged');
+        this.editor.trigger('valuechanged');
         return false;
       }
       if (e.which === 8) {
         $prevBlockEl = $blockEl.prev();
-        if ($prevBlockEl.is('hr' && this.rangeAtStartOf($blockEl))) {
+        if ($prevBlockEl.is('hr' && this.editor.selection.rangeAtStartOf($blockEl))) {
           $prevBlockEl.remove();
-          this.trigger('valuechanged');
+          this.editor.trigger('valuechanged');
           return false;
         }
       }
       if (e.which === 9 && (this.opts.tabIndent || $blockEl.is('pre'))) {
         spaces = $blockEl.is('pre') ? '\u00A0\u00A0' : '\u00A0\u00A0\u00A0\u00A0';
         spaceNode = document.createTextNode(spaces);
-        this.insertNode(spaceNode);
-        this.trigger('valuechanged');
+        this.editor.selection.insertNode(spaceNode);
+        this.editor.trigger('valuechanged');
         return false;
       }
       if (e.which in this._inputHandlers) {
-        this.traverseUp(function(node) {
-          var handler, _ref2;
+        this.editor.util.traverseUp(function(node) {
+          var handler, _ref4;
           if (node.nodeType !== 1) {
             return;
           }
-          handler = (_ref2 = _this._inputHandlers[e.which]) != null ? _ref2[node.tagName.toLowerCase()] : void 0;
+          handler = (_ref4 = _this._inputHandlers[e.which]) != null ? _ref4[node.tagName.toLowerCase()] : void 0;
           return handler != null ? handler.call(_this, $(node)) : void 0;
         });
       }
@@ -299,35 +578,37 @@
         clearTimeout(this._typing);
       }
       return this._typing = setTimeout(function() {
-        _this.trigger('valuechanged');
-        _this.trigger('selectionchanged');
+        _this.editor.trigger('valuechanged');
+        _this.editor.trigger('selectionchanged');
         return _this._typing = false;
       });
-    },
-    _onKeyUp: function(e) {
-      var p, _ref;
-      if (this.triggerHandler(e) === false) {
+    };
+
+    InputManager.prototype._onKeyUp = function(e) {
+      var p, _ref2;
+      if (this.editor.triggerHandler(e) === false) {
         return false;
       }
-      if (_ref = e.which, __indexOf.call(this._arrowKeys, _ref) >= 0) {
-        this.trigger('selectionchanged');
+      if (_ref2 = e.which, __indexOf.call(this._arrowKeys, _ref2) >= 0) {
+        this.editor.trigger('selectionchanged');
         return;
       }
-      if (e.which === 8 && this.body.is(':empty')) {
-        p = $('<p/>').append(this._placeholderBr).appendTo(this.body);
-        this.setCaretAtStartOf(p);
+      if (e.which === 8 && this.editor.body.is(':empty')) {
+        p = $('<p/>').append(this.editor.util.phBr).appendTo(this.editor.body);
+        this.editor.selection.setRangeAtStartOf(p);
       }
-    },
-    _onPaste: function(e) {
+    };
+
+    InputManager.prototype._onPaste = function(e) {
       var $blockEl, codePaste,
         _this = this;
-      if (this.triggerHandler(e) === false) {
+      if (this.editor.triggerHandler(e) === false) {
         return false;
       }
-      $blockEl = this.closestBlockEl();
+      $blockEl = this.editor.util.closestBlockEl();
       codePaste = $blockEl.is('pre');
-      this.deleteRangeContents();
-      this.saveSelection();
+      this.editor.selection.deleteRangeContents();
+      this.editor.selection.save();
       this._pasteArea.val('').focus();
       return setTimeout(function() {
         var el, els, insertPosition, node, pasteContent, range, re, result;
@@ -355,258 +636,281 @@
           }
           pasteContent = $(els);
         }
-        range = _this.restoreSelection();
+        range = _this.editor.selection.restore();
         if (codePaste && pasteContent) {
           node = document.createTextNode(pasteContent);
-          _this.insertNode(node, range);
+          _this.editor.selection.insertNode(node, range);
         } else if (pasteContent.length < 1) {
           return;
         } else if (pasteContent.length === 1) {
           node = document.createTextNode(pasteContent.text());
-          _this.insertNode(node, range);
+          _this.editor.selection.insertNode(node, range);
         } else if (pasteContent.length > 1) {
           if ($blockEl.is('li')) {
             $blockEl = $blockEl.parent();
           }
-          if (_this.rangeAtStartOf($blockEl, range)) {
+          if (_this.editor.selection.rangeAtStartOf($blockEl, range)) {
             insertPosition = 'before';
-          } else if (_this.rangeAtEndOf($blockEl, range)) {
+          } else if (_this.editor.selection.rangeAtEndOf($blockEl, range)) {
             insertPosition = 'after';
           } else {
-            _this.breakBlockEl($blockEl, range);
+            _this.editor.selection.breakBlockEl($blockEl, range);
             insertPosition = 'before';
           }
           $blockEl[insertPosition](pasteContent);
-          _this.setCaretAtEndOf(pasteContent.last(), range);
+          _this.editor.selection.setRangeAtEndOf(pasteContent.last(), range);
         }
         return _this._pasteArea.val('');
       }, 0);
-    },
-    _inputHandlers: {
+    };
+
+    InputManager.prototype._inputHandlers = {
       13: {
         li: function($node) {},
         pre: function($node) {},
         blockquote: function($node) {}
       }
-    },
-    _shortcuts: {
-      13: function(e) {
-        return this.el.closest('form').find('button:submit').click();
-      }
-    },
-    addShortcut: function(keyCode, handler) {
-      return this._shortcuts[keyCode] = $.proxy(handler, this);
-    }
-  };
+    };
 
-  Selection = {
-    _load: function() {
-      return this.sel = document.getSelection();
-    },
-    _init: function() {},
-    getRange: function() {
-      if (!this.focused || !this.sel.rangeCount) {
+    InputManager.prototype._shortcuts = {
+      13: function(e) {
+        return this.editor.el.closest('form').find('button:submit').click();
+      }
+    };
+
+    InputManager.prototype.addShortcut = function(keyCode, handler) {
+      return this._shortcuts[keyCode] = $.proxy(handler, this);
+    };
+
+    return InputManager;
+
+  })(Plugin);
+
+  UndoManager = (function(_super) {
+    __extends(UndoManager, _super);
+
+    function UndoManager() {
+      _ref2 = UndoManager.__super__.constructor.apply(this, arguments);
+      return _ref2;
+    }
+
+    UndoManager.prototype._stack = [];
+
+    UndoManager.prototype._index = -1;
+
+    UndoManager.prototype._capacity = 50;
+
+    UndoManager.prototype._timer = null;
+
+    UndoManager.prototype._init = function() {
+      var _this = this;
+      this.editor.inputManager.addShortcut(90, function(e) {
+        if (e.shiftKey) {
+          return _this.redo();
+        } else {
+          return _this.undo();
+        }
+      });
+      this.editor.on('valuechanged', function(e, src) {
+        if (src === 'undo' || !_this.editor.inputManager.focused) {
+          return;
+        }
+        if (_this._timer) {
+          clearTimeout(_this._timer);
+          _this._timer = null;
+        }
+        return _this._timer = setTimeout(function() {
+          return _this._pushUndoState();
+        }, 300);
+      });
+      return this.editor.body.on('focus', function() {
+        if (_this._index < 0) {
+          return setTimeout(function() {
+            return _this._pushUndoState();
+          }, 0);
+        }
+      });
+    };
+
+    UndoManager.prototype._pushUndoState = function() {
+      var currentState, html;
+      if (this._stack.length && this._index > -1) {
+        currentState = this._stack[this._index];
+      }
+      html = this.editor.body.html();
+      if (currentState && currentState.html === html) {
+        return;
+      }
+      this._index += 1;
+      this._stack.length = this._index;
+      this._stack.push({
+        html: html,
+        caret: this.caretPosition()
+      });
+      if (this._stack.length > this._capacity) {
+        this._stack.shift();
+        return this._index -= 1;
+      }
+    };
+
+    UndoManager.prototype.undo = function() {
+      var state;
+      if (this._index < 1 || this._stack.length < 2) {
+        return;
+      }
+      this._index -= 1;
+      state = this._stack[this._index];
+      this.editor.body.html(state.html);
+      this.editor.sync();
+      this.caretPosition(state.caret);
+      this.editor.trigger('valuechanged', ['undo']);
+      return this.editor.trigger('selectionchanged', ['undo']);
+    };
+
+    UndoManager.prototype.redo = function() {
+      var state;
+      if (this._index < 0 || this._stack.length < this._index + 2) {
+        return;
+      }
+      this._index += 1;
+      state = this._stack[this._index];
+      this.editor.body.html(state.html);
+      this.editor.sync();
+      this.caretPosition(state.caret);
+      this.editor.trigger('valuechanged', ['undo']);
+      return this.editor.trigger('selectionchanged', ['undo']);
+    };
+
+    UndoManager.prototype._getNodeOffset = function(node, index) {
+      var $parent, merging, offset,
+        _this = this;
+      if (index) {
+        $parent = $(node);
+      } else {
+        $parent = $(node).parent();
+      }
+      offset = 0;
+      merging = false;
+      $parent.contents().each(function(i, child) {
+        if (index === i || node === child) {
+          return false;
+        }
+        if (child.nodeType === 3) {
+          if (!merging) {
+            offset += 1;
+            merging = true;
+          }
+        } else {
+          offset += 1;
+          merging = false;
+        }
         return null;
-      }
-      return this.sel.getRangeAt(0);
-    },
-    selectRange: function(range) {
-      this.sel.removeAllRanges();
-      return this.sel.addRange(range);
-    },
-    rangeAtEndOf: function(node, range) {
-      var endNode, result,
-        _this = this;
-      if (range == null) {
-        range = this.getRange();
-      }
-      if (range == null) {
-        return;
-      }
-      node = $(node)[0];
-      endNode = range.endContainer;
-      if (range.endOffset !== this.getNodeLength(endNode)) {
-        return false;
-      }
-      if (node === endNode) {
-        return true;
-      } else if (!$.contains(node, endNode)) {
-        return false;
-      }
-      result = true;
-      $(endNode).parentsUntil(node).addBack().each(function(i, n) {
-        var nodes;
-        nodes = $(n).parent().contents().filter(function() {
-          return !(this.nodeType === 3 && !this.nodeValue);
-        });
-        if (nodes.last().get(0) !== n) {
-          return result = false;
-        }
       });
-      return result;
-    },
-    rangeAtStartOf: function(node, range) {
-      var result, startNode,
+      return offset;
+    };
+
+    UndoManager.prototype._getNodePosition = function(node, offset) {
+      var position, prevNode,
         _this = this;
-      if (range == null) {
-        range = this.getRange();
-      }
-      if (range == null) {
-        return;
-      }
-      node = $(node)[0];
-      startNode = range.startContainer;
-      if (range.startOffset !== 0) {
-        return false;
-      }
-      if (node === startNode) {
-        return true;
-      } else if (!$.contains(node, startNode)) {
-        return false;
-      }
-      result = true;
-      $(startNode).parentsUntil(node).addBack().each(function(i, n) {
-        var nodes;
-        nodes = $(n).parent().contents().filter(function() {
-          return !(this.nodeType === 3 && !this.nodeValue);
-        });
-        if (nodes.first().get(0) !== n) {
-          return result = false;
+      if (node.nodeType === 3) {
+        prevNode = node.previousSibling;
+        while (prevNode && prevNode.nodeType === 3) {
+          node = prevNode;
+          offset += this.editor.util.getNodeLength(prevNode);
+          prevNode = prevNode.previousSibling;
         }
-      });
-      return result;
-    },
-    insertNode: function(node, range) {
-      if (range == null) {
-        range = this.getRange();
+      } else {
+        offset = this._getNodeOffset(node, offset);
       }
-      if (range == null) {
-        return;
+      position = [];
+      position.unshift(offset);
+      this.editor.util.traverseUp(function(n) {
+        return position.unshift(_this._getNodeOffset(n));
+      }, node);
+      return position;
+    };
+
+    UndoManager.prototype._getNodeByPosition = function(position) {
+      var childNodes, node, offset, _i, _len, _ref3;
+      node = this.editor.body[0];
+      _ref3 = position.slice(0, position.length - 1);
+      for (_i = 0, _len = _ref3.length; _i < _len; _i++) {
+        offset = _ref3[_i];
+        childNodes = node.childNodes;
+        if (offset > childNodes.length - 1) {
+          debugger;
+          node = null;
+          break;
+        }
+        node = childNodes[offset];
       }
-      node = $(node)[0];
-      range.insertNode(node);
-      return this.setCaretAfter(node);
-    },
-    setCaretAfter: function(node, range) {
-      if (range == null) {
-        range = this.getRange();
-      }
-      if (range == null) {
-        return;
-      }
-      node = $(node)[0];
-      range.setEndAfter(node);
-      range.collapse();
-      return this.selectRange(range);
-    },
-    setCaretBefore: function(node, range) {
-      if (range == null) {
-        range = this.getRange();
-      }
-      if (range == null) {
-        return;
-      }
-      node = $(node)[0];
-      range.setEndBefore(node);
-      range.collapse();
-      return this.selectRange(range);
-    },
-    setCaretAtStartOf: function(node, range) {
-      if (range == null) {
-        range = this.getRange();
-      }
-      node = $(node).get(0);
-      range.setEnd(node, 0);
-      range.collapse();
-      return this.selectRange(range);
-    },
-    setCaretAtEndOf: function(node, range) {
-      var nodeLength;
-      if (range == null) {
-        range = this.getRange();
-      }
-      node = $(node).get(0);
-      nodeLength = this.getNodeLength(node);
-      if (node.nodeType !== 3 && nodeLength > 0 && $(node).contents().last().is('br')) {
-        nodeLength -= 1;
-      }
-      range.setEnd(node, nodeLength);
-      range.collapse();
-      return this.selectRange(range);
-    },
-    deleteRangeContents: function(range) {
-      if (range == null) {
-        range = this.getRange();
-      }
-      return range.deleteContents();
-    },
-    breakBlockEl: function(el, range) {
-      var $el;
-      if (range == null) {
-        range = this.getRange();
-      }
-      $el = $(el);
-      if (!range.collapsed) {
-        return $el;
-      }
-      range.setStartBefore($el.get(0));
-      if (range.collapsed) {
-        return $el;
-      }
-      return $el.before(range.extractContents());
-    },
-    saveSelection: function() {
-      var endCaret, range, startCaret;
-      if (this._selectionSaved) {
-        return;
-      }
-      range = this.getRange();
-      startCaret = $('<span/>').addClass('simditor-caret-start');
-      endCaret = $('<span/>').addClass('simditor-caret-end');
-      range.insertNode(startCaret[0]);
-      range.collapse();
-      range.insertNode(endCaret[0]);
-      this.sel.removeAllRanges();
-      return this._selectionSaved = true;
-    },
-    restoreSelection: function() {
-      var endCaret, endContainer, endOffset, range, startCaret, startContainer, startOffset;
-      if (!this._selectionSaved) {
-        return false;
-      }
-      startCaret = this.body.find('.simditor-caret-start');
-      endCaret = this.body.find('.simditor-caret-end');
-      if (startCaret.length && endCaret.length) {
-        startContainer = startCaret.parent();
-        startOffset = startContainer.contents().index(startCaret);
-        endContainer = endCaret.parent();
-        endOffset = endContainer.contents().index(endCaret);
-        if (startContainer[0] === endContainer[0]) {
-          endOffset -= 1;
+      return node;
+    };
+
+    UndoManager.prototype.caretPosition = function(caret) {
+      var endContainer, endOffset, range, startContainer, startOffset;
+      if (!caret) {
+        if (!this.editor.inputManager.focused) {
+          return {};
+        }
+        range = this.editor.selection.getRange();
+        caret = {
+          start: [],
+          end: null,
+          collapsed: true
+        };
+        caret.start = this._getNodePosition(range.startContainer, range.startOffset);
+        if (!range.collapsed) {
+          caret.end = this._getNodePosition(range.endContainer, range.endOffset);
+          caret.collapsed = false;
+        }
+        return caret;
+      } else {
+        if (!this.editor.inputManager.focused) {
+          this.editor.body.focus();
+        }
+        if (!caret.start) {
+          this.editor.body.blur();
+          return;
+        }
+        startContainer = this._getNodeByPosition(caret.start);
+        startOffset = caret.start[caret.start.length - 1];
+        if (caret.collapsed) {
+          endContainer = startContainer;
+          endOffset = startOffset;
+        } else {
+          endContainer = this._getNodeByPosition(caret.end);
+          endOffset = caret.start[caret.start.length - 1];
+        }
+        if (!startContainer || !endContainer) {
+          throw new Error('simditor: invalid caret state');
+          return;
         }
         range = document.createRange();
-        range.setStart(startContainer.get(0), startOffset);
-        range.setEnd(endContainer.get(0), endOffset);
-        startCaret.remove();
-        endCaret.remove();
-        this.selectRange(range);
-      } else {
-        startCaret.remove();
-        endCaret.remove();
+        range.setStart(startContainer, startOffset);
+        range.setEnd(endContainer, endOffset);
+        return this.editor.selection.selectRange(range);
       }
-      this._selectionSaved = false;
-      return range;
-    }
-  };
+    };
 
-  Util = {
-    _load: function() {
+    return UndoManager;
+
+  })(Plugin);
+
+  Util = (function(_super) {
+    __extends(Util, _super);
+
+    function Util(editor) {
+      this.editor = editor;
+      Util.__super__.constructor.call(this, this.editor);
       if (this.browser.msie) {
-        return this._placeholderBr = '';
+        this.phBr = '';
       }
-    },
-    _placeholderBr: '<br/>',
-    browser: (function() {
+    }
+
+    Util.prototype.phBr = '<br/>';
+
+    Util.prototype.browser = (function() {
       var chrome, firefox, ie, safari, ua;
       ua = navigator.userAgent;
       ie = /(msie|trident)/i.test(ua);
@@ -639,8 +943,9 @@
       } else {
         return {};
       }
-    })(),
-    metaKey: function(e) {
+    })();
+
+    Util.prototype.metaKey = function(e) {
       var isMac;
       isMac = /Mac/.test(navigator.userAgent);
       if (isMac) {
@@ -648,26 +953,28 @@
       } else {
         return e.ctrlKey;
       }
-    },
-    isBlockNode: function(node) {
+    };
+
+    Util.prototype.isBlockNode = function(node) {
       node = $(node)[0];
       if (!node || node.nodeType === 3) {
         return false;
       }
       return /^(div|p|ul|ol|li|blockquote|hr|pre|h1|h2|h3|h4|h5|h6|table)$/.test(node.nodeName.toLowerCase());
-    },
-    closestBlockEl: function(node) {
+    };
+
+    Util.prototype.closestBlockEl = function(node) {
       var $node, blockEl, range,
         _this = this;
       if (node == null) {
-        range = this.getRange();
+        range = this.editor.selection.getRange();
         node = range != null ? range.commonAncestorContainer : void 0;
       }
       $node = $(node);
       if (!$node.length) {
         return null;
       }
-      blockEl = $node.parentsUntil(this.body).addBack();
+      blockEl = $node.parentsUntil(this.editor.body).addBack();
       blockEl = blockEl.filter(function(i) {
         return _this.isBlockNode(blockEl.eq(i));
       });
@@ -676,8 +983,9 @@
       } else {
         return null;
       }
-    },
-    getNodeLength: function(node) {
+    };
+
+    Util.prototype.getNodeLength = function(node) {
       switch (node.nodeType) {
         case 7:
         case 10:
@@ -688,236 +996,179 @@
         default:
           return node.childNodes.length;
       }
-    },
-    traverseUp: function(callback, node) {
-      var n, nodes, range, _i, _len, _results;
+    };
+
+    Util.prototype.traverseUp = function(callback, node) {
+      var n, nodes, range, result, _i, _len, _results;
       if (node == null) {
-        range = this.getRange();
+        range = this.editor.selection.getRange();
         node = range != null ? range.commonAncestorContainer : void 0;
       }
-      if ((node == null) || !$.contains(this.body[0], node)) {
+      if ((node == null) || !$.contains(this.editor.body[0], node)) {
         return;
       }
-      nodes = $(node).parentsUntil(this.body).get();
+      nodes = $(node).parentsUntil(this.editor.body).get();
       nodes.unshift(node);
       _results = [];
       for (_i = 0, _len = nodes.length; _i < _len; _i++) {
         n = nodes[_i];
-        _results.push(callback(n));
+        result = callback(n);
+        if (result === false) {
+          break;
+        } else {
+          _results.push(void 0);
+        }
       }
       return _results;
-    }
-  };
+    };
 
-  Undo = {
-    _load: function() {},
-    _init: function() {
+    return Util;
+
+  })(Plugin);
+
+  Toolbar = (function(_super) {
+    __extends(Toolbar, _super);
+
+    function Toolbar() {
+      _ref3 = Toolbar.__super__.constructor.apply(this, arguments);
+      return _ref3;
+    }
+
+    Toolbar.prototype.opts = {
+      toolbar: true,
+      toolbarFloat: true
+    };
+
+    Toolbar.prototype._tpl = {
+      wrapper: '<div class="simditor-toolbar"><ul></ul></div>',
+      separator: '<li><span class="separator"></span></li>'
+    };
+
+    Toolbar.prototype._init = function() {
       var _this = this;
-      this._undoStack = [];
-      this._undoIndex = -1;
-      this._undoCapacity = 50;
-      this._undoTimer = null;
-      this.addShortcut(90, function(e) {
-        if (e.shiftKey) {
-          return _this.redo();
-        } else {
-          return _this.undo();
-        }
-      });
-      this.on('valuechanged', function(e, src) {
-        if (src === 'undo' || !_this.focused) {
-          return;
-        }
-        if (_this._undoTimer) {
-          clearTimeout(_this._undoTimer);
-          _this._undoTimer = null;
-        }
-        return _this._undoTimer = setTimeout(function() {
-          return _this._pushUndoState();
-        }, 300);
-      });
-      return this.body.on('focus', function() {
-        if (_this._undoIndex < 0) {
-          return setTimeout(function() {
-            return _this._pushUndoState();
-          }, 0);
-        }
-      });
-    },
-    _pushUndoState: function() {
-      var currentState, html;
-      if (this._undoStack.length && this._undoIndex > -1) {
-        currentState = this._undoStack[this._undoIndex];
-      }
-      html = this.body.html();
-      if (currentState && currentState.html === html) {
+      if (!this.opts.toolbar) {
         return;
       }
-      this._undoIndex += 1;
-      this._undoStack.length = this._undoIndex;
-      this._undoStack.push({
-        html: html,
-        caret: this.caretPosition()
+      if (!$.isArray(this.opts.toolbar)) {
+        opts.toolbar = ['bold', 'italic', 'underline', 'ol', 'ul'];
+      }
+      this._render();
+      this.list.on('click', function(e) {
+        return false;
       });
-      if (this._undoStack.length > this._undoCapacity) {
-        this._undoStack.shift();
-        this._undoIndex -= 1;
+      this.wrapper.on('mousedown', function(e) {
+        return _this.list.find('.menu-on').removeClass('.menu-on');
+      });
+      $(document).on('mousedown.simditor', function(e) {
+        return _this.list.find('.menu-on').removeClass('.menu-on');
+      });
+      if (this.opts.toolbarFloat) {
+        $(window).on('scroll.simditor-' + this.editor.id, function(e) {
+          var bottomEdge, scrollTop, top, topEdge;
+          topEdge = _this.editor.wrapper.offset().top;
+          bottomEdge = topEdge + _this.editor.wrapper.outerHeight() - 100;
+          scrollTop = $(document).scrollTop();
+          top = 0;
+          if (scrollTop <= topEdge) {
+            top = 0;
+            _this.wrapper.removeClass('floating');
+          } else if ((bottomEdge > scrollTop && scrollTop > topEdge)) {
+            top = scrollTop - topEdge;
+            _this.wrapper.addClass('floating');
+          } else {
+            top = bottomEdge - topEdge;
+            _this.wrapper.addClass('floating');
+          }
+          return _this.wrapper.css('top', top);
+        });
       }
-      return console.log(this._undoStack);
-    },
-    undo: function() {
-      var state;
-      if (this._undoIndex < 1 || this._undoStack.length < 2) {
-        return;
+      return this.editor.on('selectionchanged', function() {
+        return _this.toolbarStatus();
+      });
+    };
+
+    Toolbar.prototype._render = function() {
+      var name, _i, _len, _ref4, _results;
+      this.wrapper = $(this._tpl.wrapper).prependTo(this.editor.wrapper);
+      this.list = this.wrapper.find('ul');
+      this.editor.wrapper.addClass('toolbar-enabled');
+      _ref4 = this.opts.toolbar;
+      _results = [];
+      for (_i = 0, _len = _ref4.length; _i < _len; _i++) {
+        name = _ref4[_i];
+        if (name === '|') {
+          $(this._tpl.separator).appendTo(this.list);
+          continue;
+        }
+        if (!this.constructor.buttons[name]) {
+          throw new Error('simditor: invalid toolbar button "' + name + '"');
+          continue;
+        }
+        _results.push(this._buttons.push(new this.constructor.buttons[name](this)));
       }
-      this._undoIndex -= 1;
-      state = this._undoStack[this._undoIndex];
-      this.body.html(state.html);
-      this.sync();
-      this.caretPosition(state.caret);
-      this.trigger('valuechanged', ['undo']);
-      return this.trigger('selectionchanged', ['undo']);
-    },
-    redo: function() {
-      var state;
-      if (this._undoIndex < 0 || this._undoStack.length < this._undoIndex + 2) {
-        return;
-      }
-      this._undoIndex += 1;
-      state = this._undoStack[this._undoIndex];
-      this.body.html(state.html);
-      this.sync();
-      this.caretPosition(state.caret);
-      this.trigger('valuechanged', ['undo']);
-      return this.trigger('selectionchanged', ['undo']);
-    },
-    _getNodeOffset: function(node, index) {
-      var $parent, merging, offset,
+      return _results;
+    };
+
+    Toolbar.prototype.toolbarStatus = function(name) {
+      var buttons,
         _this = this;
-      if (index) {
-        $parent = $(node);
-      } else {
-        $parent = $(node).parent();
+      if (!this.editor.inputManager.focused) {
+        return;
       }
-      offset = 0;
-      merging = false;
-      $parent.contents().each(function(i, child) {
-        if (index === i || node === child) {
+      buttons = this._buttons.slice(0);
+      return this.editor.util.traverseUp(function(node) {
+        var button, i, removeIndex, _i, _j, _len, _len1;
+        removeIndex = [];
+        for (i = _i = 0, _len = buttons.length; _i < _len; i = ++_i) {
+          button = buttons[i];
+          if ((name != null) && button.name !== name) {
+            continue;
+          }
+          if (!button.status || button.status($(node)) === true) {
+            removeIndex.push(i);
+          }
+        }
+        for (_j = 0, _len1 = removeIndex.length; _j < _len1; _j++) {
+          i = removeIndex[_j];
+          buttons.splice(i, 1);
+        }
+        if (buttons.length === 0) {
           return false;
         }
-        if (child.nodeType === 3) {
-          if (!merging) {
-            offset += 1;
-            merging = true;
-          }
-        } else {
-          offset += 1;
-          merging = false;
-        }
-        return null;
       });
-      return offset;
-    },
-    _getNodePosition: function(node, offset) {
-      var position, prevNode,
-        _this = this;
-      if (node.nodeType === 3) {
-        prevNode = node.previousSibling;
-        while (prevNode && prevNode.nodeType === 3) {
-          node = prevNode;
-          offset += this.getNodeLength(prevNode);
-          prevNode = prevNode.previousSibling;
-        }
-      } else {
-        offset = this._getNodeOffset(node, offset);
-      }
-      position = [];
-      position.unshift(offset);
-      this.traverseUp(function(n) {
-        return position.unshift(_this._getNodeOffset(n));
-      }, node);
-      return position;
-    },
-    _getNodeByPosition: function(position) {
-      var childNodes, node, offset, _i, _len, _ref;
-      node = this.body[0];
-      _ref = position.slice(0, position.length - 1);
-      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-        offset = _ref[_i];
-        childNodes = node.childNodes;
-        if (offset > childNodes.length - 1) {
-          debugger;
-          node = null;
-          break;
-        }
-        node = childNodes[offset];
-      }
-      return node;
-    },
-    caretPosition: function(caret) {
-      var endContainer, endOffset, range, startContainer, startOffset;
-      if (!caret) {
-        if (!this.focused) {
-          return {};
-        }
-        range = this.getRange();
-        caret = {
-          start: [],
-          end: null,
-          collapsed: true
-        };
-        caret.start = this._getNodePosition(range.startContainer, range.startOffset);
-        if (!range.collapsed) {
-          caret.end = this._getNodePosition(range.endContainer, range.endOffset);
-          caret.collapsed = false;
-        }
-        return caret;
-      } else {
-        if (!this.focused) {
-          this.body.focus();
-        }
-        if (!caret.start) {
-          this.body.blur();
-          return;
-        }
-        startContainer = this._getNodeByPosition(caret.start);
-        startOffset = caret.start[caret.start.length - 1];
-        if (caret.collapsed) {
-          endContainer = startContainer;
-          endOffset = startOffset;
-        } else {
-          endContainer = this._getNodeByPosition(caret.end);
-          endOffset = caret.start[caret.start.length - 1];
-        }
-        if (!startContainer || !endContainer) {
-          throw new Error('simditor: invalid caret state');
-          return;
-        }
-        range = document.createRange();
-        range.setStart(startContainer, startOffset);
-        range.setEnd(endContainer, endOffset);
-        return this.selectRange(range);
-      }
-    }
-  };
+    };
+
+    Toolbar.prototype._buttons = [];
+
+    Toolbar.addButton = function(btn) {
+      return this.buttons[btn.prototype.name] = btn;
+    };
+
+    Toolbar.buttons = {};
+
+    return Toolbar;
+
+  })(Plugin);
 
   Simditor = (function(_super) {
     __extends(Simditor, _super);
 
     function Simditor() {
-      _ref = Simditor.__super__.constructor.apply(this, arguments);
-      return _ref;
+      _ref4 = Simditor.__super__.constructor.apply(this, arguments);
+      return _ref4;
     }
 
-    Simditor.extend(Util);
+    Simditor.connect(Util);
 
-    Simditor.extend(Undo);
+    Simditor.connect(UndoManager);
 
-    Simditor.extend(Input);
+    Simditor.connect(InputManager);
 
-    Simditor.extend(Format);
+    Simditor.connect(Formatter);
 
-    Simditor.extend(Selection);
+    Simditor.connect(Selection);
+
+    Simditor.connect(Toolbar);
 
     Simditor.count = 0;
 
@@ -970,8 +1221,8 @@
     Simditor.prototype.setValue = function(val) {
       this.textarea.val(val);
       this.body.html(val);
-      this.format();
-      return this._decorate();
+      this.formatter.format();
+      return this.formatter.decorate();
     };
 
     Simditor.prototype.getValue = function() {
@@ -980,25 +1231,290 @@
 
     Simditor.prototype.sync = function() {
       var val;
-      val = this._undecorate();
+      val = this.formatter.undecorate();
       this.textarea.val(val);
       return val;
     };
 
     Simditor.prototype.destroy = function() {
       this.trigger('destroy');
-      this.textarea.closest('form'.off('.simditor simditor-' + this.id));
-      this.sel.removeAllRanges();
+      this.textarea.closest('form'.off('.simditor .simditor-' + this.id));
+      this.selection.clear();
       this.textarea.insertBefore(this.el).hide().val(''.removeData('simditor'));
-      return this.el.remove();
+      this.el.remove();
+      $(document).off('.simditor-' + this.id);
+      return $(window).off('.simditor-' + this.id);
     };
 
     return Simditor;
 
   })(Widget);
 
-  window.simditor = function(opts) {
-    return new Simditor(opts);
-  };
+  window.Simditor = Simditor;
+
+  window.Simditor.Plugin = Plugin;
+
+  Button = (function() {
+    Button.prototype._tpl = {
+      item: '<li><a tabindex="-1" unselectable="on" class="toolbar-item" href="javascript:;"><span></span></a></li>',
+      menuWrapper: '<div class="toolbar-menu"></div>',
+      menuItem: '<li><a tabindex="-1" unselectable="on" class="menu-item" href="javascript:;"><span></span></a></li>',
+      separator: '<li><span class="separator"></span></li>'
+    };
+
+    Button.prototype.name = '';
+
+    Button.prototype.icon = '';
+
+    Button.prototype.title = '';
+
+    Button.prototype.text = '';
+
+    Button.prototype.htmlTag = '';
+
+    Button.prototype.menu = false;
+
+    Button.prototype.active = false;
+
+    Button.prototype.shortcut = null;
+
+    function Button(toolbar) {
+      var _this = this;
+      this.toolbar = toolbar;
+      this.render();
+      this.el.on('mousedown', function(e) {
+        e.preventDefault();
+        if (_this.el.hasClass('disabled')) {
+          return;
+        }
+        if (_this.menu) {
+          return _this.toolbar.wrapper.toggleClass('menu-on');
+        } else {
+          _this.command();
+          return _this.status();
+        }
+      });
+      this.toolbar.list.on('mousedown', 'a.menu-item', function(e) {
+        var btn, param;
+        e.preventDefault();
+        btn = $(e.currentTarget);
+        if (btn.hasClass('disabled')) {
+          return;
+        }
+        _this.toolbar.wrapper.removeClass('menu-on');
+        param = btn.data('param');
+        _this.command(param);
+        return _this.status();
+      });
+      if (this.shortcut) {
+        this.toolbar.editor.inputManager.addShortcut(this.shortcut, function(e) {
+          return _this.el.mousedown();
+        });
+      }
+    }
+
+    Button.prototype.render = function() {
+      this.wrapper = $(this._tpl.item).appendTo(this.toolbar.list);
+      this.el = this.wrapper.find('a.toolbar-item');
+      this.el.attr('title', this.title).addClass('toolbar-item-' + this.name).data('button', this);
+      this.el.find('span').addClass(this.icon ? 'fa fa-' + this.icon : '').text(this.text);
+      if (!this.menu) {
+        return;
+      }
+      this.menuWrapper = $(this._tpl.menuWrapper).appendTo(this.wrapper);
+      return this.renderMenu();
+    };
+
+    Button.prototype.renderMenu = function() {
+      var $menuBtntnEl, $menuItemEl, menuItem, _i, _len, _ref5, _results;
+      if (!$.isArray(this.menu)) {
+        return;
+      }
+      this.menuEl = $('<ul/>').appendTo(this.menuWrapper);
+      _ref5 = this.menu;
+      _results = [];
+      for (_i = 0, _len = _ref5.length; _i < _len; _i++) {
+        menuItem = _ref5[_i];
+        if (menuItem === '|') {
+          $(this._tpl.separator).appendTo(this.menuEl);
+          continue;
+        }
+        $menuItemEl = $(this._tpl.menuItem).appendTo(this.menuEl);
+        _results.push($menuBtntnEl = $menuItemEl.find('a.menu-item').attr({
+          'title': menuItem.title
+        }).addClass('menu-item-' + menuItem.name).data('param', menuItem.param).find('span').text(menuItem.text));
+      }
+      return _results;
+    };
+
+    Button.prototype.status = function($node) {
+      if ($node != null) {
+        this.active = $node.is(this.htmlTag);
+      }
+      this.el.toggleClass('active', this.active);
+      return this.active;
+    };
+
+    Button.prototype.command = function(param) {
+      this.active = !this.active;
+      return null;
+    };
+
+    return Button;
+
+  })();
+
+  BoldButton = (function(_super) {
+    __extends(BoldButton, _super);
+
+    function BoldButton() {
+      _ref5 = BoldButton.__super__.constructor.apply(this, arguments);
+      return _ref5;
+    }
+
+    BoldButton.prototype.name = 'bold';
+
+    BoldButton.prototype.icon = 'bold';
+
+    BoldButton.prototype.title = '加粗文字';
+
+    BoldButton.prototype.htmlTag = 'b, strong';
+
+    BoldButton.prototype.shortcut = 66;
+
+    BoldButton.prototype.command = function() {
+      document.execCommand('bold');
+      return this.active = !this.active;
+    };
+
+    return BoldButton;
+
+  })(Button);
+
+  Simditor.Toolbar.addButton(BoldButton);
+
+  ItalicButton = (function(_super) {
+    __extends(ItalicButton, _super);
+
+    function ItalicButton() {
+      _ref6 = ItalicButton.__super__.constructor.apply(this, arguments);
+      return _ref6;
+    }
+
+    ItalicButton.prototype.name = 'italic';
+
+    ItalicButton.prototype.icon = 'italic';
+
+    ItalicButton.prototype.title = '斜体文字';
+
+    ItalicButton.prototype.htmlTag = 'i';
+
+    ItalicButton.prototype.shortcut = 73;
+
+    ItalicButton.prototype.command = function() {
+      document.execCommand('italic');
+      return this.active = !this.active;
+    };
+
+    return ItalicButton;
+
+  })(Button);
+
+  Simditor.Toolbar.addButton(ItalicButton);
+
+  UnderlineButton = (function(_super) {
+    __extends(UnderlineButton, _super);
+
+    function UnderlineButton() {
+      _ref7 = UnderlineButton.__super__.constructor.apply(this, arguments);
+      return _ref7;
+    }
+
+    UnderlineButton.prototype.name = 'underline';
+
+    UnderlineButton.prototype.icon = 'underline';
+
+    UnderlineButton.prototype.title = '下划线文字';
+
+    UnderlineButton.prototype.htmlTag = 'u';
+
+    UnderlineButton.prototype.shortcut = 85;
+
+    UnderlineButton.prototype.command = function() {
+      document.execCommand('underline');
+      return this.active = !this.active;
+    };
+
+    return UnderlineButton;
+
+  })(Button);
+
+  Simditor.Toolbar.addButton(UnderlineButton);
+
+  ListButton = (function(_super) {
+    __extends(ListButton, _super);
+
+    function ListButton() {
+      _ref8 = ListButton.__super__.constructor.apply(this, arguments);
+      return _ref8;
+    }
+
+    ListButton.prototype.type = '';
+
+    ListButton.prototype.status = function($node) {};
+
+    ListButton.prototype.command = function(param) {};
+
+    return ListButton;
+
+  })(Button);
+
+  OrderListButton = (function(_super) {
+    __extends(OrderListButton, _super);
+
+    function OrderListButton() {
+      _ref9 = OrderListButton.__super__.constructor.apply(this, arguments);
+      return _ref9;
+    }
+
+    OrderListButton.prototype.type = 'ol';
+
+    OrderListButton.prototype.name = 'ol';
+
+    OrderListButton.prototype.title = '有序列表';
+
+    OrderListButton.prototype.icon = 'list-ol';
+
+    OrderListButton.prototype.htmlTag = 'ol';
+
+    return OrderListButton;
+
+  })(ListButton);
+
+  UnorderListButton = (function(_super) {
+    __extends(UnorderListButton, _super);
+
+    function UnorderListButton() {
+      _ref10 = UnorderListButton.__super__.constructor.apply(this, arguments);
+      return _ref10;
+    }
+
+    UnorderListButton.prototype.type = 'ul';
+
+    UnorderListButton.prototype.name = 'ul';
+
+    UnorderListButton.prototype.title = '无序列表';
+
+    UnorderListButton.prototype.icon = 'list-ul';
+
+    UnorderListButton.prototype.htmlTag = 'ul';
+
+    return UnorderListButton;
+
+  })(ListButton);
+
+  Simditor.Toolbar.addButton(OrderListButton);
+
+  Simditor.Toolbar.addButton(UnorderListButton);
 
 }).call(this);

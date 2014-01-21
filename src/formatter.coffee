@@ -1,7 +1,7 @@
 
-class Formatter
+class Formatter extends Plugin
 
-  constructor: (@editor) ->
+  _init: ->
     @editor.body.on 'click', 'a', (e) =>
       false
 

@@ -9,6 +9,8 @@ class UnderlineButton extends Button
 
   htmlTag: 'u'
 
+  shortcut: 85
+
   command: ->
     document.execCommand 'underline'
     @active = !@active

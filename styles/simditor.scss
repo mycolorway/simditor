@@ -1,13 +1,31 @@
 
 .simditor {
 	overflow: hidden;
+	position: relative;
 
 	.simditor-wrapper {
-	
+		position: relative;
+		background: #ffffff;
+
+		.simditor-placeholder {
+			position: absolute;
+			top: 0;
+			left: 0;
+			z-index: 0;
+			width: 100%;
+			padding: 8px 0;
+			text-indent: 12px;
+			color: #999999;
+			background: transparent;
+		}
+
+		&.toolbar-enabled {
+			padding-top: 60px;
+		}
 	}
 
 	.simditor-body {
-		min-height: 600px;
+		min-height: 500px;
 		outline: none;
 		cursor: text;
 	}
@@ -19,5 +37,231 @@
 		position: absolute;
 		right: 9999px;
 		bottom: 5px;
+	}
+
+	.simditor-toolbar {
+		width: 100%;
+		position: absolute;
+		top: 0;
+		left: 0;
+		z-index: 10;
+		background: #ffffff;
+		border-bottom: 1px solid #eeeeee;
+
+		&.floating {
+			box-shadow: 0 0 6px rgba(0,0,0,0.2);
+		}
+
+		& > ul {
+			height: 60px;
+			margin: 0;
+			padding: 0;
+			list-style: none;
+
+			& > li {
+				position: relative;
+				float: left;
+
+				& > span.separator {
+					display: block;
+					float: left;
+					background: #eeeeee;
+					width: 1px;
+					height: 18px;
+					margin: 20px 15px;
+				}
+
+				& > .toolbar-item {
+					display: block;
+					float: left;
+					width: 50px;
+					height: 60px;
+					outline: none;
+					overflow: hidden;
+					color: #333333;
+					font-size: 16px;
+					line-height: 60px;
+					text-align: center;
+					margin: 0 1px;
+
+					span {
+						opacity: 0.6;
+					}
+
+					&:hover span {
+						opacity: 1;
+					}
+					
+					&.active {
+						background: #eeeeee;
+
+						span {
+							opacity: 1;
+						}
+					}
+
+
+					&.disable {
+						cursor: default;
+
+						span {
+							opacity: 0.3;
+						}
+					}
+				}
+			}
+		}
+
+		.menu {
+			position: relative;
+
+			ul {
+				display: none;
+				z-index: 998;
+				position: absolute;
+				top: 100%;
+				left: 0;
+				text-align: left;
+			}
+
+			.horizontal-line {
+				border-top: 1px solid #f0eadf;
+				height: 0;
+				line-height: 0;
+				font-size: 0;
+				margin: 8px 0;
+			}
+		}
+	}
+}
+
+.simditor .simditor-body, .editor-style {
+	padding: 22px 15px;
+	font-size: 16px;
+	font-family: helvetica,Arial;
+	line-height: 1.5;
+	color: #333;
+	outline: none;
+	word-wrap: break-word;
+
+	a{ color: #4298BA; text-decoration: none; word-break: break-all;}
+	a:visited{ color: #4298BA; }
+	a:hover{ color: #0F769F; }
+	a:active{ color:#9E792E; }
+	a:hover, a:active{ outline: 0; }
+
+	h1,h2,h3,h4,h5,h6 {
+		font-weight: normal;
+		color: #333!important;
+		text-align: left!important;
+		line-height: 1.6!important;
+		margin: 0.5em 0!important;
+	}
+
+	h1 { font-size: 1.6em!important; }
+	h2 { font-size: 1.4em!important; }
+	h3 { font-size: 1.2em!important; }
+	h4 { font-size: 1em!important; }
+	h5 { font-size: 1em!important; }
+	h6 { font-size: 1em!important; }
+
+	p, div {
+		margin:0 0 12px 0;
+		word-wrap: break-word;
+	}
+
+	b, strong {
+		font-weight: bold!important;
+	}
+
+	i, em {
+		font-style: italic!important;
+	}
+
+	u {
+		text-decoration: underline;
+	}
+
+	ul, ol {
+		list-style:disc outside none;
+		margin: 0 0 15px 0;
+		padding: 0 0 0 30px;
+		line-height: 1.6;
+	}
+
+	ol {
+		list-style:decimal;
+	}
+
+	li p:last-child {
+		margin:0
+	}
+
+	blockquote {
+		border-left: 6px solid #ddd;
+		padding: 5px 0 5px 10px;
+		margin: 0 0 15px 15px;
+
+		p {
+			margin: 2px 0;
+		}
+	}
+
+	pre {
+		padding: 5px 5px 5px 10px;
+		margin: 0 0 15px;
+		display: block;
+		font-family: 'monaco', 'Consolas', "Liberation Mono", Courier, monospace;
+		font-size:13px;
+		line-height: 18px;
+		background: #F0F0F0;
+		border-radius: 3px;
+
+		p {
+			margin: 2px 0;
+		}
+	}
+
+	hr {
+		display: block;
+		height: 0px;
+		border: 0;
+		border-top: 1px solid #ccc;
+		margin: 1em 0; padding: 0;
+	}
+
+	table {
+		max-width: 700px;
+		table-layout: fixed;
+		width: 100%;
+		border-collapse: collapse;
+		border-spacing: 0;
+		margin: 1em 0;
+
+		p {
+			margin: 0;
+		}
+	}
+
+	thead {
+		background-color: #f9f9f9;
+	}
+
+	td, th {
+		min-width: 40px;
+		border: 1px solid #ccc;
+		vertical-align: top;
+		padding: 2px 4px;
+
+		&.active {
+			background-color: #ffffee;
+		}
+	}
+
+	img {
+		-ms-interpolation-mode: bicubic;
+		vertical-align: bottom;
+		max-width: 600px;
+		max-height: 400px;
 	}
 }

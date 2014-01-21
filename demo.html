@@ -1,21 +1,20 @@
 <!DOCTYPE html>
 <html>
 <head>
-	<title>Simditor by mycolorway</title>
+	<title>A Simple Online Editor</title>
 	<meta charset="utf-8" />
 
 	<link media="all" rel="stylesheet" type="text/css" href="styles/font-awesome.css" />
 	<link media="all" rel="stylesheet" type="text/css" href="styles/simditor.css" />
 	<style type="text/css" media="all">
 		body {
-			background: #efefef;
 			margin: 0;
 			padding: 0;
 		}
 
 		.wrapper {
-			width: 500px;
-			margin: 20px auto;
+			width: 800px;
+			margin: 0 auto 80px;
 		}
 
 
@@ -25,8 +24,9 @@
 	<script type="text/javascript" src="scripts/simditor.js"></script>
 	<script type="text/javascript">
 		$(function() {
-			var editor = simditor({
-				textarea: $('#txt-content')
+			var editor = new Simditor({
+				textarea: $('#txt-content'),
+				toolbar: ['bold', 'italic', 'underline', '|', 'ol', 'ul']
 			});
 		});
 	</script>

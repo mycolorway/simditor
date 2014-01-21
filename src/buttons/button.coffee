@@ -21,6 +21,8 @@ class Button
 
   active: false
 
+  shortcut: null
+
   constructor: (@toolbar) ->
     @render()
 
@@ -43,6 +45,10 @@ class Button
       param = btn.data('param')
       @command(param)
       @status()
+
+    if @shortcut
+      @toolbar.editor.inputManager.addShortcut @shortcut, (e) =>
+        @el.mousedown()
 
   render: ->
     @wrapper = $(@_tpl.item).appendTo @toolbar.list
@@ -83,7 +89,8 @@ class Button
   status: ($node) ->
     @active = $node.is(@htmlTag) if $node?
     @el.toggleClass('active', @active)
-    return active
+    @active
 
   command: (param) ->
     @active = !@active
+    null

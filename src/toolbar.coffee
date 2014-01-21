@@ -1,19 +1,18 @@
 
-class Toolbar
+class Toolbar extends Plugin
 
   opts:
     toolbar: true
     toolbarFloat: true
 
   _tpl: 
-    wrapper: '<div class="simditor-toobar"></div>'
+    wrapper: '<div class="simditor-toolbar"><ul></ul></div>'
     separator: '<li><span class="separator"></span></li>'
 
-  constructor: ->
-    $.extend(@opts, @editor.opts)
+  _init: ->
     return unless @opts.toolbar
 
-    unless $.isArray opts.toolbar
+    unless $.isArray @opts.toolbar
       opts.toolbar = ['bold', 'italic', 'underline', 'ol', 'ul']
 
     @_render()
@@ -34,25 +33,25 @@ class Toolbar
         scrollTop = $(document).scrollTop()
         top = 0
 
-        if scrollTop < topEdge
+        if scrollTop <= topEdge
           top = 0
           @wrapper.removeClass('floating')
-        else if bottomEdge >= scrollTop >= topEdge
+        else if bottomEdge > scrollTop > topEdge
           top = scrollTop - topEdge
           @wrapper.addClass('floating')
         else
           top = bottomEdge - topEdge
           @wrapper.addClass('floating')
-        }
 
         @wrapper.css 'top', top
 
-    @editor.on 'selectionchange', =>
+    @editor.on 'selectionchanged', =>
       @toolbarStatus()
 
   _render: ->
     @wrapper = $(@_tpl.wrapper).prependTo(@editor.wrapper)
     @list = @wrapper.find('ul')
+    @editor.wrapper.addClass('toolbar-enabled')
 
     for name in @opts.toolbar
       if name == '|'
@@ -63,20 +62,23 @@ class Toolbar
         throw new Error 'simditor: invalid toolbar button "' + name + '"'
         continue
       
-      new @constructor.buttons[name](@)
+      @_buttons.push new @constructor.buttons[name](@)
 
   toolbarStatus: (name) ->
     return unless @editor.inputManager.focused
 
-    buttons = if name then [name] else @opts.toolbar[..]
+    buttons = @_buttons[..]
     @editor.util.traverseUp (node) =>
       removeIndex = []
-      for name, i in buttons
-        checkStatus = @constructor.buttons[name].status
-        removeIndex.push[i] if !checkStatus or checkStatus.call(this, $(node)) == true
+      for button, i in buttons
+        continue if name? and button.name isnt name
+        removeIndex.push i if !button.status or button.status($(node)) is true
 
-      buttons.splice(i, 1) for i in remoeIndex
+      buttons.splice(i, 1) for i in removeIndex
       return false if buttons.length == 0
+
+  # button instances
+  _buttons: []
 
   @addButton: (btn) ->
     @buttons[btn::name] = btn

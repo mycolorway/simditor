@@ -1,8 +1,27 @@
 .simditor {
   overflow: hidden;
+  position: relative;
+}
+.simditor .simditor-wrapper {
+  position: relative;
+  background: #ffffff;
+}
+.simditor .simditor-wrapper .simditor-placeholder {
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 0;
+  width: 100%;
+  padding: 8px 0;
+  text-indent: 12px;
+  color: #999999;
+  background: transparent;
+}
+.simditor .simditor-wrapper.toolbar-enabled {
+  padding-top: 60px;
 }
 .simditor .simditor-body {
-  min-height: 600px;
+  min-height: 500px;
   outline: none;
   cursor: text;
 }
@@ -13,4 +32,218 @@
   position: absolute;
   right: 9999px;
   bottom: 5px;
+}
+.simditor .simditor-toolbar {
+  width: 100%;
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 10;
+  background: #ffffff;
+  border-bottom: 1px solid #eeeeee;
+}
+.simditor .simditor-toolbar.floating {
+  box-shadow: 0 0 6px rgba(0, 0, 0, 0.2);
+}
+.simditor .simditor-toolbar > ul {
+  height: 60px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.simditor .simditor-toolbar > ul > li {
+  position: relative;
+  float: left;
+}
+.simditor .simditor-toolbar > ul > li > span.separator {
+  display: block;
+  float: left;
+  background: #eeeeee;
+  width: 1px;
+  height: 18px;
+  margin: 20px 15px;
+}
+.simditor .simditor-toolbar > ul > li > .toolbar-item {
+  display: block;
+  float: left;
+  width: 50px;
+  height: 60px;
+  outline: none;
+  overflow: hidden;
+  color: #333333;
+  font-size: 16px;
+  line-height: 60px;
+  text-align: center;
+  margin: 0 1px;
+}
+.simditor .simditor-toolbar > ul > li > .toolbar-item span {
+  opacity: 0.6;
+}
+.simditor .simditor-toolbar > ul > li > .toolbar-item:hover span {
+  opacity: 1;
+}
+.simditor .simditor-toolbar > ul > li > .toolbar-item.active {
+  background: #eeeeee;
+}
+.simditor .simditor-toolbar > ul > li > .toolbar-item.active span {
+  opacity: 1;
+}
+.simditor .simditor-toolbar > ul > li > .toolbar-item.disable {
+  cursor: default;
+}
+.simditor .simditor-toolbar > ul > li > .toolbar-item.disable span {
+  opacity: 0.3;
+}
+.simditor .simditor-toolbar .menu {
+  position: relative;
+}
+.simditor .simditor-toolbar .menu ul {
+  display: none;
+  z-index: 998;
+  position: absolute;
+  top: 100%;
+  left: 0;
+  text-align: left;
+}
+.simditor .simditor-toolbar .menu .horizontal-line {
+  border-top: 1px solid #f0eadf;
+  height: 0;
+  line-height: 0;
+  font-size: 0;
+  margin: 8px 0;
+}
+
+.simditor .simditor-body, .editor-style {
+  padding: 22px 15px;
+  font-size: 16px;
+  font-family: helvetica,Arial;
+  line-height: 1.5;
+  color: #333;
+  outline: none;
+  word-wrap: break-word;
+}
+.simditor .simditor-body a, .editor-style a {
+  color: #4298BA;
+  text-decoration: none;
+  word-break: break-all;
+}
+.simditor .simditor-body a:visited, .editor-style a:visited {
+  color: #4298BA;
+}
+.simditor .simditor-body a:hover, .editor-style a:hover {
+  color: #0F769F;
+}
+.simditor .simditor-body a:active, .editor-style a:active {
+  color: #9E792E;
+}
+.simditor .simditor-body a:hover, .simditor .simditor-body a:active, .editor-style a:hover, .editor-style a:active {
+  outline: 0;
+}
+.simditor .simditor-body h1, .simditor .simditor-body h2, .simditor .simditor-body h3, .simditor .simditor-body h4, .simditor .simditor-body h5, .simditor .simditor-body h6, .editor-style h1, .editor-style h2, .editor-style h3, .editor-style h4, .editor-style h5, .editor-style h6 {
+  font-weight: normal;
+  color: #333333 !important;
+  text-align: left !important;
+  line-height: 1.6 !important;
+  margin: 0.5em 0 !important;
+}
+.simditor .simditor-body h1, .editor-style h1 {
+  font-size: 1.6em !important;
+}
+.simditor .simditor-body h2, .editor-style h2 {
+  font-size: 1.4em !important;
+}
+.simditor .simditor-body h3, .editor-style h3 {
+  font-size: 1.2em !important;
+}
+.simditor .simditor-body h4, .editor-style h4 {
+  font-size: 1em !important;
+}
+.simditor .simditor-body h5, .editor-style h5 {
+  font-size: 1em !important;
+}
+.simditor .simditor-body h6, .editor-style h6 {
+  font-size: 1em !important;
+}
+.simditor .simditor-body p, .simditor .simditor-body div, .editor-style p, .editor-style div {
+  margin: 0 0 12px 0;
+  word-wrap: break-word;
+}
+.simditor .simditor-body b, .simditor .simditor-body strong, .editor-style b, .editor-style strong {
+  font-weight: bold !important;
+}
+.simditor .simditor-body i, .simditor .simditor-body em, .editor-style i, .editor-style em {
+  font-style: italic !important;
+}
+.simditor .simditor-body u, .editor-style u {
+  text-decoration: underline;
+}
+.simditor .simditor-body ul, .simditor .simditor-body ol, .editor-style ul, .editor-style ol {
+  list-style: disc outside none;
+  margin: 0 0 15px 0;
+  padding: 0 0 0 30px;
+  line-height: 1.6;
+}
+.simditor .simditor-body ol, .editor-style ol {
+  list-style: decimal;
+}
+.simditor .simditor-body li p:last-child, .editor-style li p:last-child {
+  margin: 0;
+}
+.simditor .simditor-body blockquote, .editor-style blockquote {
+  border-left: 6px solid #ddd;
+  padding: 5px 0 5px 10px;
+  margin: 0 0 15px 15px;
+}
+.simditor .simditor-body blockquote p, .editor-style blockquote p {
+  margin: 2px 0;
+}
+.simditor .simditor-body pre, .editor-style pre {
+  padding: 5px 5px 5px 10px;
+  margin: 0 0 15px;
+  display: block;
+  font-family: 'monaco', 'Consolas', "Liberation Mono", Courier, monospace;
+  font-size: 13px;
+  line-height: 18px;
+  background: #F0F0F0;
+  border-radius: 3px;
+}
+.simditor .simditor-body pre p, .editor-style pre p {
+  margin: 2px 0;
+}
+.simditor .simditor-body hr, .editor-style hr {
+  display: block;
+  height: 0px;
+  border: 0;
+  border-top: 1px solid #ccc;
+  margin: 1em 0;
+  padding: 0;
+}
+.simditor .simditor-body table, .editor-style table {
+  max-width: 700px;
+  table-layout: fixed;
+  width: 100%;
+  border-collapse: collapse;
+  border-spacing: 0;
+  margin: 1em 0;
+}
+.simditor .simditor-body table p, .editor-style table p {
+  margin: 0;
+}
+.simditor .simditor-body thead, .editor-style thead {
+  background-color: #f9f9f9;
+}
+.simditor .simditor-body td, .simditor .simditor-body th, .editor-style td, .editor-style th {
+  min-width: 40px;
+  border: 1px solid #ccc;
+  vertical-align: top;
+  padding: 2px 4px;
+}
+.simditor .simditor-body td.active, .simditor .simditor-body th.active, .editor-style td.active, .editor-style th.active {
+  background-color: #ffffee;
+}
+.simditor .simditor-body img, .editor-style img {
+  -ms-interpolation-mode: bicubic;
+  vertical-align: bottom;
+  max-width: 600px;
+  max-height: 400px;
 }
