@@ -48,6 +48,7 @@ class Toolbar extends Plugin
     @editor.on 'selectionchanged', =>
       @toolbarStatus()
 
+
   _render: ->
     @wrapper = $(@_tpl.wrapper).prependTo(@editor.wrapper)
     @list = @wrapper.find('ul')

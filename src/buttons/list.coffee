@@ -3,9 +3,63 @@ class ListButton extends Button
 
   type: ''
 
-  status: ($node) ->
-  
   command: (param) ->
+    editor =  @toolbar.editor
+    range = editor.selection.getRange()
+    startNode = range.startContainer
+    endNode = range.endContainer
+    $startBlock = editor.util.closestBlockEl(startNode)
+    $endBlock = editor.util.closestBlockEl(endNode)
+
+    range.setStartBefore $startBlock[0]
+    range.setEndAfter $endBlock[0]
+
+    if $startBlock.is('li') and $endBlock.is('li') and $startBlock.parent()[0] == $endBlock.parent()[0]
+      $breakedEl = $startBlock.parent()
+
+    $contents = $(range.extractContents())
+
+    if $breakedEl?
+      $contents.wrapInner('<' + $breakedEl[0].tagName + '/>')
+      $breakedEl = editor.selection.breakBlockEl($breakedEl, range)
+      range.setEndBefore($breakedEl[0])
+      range.collapse()
+
+    results = []
+    $contents.children().each (i, el) =>
+      converted = @_convertEl el
+      for c in converted
+        if results.length and results[results.length - 1].is(@type) and c.is(@type)
+          results[results.length - 1].append(c.children())
+        else
+          results.push(c)
+
+    range.insertNode node[0] for node in results.reverse()
+    editor.selection.selectRange(range)
+    null
+
+  _convertEl: (el) ->
+    editor = @toolbar.editor
+    $el = $(el)
+    results = []
+    anotherType = if @type == 'ul' then 'ol' else 'ul'
+    
+    if $el.is @type
+      $el.find('li').each (i, li) =>
+        block = $('<p/>').append($(li).html() || editor.util.phBr)
+        results.push(block)
+    else if $el.is anotherType
+      block = $('<' + @type + '/>').append($el.html())
+      results.push(block)
+    else if $el.is 'blockquote'
+      children = @_convertEl child for child in $el.children().get()
+      $.merge results, children
+    else
+      block = $('<' + @type + '><li></li></' + @type + '>')
+      block.find('li').append($el.html() || editor.util.phBr)
+      results.push(block)
+
+    results
 
 
 class OrderListButton extends ListButton

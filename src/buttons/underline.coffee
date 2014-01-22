@@ -11,9 +11,14 @@ class UnderlineButton extends Button
 
   shortcut: 85
 
+  status: ->
+    active = document.queryCommandState('underline') is true
+    @setActive active
+    active
+
   command: ->
     document.execCommand 'underline'
-    @active = !@active
+    @status()
 
 
 Simditor.Toolbar.addButton(UnderlineButton)

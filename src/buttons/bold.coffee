@@ -11,9 +11,14 @@ class BoldButton extends Button
 
   shortcut: 66
 
+  status: ->
+    active = document.queryCommandState('bold') is true
+    @setActive active
+    active
+
   command: ->
     document.execCommand 'bold'
-    @active = !@active
+    @status()
 
 
 Simditor.Toolbar.addButton(BoldButton)

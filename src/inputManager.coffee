@@ -33,11 +33,17 @@ class InputManager extends Plugin
     @editor.el.addClass('focus')
       .removeClass('error')
     @focused = true
-    @editor.formatter.format()
+    #@editor.formatter.format()
+    setTimeout =>
+      @editor.trigger 'focus'
+      @editor.trigger 'selectionchanged'
+    , 0
 
   _onBlur: (e) ->
     @editor.el.removeClass 'focus'
     @focused = false
+
+    @editor.trigger 'blur'
 
   _onMouseUp: (e) ->
     @editor.trigger 'selectionchanged'

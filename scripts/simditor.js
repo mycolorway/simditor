@@ -508,14 +508,19 @@
     };
 
     InputManager.prototype._onFocus = function(e) {
+      var _this = this;
       this.editor.el.addClass('focus').removeClass('error');
       this.focused = true;
-      return this.editor.formatter.format();
+      return setTimeout(function() {
+        _this.editor.trigger('focus');
+        return _this.editor.trigger('selectionchanged');
+      }, 0);
     };
 
     InputManager.prototype._onBlur = function(e) {
       this.editor.el.removeClass('focus');
-      return this.focused = false;
+      this.focused = false;
+      return this.editor.trigger('blur');
     };
 
     InputManager.prototype._onMouseUp = function(e) {
@@ -723,11 +728,9 @@
           return _this._pushUndoState();
         }, 300);
       });
-      return this.editor.body.on('focus', function() {
+      return this.editor.on('focus', function() {
         if (_this._index < 0) {
-          return setTimeout(function() {
-            return _this._pushUndoState();
-          }, 0);
+          return _this._pushUndoState();
         }
       });
     };
@@ -979,7 +982,7 @@
         return _this.isBlockNode(blockEl.eq(i));
       });
       if (blockEl.length) {
-        return blockEl;
+        return blockEl.last();
       } else {
         return null;
       }
@@ -1290,8 +1293,7 @@
         if (_this.menu) {
           return _this.toolbar.wrapper.toggleClass('menu-on');
         } else {
-          _this.command();
-          return _this.status();
+          return _this.command();
         }
       });
       this.toolbar.list.on('mousedown', 'a.menu-item', function(e) {
@@ -1303,10 +1305,12 @@
         }
         _this.toolbar.wrapper.removeClass('menu-on');
         param = btn.data('param');
-        _this.command(param);
-        return _this.status();
+        return _this.command(param);
       });
-      if (this.shortcut) {
+      this.toolbar.editor.on('blur', function() {
+        return _this.setActive(false);
+      });
+      if (this.shortcut != null) {
         this.toolbar.editor.inputManager.addShortcut(this.shortcut, function(e) {
           return _this.el.mousedown();
         });
@@ -1347,16 +1351,22 @@
       return _results;
     };
 
+    Button.prototype.setActive = function(active) {
+      this.active = active;
+      return this.el.toggleClass('active', this.active);
+    };
+
     Button.prototype.status = function($node) {
+      var active;
       if ($node != null) {
-        this.active = $node.is(this.htmlTag);
+        active = $node.is(this.htmlTag);
       }
-      this.el.toggleClass('active', this.active);
-      return this.active;
+      this.setActive(active);
+      return active;
     };
 
     Button.prototype.command = function(param) {
-      this.active = !this.active;
+      this.setActive(!this.active);
       return null;
     };
 
@@ -1382,9 +1392,16 @@
 
     BoldButton.prototype.shortcut = 66;
 
+    BoldButton.prototype.status = function() {
+      var active;
+      active = document.queryCommandState('bold') === true;
+      this.setActive(active);
+      return active;
+    };
+
     BoldButton.prototype.command = function() {
       document.execCommand('bold');
-      return this.active = !this.active;
+      return this.status();
     };
 
     return BoldButton;
@@ -1411,9 +1428,16 @@
 
     ItalicButton.prototype.shortcut = 73;
 
+    ItalicButton.prototype.status = function() {
+      var active;
+      active = document.queryCommandState('italic') === true;
+      this.setActive(active);
+      return active;
+    };
+
     ItalicButton.prototype.command = function() {
       document.execCommand('italic');
-      return this.active = !this.active;
+      return this.status();
     };
 
     return ItalicButton;
@@ -1440,9 +1464,16 @@
 
     UnderlineButton.prototype.shortcut = 85;
 
+    UnderlineButton.prototype.status = function() {
+      var active;
+      active = document.queryCommandState('underline') === true;
+      this.setActive(active);
+      return active;
+    };
+
     UnderlineButton.prototype.command = function() {
       document.execCommand('underline');
-      return this.active = !this.active;
+      return this.status();
     };
 
     return UnderlineButton;
@@ -1461,9 +1492,81 @@
 
     ListButton.prototype.type = '';
 
-    ListButton.prototype.status = function($node) {};
+    ListButton.prototype.command = function(param) {
+      var $breakedEl, $contents, $endBlock, $startBlock, editor, endNode, node, range, results, startNode, _i, _len, _ref9,
+        _this = this;
+      editor = this.toolbar.editor;
+      range = editor.selection.getRange();
+      startNode = range.startContainer;
+      endNode = range.endContainer;
+      $startBlock = editor.util.closestBlockEl(startNode);
+      $endBlock = editor.util.closestBlockEl(endNode);
+      range.setStartBefore($startBlock[0]);
+      range.setEndAfter($endBlock[0]);
+      if ($startBlock.is('li') && $endBlock.is('li') && $startBlock.parent()[0] === $endBlock.parent()[0]) {
+        $breakedEl = $startBlock.parent();
+      }
+      $contents = $(range.extractContents());
+      if ($breakedEl != null) {
+        $contents.wrapInner('<' + $breakedEl[0].tagName + '/>');
+        $breakedEl = editor.selection.breakBlockEl($breakedEl, range);
+        range.setEndBefore($breakedEl[0]);
+        range.collapse();
+      }
+      results = [];
+      $contents.children().each(function(i, el) {
+        var c, converted, _i, _len, _results;
+        converted = _this._convertEl(el);
+        _results = [];
+        for (_i = 0, _len = converted.length; _i < _len; _i++) {
+          c = converted[_i];
+          if (results.length && results[results.length - 1].is(_this.type) && c.is(_this.type)) {
+            _results.push(results[results.length - 1].append(c.children()));
+          } else {
+            _results.push(results.push(c));
+          }
+        }
+        return _results;
+      });
+      _ref9 = results.reverse();
+      for (_i = 0, _len = _ref9.length; _i < _len; _i++) {
+        node = _ref9[_i];
+        range.insertNode(node[0]);
+      }
+      editor.selection.selectRange(range);
+      return null;
+    };
 
-    ListButton.prototype.command = function(param) {};
+    ListButton.prototype._convertEl = function(el) {
+      var $el, anotherType, block, child, children, editor, results, _i, _len, _ref9,
+        _this = this;
+      editor = this.toolbar.editor;
+      $el = $(el);
+      results = [];
+      anotherType = this.type === 'ul' ? 'ol' : 'ul';
+      if ($el.is(this.type)) {
+        $el.find('li').each(function(i, li) {
+          var block;
+          block = $('<p/>').append($(li).html() || editor.util.phBr);
+          return results.push(block);
+        });
+      } else if ($el.is(anotherType)) {
+        block = $('<' + this.type + '/>').append($el.html());
+        results.push(block);
+      } else if ($el.is('blockquote')) {
+        _ref9 = $el.children().get();
+        for (_i = 0, _len = _ref9.length; _i < _len; _i++) {
+          child = _ref9[_i];
+          children = this._convertEl(child);
+        }
+        $.merge(results, children);
+      } else {
+        block = $('<' + this.type + '><li></li></' + this.type + '>');
+        block.find('li').append($el.html() || editor.util.phBr);
+        results.push(block);
+      }
+      return results;
+    };
 
     return ListButton;
 

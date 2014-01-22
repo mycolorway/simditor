@@ -57,7 +57,7 @@ class Util extends Plugin
     blockEl = blockEl.filter (i) =>
       @isBlockNode blockEl.eq(i)
 
-    if blockEl.length then blockEl else null
+    if blockEl.length then blockEl.last() else null
 
   getNodeLength: (node) ->
     switch node.nodeType

@@ -34,7 +34,6 @@ class Button
         @toolbar.wrapper.toggleClass('menu-on')
       else
         @command()
-        @status()
 
     @toolbar.list.on 'mousedown', 'a.menu-item', (e) =>
       e.preventDefault()
@@ -44,9 +43,11 @@ class Button
       @toolbar.wrapper.removeClass('menu-on')
       param = btn.data('param')
       @command(param)
-      @status()
 
-    if @shortcut
+    @toolbar.editor.on 'blur', =>
+      @setActive false
+
+    if @shortcut?
       @toolbar.editor.inputManager.addShortcut @shortcut, (e) =>
         @el.mousedown()
 
@@ -86,11 +87,15 @@ class Button
         .find('span')
         .text(menuItem.text)
 
-  status: ($node) ->
-    @active = $node.is(@htmlTag) if $node?
+  setActive: (active) ->
+    @active = active
     @el.toggleClass('active', @active)
-    @active
+
+  status: ($node) ->
+    active = $node.is(@htmlTag) if $node?
+    @setActive active
+    active
 
   command: (param) ->
-    @active = !@active
+    @setActive !@active
     null

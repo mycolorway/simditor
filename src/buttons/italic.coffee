@@ -11,9 +11,14 @@ class ItalicButton extends Button
 
   shortcut: 73
 
+  status: ->
+    active = document.queryCommandState('italic') is true
+    @setActive active
+    active
+
   command: ->
     document.execCommand 'italic'
-    @active = !@active
+    @status()
 
 
 Simditor.Toolbar.addButton(ItalicButton)
