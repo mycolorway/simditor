@@ -3,7 +3,7 @@ Simditor is a simple WYSIWYG editor which aims at providing top writing experien
 
 Instead of extending it to be over-powerful, we choose to keep it simple and tight while improving every single feature for the best user expeirence. It is also extreamly easy to be extended, if sometimes it couldn't cover your needs.
 
-Check [here](demo.html) for a live demo.
+Check [here](http://mycolorway.github.io/simditor/demo.html) for a live demo.
 
 
 ### How to Use
