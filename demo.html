@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>A Simple Online Editor</title>
+	<meta charset="utf-8" />
+
+	<link media="all" rel="stylesheet" type="text/css" href="styles/font-awesome.css" />
+	<link media="all" rel="stylesheet" type="text/css" href="styles/simditor.css" />
+	<style type="text/css" media="all">
+		body {
+			margin: 0;
+			padding: 0;
+		}
+
+		.wrapper {
+			width: 800px;
+			margin: 0 auto 80px;
+		}
+
+
+	</style>
+
+	<script type="text/javascript" src="scripts/jquery-2.0.3.js"></script>
+	<script type="text/javascript" src="scripts/simditor.js"></script>
+	<script type="text/javascript">
+		$(function() {
+			var editor = new Simditor({
+				textarea: $('#txt-content'),
+				toolbar: true
+			});
+		});
+	</script>
+
+</head>
+<body>
+	<div class="wrapper">
+		<textarea id="txt-content" data-autosave="editor-content">test</textarea>
+	</div>
+</body>
+</html>
+
+
