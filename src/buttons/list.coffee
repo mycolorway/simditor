@@ -4,12 +4,15 @@ class ListButton extends Button
   type: ''
 
   command: (param) ->
+    super()
     editor =  @toolbar.editor
     range = editor.selection.getRange()
     startNode = range.startContainer
     endNode = range.endContainer
     $startBlock = editor.util.closestBlockEl(startNode)
     $endBlock = editor.util.closestBlockEl(endNode)
+
+    editor.selection.save()
 
     range.setStartBefore $startBlock[0]
     range.setEndAfter $endBlock[0]
@@ -21,9 +24,16 @@ class ListButton extends Button
 
     if $breakedEl?
       $contents.wrapInner('<' + $breakedEl[0].tagName + '/>')
-      $breakedEl = editor.selection.breakBlockEl($breakedEl, range)
-      range.setEndBefore($breakedEl[0])
-      range.collapse()
+      if editor.selection.rangeAtStartOf $breakedEl, range
+        range.setEndBefore($breakedEl[0])
+        range.collapse()
+      else if editor.selection.rangeAtEndOf $breakedEl, range
+        range.setEndAfter($breakedEl[0])
+        range.collapse()
+      else
+        $breakedEl = editor.selection.breakBlockEl($breakedEl, range)
+        range.setEndBefore($breakedEl[0])
+        range.collapse()
 
     results = []
     $contents.children().each (i, el) =>
@@ -35,8 +45,10 @@ class ListButton extends Button
           results.push(c)
 
     range.insertNode node[0] for node in results.reverse()
-    editor.selection.selectRange(range)
-    null
+    editor.selection.restore()
+
+    @toolbar.editor.trigger 'valuechanged'
+    @toolbar.editor.trigger 'selectionchanged'
 
   _convertEl: (el) ->
     editor = @toolbar.editor
@@ -54,6 +66,8 @@ class ListButton extends Button
     else if $el.is 'blockquote'
       children = @_convertEl child for child in $el.children().get()
       $.merge results, children
+    else if $el.is 'table'
+      # TODO
     else
       block = $('<' + @type + '><li></li></' + @type + '>')
       block.find('li').append($el.html() || editor.util.phBr)

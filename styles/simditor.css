@@ -26,12 +26,9 @@
   cursor: text;
 }
 .simditor .simditor-paste-area {
-  width: 1px;
-  height: 1px;
-  overflow: hidden;
-  position: absolute;
-  right: 9999px;
-  bottom: 5px;
+  background: transparent;
+  border: none;
+  outline: none;
 }
 .simditor .simditor-toolbar {
   width: 100%;

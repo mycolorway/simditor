@@ -1,5 +1,5 @@
 (function() {
-  var BoldButton, Button, Formatter, InputManager, ItalicButton, ListButton, OrderListButton, Plugin, Selection, Simditor, Toolbar, UnderlineButton, UndoManager, UnorderListButton, Util, Widget, _ref, _ref1, _ref10, _ref2, _ref3, _ref4, _ref5, _ref6, _ref7, _ref8, _ref9,
+  var BlockquoteButton, BoldButton, Button, CodeButton, Formatter, InputManager, ItalicButton, ListButton, OrderListButton, Plugin, Selection, Simditor, Toolbar, UnderlineButton, UndoManager, UnorderListButton, Util, Widget, _ref, _ref1, _ref10, _ref11, _ref12, _ref2, _ref3, _ref4, _ref5, _ref6, _ref7, _ref8, _ref9,
     __slice = [].slice,
     __hasProp = {}.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
@@ -282,7 +282,7 @@
       return $el.before(range.extractContents());
     };
 
-    Selection.prototype.saveSelection = function() {
+    Selection.prototype.save = function() {
       var endCaret, range, startCaret;
       if (this._selectionSaved) {
         return;
@@ -297,7 +297,7 @@
       return this._selectionSaved = true;
     };
 
-    Selection.prototype.restoreSelection = function() {
+    Selection.prototype.restore = function() {
       var endCaret, endContainer, endOffset, range, startCaret, startContainer, startOffset;
       if (!this._selectionSaved) {
         return false;
@@ -473,6 +473,29 @@
       }
     };
 
+    Formatter.prototype.clearHtml = function(html) {
+      var container, result,
+        _this = this;
+      container = $('<div/>').append(html);
+      result = '';
+      container.contents().each(function(i, node) {
+        var $node, contents;
+        if (node.nodeType === 3) {
+          return result += node.nodeValue;
+        } else if (node.nodeType === 1) {
+          $node = $(node);
+          contents = $node.contents();
+          if (contents.length > 0) {
+            result += _this.clearHtml(contents);
+          }
+          if ($node.is('p, div, li, tr, pre, address, artticle, aside, dd, figcaption, footer, h1, h2, h3, h4, h5, h6, header')) {
+            return result += '\n';
+          }
+        }
+      });
+      return result;
+    };
+
     return Formatter;
 
   })(Plugin);
@@ -495,10 +518,19 @@
 
     InputManager.prototype._init = function() {
       var _this = this;
-      this._pasteArea = $('<textarea/>').attr('tabIndex', '-1').addClass('simditor-paste-area').appendTo(this.editor.el);
+      this._pasteArea = $('<textarea/>').css({
+        width: '1px',
+        height: '1px',
+        overflow: 'hidden',
+        resize: 'none',
+        position: 'fixed',
+        right: '0',
+        bottom: '100px'
+      }).attr('tabIndex', '-1').addClass('simditor-paste-area').appendTo(this.editor.el);
       this.editor.on('destroy', function() {
         return _this._pasteArea.remove();
       });
+      this.editor.on('valuechanged', function() {});
       this.editor.body.on('keydown', $.proxy(this._onKeyDown, this)).on('keyup', $.proxy(this._onKeyUp, this)).on('mouseup', $.proxy(this._onMouseUp, this)).on('focus', $.proxy(this._onFocus, this)).on('blur', $.proxy(this._onBlur, this)).on('paste', $.proxy(this._onPaste, this));
       if (this.editor.textarea.attr('autofocus')) {
         return setTimeout(function() {
@@ -728,11 +760,7 @@
           return _this._pushUndoState();
         }, 300);
       });
-      return this.editor.on('focus', function() {
-        if (_this._index < 0) {
-          return _this._pushUndoState();
-        }
-      });
+      return this._pushUndoState();
     };
 
     UndoManager.prototype._pushUndoState = function() {
@@ -988,6 +1016,28 @@
       }
     };
 
+    Util.prototype.furthestBlockEl = function(node) {
+      var $node, blockEl, range,
+        _this = this;
+      if (node == null) {
+        range = this.editor.selection.getRange();
+        node = range != null ? range.commonAncestorContainer : void 0;
+      }
+      $node = $(node);
+      if (!$node.length) {
+        return null;
+      }
+      blockEl = $node.parentsUntil(this.editor.body).addBack();
+      blockEl = blockEl.filter(function(i) {
+        return _this.isBlockNode(blockEl.eq(i));
+      });
+      if (blockEl.length) {
+        return blockEl.first();
+      } else {
+        return null;
+      }
+    };
+
     Util.prototype.getNodeLength = function(node) {
       switch (node.nodeType) {
         case 7:
@@ -1008,7 +1058,7 @@
         node = range != null ? range.commonAncestorContainer : void 0;
       }
       if ((node == null) || !$.contains(this.editor.body[0], node)) {
-        return;
+        return false;
       }
       nodes = $(node).parentsUntil(this.editor.body).get();
       nodes.unshift(node);
@@ -1053,7 +1103,7 @@
         return;
       }
       if (!$.isArray(this.opts.toolbar)) {
-        opts.toolbar = ['bold', 'italic', 'underline', 'ol', 'ul'];
+        this.opts.toolbar = ['bold', 'italic', 'underline', '|', 'ol', 'ul', 'blockquote', 'code'];
       }
       this._render();
       this.list.on('click', function(e) {
@@ -1113,13 +1163,13 @@
     };
 
     Toolbar.prototype.toolbarStatus = function(name) {
-      var buttons,
+      var button, buttons, success, _i, _len, _results,
         _this = this;
       if (!this.editor.inputManager.focused) {
         return;
       }
       buttons = this._buttons.slice(0);
-      return this.editor.util.traverseUp(function(node) {
+      success = this.editor.util.traverseUp(function(node) {
         var button, i, removeIndex, _i, _j, _len, _len1;
         removeIndex = [];
         for (i = _i = 0, _len = buttons.length; _i < _len; i = ++_i) {
@@ -1139,6 +1189,14 @@
           return false;
         }
       });
+      if (!success) {
+        _results = [];
+        for (_i = 0, _len = buttons.length; _i < _len; _i++) {
+          button = buttons[_i];
+          _results.push(button.setActive(false));
+        }
+        return _results;
+      }
     };
 
     Toolbar.prototype._buttons = [];
@@ -1357,17 +1415,18 @@
     };
 
     Button.prototype.status = function($node) {
-      var active;
       if ($node != null) {
-        active = $node.is(this.htmlTag);
+        this.setActive($node.is(this.htmlTag));
       }
-      this.setActive(active);
-      return active;
+      return this.active;
     };
 
     Button.prototype.command = function(param) {
-      this.setActive(!this.active);
-      return null;
+      var editor;
+      editor = this.toolbar.editor;
+      if (!editor.focused) {
+        return editor.body.focus();
+      }
     };
 
     return Button;
@@ -1400,8 +1459,10 @@
     };
 
     BoldButton.prototype.command = function() {
+      BoldButton.__super__.command.call(this);
       document.execCommand('bold');
-      return this.status();
+      this.toolbar.editor.trigger('valuechanged');
+      return this.toolbar.editor.trigger('selectionchanged');
     };
 
     return BoldButton;
@@ -1436,8 +1497,10 @@
     };
 
     ItalicButton.prototype.command = function() {
+      ItalicButton.__super__.command.call(this);
       document.execCommand('italic');
-      return this.status();
+      this.toolbar.editor.trigger('valuechanged');
+      return this.toolbar.editor.trigger('selectionchanged');
     };
 
     return ItalicButton;
@@ -1472,8 +1535,10 @@
     };
 
     UnderlineButton.prototype.command = function() {
+      UnderlineButton.__super__.command.call(this);
       document.execCommand('underline');
-      return this.status();
+      this.toolbar.editor.trigger('valuechanged');
+      return this.toolbar.editor.trigger('selectionchanged');
     };
 
     return UnderlineButton;
@@ -1495,12 +1560,14 @@
     ListButton.prototype.command = function(param) {
       var $breakedEl, $contents, $endBlock, $startBlock, editor, endNode, node, range, results, startNode, _i, _len, _ref9,
         _this = this;
+      ListButton.__super__.command.call(this);
       editor = this.toolbar.editor;
       range = editor.selection.getRange();
       startNode = range.startContainer;
       endNode = range.endContainer;
       $startBlock = editor.util.closestBlockEl(startNode);
       $endBlock = editor.util.closestBlockEl(endNode);
+      editor.selection.save();
       range.setStartBefore($startBlock[0]);
       range.setEndAfter($endBlock[0]);
       if ($startBlock.is('li') && $endBlock.is('li') && $startBlock.parent()[0] === $endBlock.parent()[0]) {
@@ -1509,9 +1576,17 @@
       $contents = $(range.extractContents());
       if ($breakedEl != null) {
         $contents.wrapInner('<' + $breakedEl[0].tagName + '/>');
-        $breakedEl = editor.selection.breakBlockEl($breakedEl, range);
-        range.setEndBefore($breakedEl[0]);
-        range.collapse();
+        if (editor.selection.rangeAtStartOf($breakedEl, range)) {
+          range.setEndBefore($breakedEl[0]);
+          range.collapse();
+        } else if (editor.selection.rangeAtEndOf($breakedEl, range)) {
+          range.setEndAfter($breakedEl[0]);
+          range.collapse();
+        } else {
+          $breakedEl = editor.selection.breakBlockEl($breakedEl, range);
+          range.setEndBefore($breakedEl[0]);
+          range.collapse();
+        }
       }
       results = [];
       $contents.children().each(function(i, el) {
@@ -1533,8 +1608,9 @@
         node = _ref9[_i];
         range.insertNode(node[0]);
       }
-      editor.selection.selectRange(range);
-      return null;
+      editor.selection.restore();
+      this.toolbar.editor.trigger('valuechanged');
+      return this.toolbar.editor.trigger('selectionchanged');
     };
 
     ListButton.prototype._convertEl = function(el) {
@@ -1560,6 +1636,8 @@
           children = this._convertEl(child);
         }
         $.merge(results, children);
+      } else if ($el.is('table')) {
+
       } else {
         block = $('<' + this.type + '><li></li></' + this.type + '>');
         block.find('li').append($el.html() || editor.util.phBr);
@@ -1619,5 +1697,159 @@
   Simditor.Toolbar.addButton(OrderListButton);
 
   Simditor.Toolbar.addButton(UnorderListButton);
+
+  BlockquoteButton = (function(_super) {
+    __extends(BlockquoteButton, _super);
+
+    function BlockquoteButton() {
+      _ref11 = BlockquoteButton.__super__.constructor.apply(this, arguments);
+      return _ref11;
+    }
+
+    BlockquoteButton.prototype.name = 'blockquote';
+
+    BlockquoteButton.prototype.icon = 'quote-left';
+
+    BlockquoteButton.prototype.title = '引用';
+
+    BlockquoteButton.prototype.htmlTag = 'blockquote';
+
+    BlockquoteButton.prototype.command = function() {
+      var $contents, $endBlock, $startBlock, editor, endNode, node, range, results, startNode, _i, _len, _ref12,
+        _this = this;
+      BlockquoteButton.__super__.command.call(this);
+      editor = this.toolbar.editor;
+      range = editor.selection.getRange();
+      startNode = range.startContainer;
+      endNode = range.endContainer;
+      $startBlock = editor.util.furthestBlockEl(startNode);
+      $endBlock = editor.util.furthestBlockEl(endNode);
+      editor.selection.save();
+      range.setStartBefore($startBlock[0]);
+      range.setEndAfter($endBlock[0]);
+      $contents = $(range.extractContents());
+      results = [];
+      $contents.children().each(function(i, el) {
+        var c, converted, _i, _len, _results;
+        converted = _this._convertEl(el);
+        _results = [];
+        for (_i = 0, _len = converted.length; _i < _len; _i++) {
+          c = converted[_i];
+          if (results.length && results[results.length - 1].is(_this.htmlTag) && c.is(_this.htmlTag)) {
+            _results.push(results[results.length - 1].append(c.children()));
+          } else {
+            _results.push(results.push(c));
+          }
+        }
+        return _results;
+      });
+      _ref12 = results.reverse();
+      for (_i = 0, _len = _ref12.length; _i < _len; _i++) {
+        node = _ref12[_i];
+        range.insertNode(node[0]);
+      }
+      editor.selection.restore();
+      this.toolbar.editor.trigger('valuechanged');
+      return this.toolbar.editor.trigger('selectionchanged');
+    };
+
+    BlockquoteButton.prototype._convertEl = function(el) {
+      var $el, block, editor, results,
+        _this = this;
+      editor = this.toolbar.editor;
+      $el = $(el);
+      results = [];
+      if ($el.is(this.htmlTag)) {
+        $el.children().each(function(i, node) {
+          return results.push($(node));
+        });
+      } else {
+        block = $('<' + this.htmlTag + '/>').append($el);
+        results.push(block);
+      }
+      return results;
+    };
+
+    return BlockquoteButton;
+
+  })(Button);
+
+  Simditor.Toolbar.addButton(BlockquoteButton);
+
+  CodeButton = (function(_super) {
+    __extends(CodeButton, _super);
+
+    function CodeButton() {
+      _ref12 = CodeButton.__super__.constructor.apply(this, arguments);
+      return _ref12;
+    }
+
+    CodeButton.prototype.name = 'code';
+
+    CodeButton.prototype.icon = 'code';
+
+    CodeButton.prototype.title = '插入代码';
+
+    CodeButton.prototype.htmlTag = 'pre';
+
+    CodeButton.prototype.command = function() {
+      var $contents, $endBlock, $startBlock, editor, endNode, node, range, results, startNode, _i, _len, _ref13,
+        _this = this;
+      CodeButton.__super__.command.call(this);
+      editor = this.toolbar.editor;
+      range = editor.selection.getRange();
+      startNode = range.startContainer;
+      endNode = range.endContainer;
+      $startBlock = editor.util.closestBlockEl(startNode);
+      $endBlock = editor.util.closestBlockEl(endNode);
+      range.setStartBefore($startBlock[0]);
+      range.setEndAfter($endBlock[0]);
+      $contents = $(range.extractContents());
+      results = [];
+      $contents.children().each(function(i, el) {
+        var c, converted, _i, _len, _results;
+        converted = _this._convertEl(el);
+        _results = [];
+        for (_i = 0, _len = converted.length; _i < _len; _i++) {
+          c = converted[_i];
+          if (results.length && results[results.length - 1].is(_this.htmlTag) && c.is(_this.htmlTag)) {
+            _results.push(results[results.length - 1].append(c.contents()));
+          } else {
+            _results.push(results.push(c));
+          }
+        }
+        return _results;
+      });
+      _ref13 = results.reverse();
+      for (_i = 0, _len = _ref13.length; _i < _len; _i++) {
+        node = _ref13[_i];
+        range.insertNode(node[0]);
+      }
+      editor.selection.selectRange(range);
+      this.toolbar.editor.trigger('valuechanged');
+      return this.toolbar.editor.trigger('selectionchanged');
+    };
+
+    CodeButton.prototype._convertEl = function(el) {
+      var $el, block, codeStr, editor, results;
+      editor = this.toolbar.editor;
+      $el = $(el);
+      results = [];
+      if ($el.is(this.htmlTag)) {
+        block = $('<p/>').append($el.html().replace('\n', '<br/>'));
+        results.push(block);
+      } else {
+        codeStr = editor.formatter.clearHtml($el);
+        block = $('<' + this.htmlTag + '/>').append(codeStr);
+        results.push(block);
+      }
+      return results;
+    };
+
+    return CodeButton;
+
+  })(Button);
+
+  Simditor.Toolbar.addButton(CodeButton);
 
 }).call(this);

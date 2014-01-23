@@ -27,8 +27,7 @@ class UndoManager extends Plugin
         @_pushUndoState()
       , 300
 
-    @editor.on 'focus', =>
-      @_pushUndoState() if @_index < 0
+    @_pushUndoState()
 
   _pushUndoState: ->
     if @_stack.length and @_index > -1

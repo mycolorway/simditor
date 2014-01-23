@@ -17,8 +17,10 @@ class ItalicButton extends Button
     active
 
   command: ->
+    super()
     document.execCommand 'italic'
-    @status()
+    @toolbar.editor.trigger 'valuechanged'
+    @toolbar.editor.trigger 'selectionchanged'
 
 
 Simditor.Toolbar.addButton(ItalicButton)

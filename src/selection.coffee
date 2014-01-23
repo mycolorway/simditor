@@ -109,7 +109,7 @@ class Selection extends Plugin
     return $el if range.collapsed
     $el.before range.extractContents()
 
-  saveSelection: () ->
+  save: () ->
     return if @_selectionSaved
 
     range = @getRange()
@@ -123,7 +123,7 @@ class Selection extends Plugin
     @sel.removeAllRanges()
     @_selectionSaved = true
 
-  restoreSelection: () ->
+  restore: () ->
     return false unless @_selectionSaved
 
     startCaret = @editor.body.find('.simditor-caret-start')

@@ -13,7 +13,7 @@ class Toolbar extends Plugin
     return unless @opts.toolbar
 
     unless $.isArray @opts.toolbar
-      opts.toolbar = ['bold', 'italic', 'underline', 'ol', 'ul']
+      @opts.toolbar = ['bold', 'italic', 'underline', '|', 'ol', 'ul', 'blockquote', 'code']
 
     @_render()
     
@@ -69,7 +69,7 @@ class Toolbar extends Plugin
     return unless @editor.inputManager.focused
 
     buttons = @_buttons[..]
-    @editor.util.traverseUp (node) =>
+    success = @editor.util.traverseUp (node) =>
       removeIndex = []
       for button, i in buttons
         continue if name? and button.name isnt name
@@ -77,6 +77,8 @@ class Toolbar extends Plugin
 
       buttons.splice(i, 1) for i in removeIndex
       return false if buttons.length == 0
+
+    button.setActive false for button in buttons unless success
 
   # button instances
   _buttons: []

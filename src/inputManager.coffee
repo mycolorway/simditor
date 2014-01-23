@@ -10,12 +10,24 @@ class InputManager extends Plugin
 
   _init: ->
     @_pasteArea = $('<textarea/>')
+      .css({
+        width: '1px',
+        height: '1px',
+        overflow: 'hidden',
+        resize: 'none',
+        position: 'fixed',
+        right: '0',
+        bottom: '100px'
+      })
       .attr('tabIndex', '-1')
       .addClass('simditor-paste-area')
       .appendTo(@.editor.el)
 
     @editor.on 'destroy', =>
       @_pasteArea.remove()
+
+    @editor.on 'valuechanged', =>
+      # TODO: check next el of code block
 
     @editor.body.on('keydown', $.proxy(@_onKeyDown, @))
       .on('keyup', $.proxy(@_onKeyUp, @))
@@ -184,10 +196,13 @@ class InputManager extends Plugin
   _inputHandlers:
     13:
       li: ($node) ->
+        # TODO: press enter in a empty list item
 
       pre: ($node) ->
+        # TODO: press enter in a code block: insert \n instead of br
 
       blockquote: ($node) ->
+        # TODO: press enter in the last paragraph of blockquote, just leave the block quote
 
   _shortcuts:
     13: (e) ->

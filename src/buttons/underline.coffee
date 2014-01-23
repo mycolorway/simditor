@@ -17,8 +17,10 @@ class UnderlineButton extends Button
     active
 
   command: ->
+    super()
     document.execCommand 'underline'
-    @status()
+    @toolbar.editor.trigger 'valuechanged'
+    @toolbar.editor.trigger 'selectionchanged'
 
 
 Simditor.Toolbar.addButton(UnderlineButton)

@@ -92,10 +92,9 @@ class Button
     @el.toggleClass('active', @active)
 
   status: ($node) ->
-    active = $node.is(@htmlTag) if $node?
-    @setActive active
-    active
+    @setActive $node.is(@htmlTag) if $node?
+    @active
 
   command: (param) ->
-    @setActive !@active
-    null
+    editor = @toolbar.editor
+    editor.body.focus() unless editor.focused
