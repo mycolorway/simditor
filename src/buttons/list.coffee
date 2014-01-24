@@ -26,14 +26,14 @@ class ListButton extends Button
       $contents.wrapInner('<' + $breakedEl[0].tagName + '/>')
       if editor.selection.rangeAtStartOf $breakedEl, range
         range.setEndBefore($breakedEl[0])
-        range.collapse()
+        range.collapse(false)
       else if editor.selection.rangeAtEndOf $breakedEl, range
         range.setEndAfter($breakedEl[0])
-        range.collapse()
+        range.collapse(false)
       else
         $breakedEl = editor.selection.breakBlockEl($breakedEl, range)
         range.setEndBefore($breakedEl[0])
-        range.collapse()
+        range.collapse(false)
 
     results = []
     $contents.children().each (i, el) =>

@@ -74,7 +74,7 @@ class Selection extends Plugin
 
     node = $(node)[0]
     range.setEndAfter node
-    range.collapse()
+    range.collapse(false)
     @selectRange range
 
   setRangeBefore: (node, range = @getRange()) ->
@@ -82,13 +82,13 @@ class Selection extends Plugin
 
     node = $(node)[0]
     range.setEndBefore node
-    range.collapse()
+    range.collapse(false)
     @selectRange range
 
   setRangeAtStartOf: (node, range = @getRange()) ->
     node = $(node).get(0)
     range.setEnd(node, 0)
-    range.collapse()
+    range.collapse(false)
     @selectRange range
 
   setRangeAtEndOf: (node, range = @getRange()) ->
@@ -96,7 +96,7 @@ class Selection extends Plugin
     nodeLength = @editor.util.getNodeLength node
     nodeLength -= 1 if node.nodeType != 3 and nodeLength > 0 and $(node).contents().last().is('br')
     range.setEnd(node, nodeLength)
-    range.collapse()
+    range.collapse(false)
     @selectRange range
 
   deleteRangeContents: (range = @getRange()) ->
@@ -117,7 +117,7 @@ class Selection extends Plugin
     endCaret = $('<span/>').addClass('simditor-caret-end')
 
     range.insertNode(startCaret[0])
-    range.collapse()
+    range.collapse(false)
     range.insertNode(endCaret[0])
 
     @sel.removeAllRanges()

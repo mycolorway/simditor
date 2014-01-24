@@ -13,9 +13,9 @@ class Widget
     obj.included?.call(@)
 
   @connect: (cls) ->
-    return unless typeof cls is 'function' and cls.name
+    return unless typeof cls is 'function'
     @::_connectedClasses.push(cls)
-    @[cls.name] = cls
+    @[cls.name] = cls if cls.name
 
   _connectedClasses: []
 
@@ -45,3 +45,13 @@ class Widget
   destroy: ->
 
 window.Widget = Widget
+
+# Hack: IE doesn't support Function.name
+if Function::name == undefined && Object.defineProperty != undefined
+  Object.defineProperty(Function.prototype, 'name', {
+    get: ->
+      funcNameRegex = /function\s([^(]{1,})\(/
+      results = funcNameRegex.exec(this.toString())
+      if results && results.length > 1 then results[1].trim() else ""
+    set: (value) ->
+  })

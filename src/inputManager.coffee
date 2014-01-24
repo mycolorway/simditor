@@ -227,7 +227,7 @@ class InputManager extends Plugin
           newLi = $('<li/>').append(@editor.util.phBr).insertAfter($node)
           range.setEnd(newLi[0], 0)
 
-        range.collapse()
+        range.collapse(false)
         @editor.selection.selectRange(range)
         true
 
@@ -248,7 +248,7 @@ class InputManager extends Plugin
           range.insertNode breakNode
           range.setStartAfter breakNode
 
-        range.collapse()
+        range.collapse(false)
         @editor.selection.selectRange range
         true
 
@@ -263,7 +263,8 @@ class InputManager extends Plugin
     8:
       pre: (e, $node) ->
         return unless @editor.selection.rangeAtStartOf $node
-        $newNode = $('<p/>').append($node.html() || @editor.util.phBr).insertBefore $node
+        codeStr = $node.html().replace('\n', '<br/>')
+        $newNode = $('<p/>').append(codeStr || @editor.util.phBr).insertAfter $node
         $node.remove()
         @editor.selection.setRangeAtStartOf $newNode
         true

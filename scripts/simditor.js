@@ -35,11 +35,13 @@
     };
 
     Widget.connect = function(cls) {
-      if (!(typeof cls === 'function' && cls.name)) {
+      if (typeof cls !== 'function') {
         return;
       }
       this.prototype._connectedClasses.push(cls);
-      return this[cls.name] = cls;
+      if (cls.name) {
+        return this[cls.name] = cls;
+      }
     };
 
     Widget.prototype._connectedClasses = [];
@@ -92,6 +94,22 @@
   })();
 
   window.Widget = Widget;
+
+  if (Function.prototype.name === void 0 && Object.defineProperty !== void 0) {
+    Object.defineProperty(Function.prototype, 'name', {
+      get: function() {
+        var funcNameRegex, results;
+        funcNameRegex = /function\s([^(]{1,})\(/;
+        results = funcNameRegex.exec(this.toString());
+        if (results && results.length > 1) {
+          return results[1].trim();
+        } else {
+          return "";
+        }
+      },
+      set: function(value) {}
+    });
+  }
 
   Plugin = (function() {
     Plugin.prototype.opts = {};
@@ -217,7 +235,7 @@
       }
       node = $(node)[0];
       range.setEndAfter(node);
-      range.collapse();
+      range.collapse(false);
       return this.selectRange(range);
     };
 
@@ -230,7 +248,7 @@
       }
       node = $(node)[0];
       range.setEndBefore(node);
-      range.collapse();
+      range.collapse(false);
       return this.selectRange(range);
     };
 
@@ -240,7 +258,7 @@
       }
       node = $(node).get(0);
       range.setEnd(node, 0);
-      range.collapse();
+      range.collapse(false);
       return this.selectRange(range);
     };
 
@@ -255,7 +273,7 @@
         nodeLength -= 1;
       }
       range.setEnd(node, nodeLength);
-      range.collapse();
+      range.collapse(false);
       return this.selectRange(range);
     };
 
@@ -291,7 +309,7 @@
       startCaret = $('<span/>').addClass('simditor-caret-start');
       endCaret = $('<span/>').addClass('simditor-caret-end');
       range.insertNode(startCaret[0]);
-      range.collapse();
+      range.collapse(false);
       range.insertNode(endCaret[0]);
       this.sel.removeAllRanges();
       return this._selectionSaved = true;
@@ -741,7 +759,7 @@
             newLi = $('<li/>').append(this.editor.util.phBr).insertAfter($node);
             range.setEnd(newLi[0], 0);
           }
-          range.collapse();
+          range.collapse(false);
           this.editor.selection.selectRange(range);
           return true;
         },
@@ -760,7 +778,7 @@
             range.insertNode(breakNode);
             range.setStartAfter(breakNode);
           }
-          range.collapse();
+          range.collapse(false);
           this.editor.selection.selectRange(range);
           return true;
         },
@@ -777,11 +795,12 @@
       },
       8: {
         pre: function(e, $node) {
-          var $newNode;
+          var $newNode, codeStr;
           if (!this.editor.selection.rangeAtStartOf($node)) {
             return;
           }
-          $newNode = $('<p/>').append($node.html() || this.editor.util.phBr).insertBefore($node);
+          codeStr = $node.html().replace('\n', '<br/>');
+          $newNode = $('<p/>').append(codeStr || this.editor.util.phBr).insertAfter($node);
           $node.remove();
           this.editor.selection.setRangeAtStartOf($newNode);
           return true;
@@ -1686,14 +1705,14 @@
         $contents.wrapInner('<' + $breakedEl[0].tagName + '/>');
         if (editor.selection.rangeAtStartOf($breakedEl, range)) {
           range.setEndBefore($breakedEl[0]);
-          range.collapse();
+          range.collapse(false);
         } else if (editor.selection.rangeAtEndOf($breakedEl, range)) {
           range.setEndAfter($breakedEl[0]);
-          range.collapse();
+          range.collapse(false);
         } else {
           $breakedEl = editor.selection.breakBlockEl($breakedEl, range);
           range.setEndBefore($breakedEl[0]);
-          range.collapse();
+          range.collapse(false);
         }
       }
       results = [];
@@ -1933,7 +1952,7 @@
         node = _ref13[_i];
         range.insertNode(node[0]);
       }
-      editor.selection.selectRange(range);
+      editor.selection.setRangeAtStartOf(results[0]);
       this.toolbar.editor.trigger('valuechanged');
       return this.toolbar.editor.trigger('selectionchanged');
     };
