@@ -37,6 +37,10 @@ class Util extends Plugin
     isMac = /Mac/.test navigator.userAgent
     if isMac then e.metaKey else e.ctrlKey
 
+  isEmptyNode: (node) ->
+    $node = $(node)
+    !$node.text() and !$node.find(':not(br)').length
+
   isBlockNode: (node) ->
     node = $(node)[0]
     if !node or node.nodeType == 3

@@ -27,7 +27,11 @@ class InputManager extends Plugin
       @_pasteArea.remove()
 
     @editor.on 'valuechanged', =>
-      # TODO: check next el of code block
+      @editor.body.find('pre').each (i, pre) =>
+        $pre = $(pre)
+        if $pre.next().length == 0
+          $('<p/>').append(@editor.util.phBr)
+            .insertAfter($pre)
 
     @editor.body.on('keydown', $.proxy(@_onKeyDown, @))
       .on('keyup', $.proxy(@_onKeyUp, @))
@@ -87,6 +91,7 @@ class InputManager extends Plugin
         @editor.selection.insertNode $br
 
       @editor.trigger 'valuechanged'
+      @editor.trigger 'selectionchanged'
       return false
 
     # Remove hr node
@@ -96,6 +101,7 @@ class InputManager extends Plugin
         # TODO: need to test on IE
         $prevBlockEl.remove()
         @editor.trigger 'valuechanged'
+        @editor.trigger 'selectionchanged'
         return false
 
     # Tab to indent
@@ -104,14 +110,17 @@ class InputManager extends Plugin
       spaceNode = document.createTextNode spaces
       @editor.selection.insertNode spaceNode
       @editor.trigger 'valuechanged'
+      @editor.trigger 'selectionchanged'
       return false
 
     # Check the condictional handlers
     if e.which of @_inputHandlers
+      result = null
       @editor.util.traverseUp (node) =>
         return unless node.nodeType == 1
         handler = @_inputHandlers[e.which]?[node.tagName.toLowerCase()]
-        handler?.call(this, $(node))
+        result = handler?.call(@, e, $(node))
+      return result
 
     clearTimeout @_typing if @_typing
 
@@ -195,11 +204,54 @@ class InputManager extends Plugin
 
   _inputHandlers:
     13:
-      li: ($node) ->
-        # TODO: press enter in a empty list item
+      # press enter in a empty list item
+      li: (e, $node) ->
+        return unless @editor.util.isEmptyNode $node
+        e.preventDefault()
+        range = @editor.selection.getRange()
 
-      pre: ($node) ->
-        # TODO: press enter in a code block: insert \n instead of br
+        if !$node.next('li').length
+          listEl = $node.parent()
+          newBlockEl = $('<p/>').append(@editor.util.phBr).insertAfter(listEl)
+
+          if $node.siblings('li').length
+            $node.remove()
+          else
+            listEl.remove()
+
+          range.setEnd(newBlockEl[0], 0)
+        else
+          newLi = $('<li/>').append(@editor.util.phBr).insertAfter($node)
+          range.setEnd(newLi[0], 0)
+
+        range.collapse()
+        @editor.selection.selectRange(range)
+        @editor.trigger 'valuechanged'
+        @editor.trigger 'selectionchanged'
+        return false
+
+      # press enter in a code block: insert \n instead of br
+      pre: (e, $node) ->
+        e.preventDefault()
+        range = @editor.selection.getRange()
+        breakNode = null
+
+        range.deleteContents()
+
+        if !@editor.util.browser.msie && @editor.selection.rangeAtEndOf $node
+          breakNode = document.createTextNode('\n\n')
+          range.insertNode breakNode
+          range.setEnd breakNode, 1
+        else
+          breakNode = document.createTextNode('\n')
+          range.insertNode breakNode
+          range.setStartAfter breakNode
+
+        range.collapse()
+        @editor.selection.selectRange range
+        @editor.trigger 'valuechanged'
+        @editor.trigger 'selectionchanged'
+        return false;
 
       blockquote: ($node) ->
         # TODO: press enter in the last paragraph of blockquote, just leave the block quote

@@ -530,7 +530,15 @@
       this.editor.on('destroy', function() {
         return _this._pasteArea.remove();
       });
-      this.editor.on('valuechanged', function() {});
+      this.editor.on('valuechanged', function() {
+        return _this.editor.body.find('pre').each(function(i, pre) {
+          var $pre;
+          $pre = $(pre);
+          if ($pre.next().length === 0) {
+            return $('<p/>').append(_this.editor.util.phBr).insertAfter($pre);
+          }
+        });
+      });
       this.editor.body.on('keydown', $.proxy(this._onKeyDown, this)).on('keyup', $.proxy(this._onKeyUp, this)).on('mouseup', $.proxy(this._onMouseUp, this)).on('focus', $.proxy(this._onFocus, this)).on('blur', $.proxy(this._onBlur, this)).on('paste', $.proxy(this._onPaste, this));
       if (this.editor.textarea.attr('autofocus')) {
         return setTimeout(function() {
@@ -560,7 +568,7 @@
     };
 
     InputManager.prototype._onKeyDown = function(e) {
-      var $blockEl, $br, $prevBlockEl, metaKey, spaceNode, spaces, _ref2, _ref3,
+      var $blockEl, $br, $prevBlockEl, metaKey, result, spaceNode, spaces, _ref2, _ref3,
         _this = this;
       if (this.editor.triggerHandler(e) === false) {
         return false;
@@ -584,6 +592,7 @@
           this.editor.selection.insertNode($br);
         }
         this.editor.trigger('valuechanged');
+        this.editor.trigger('selectionchanged');
         return false;
       }
       if (e.which === 8) {
@@ -591,6 +600,7 @@
         if ($prevBlockEl.is('hr' && this.editor.selection.rangeAtStartOf($blockEl))) {
           $prevBlockEl.remove();
           this.editor.trigger('valuechanged');
+          this.editor.trigger('selectionchanged');
           return false;
         }
       }
@@ -599,17 +609,20 @@
         spaceNode = document.createTextNode(spaces);
         this.editor.selection.insertNode(spaceNode);
         this.editor.trigger('valuechanged');
+        this.editor.trigger('selectionchanged');
         return false;
       }
       if (e.which in this._inputHandlers) {
+        result = null;
         this.editor.util.traverseUp(function(node) {
           var handler, _ref4;
           if (node.nodeType !== 1) {
             return;
           }
           handler = (_ref4 = _this._inputHandlers[e.which]) != null ? _ref4[node.tagName.toLowerCase()] : void 0;
-          return handler != null ? handler.call(_this, $(node)) : void 0;
+          return result = handler != null ? handler.call(_this, e, $(node)) : void 0;
         });
+        return result;
       }
       if (this._typing) {
         clearTimeout(this._typing);
@@ -703,8 +716,53 @@
 
     InputManager.prototype._inputHandlers = {
       13: {
-        li: function($node) {},
-        pre: function($node) {},
+        li: function(e, $node) {
+          var listEl, newBlockEl, newLi, range;
+          if (!this.editor.util.isEmptyNode($node)) {
+            return;
+          }
+          e.preventDefault();
+          range = this.editor.selection.getRange();
+          if (!$node.next('li').length) {
+            listEl = $node.parent();
+            newBlockEl = $('<p/>').append(this.editor.util.phBr).insertAfter(listEl);
+            if ($node.siblings('li').length) {
+              $node.remove();
+            } else {
+              listEl.remove();
+            }
+            range.setEnd(newBlockEl[0], 0);
+          } else {
+            newLi = $('<li/>').append(this.editor.util.phBr).insertAfter($node);
+            range.setEnd(newLi[0], 0);
+          }
+          range.collapse();
+          this.editor.selection.selectRange(range);
+          this.editor.trigger('valuechanged');
+          this.editor.trigger('selectionchanged');
+          return false;
+        },
+        pre: function(e, $node) {
+          var breakNode, range;
+          e.preventDefault();
+          range = this.editor.selection.getRange();
+          breakNode = null;
+          range.deleteContents();
+          if (!this.editor.util.browser.msie && this.editor.selection.rangeAtEndOf($node)) {
+            breakNode = document.createTextNode('\n\n');
+            range.insertNode(breakNode);
+            range.setEnd(breakNode, 1);
+          } else {
+            breakNode = document.createTextNode('\n');
+            range.insertNode(breakNode);
+            range.setStartAfter(breakNode);
+          }
+          range.collapse();
+          this.editor.selection.selectRange(range);
+          this.editor.trigger('valuechanged');
+          this.editor.trigger('selectionchanged');
+          return false;
+        },
         blockquote: function($node) {}
       }
     };
@@ -984,6 +1042,12 @@
       } else {
         return e.ctrlKey;
       }
+    };
+
+    Util.prototype.isEmptyNode = function(node) {
+      var $node;
+      $node = $(node);
+      return !$node.text() && !$node.find(':not(br)').length;
     };
 
     Util.prototype.isBlockNode = function(node) {
