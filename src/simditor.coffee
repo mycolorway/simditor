@@ -34,16 +34,14 @@ class Simditor extends Widget
       form.on 'reset.simditor-' + @id, =>
         @setValue ''
 
-    if val = @textarea.val()
-      @setValue val ? ''
-      setTimeout =>
-        @trigger 'valuechanged'
-      , 0
+    @setValue @textarea.val() ? ''
 
     @on 'valuechanged', =>
       @_placeholder()
 
-    @_placeholder()
+    setTimeout =>
+      @trigger 'valuechanged'
+    , 0
 
     # Disable the resizing of `img` and `table`
     #if @browser.mozilla

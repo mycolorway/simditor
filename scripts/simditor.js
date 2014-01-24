@@ -1334,7 +1334,7 @@
     };
 
     Simditor.prototype._init = function() {
-      var editor, form, val,
+      var editor, form, _ref5,
         _this = this;
       this.textarea = $(this.opts.textarea);
       if (!this.textarea.length) {
@@ -1356,16 +1356,13 @@
           return _this.setValue('');
         });
       }
-      if (val = this.textarea.val()) {
-        this.setValue(val != null ? val : '');
-        setTimeout(function() {
-          return _this.trigger('valuechanged');
-        }, 0);
-      }
+      this.setValue((_ref5 = this.textarea.val()) != null ? _ref5 : '');
       this.on('valuechanged', function() {
         return _this._placeholder();
       });
-      return this._placeholder();
+      return setTimeout(function() {
+        return _this.trigger('valuechanged');
+      }, 0);
     };
 
     Simditor.prototype._tpl = "<div class=\"simditor\">\n  <div class=\"simditor-wrapper\">\n    <div class=\"simditor-placeholder\"></div>\n    <div class=\"simditor-body\" contenteditable=\"true\">\n    </div>\n  </div>\n</div>";
