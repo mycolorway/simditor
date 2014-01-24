@@ -18,7 +18,7 @@ class Selection extends Plugin
     @sel.addRange(range)
 
   rangeAtEndOf: (node, range = @getRange()) ->
-    return unless range?
+    return unless range? and range.collapsed
 
     node = $(node)[0]
     endNode = range.endContainer
@@ -41,7 +41,7 @@ class Selection extends Plugin
     result
 
   rangeAtStartOf: (node, range = @getRange()) ->
-    return unless range?
+    return unless range? and range.collapsed
 
     node = $(node)[0]
     startNode = range.startContainer

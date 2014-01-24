@@ -7,23 +7,32 @@
   background: #ffffff;
 }
 .simditor .simditor-wrapper .simditor-placeholder {
+  display: none;
   position: absolute;
   top: 0;
   left: 0;
   z-index: 0;
   width: 100%;
-  padding: 8px 0;
-  text-indent: 12px;
+  padding: 22px 15px;
+  font-size: 16px;
+  font-family: helvetica,Arial;
+  line-height: 1.5;
   color: #999999;
   background: transparent;
 }
 .simditor .simditor-wrapper.toolbar-enabled {
   padding-top: 60px;
 }
+.simditor .simditor-wrapper.toolbar-enabled .simditor-placeholder {
+  top: 60px;
+}
 .simditor .simditor-body {
   min-height: 500px;
   outline: none;
   cursor: text;
+  position: relative;
+  z-index: 1;
+  background: transparent;
 }
 .simditor .simditor-paste-area {
   background: transparent;

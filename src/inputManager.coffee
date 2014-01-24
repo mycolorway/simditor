@@ -120,10 +120,13 @@ class InputManager extends Plugin
         return unless node.nodeType == 1
         handler = @_inputHandlers[e.which]?[node.tagName.toLowerCase()]
         result = handler?.call(@, e, $(node))
-      return result
+        !result
+      if result
+        @editor.trigger 'valuechanged'
+        @editor.trigger 'selectionchanged'
+        return false
 
     clearTimeout @_typing if @_typing
-
     @_typing = setTimeout =>
       @editor.trigger 'valuechanged'
       @editor.trigger 'selectionchanged'
@@ -226,9 +229,7 @@ class InputManager extends Plugin
 
         range.collapse()
         @editor.selection.selectRange(range)
-        @editor.trigger 'valuechanged'
-        @editor.trigger 'selectionchanged'
-        return false
+        true
 
       # press enter in a code block: insert \n instead of br
       pre: (e, $node) ->
@@ -249,12 +250,29 @@ class InputManager extends Plugin
 
         range.collapse()
         @editor.selection.selectRange range
-        @editor.trigger 'valuechanged'
-        @editor.trigger 'selectionchanged'
-        return false;
+        true
 
-      blockquote: ($node) ->
-        # TODO: press enter in the last paragraph of blockquote, just leave the block quote
+      # press enter in the last paragraph of blockquote, just leave the block quote
+      blockquote: (e, $node) ->
+        $closestBlock = @editor.util.closestBlockEl()
+        return unless $closestBlock.is('p') and !$closestBlock.next().length and @editor.util.isEmptyNode $closestBlock
+        $node.after $closestBlock
+        @editor.selection.setRangeAtStartOf $closestBlock
+        true
+
+    8:
+      pre: (e, $node) ->
+        return unless @editor.selection.rangeAtStartOf $node
+        $newNode = $('<p/>').append($node.html() || @editor.util.phBr).insertBefore $node
+        $node.remove()
+        @editor.selection.setRangeAtStartOf $newNode
+        true
+
+      blockquote: (e, $node) ->
+        return unless @editor.selection.rangeAtStartOf $node
+        $firstChild = $node.children().first().unwrap()
+        @editor.selection.setRangeAtStartOf $firstChild
+        true
 
   _shortcuts:
     13: (e) ->

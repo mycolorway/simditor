@@ -26,6 +26,7 @@
 		$(function() {
 			var editor = new Simditor({
 				textarea: $('#txt-content'),
+				placeholder: '这里输入文字...',
 				toolbar: true
 			});
 		});
@@ -34,7 +35,7 @@
 </head>
 <body>
 	<div class="wrapper">
-		<textarea id="txt-content" data-autosave="editor-content">test</textarea>
+		<textarea id="txt-content" data-autosave="editor-content"></textarea>
 	</div>
 </body>
 </html>

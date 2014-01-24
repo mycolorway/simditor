@@ -11,6 +11,7 @@ class Simditor extends Widget
 
   opts:
     textarea: null
+    placeholder: 'Type here...'
 
   _init: ->
     @textarea = $(@opts.textarea);
@@ -39,6 +40,11 @@ class Simditor extends Widget
         @trigger 'valuechanged'
       , 0
 
+    @on 'valuechanged', =>
+      @_placeholder()
+
+    @_placeholder()
+
     # Disable the resizing of `img` and `table`
     #if @browser.mozilla
       #document.execCommand "enableObjectResizing", false, "false"
@@ -47,6 +53,7 @@ class Simditor extends Widget
   _tpl:"""
     <div class="simditor">
       <div class="simditor-wrapper">
+        <div class="simditor-placeholder"></div>
         <div class="simditor-body" contenteditable="true">
         </div>
       </div>
@@ -57,6 +64,7 @@ class Simditor extends Widget
     @el = $(@_tpl).insertBefore @textarea
     @wrapper = @el.find '.simditor-wrapper'
     @body = @wrapper.find '.simditor-body'
+    @placeholderEl = @wrapper.find('.simditor-placeholder').append(@opts.placeholder)
 
     @el.append(@textarea)
       .data 'simditor', this
@@ -64,6 +72,13 @@ class Simditor extends Widget
       .hide()
       .blur()
     @body.attr 'tabindex', @textarea.attr('tabindex')
+
+  _placeholder: ->
+    children = @body.children()
+    if children.length == 0 or (children.length == 1 and @util.isEmptyNode(children))
+      @placeholderEl.show()
+    else
+      @placeholderEl.hide()
 
   setValue: (val) ->
     @textarea.val val

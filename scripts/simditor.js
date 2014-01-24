@@ -138,7 +138,7 @@
       if (range == null) {
         range = this.getRange();
       }
-      if (range == null) {
+      if (!((range != null) && range.collapsed)) {
         return;
       }
       node = $(node)[0];
@@ -170,7 +170,7 @@
       if (range == null) {
         range = this.getRange();
       }
-      if (range == null) {
+      if (!((range != null) && range.collapsed)) {
         return;
       }
       node = $(node)[0];
@@ -620,9 +620,14 @@
             return;
           }
           handler = (_ref4 = _this._inputHandlers[e.which]) != null ? _ref4[node.tagName.toLowerCase()] : void 0;
-          return result = handler != null ? handler.call(_this, e, $(node)) : void 0;
+          result = handler != null ? handler.call(_this, e, $(node)) : void 0;
+          return !result;
         });
-        return result;
+        if (result) {
+          this.editor.trigger('valuechanged');
+          this.editor.trigger('selectionchanged');
+          return false;
+        }
       }
       if (this._typing) {
         clearTimeout(this._typing);
@@ -738,9 +743,7 @@
           }
           range.collapse();
           this.editor.selection.selectRange(range);
-          this.editor.trigger('valuechanged');
-          this.editor.trigger('selectionchanged');
-          return false;
+          return true;
         },
         pre: function(e, $node) {
           var breakNode, range;
@@ -759,11 +762,39 @@
           }
           range.collapse();
           this.editor.selection.selectRange(range);
-          this.editor.trigger('valuechanged');
-          this.editor.trigger('selectionchanged');
-          return false;
+          return true;
         },
-        blockquote: function($node) {}
+        blockquote: function(e, $node) {
+          var $closestBlock;
+          $closestBlock = this.editor.util.closestBlockEl();
+          if (!($closestBlock.is('p') && !$closestBlock.next().length && this.editor.util.isEmptyNode($closestBlock))) {
+            return;
+          }
+          $node.after($closestBlock);
+          this.editor.selection.setRangeAtStartOf($closestBlock);
+          return true;
+        }
+      },
+      8: {
+        pre: function(e, $node) {
+          var $newNode;
+          if (!this.editor.selection.rangeAtStartOf($node)) {
+            return;
+          }
+          $newNode = $('<p/>').append($node.html() || this.editor.util.phBr).insertBefore($node);
+          $node.remove();
+          this.editor.selection.setRangeAtStartOf($newNode);
+          return true;
+        },
+        blockquote: function(e, $node) {
+          var $firstChild;
+          if (!this.editor.selection.rangeAtStartOf($node)) {
+            return;
+          }
+          $firstChild = $node.children().first().unwrap();
+          this.editor.selection.setRangeAtStartOf($firstChild);
+          return true;
+        }
       }
     };
 
@@ -1298,7 +1329,8 @@
     Simditor.count = 0;
 
     Simditor.prototype.opts = {
-      textarea: null
+      textarea: null,
+      placeholder: 'Type here...'
     };
 
     Simditor.prototype._init = function() {
@@ -1326,21 +1358,36 @@
       }
       if (val = this.textarea.val()) {
         this.setValue(val != null ? val : '');
-        return setTimeout(function() {
+        setTimeout(function() {
           return _this.trigger('valuechanged');
         }, 0);
       }
+      this.on('valuechanged', function() {
+        return _this._placeholder();
+      });
+      return this._placeholder();
     };
 
-    Simditor.prototype._tpl = "<div class=\"simditor\">\n  <div class=\"simditor-wrapper\">\n    <div class=\"simditor-body\" contenteditable=\"true\">\n    </div>\n  </div>\n</div>";
+    Simditor.prototype._tpl = "<div class=\"simditor\">\n  <div class=\"simditor-wrapper\">\n    <div class=\"simditor-placeholder\"></div>\n    <div class=\"simditor-body\" contenteditable=\"true\">\n    </div>\n  </div>\n</div>";
 
     Simditor.prototype._render = function() {
       this.el = $(this._tpl).insertBefore(this.textarea);
       this.wrapper = this.el.find('.simditor-wrapper');
       this.body = this.wrapper.find('.simditor-body');
+      this.placeholderEl = this.wrapper.find('.simditor-placeholder').append(this.opts.placeholder);
       this.el.append(this.textarea).data('simditor', this);
       this.textarea.data('simditor', this).hide().blur();
       return this.body.attr('tabindex', this.textarea.attr('tabindex'));
+    };
+
+    Simditor.prototype._placeholder = function() {
+      var children;
+      children = this.body.children();
+      if (children.length === 0 || (children.length === 1 && this.util.isEmptyNode(children))) {
+        return this.placeholderEl.show();
+      } else {
+        return this.placeholderEl.hide();
+      }
     };
 
     Simditor.prototype.setValue = function(val) {
