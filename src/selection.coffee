@@ -92,10 +92,21 @@ class Selection extends Plugin
     @selectRange range
 
   setRangeAtEndOf: (node, range = @getRange()) ->
-    node = $(node).get(0)
-    nodeLength = @editor.util.getNodeLength node
-    nodeLength -= 1 if node.nodeType != 3 and nodeLength > 0 and $(node).contents().last().is('br')
-    range.setEnd(node, nodeLength)
+    $node = $(node)
+    node = $node.get(0)
+
+    if $node.is('pre')
+      contents = $node.contents()
+      if contents.length > 0
+        lastChild = contents.last()
+        range.setEnd(lastChild[0], @editor.util.getNodeLength(lastChild[0]) - 1)
+      else
+        range.setEnd(node, 0)
+    else
+      nodeLength = @editor.util.getNodeLength node
+      nodeLength -= 1 if node.nodeType != 3 and nodeLength > 0 and $(node).contents().last().is('br')
+      range.setEnd(node, nodeLength)
+
     range.collapse(false)
     @selectRange range
 

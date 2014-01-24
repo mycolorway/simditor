@@ -263,16 +263,27 @@
     };
 
     Selection.prototype.setRangeAtEndOf = function(node, range) {
-      var nodeLength;
+      var $node, contents, lastChild, nodeLength;
       if (range == null) {
         range = this.getRange();
       }
-      node = $(node).get(0);
-      nodeLength = this.editor.util.getNodeLength(node);
-      if (node.nodeType !== 3 && nodeLength > 0 && $(node).contents().last().is('br')) {
-        nodeLength -= 1;
+      $node = $(node);
+      node = $node.get(0);
+      if ($node.is('pre')) {
+        contents = $node.contents();
+        if (contents.length > 0) {
+          lastChild = contents.last();
+          range.setEnd(lastChild[0], this.editor.util.getNodeLength(lastChild[0]) - 1);
+        } else {
+          range.setEnd(node, 0);
+        }
+      } else {
+        nodeLength = this.editor.util.getNodeLength(node);
+        if (node.nodeType !== 3 && nodeLength > 0 && $(node).contents().last().is('br')) {
+          nodeLength -= 1;
+        }
+        range.setEnd(node, nodeLength);
       }
-      range.setEnd(node, nodeLength);
       range.collapse(false);
       return this.selectRange(range);
     };
@@ -1952,7 +1963,7 @@
         node = _ref13[_i];
         range.insertNode(node[0]);
       }
-      editor.selection.setRangeAtStartOf(results[0]);
+      editor.selection.setRangeAtEndOf(results[0]);
       this.toolbar.editor.trigger('valuechanged');
       return this.toolbar.editor.trigger('selectionchanged');
     };

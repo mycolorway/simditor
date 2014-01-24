@@ -33,7 +33,7 @@ class CodeButton extends Button
           results.push(c)
     
     range.insertNode node[0] for node in results.reverse()
-    editor.selection.setRangeAtStartOf results[0]
+    editor.selection.setRangeAtEndOf results[0]
 
     @toolbar.editor.trigger 'valuechanged'
     @toolbar.editor.trigger 'selectionchanged'
