@@ -46,6 +46,7 @@ class Widget
 
 window.Widget = Widget
 
+
 # Hack: IE doesn't support Function.name
 if Function::name == undefined && Object.defineProperty != undefined
   Object.defineProperty(Function.prototype, 'name', {
