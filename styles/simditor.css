@@ -12,7 +12,6 @@
   top: 0;
   left: 0;
   z-index: 0;
-  width: 100%;
   padding: 22px 15px;
   font-size: 16px;
   font-family: helvetica,Arial;
@@ -33,6 +32,9 @@
   position: relative;
   z-index: 1;
   background: transparent;
+}
+.simditor .simditor-body > :first-child {
+  margin-top: 0;
 }
 .simditor .simditor-paste-area {
   background: transparent;

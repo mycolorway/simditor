@@ -610,6 +610,9 @@
       }
       metaKey = this.editor.util.metaKey(e);
       $blockEl = this.editor.util.closestBlockEl();
+      if (metaKey && e.which === 86) {
+        return;
+      }
       if (metaKey && this._shortcuts[e.which]) {
         this._shortcuts[e.which].call(this, e);
         return false;
@@ -696,10 +699,11 @@
       codePaste = $blockEl.is('pre');
       this.editor.selection.deleteRangeContents();
       this.editor.selection.save();
-      this._pasteArea.val('').focus();
+      this._pasteArea.focus();
       return setTimeout(function() {
         var el, els, insertPosition, node, pasteContent, range, re, result;
         pasteContent = _this._pasteArea.val();
+        _this._pasteArea.val('');
         if (!codePaste) {
           els = [];
           re = /(.*)(\n*)/g;
@@ -747,7 +751,8 @@
           $blockEl[insertPosition](pasteContent);
           _this.editor.selection.setRangeAtEndOf(pasteContent.last(), range);
         }
-        return _this._pasteArea.val('');
+        _this.editor.trigger('valuechanged');
+        return _this.editor.trigger('selectionchanged');
       }, 0);
     };
 
@@ -1231,7 +1236,7 @@
         return;
       }
       if (!$.isArray(this.opts.toolbar)) {
-        this.opts.toolbar = ['bold', 'italic', 'underline', '|', 'ol', 'ul', 'blockquote', 'code'];
+        this.opts.toolbar = ['bold', 'italic', 'underline', '|', 'ol', 'ul', 'blockquote', 'code', '|', 'link'];
       }
       this._render();
       this.list.on('click', function(e) {
@@ -2022,16 +2027,16 @@
       $link = $('<a/>', {
         href: 'http://www.example.com',
         target: '_blank',
-        text: editor.formatter.cleanHtml($contents.contents(), false) || '链接文字'
+        text: editor.formatter.clearHtml($contents.contents(), false) || '链接文字'
       });
-      if ($startBlock[0] === $endBlockf[0]) {
+      if ($startBlock[0] === $endBlock[0]) {
         range.insertNode($link[0]);
       } else {
         $newBlock = $('<p/>').append($link);
         range.insertNode($newBlock);
       }
       range.selectNodeContents($link[0]);
-      editor.selection.selectRange();
+      editor.selection.selectRange(range);
       this.toolbar.editor.trigger('valuechanged');
       return this.toolbar.editor.trigger('selectionchanged');
     };
@@ -2040,6 +2045,6 @@
 
   })(Button);
 
-  Simditor.Toolbar.addButton(BoldButton);
+  Simditor.Toolbar.addButton(LinkButton);
 
 }).call(this);

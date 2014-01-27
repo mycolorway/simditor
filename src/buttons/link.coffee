@@ -22,21 +22,21 @@ class LinkButton extends Button
     $link = $('<a/>', {
       href: 'http://www.example.com',
       target: '_blank',
-      text: editor.formatter.cleanHtml($contents.contents(), false) || '链接文字'
+      text: editor.formatter.clearHtml($contents.contents(), false) || '链接文字'
     })
 
-    if $startBlock[0] == $endBlockf[0]
+    if $startBlock[0] == $endBlock[0]
       range.insertNode $link[0]
     else
       $newBlock = $('<p/>').append($link)
       range.insertNode $newBlock
 
     range.selectNodeContents $link[0]
-    editor.selection.selectRange()
+    editor.selection.selectRange range
 
     @toolbar.editor.trigger 'valuechanged'
     @toolbar.editor.trigger 'selectionchanged'
 
 
-Simditor.Toolbar.addButton(BoldButton)
+Simditor.Toolbar.addButton(LinkButton)
 

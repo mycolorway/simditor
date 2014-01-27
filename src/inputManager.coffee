@@ -74,6 +74,9 @@ class InputManager extends Plugin
     metaKey = @editor.util.metaKey e
     $blockEl = @editor.util.closestBlockEl()
 
+    # paste shortcut
+    return if metaKey and e.which == 86
+
     # handle predefined shortcuts
     if metaKey and @_shortcuts[e.which]
       @_shortcuts[e.which].call(this, e)
@@ -155,10 +158,11 @@ class InputManager extends Plugin
     @editor.selection.deleteRangeContents()
     @editor.selection.save()
 
-    @_pasteArea.val('').focus()
+    @_pasteArea.focus()
 
     setTimeout =>
       pasteContent = @_pasteArea.val()
+      @_pasteArea.val ''
 
       # clean paste content
       unless codePaste
@@ -202,7 +206,8 @@ class InputManager extends Plugin
         $blockEl[insertPosition](pasteContent)
         @editor.selection.setRangeAtEndOf(pasteContent.last(), range)
 
-      @_pasteArea.val ''
+      @editor.trigger 'valuechanged'
+      @editor.trigger 'selectionchanged'
     , 0
 
   _inputHandlers:
@@ -276,6 +281,7 @@ class InputManager extends Plugin
         true
 
   _shortcuts:
+    # meta + enter: submit form
     13: (e) ->
       @editor.el.closest('form')
         .find('button:submit')
