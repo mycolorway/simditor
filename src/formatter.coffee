@@ -95,7 +95,7 @@ class Formatter extends Plugin
 
     cleanNode n for n in contents if recursive and contents?
 
-  clearHtml: (html) ->
+  clearHtml: (html, lineBreak = true) ->
     container = $('<div/>').append(html)
     result = ''
 
@@ -106,7 +106,7 @@ class Formatter extends Plugin
         $node = $(node)
         contents = $node.contents()
         result += @clearHtml contents if contents.length > 0
-        if $node.is 'p, div, li, tr, pre, address, artticle, aside, dd, figcaption, footer, h1, h2, h3, h4, h5, h6, header'
+        if lineBreak and $node.is 'p, div, li, tr, pre, address, artticle, aside, dd, figcaption, footer, h1, h2, h3, h4, h5, h6, header'
           result += '\n'
 
     result

@@ -192,7 +192,7 @@
 
 	ul, ol {
 		list-style:disc outside none;
-		margin: 0 0 15px 0;
+		margin: 15px 0;
 		padding: 0 0 0 30px;
 		line-height: 1.6;
 	}
@@ -208,7 +208,7 @@
 	blockquote {
 		border-left: 6px solid #ddd;
 		padding: 5px 0 5px 10px;
-		margin: 0 0 15px 15px;
+		margin: 15px 0 15px 15px;
 
 		p {
 			margin: 2px 0;
@@ -217,7 +217,7 @@
 
 	pre {
 		padding: 5px 5px 5px 10px;
-		margin: 0 0 15px;
+		margin: 15px 0;
 		display: block;
 		font-family: 'monaco', 'Consolas', "Liberation Mono", Courier, monospace;
 		font-size:13px;

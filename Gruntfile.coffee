@@ -29,7 +29,8 @@ module.exports = (grunt) ->
             'src/buttons/underline.coffee',
             'src/buttons/list.coffee',
             'src/buttons/blockquote.coffee',
-            'src/buttons/code.coffee'
+            'src/buttons/code.coffee',
+            'src/buttons/link.coffee'
           ]
     watch:
       styles:

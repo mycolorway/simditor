@@ -1,5 +1,5 @@
 (function() {
-  var BlockquoteButton, BoldButton, Button, CodeButton, Formatter, InputManager, ItalicButton, ListButton, OrderListButton, Plugin, Selection, Simditor, Toolbar, UnderlineButton, UndoManager, UnorderListButton, Util, Widget, _ref, _ref1, _ref10, _ref11, _ref12, _ref2, _ref3, _ref4, _ref5, _ref6, _ref7, _ref8, _ref9,
+  var BlockquoteButton, BoldButton, Button, CodeButton, Formatter, InputManager, ItalicButton, LinkButton, ListButton, OrderListButton, Plugin, Selection, Simditor, Toolbar, UnderlineButton, UndoManager, UnorderListButton, Util, Widget, _ref, _ref1, _ref10, _ref11, _ref12, _ref13, _ref2, _ref3, _ref4, _ref5, _ref6, _ref7, _ref8, _ref9,
     __slice = [].slice,
     __hasProp = {}.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
@@ -502,9 +502,12 @@
       }
     };
 
-    Formatter.prototype.clearHtml = function(html) {
+    Formatter.prototype.clearHtml = function(html, lineBreak) {
       var container, result,
         _this = this;
+      if (lineBreak == null) {
+        lineBreak = true;
+      }
       container = $('<div/>').append(html);
       result = '';
       container.contents().each(function(i, node) {
@@ -517,7 +520,7 @@
           if (contents.length > 0) {
             result += _this.clearHtml(contents);
           }
-          if ($node.is('p, div, li, tr, pre, address, artticle, aside, dd, figcaption, footer, h1, h2, h3, h4, h5, h6, header')) {
+          if (lineBreak && $node.is('p, div, li, tr, pre, address, artticle, aside, dd, figcaption, footer, h1, h2, h3, h4, h5, h6, header')) {
             return result += '\n';
           }
         }
@@ -1989,5 +1992,54 @@
   })(Button);
 
   Simditor.Toolbar.addButton(CodeButton);
+
+  LinkButton = (function(_super) {
+    __extends(LinkButton, _super);
+
+    function LinkButton() {
+      _ref13 = LinkButton.__super__.constructor.apply(this, arguments);
+      return _ref13;
+    }
+
+    LinkButton.prototype.name = 'link';
+
+    LinkButton.prototype.icon = 'link';
+
+    LinkButton.prototype.title = '插入链接';
+
+    LinkButton.prototype.htmlTag = 'a';
+
+    LinkButton.prototype.command = function() {
+      var $contents, $endBlock, $link, $newBlock, $startBlock, editor, endNode, range, startNode;
+      LinkButton.__super__.command.call(this);
+      editor = this.toolbar.editor;
+      range = editor.selection.getRange();
+      startNode = range.startContainer;
+      endNode = range.endContainer;
+      $startBlock = editor.util.closestBlockEl(startNode);
+      $endBlock = editor.util.closestBlockEl(endNode);
+      $contents = $(range.extractContents());
+      $link = $('<a/>', {
+        href: 'http://www.example.com',
+        target: '_blank',
+        text: editor.formatter.cleanHtml($contents.contents(), false) || '链接文字'
+      });
+      if ($startBlock[0] === $endBlockf[0]) {
+        range.insertNode($link[0]);
+      } else {
+        $newBlock = $('<p/>').append($link);
+        range.insertNode($newBlock);
+      }
+      range.selectNodeContents($link[0]);
+      editor.selection.selectRange();
+      this.toolbar.editor.trigger('valuechanged');
+      return this.toolbar.editor.trigger('selectionchanged');
+    };
+
+    return LinkButton;
+
+  })(Button);
+
+  Simditor.Toolbar.addButton(BoldButton);
 
 }).call(this);
