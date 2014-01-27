@@ -29,7 +29,7 @@ class LinkButton extends Button
       range.insertNode $link[0]
     else
       $newBlock = $('<p/>').append($link)
-      range.insertNode $newBlock
+      range.insertNode $newBlock[0]
 
     range.selectNodeContents $link[0]
     editor.selection.selectRange range
