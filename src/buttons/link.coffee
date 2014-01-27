@@ -9,8 +9,9 @@ class LinkButton extends Button
 
   htmlTag: 'a'
 
+  disableTag: 'pre'
+
   command: ->
-    super()
     editor =  @toolbar.editor
     range = editor.selection.getRange()
     startNode = range.startContainer

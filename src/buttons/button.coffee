@@ -17,9 +17,15 @@ class Button
 
   htmlTag: ''
 
+  disableTag: ''
+
   menu: false
 
   active: false
+
+  disabled: false
+
+  needFocus: true
 
   shortcut: null
 
@@ -38,7 +44,7 @@ class Button
     @toolbar.list.on 'mousedown', 'a.menu-item', (e) =>
       e.preventDefault()
       btn = $(e.currentTarget)
-      return if btn.hasClass 'disabled'
+      return if btn.hasClass 'disabled' or (@needFocus and !@toolbar.editor.inputManager.focused)
 
       @toolbar.wrapper.removeClass('menu-on')
       param = btn.data('param')
@@ -46,6 +52,7 @@ class Button
 
     @toolbar.editor.on 'blur', =>
       @setActive false
+      @setDisabled false
 
     if @shortcut?
       @toolbar.editor.inputManager.addShortcut @shortcut, (e) =>
@@ -91,10 +98,15 @@ class Button
     @active = active
     @el.toggleClass('active', @active)
 
+  setDisabled: (disabled) ->
+    @disabled = disabled
+    @el.toggleClass('disabled', @disabled)
+
   status: ($node) ->
+    @setDisabled $node.is(@disableTag) if $node?
+    return @disabled if @disabled
+
     @setActive $node.is(@htmlTag) if $node?
     @active
 
   command: (param) ->
-    editor = @toolbar.editor
-    editor.body.focus() unless editor.focused

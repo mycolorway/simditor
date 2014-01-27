@@ -1479,9 +1479,15 @@
 
     Button.prototype.htmlTag = '';
 
+    Button.prototype.disableTag = '';
+
     Button.prototype.menu = false;
 
     Button.prototype.active = false;
+
+    Button.prototype.disabled = false;
+
+    Button.prototype.needFocus = true;
 
     Button.prototype.shortcut = null;
 
@@ -1504,7 +1510,7 @@
         var btn, param;
         e.preventDefault();
         btn = $(e.currentTarget);
-        if (btn.hasClass('disabled')) {
+        if (btn.hasClass('disabled' || (_this.needFocus && !_this.toolbar.editor.inputManager.focused))) {
           return;
         }
         _this.toolbar.wrapper.removeClass('menu-on');
@@ -1512,7 +1518,8 @@
         return _this.command(param);
       });
       this.toolbar.editor.on('blur', function() {
-        return _this.setActive(false);
+        _this.setActive(false);
+        return _this.setDisabled(false);
       });
       if (this.shortcut != null) {
         this.toolbar.editor.inputManager.addShortcut(this.shortcut, function(e) {
@@ -1560,20 +1567,25 @@
       return this.el.toggleClass('active', this.active);
     };
 
+    Button.prototype.setDisabled = function(disabled) {
+      this.disabled = disabled;
+      return this.el.toggleClass('disabled', this.disabled);
+    };
+
     Button.prototype.status = function($node) {
+      if ($node != null) {
+        this.setDisabled($node.is(this.disableTag));
+      }
+      if (this.disabled) {
+        return this.disabled;
+      }
       if ($node != null) {
         this.setActive($node.is(this.htmlTag));
       }
       return this.active;
     };
 
-    Button.prototype.command = function(param) {
-      var editor;
-      editor = this.toolbar.editor;
-      if (!editor.focused) {
-        return editor.body.focus();
-      }
-    };
+    Button.prototype.command = function(param) {};
 
     return Button;
 
@@ -1595,17 +1607,24 @@
 
     BoldButton.prototype.htmlTag = 'b, strong';
 
+    BoldButton.prototype.disableTag = 'pre';
+
     BoldButton.prototype.shortcut = 66;
 
-    BoldButton.prototype.status = function() {
+    BoldButton.prototype.status = function($node) {
       var active;
+      if ($node != null) {
+        this.setDisabled($node.is(this.disableTag));
+      }
+      if (this.disabled) {
+        return this.disabled;
+      }
       active = document.queryCommandState('bold') === true;
       this.setActive(active);
       return active;
     };
 
     BoldButton.prototype.command = function() {
-      BoldButton.__super__.command.call(this);
       document.execCommand('bold');
       this.toolbar.editor.trigger('valuechanged');
       return this.toolbar.editor.trigger('selectionchanged');
@@ -1633,6 +1652,8 @@
 
     ItalicButton.prototype.htmlTag = 'i';
 
+    ItalicButton.prototype.disableTag = 'pre';
+
     ItalicButton.prototype.shortcut = 73;
 
     ItalicButton.prototype.status = function() {
@@ -1643,7 +1664,6 @@
     };
 
     ItalicButton.prototype.command = function() {
-      ItalicButton.__super__.command.call(this);
       document.execCommand('italic');
       this.toolbar.editor.trigger('valuechanged');
       return this.toolbar.editor.trigger('selectionchanged');
@@ -1671,6 +1691,8 @@
 
     UnderlineButton.prototype.htmlTag = 'u';
 
+    UnderlineButton.prototype.disableTag = 'pre';
+
     UnderlineButton.prototype.shortcut = 85;
 
     UnderlineButton.prototype.status = function() {
@@ -1681,7 +1703,6 @@
     };
 
     UnderlineButton.prototype.command = function() {
-      UnderlineButton.__super__.command.call(this);
       document.execCommand('underline');
       this.toolbar.editor.trigger('valuechanged');
       return this.toolbar.editor.trigger('selectionchanged');
@@ -1703,10 +1724,11 @@
 
     ListButton.prototype.type = '';
 
+    ListButton.prototype.disableTag = 'pre';
+
     ListButton.prototype.command = function(param) {
       var $breakedEl, $contents, $endBlock, $startBlock, editor, endNode, node, range, results, startNode, _i, _len, _ref9,
         _this = this;
-      ListButton.__super__.command.call(this);
       editor = this.toolbar.editor;
       range = editor.selection.getRange();
       startNode = range.startContainer;
@@ -1860,10 +1882,11 @@
 
     BlockquoteButton.prototype.htmlTag = 'blockquote';
 
+    BlockquoteButton.prototype.disableTag = 'pre';
+
     BlockquoteButton.prototype.command = function() {
       var $contents, $endBlock, $startBlock, editor, endNode, node, range, results, startNode, _i, _len, _ref12,
         _this = this;
-      BlockquoteButton.__super__.command.call(this);
       editor = this.toolbar.editor;
       range = editor.selection.getRange();
       startNode = range.startContainer;
@@ -1938,10 +1961,11 @@
 
     CodeButton.prototype.htmlTag = 'pre';
 
+    CodeButton.prototype.disableTag = 'li';
+
     CodeButton.prototype.command = function() {
       var $contents, $endBlock, $startBlock, editor, endNode, node, range, results, startNode, _i, _len, _ref13,
         _this = this;
-      CodeButton.__super__.command.call(this);
       editor = this.toolbar.editor;
       range = editor.selection.getRange();
       startNode = range.startContainer;
@@ -2014,9 +2038,10 @@
 
     LinkButton.prototype.htmlTag = 'a';
 
+    LinkButton.prototype.disableTag = 'pre';
+
     LinkButton.prototype.command = function() {
       var $contents, $endBlock, $link, $newBlock, $startBlock, editor, endNode, range, startNode;
-      LinkButton.__super__.command.call(this);
       editor = this.toolbar.editor;
       range = editor.selection.getRange();
       startNode = range.startContainer;

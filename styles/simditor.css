@@ -96,10 +96,10 @@
 .simditor .simditor-toolbar > ul > li > .toolbar-item.active span {
   opacity: 1;
 }
-.simditor .simditor-toolbar > ul > li > .toolbar-item.disable {
+.simditor .simditor-toolbar > ul > li > .toolbar-item.disabled {
   cursor: default;
 }
-.simditor .simditor-toolbar > ul > li > .toolbar-item.disable span {
+.simditor .simditor-toolbar > ul > li > .toolbar-item.disabled span {
   opacity: 0.3;
 }
 .simditor .simditor-toolbar .menu {
@@ -203,8 +203,8 @@
   padding: 5px 0 5px 10px;
   margin: 15px 0 15px 15px;
 }
-.simditor .simditor-body blockquote p, .editor-style blockquote p {
-  margin: 2px 0;
+.simditor .simditor-body blockquote > :first-child, .editor-style blockquote > :first-child {
+  margin-top: 0;
 }
 .simditor .simditor-body pre, .editor-style pre {
   padding: 5px 5px 5px 10px;

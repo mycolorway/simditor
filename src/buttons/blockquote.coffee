@@ -9,8 +9,9 @@ class BlockquoteButton extends Button
 
   htmlTag: 'blockquote'
 
+  disableTag: 'pre'
+
   command: ->
-    super()
     editor =  @toolbar.editor
     range = editor.selection.getRange()
     startNode = range.startContainer

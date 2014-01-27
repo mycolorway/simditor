@@ -9,15 +9,19 @@ class BoldButton extends Button
 
   htmlTag: 'b, strong'
 
+  disableTag: 'pre'
+
   shortcut: 66
 
-  status: ->
+  status: ($node) ->
+    @setDisabled $node.is(@disableTag) if $node?
+    return @disabled if @disabled
+
     active = document.queryCommandState('bold') is true
     @setActive active
     active
 
   command: ->
-    super()
     document.execCommand 'bold'
     @toolbar.editor.trigger 'valuechanged'
     @toolbar.editor.trigger 'selectionchanged'

@@ -9,6 +9,8 @@ class ItalicButton extends Button
 
   htmlTag: 'i'
 
+  disableTag: 'pre'
+
   shortcut: 73
 
   status: ->
@@ -17,7 +19,6 @@ class ItalicButton extends Button
     active
 
   command: ->
-    super()
     document.execCommand 'italic'
     @toolbar.editor.trigger 'valuechanged'
     @toolbar.editor.trigger 'selectionchanged'

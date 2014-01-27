@@ -9,6 +9,8 @@ class UnderlineButton extends Button
 
   htmlTag: 'u'
 
+  disableTag: 'pre'
+
   shortcut: 85
 
   status: ->
@@ -17,7 +19,6 @@ class UnderlineButton extends Button
     active
 
   command: ->
-    super()
     document.execCommand 'underline'
     @toolbar.editor.trigger 'valuechanged'
     @toolbar.editor.trigger 'selectionchanged'

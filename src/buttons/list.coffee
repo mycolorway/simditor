@@ -3,8 +3,9 @@ class ListButton extends Button
 
   type: ''
 
+  disableTag: 'pre'
+
   command: (param) ->
-    super()
     editor =  @toolbar.editor
     range = editor.selection.getRange()
     startNode = range.startContainer

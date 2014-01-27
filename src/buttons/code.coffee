@@ -9,8 +9,9 @@ class CodeButton extends Button
 
   htmlTag: 'pre'
 
+  disableTag: 'li'
+
   command: ->
-    super()
     editor =  @toolbar.editor
     range = editor.selection.getRange()
     startNode = range.startContainer
