@@ -1,5 +1,5 @@
 
-class Button
+class Button extends Module
 
   _tpl:
     item: '<li><a tabindex="-1" unselectable="on" class="toolbar-item" href="javascript:;"><span></span></a></li>'
@@ -34,7 +34,7 @@ class Button
 
     @el.on 'mousedown', (e) =>
       e.preventDefault()
-      return if @el.hasClass 'disabled'
+      return if @el.hasClass('disabled') or (@needFocus and !@toolbar.editor.inputManager.focused)
 
       if @menu
         @toolbar.wrapper.toggleClass('menu-on')
@@ -44,7 +44,7 @@ class Button
     @toolbar.list.on 'mousedown', 'a.menu-item', (e) =>
       e.preventDefault()
       btn = $(e.currentTarget)
-      return if btn.hasClass 'disabled' or (@needFocus and !@toolbar.editor.inputManager.focused)
+      return if btn.hasClass 'disabled'
 
       @toolbar.wrapper.removeClass('menu-on')
       param = btn.data('param')
@@ -104,7 +104,7 @@ class Button
 
   status: ($node) ->
     @setDisabled $node.is(@disableTag) if $node?
-    return @disabled if @disabled
+    return true if @disabled
 
     @setActive $node.is(@htmlTag) if $node?
     @active

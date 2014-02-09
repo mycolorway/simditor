@@ -1,6 +1,10 @@
 
 class Formatter extends Plugin
 
+  constructor: (args...) ->
+    super args...
+    @editor = @widget
+
   _init: ->
     @editor.body.on 'click', 'a', (e) =>
       false
@@ -43,18 +47,19 @@ class Formatter extends Plugin
 
     re = /(https?:\/\/|www\.)[\w\-\.\?&=\/]+/ig
     for $node in linkNodes
-      text = $node.text().replace re, (link) ->
-        if /^(http(s)?:\/\/|\/)/.test link
-          uri = link
-        else
-          uri = 'http://' + link;
+      text = $node.text();
+      replaceEls = [];
+      match = null;
+      lastIndex = 0;
 
-        return '<a href="' + uri + '" rel="nofollow">' + link + '</a>'
+      while (match = re.exec(text)) != null
+        replaceEls.push document.createTextNode(text.substring(lastIndex, match.index))
+        lastIndex = re.lastIndex
+        uri = if /^(http(s)?:\/\/|\/)/.test(match[0]) then match[0] else 'http://' + match[0]
+        replaceEls.push $('<a href="' + uri + '" rel="nofollow">' + match[0] + '</a>')[0]
 
-      if $node[0].nodeType == 3
-        $node.replaceWith text
-      else
-        $node.html text
+      replaceEls.push document.createTextNode(text.substring(lastIndex))
+      $node.replaceWith $(replaceEls)
 
     $el
 

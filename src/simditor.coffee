@@ -94,8 +94,6 @@ class Simditor extends Widget
     val
 
   destroy: ->
-    @trigger('destroy')
-
     @textarea.closest 'form'
       .off '.simditor .simditor-' + @id
 
@@ -109,6 +107,7 @@ class Simditor extends Widget
     @el.remove()
     $(document).off '.simditor-' + @id
     $(window).off '.simditor-' + @id
+    @off()
 
 
 window.Simditor = Simditor

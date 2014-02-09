@@ -1,8 +1,11 @@
 
 class Selection extends Plugin
-  constructor: (@editor) ->
-    super @editor
+  constructor: (args...) ->
+    super args...
     @sel = document.getSelection()
+    @editor = @widget
+
+  _init: ->
 
   clear: ->
     @sel.removeAllRanges()

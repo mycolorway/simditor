@@ -4,6 +4,10 @@ class InputManager extends Plugin
   opts:
     tabIndent: true
 
+  constructor: (args...) ->
+    super args...
+    @editor = @widget
+
   _modifierKeys: [16, 17, 18, 91, 93]
 
   _arrowKeys: [37..40]
@@ -27,6 +31,7 @@ class InputManager extends Plugin
       @_pasteArea.remove()
 
     @editor.on 'valuechanged', =>
+      # make sure each code block has a p following it
       @editor.body.find('pre').each (i, pre) =>
         $pre = $(pre)
         if $pre.next().length == 0
@@ -49,7 +54,14 @@ class InputManager extends Plugin
     @editor.el.addClass('focus')
       .removeClass('error')
     @focused = true
-    #@editor.formatter.format()
+
+    @editor.body.find('.selected').removeClass('selected')
+    #if $selectedNode.length
+    #range = @editor.selection.getRange()
+    #range.selectNode $selectedNode[0]
+    #@editor.selection.selectRange range
+    #$selectedNode.removeClass 'selected'
+
     setTimeout =>
       @editor.trigger 'focus'
       @editor.trigger 'selectionchanged'

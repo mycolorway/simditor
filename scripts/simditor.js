@@ -1,12 +1,14 @@
 (function() {
-  var BlockquoteButton, BoldButton, Button, CodeButton, Formatter, InputManager, ItalicButton, LinkButton, ListButton, OrderListButton, Plugin, Selection, Simditor, Toolbar, UnderlineButton, UndoManager, UnorderListButton, Util, Widget, _ref, _ref1, _ref10, _ref11, _ref12, _ref13, _ref2, _ref3, _ref4, _ref5, _ref6, _ref7, _ref8, _ref9,
+  var BlockquoteButton, BoldButton, Button, CodeButton, Formatter, InputManager, ItalicButton, LinkButton, LinkPopover, ListButton, Module, OrderListButton, Plugin, Popover, Selection, Simditor, Toolbar, UnderlineButton, UndoManager, UnorderListButton, Util, Widget, _ref, _ref1, _ref10, _ref2, _ref3, _ref4, _ref5, _ref6, _ref7, _ref8, _ref9,
     __slice = [].slice,
     __hasProp = {}.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
     __indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
 
-  Widget = (function() {
-    Widget.extend = function(obj) {
+  Module = (function() {
+    function Module() {}
+
+    Module.extend = function(obj) {
       var key, val, _ref;
       if (!((obj != null) && typeof obj === 'object')) {
         return;
@@ -20,7 +22,7 @@
       return (_ref = obj.extended) != null ? _ref.call(this) : void 0;
     };
 
-    Widget.include = function(obj) {
+    Module.include = function(obj) {
       var key, val, _ref;
       if (!((obj != null) && typeof obj === 'object')) {
         return;
@@ -33,6 +35,43 @@
       }
       return (_ref = obj.included) != null ? _ref.call(this) : void 0;
     };
+
+    Module.prototype.on = function() {
+      var args, _ref;
+      args = 1 <= arguments.length ? __slice.call(arguments, 0) : [];
+      return (_ref = $(this)).on.apply(_ref, args);
+    };
+
+    Module.prototype.one = function() {
+      var args, _ref;
+      args = 1 <= arguments.length ? __slice.call(arguments, 0) : [];
+      return (_ref = $(this)).one.apply(_ref, args);
+    };
+
+    Module.prototype.off = function() {
+      var args, _ref;
+      args = 1 <= arguments.length ? __slice.call(arguments, 0) : [];
+      return (_ref = $(this)).off.apply(_ref, args);
+    };
+
+    Module.prototype.trigger = function() {
+      var args, _ref;
+      args = 1 <= arguments.length ? __slice.call(arguments, 0) : [];
+      return (_ref = $(this)).trigger.apply(_ref, args);
+    };
+
+    Module.prototype.triggerHandler = function() {
+      var args, _ref;
+      args = 1 <= arguments.length ? __slice.call(arguments, 0) : [];
+      return (_ref = $(this)).triggerHandler.apply(_ref, args);
+    };
+
+    return Module;
+
+  })();
+
+  Widget = (function(_super) {
+    __extends(Widget, _super);
 
     Widget.connect = function(cls) {
       if (typeof cls !== 'function') {
@@ -47,6 +86,8 @@
     Widget.prototype._connectedClasses = [];
 
     Widget.prototype._init = function() {};
+
+    Widget.prototype.opts = {};
 
     function Widget(opts) {
       var cls, instance, instances, name, _i, _len;
@@ -65,35 +106,33 @@
       this._init();
       for (_i = 0, _len = instances.length; _i < _len; _i++) {
         instance = instances[_i];
-        instance._init();
+        if (typeof instance._init === "function") {
+          instance._init();
+        }
       }
     }
-
-    Widget.prototype.on = function() {
-      var args, _ref;
-      args = 1 <= arguments.length ? __slice.call(arguments, 0) : [];
-      return (_ref = $(this)).on.apply(_ref, args);
-    };
-
-    Widget.prototype.trigger = function() {
-      var args, _ref;
-      args = 1 <= arguments.length ? __slice.call(arguments, 0) : [];
-      return (_ref = $(this)).trigger.apply(_ref, args);
-    };
-
-    Widget.prototype.triggerHandler = function() {
-      var args, _ref;
-      args = 1 <= arguments.length ? __slice.call(arguments, 0) : [];
-      return (_ref = $(this)).triggerHandler.apply(_ref, args);
-    };
 
     Widget.prototype.destroy = function() {};
 
     return Widget;
 
-  })();
+  })(Module);
 
-  window.Widget = Widget;
+  Plugin = (function(_super) {
+    __extends(Plugin, _super);
+
+    Plugin.prototype.opts = {};
+
+    function Plugin(widget) {
+      this.widget = widget;
+      $.extend(this.opts, this.widget.opts);
+    }
+
+    Plugin.prototype._init = function() {};
+
+    return Plugin;
+
+  })(Module);
 
   if (Function.prototype.name === void 0 && Object.defineProperty !== void 0) {
     Object.defineProperty(Function.prototype, 'name', {
@@ -111,28 +150,18 @@
     });
   }
 
-  Plugin = (function() {
-    Plugin.prototype.opts = {};
-
-    function Plugin(editor) {
-      this.editor = editor;
-      $.extend(this.opts, this.editor.opts);
-    }
-
-    Plugin.prototype._init = function() {};
-
-    return Plugin;
-
-  })();
-
   Selection = (function(_super) {
     __extends(Selection, _super);
 
-    function Selection(editor) {
-      this.editor = editor;
-      Selection.__super__.constructor.call(this, this.editor);
+    function Selection() {
+      var args;
+      args = 1 <= arguments.length ? __slice.call(arguments, 0) : [];
+      Selection.__super__.constructor.apply(this, args);
       this.sel = document.getSelection();
+      this.editor = this.widget;
     }
+
+    Selection.prototype._init = function() {};
 
     Selection.prototype.clear = function() {
       return this.sel.removeAllRanges();
@@ -363,8 +392,10 @@
     __extends(Formatter, _super);
 
     function Formatter() {
-      _ref = Formatter.__super__.constructor.apply(this, arguments);
-      return _ref;
+      var args;
+      args = 1 <= arguments.length ? __slice.call(arguments, 0) : [];
+      Formatter.__super__.constructor.apply(this, args);
+      this.editor = this.widget;
     }
 
     Formatter.prototype._init = function() {
@@ -400,7 +431,7 @@
     };
 
     Formatter.prototype.autolink = function($el) {
-      var $node, findLinkNode, linkNodes, re, text, _i, _len;
+      var $node, findLinkNode, lastIndex, linkNodes, match, re, replaceEls, text, uri, _i, _len;
       if ($el == null) {
         $el = this.editor.body;
       }
@@ -423,26 +454,24 @@
       re = /(https?:\/\/|www\.)[\w\-\.\?&=\/]+/ig;
       for (_i = 0, _len = linkNodes.length; _i < _len; _i++) {
         $node = linkNodes[_i];
-        text = $node.text().replace(re, function(link) {
-          var uri;
-          if (/^(http(s)?:\/\/|\/)/.test(link)) {
-            uri = link;
-          } else {
-            uri = 'http://' + link;
-          }
-          return '<a href="' + uri + '" rel="nofollow">' + link + '</a>';
-        });
-        if ($node[0].nodeType === 3) {
-          $node.replaceWith(text);
-        } else {
-          $node.html(text);
+        text = $node.text();
+        replaceEls = [];
+        match = null;
+        lastIndex = 0;
+        while ((match = re.exec(text)) !== null) {
+          replaceEls.push(document.createTextNode(text.substring(lastIndex, match.index)));
+          lastIndex = re.lastIndex;
+          uri = /^(http(s)?:\/\/|\/)/.test(match[0]) ? match[0] : 'http://' + match[0];
+          replaceEls.push($('<a href="' + uri + '" rel="nofollow">' + match[0] + '</a>')[0]);
         }
+        replaceEls.push(document.createTextNode(text.substring(lastIndex)));
+        $node.replaceWith($(replaceEls));
       }
       return $el;
     };
 
     Formatter.prototype.format = function($el) {
-      var blockNode, node, _i, _len, _ref1, _results;
+      var blockNode, node, _i, _len, _ref, _results;
       if ($el == null) {
         $el = this.editor.body;
       }
@@ -450,10 +479,10 @@
         $el.append('<p>' + this.editor.util.phBr + '</p>');
         return $el;
       }
-      _ref1 = $el.contents();
+      _ref = $el.contents();
       _results = [];
-      for (_i = 0, _len = _ref1.length; _i < _len; _i++) {
-        node = _ref1[_i];
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        node = _ref[_i];
         if (this.editor.util.isBlockNode(node)) {
           if (typeof blockNode !== "undefined" && blockNode !== null) {
             this.cleanNode(blockNode);
@@ -471,17 +500,17 @@
     };
 
     Formatter.prototype.cleanNode = function(node, recursive) {
-      var $node, attr, contents, n, _i, _j, _len, _len1, _ref1, _ref2, _ref3, _results;
+      var $node, attr, contents, n, _i, _j, _len, _len1, _ref, _ref1, _ref2, _results;
       $node = $(node);
       if ($node[0].nodeType === 3) {
         return;
       }
       contents = $node.contents();
       if ($node.is(this._allowedTags.join(','))) {
-        _ref1 = $.makeArray($node[0].attributes);
-        for (_i = 0, _len = _ref1.length; _i < _len; _i++) {
-          attr = _ref1[_i];
-          if (!($node.is('img' && ((_ref2 = attr.name) === 'src' || _ref2 === 'alt'))) && !($node.is('a' && ((_ref3 = attr.name) === 'href' || _ref3 === 'target')))) {
+        _ref = $.makeArray($node[0].attributes);
+        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+          attr = _ref[_i];
+          if (!($node.is('img' && ((_ref1 = attr.name) === 'src' || _ref1 === 'alt'))) && !($node.is('a' && ((_ref2 = attr.name) === 'href' || _ref2 === 'target')))) {
             $node.removeAttr(attr.name);
           }
         }
@@ -535,14 +564,16 @@
   InputManager = (function(_super) {
     __extends(InputManager, _super);
 
-    function InputManager() {
-      _ref1 = InputManager.__super__.constructor.apply(this, arguments);
-      return _ref1;
-    }
-
     InputManager.prototype.opts = {
       tabIndent: true
     };
+
+    function InputManager() {
+      var args;
+      args = 1 <= arguments.length ? __slice.call(arguments, 0) : [];
+      InputManager.__super__.constructor.apply(this, args);
+      this.editor = this.widget;
+    }
 
     InputManager.prototype._modifierKeys = [16, 17, 18, 91, 93];
 
@@ -583,6 +614,7 @@
       var _this = this;
       this.editor.el.addClass('focus').removeClass('error');
       this.focused = true;
+      this.editor.body.find('.selected').removeClass('selected');
       return setTimeout(function() {
         _this.editor.trigger('focus');
         return _this.editor.trigger('selectionchanged');
@@ -600,12 +632,12 @@
     };
 
     InputManager.prototype._onKeyDown = function(e) {
-      var $blockEl, $br, $prevBlockEl, metaKey, result, spaceNode, spaces, _ref2, _ref3,
+      var $blockEl, $br, $prevBlockEl, metaKey, result, spaceNode, spaces, _ref, _ref1,
         _this = this;
       if (this.editor.triggerHandler(e) === false) {
         return false;
       }
-      if ((_ref2 = e.which, __indexOf.call(this._modifierKeys, _ref2) >= 0) || (_ref3 = e.which, __indexOf.call(this._arrowKeys, _ref3) >= 0)) {
+      if ((_ref = e.which, __indexOf.call(this._modifierKeys, _ref) >= 0) || (_ref1 = e.which, __indexOf.call(this._arrowKeys, _ref1) >= 0)) {
         return;
       }
       metaKey = this.editor.util.metaKey(e);
@@ -650,11 +682,11 @@
       if (e.which in this._inputHandlers) {
         result = null;
         this.editor.util.traverseUp(function(node) {
-          var handler, _ref4;
+          var handler, _ref2;
           if (node.nodeType !== 1) {
             return;
           }
-          handler = (_ref4 = _this._inputHandlers[e.which]) != null ? _ref4[node.tagName.toLowerCase()] : void 0;
+          handler = (_ref2 = _this._inputHandlers[e.which]) != null ? _ref2[node.tagName.toLowerCase()] : void 0;
           result = handler != null ? handler.call(_this, e, $(node)) : void 0;
           return !result;
         });
@@ -675,11 +707,11 @@
     };
 
     InputManager.prototype._onKeyUp = function(e) {
-      var p, _ref2;
+      var p, _ref;
       if (this.editor.triggerHandler(e) === false) {
         return false;
       }
-      if (_ref2 = e.which, __indexOf.call(this._arrowKeys, _ref2) >= 0) {
+      if (_ref = e.which, __indexOf.call(this._arrowKeys, _ref) >= 0) {
         this.editor.trigger('selectionchanged');
         return;
       }
@@ -853,11 +885,6 @@
   UndoManager = (function(_super) {
     __extends(UndoManager, _super);
 
-    function UndoManager() {
-      _ref2 = UndoManager.__super__.constructor.apply(this, arguments);
-      return _ref2;
-    }
-
     UndoManager.prototype._stack = [];
 
     UndoManager.prototype._index = -1;
@@ -865,6 +892,13 @@
     UndoManager.prototype._capacity = 50;
 
     UndoManager.prototype._timer = null;
+
+    function UndoManager() {
+      var args;
+      args = 1 <= arguments.length ? __slice.call(arguments, 0) : [];
+      UndoManager.__super__.constructor.apply(this, args);
+      this.editor = this.widget;
+    }
 
     UndoManager.prototype._init = function() {
       var _this = this;
@@ -989,11 +1023,11 @@
     };
 
     UndoManager.prototype._getNodeByPosition = function(position) {
-      var childNodes, node, offset, _i, _len, _ref3;
+      var childNodes, node, offset, _i, _len, _ref;
       node = this.editor.body[0];
-      _ref3 = position.slice(0, position.length - 1);
-      for (_i = 0, _len = _ref3.length; _i < _len; _i++) {
-        offset = _ref3[_i];
+      _ref = position.slice(0, position.length - 1);
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        offset = _ref[_i];
         childNodes = node.childNodes;
         if (offset > childNodes.length - 1) {
           debugger;
@@ -1058,13 +1092,17 @@
   Util = (function(_super) {
     __extends(Util, _super);
 
-    function Util(editor) {
-      this.editor = editor;
-      Util.__super__.constructor.call(this, this.editor);
+    function Util() {
+      var args;
+      args = 1 <= arguments.length ? __slice.call(arguments, 0) : [];
+      Util.__super__.constructor.apply(this, args);
       if (this.browser.msie) {
         this.phBr = '';
       }
+      this.editor = this.widget;
     }
+
+    Util.prototype._init = function() {};
 
     Util.prototype.phBr = '<br/>';
 
@@ -1215,11 +1253,6 @@
   Toolbar = (function(_super) {
     __extends(Toolbar, _super);
 
-    function Toolbar() {
-      _ref3 = Toolbar.__super__.constructor.apply(this, arguments);
-      return _ref3;
-    }
-
     Toolbar.prototype.opts = {
       toolbar: true,
       toolbarFloat: true
@@ -1229,6 +1262,13 @@
       wrapper: '<div class="simditor-toolbar"><ul></ul></div>',
       separator: '<li><span class="separator"></span></li>'
     };
+
+    function Toolbar() {
+      var args;
+      args = 1 <= arguments.length ? __slice.call(arguments, 0) : [];
+      Toolbar.__super__.constructor.apply(this, args);
+      this.editor = this.widget;
+    }
 
     Toolbar.prototype._init = function() {
       var _this = this;
@@ -1268,20 +1308,23 @@
           return _this.wrapper.css('top', top);
         });
       }
-      return this.editor.on('selectionchanged', function() {
+      this.editor.on('selectionchanged', function() {
         return _this.toolbarStatus();
+      });
+      return this.editor.on('destroy', function() {
+        return _this._buttons.length = 0;
       });
     };
 
     Toolbar.prototype._render = function() {
-      var name, _i, _len, _ref4, _results;
+      var name, _i, _len, _ref, _results;
       this.wrapper = $(this._tpl.wrapper).prependTo(this.editor.wrapper);
       this.list = this.wrapper.find('ul');
       this.editor.wrapper.addClass('toolbar-enabled');
-      _ref4 = this.opts.toolbar;
+      _ref = this.opts.toolbar;
       _results = [];
-      for (_i = 0, _len = _ref4.length; _i < _len; _i++) {
-        name = _ref4[_i];
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        name = _ref[_i];
         if (name === '|') {
           $(this._tpl.separator).appendTo(this.list);
           continue;
@@ -1296,13 +1339,13 @@
     };
 
     Toolbar.prototype.toolbarStatus = function(name) {
-      var button, buttons, success, _i, _len, _results,
+      var buttons,
         _this = this;
       if (!this.editor.inputManager.focused) {
         return;
       }
       buttons = this._buttons.slice(0);
-      success = this.editor.util.traverseUp(function(node) {
+      return this.editor.util.traverseUp(function(node) {
         var button, i, removeIndex, _i, _j, _len, _len1;
         removeIndex = [];
         for (i = _i = 0, _len = buttons.length; _i < _len; i = ++_i) {
@@ -1322,14 +1365,6 @@
           return false;
         }
       });
-      if (!success) {
-        _results = [];
-        for (_i = 0, _len = buttons.length; _i < _len; _i++) {
-          button = buttons[_i];
-          _results.push(button.setActive(false));
-        }
-        return _results;
-      }
     };
 
     Toolbar.prototype._buttons = [];
@@ -1348,8 +1383,8 @@
     __extends(Simditor, _super);
 
     function Simditor() {
-      _ref4 = Simditor.__super__.constructor.apply(this, arguments);
-      return _ref4;
+      _ref = Simditor.__super__.constructor.apply(this, arguments);
+      return _ref;
     }
 
     Simditor.connect(Util);
@@ -1372,7 +1407,7 @@
     };
 
     Simditor.prototype._init = function() {
-      var editor, form, _ref5,
+      var editor, form, _ref1,
         _this = this;
       this.textarea = $(this.opts.textarea);
       if (!this.textarea.length) {
@@ -1394,7 +1429,7 @@
           return _this.setValue('');
         });
       }
-      this.setValue((_ref5 = this.textarea.val()) != null ? _ref5 : '');
+      this.setValue((_ref1 = this.textarea.val()) != null ? _ref1 : '');
       this.on('valuechanged', function() {
         return _this._placeholder();
       });
@@ -1444,13 +1479,13 @@
     };
 
     Simditor.prototype.destroy = function() {
-      this.trigger('destroy');
       this.textarea.closest('form'.off('.simditor .simditor-' + this.id));
       this.selection.clear();
       this.textarea.insertBefore(this.el).hide().val(''.removeData('simditor'));
       this.el.remove();
       $(document).off('.simditor-' + this.id);
-      return $(window).off('.simditor-' + this.id);
+      $(window).off('.simditor-' + this.id);
+      return this.off();
     };
 
     return Simditor;
@@ -1461,7 +1496,9 @@
 
   window.Simditor.Plugin = Plugin;
 
-  Button = (function() {
+  Button = (function(_super) {
+    __extends(Button, _super);
+
     Button.prototype._tpl = {
       item: '<li><a tabindex="-1" unselectable="on" class="toolbar-item" href="javascript:;"><span></span></a></li>',
       menuWrapper: '<div class="toolbar-menu"></div>',
@@ -1497,7 +1534,7 @@
       this.render();
       this.el.on('mousedown', function(e) {
         e.preventDefault();
-        if (_this.el.hasClass('disabled')) {
+        if (_this.el.hasClass('disabled') || (_this.needFocus && !_this.toolbar.editor.inputManager.focused)) {
           return;
         }
         if (_this.menu) {
@@ -1510,7 +1547,7 @@
         var btn, param;
         e.preventDefault();
         btn = $(e.currentTarget);
-        if (btn.hasClass('disabled' || (_this.needFocus && !_this.toolbar.editor.inputManager.focused))) {
+        if (btn.hasClass('disabled')) {
           return;
         }
         _this.toolbar.wrapper.removeClass('menu-on');
@@ -1541,15 +1578,15 @@
     };
 
     Button.prototype.renderMenu = function() {
-      var $menuBtntnEl, $menuItemEl, menuItem, _i, _len, _ref5, _results;
+      var $menuBtntnEl, $menuItemEl, menuItem, _i, _len, _ref1, _results;
       if (!$.isArray(this.menu)) {
         return;
       }
       this.menuEl = $('<ul/>').appendTo(this.menuWrapper);
-      _ref5 = this.menu;
+      _ref1 = this.menu;
       _results = [];
-      for (_i = 0, _len = _ref5.length; _i < _len; _i++) {
-        menuItem = _ref5[_i];
+      for (_i = 0, _len = _ref1.length; _i < _len; _i++) {
+        menuItem = _ref1[_i];
         if (menuItem === '|') {
           $(this._tpl.separator).appendTo(this.menuEl);
           continue;
@@ -1577,7 +1614,7 @@
         this.setDisabled($node.is(this.disableTag));
       }
       if (this.disabled) {
-        return this.disabled;
+        return true;
       }
       if ($node != null) {
         this.setActive($node.is(this.htmlTag));
@@ -1589,14 +1626,89 @@
 
     return Button;
 
-  })();
+  })(Module);
+
+  Popover = (function(_super) {
+    __extends(Popover, _super);
+
+    Popover.prototype.offset = {
+      top: 4,
+      left: 0
+    };
+
+    Popover.prototype.target = null;
+
+    Popover.prototype.active = false;
+
+    function Popover(editor) {
+      var _this = this;
+      this.editor = editor;
+      this.el = $('<div class="simditor-popover"></div>').appendTo(this.editor.wrapper);
+      this.render();
+      this.editor.on('blur.linkpopover', function() {
+        if (_this.active && (_this.target != null)) {
+          return _this.target.addClass('selected');
+        }
+      });
+    }
+
+    Popover.prototype.render = function() {};
+
+    Popover.prototype.show = function($target, position) {
+      var _this = this;
+      if (position == null) {
+        position = 'bottom';
+      }
+      if ($target == null) {
+        return;
+      }
+      this.target = $target;
+      this.active = true;
+      this.el.css({
+        left: -9999
+      }).show();
+      return setTimeout(function() {
+        var left, targetH, targetPos, top;
+        targetPos = _this.target.position();
+        targetH = _this.target.height();
+        if (position === 'bottom') {
+          top = targetPos.top + targetH;
+        } else if (position === 'top') {
+          top = targetPos.top - _this.el.height();
+        }
+        left = Math.min(targetPos.left, _this.editor.wrapper.width() - _this.el.width());
+        _this.el.css({
+          top: top + _this.offset.top + parseFloat(_this.editor.wrapper.css('padding-top')),
+          left: left + _this.offset.left
+        });
+        return _this.trigger('popovershow');
+      }, 0);
+    };
+
+    Popover.prototype.hide = function() {
+      this.target = null;
+      this.active = false;
+      this.el.hide();
+      return this.trigger('popoverhide');
+    };
+
+    Popover.prototype.destroy = function() {
+      this.target = null;
+      this.active = false;
+      this.editor.off('.linkpopover');
+      return this.el.remove();
+    };
+
+    return Popover;
+
+  })(Module);
 
   BoldButton = (function(_super) {
     __extends(BoldButton, _super);
 
     function BoldButton() {
-      _ref5 = BoldButton.__super__.constructor.apply(this, arguments);
-      return _ref5;
+      _ref1 = BoldButton.__super__.constructor.apply(this, arguments);
+      return _ref1;
     }
 
     BoldButton.prototype.name = 'bold';
@@ -1640,8 +1752,8 @@
     __extends(ItalicButton, _super);
 
     function ItalicButton() {
-      _ref6 = ItalicButton.__super__.constructor.apply(this, arguments);
-      return _ref6;
+      _ref2 = ItalicButton.__super__.constructor.apply(this, arguments);
+      return _ref2;
     }
 
     ItalicButton.prototype.name = 'italic';
@@ -1679,8 +1791,8 @@
     __extends(UnderlineButton, _super);
 
     function UnderlineButton() {
-      _ref7 = UnderlineButton.__super__.constructor.apply(this, arguments);
-      return _ref7;
+      _ref3 = UnderlineButton.__super__.constructor.apply(this, arguments);
+      return _ref3;
     }
 
     UnderlineButton.prototype.name = 'underline';
@@ -1718,8 +1830,8 @@
     __extends(ListButton, _super);
 
     function ListButton() {
-      _ref8 = ListButton.__super__.constructor.apply(this, arguments);
-      return _ref8;
+      _ref4 = ListButton.__super__.constructor.apply(this, arguments);
+      return _ref4;
     }
 
     ListButton.prototype.type = '';
@@ -1727,7 +1839,7 @@
     ListButton.prototype.disableTag = 'pre';
 
     ListButton.prototype.command = function(param) {
-      var $breakedEl, $contents, $endBlock, $startBlock, editor, endNode, node, range, results, startNode, _i, _len, _ref9,
+      var $breakedEl, $contents, $endBlock, $startBlock, editor, endNode, node, range, results, startNode, _i, _len, _ref5,
         _this = this;
       editor = this.toolbar.editor;
       range = editor.selection.getRange();
@@ -1771,9 +1883,9 @@
         }
         return _results;
       });
-      _ref9 = results.reverse();
-      for (_i = 0, _len = _ref9.length; _i < _len; _i++) {
-        node = _ref9[_i];
+      _ref5 = results.reverse();
+      for (_i = 0, _len = _ref5.length; _i < _len; _i++) {
+        node = _ref5[_i];
         range.insertNode(node[0]);
       }
       editor.selection.restore();
@@ -1782,7 +1894,7 @@
     };
 
     ListButton.prototype._convertEl = function(el) {
-      var $el, anotherType, block, child, children, editor, results, _i, _len, _ref9,
+      var $el, anotherType, block, child, children, editor, results, _i, _len, _ref5,
         _this = this;
       editor = this.toolbar.editor;
       $el = $(el);
@@ -1798,9 +1910,9 @@
         block = $('<' + this.type + '/>').append($el.html());
         results.push(block);
       } else if ($el.is('blockquote')) {
-        _ref9 = $el.children().get();
-        for (_i = 0, _len = _ref9.length; _i < _len; _i++) {
-          child = _ref9[_i];
+        _ref5 = $el.children().get();
+        for (_i = 0, _len = _ref5.length; _i < _len; _i++) {
+          child = _ref5[_i];
           children = this._convertEl(child);
         }
         $.merge(results, children);
@@ -1822,8 +1934,8 @@
     __extends(OrderListButton, _super);
 
     function OrderListButton() {
-      _ref9 = OrderListButton.__super__.constructor.apply(this, arguments);
-      return _ref9;
+      _ref5 = OrderListButton.__super__.constructor.apply(this, arguments);
+      return _ref5;
     }
 
     OrderListButton.prototype.type = 'ol';
@@ -1844,8 +1956,8 @@
     __extends(UnorderListButton, _super);
 
     function UnorderListButton() {
-      _ref10 = UnorderListButton.__super__.constructor.apply(this, arguments);
-      return _ref10;
+      _ref6 = UnorderListButton.__super__.constructor.apply(this, arguments);
+      return _ref6;
     }
 
     UnorderListButton.prototype.type = 'ul';
@@ -1870,8 +1982,8 @@
     __extends(BlockquoteButton, _super);
 
     function BlockquoteButton() {
-      _ref11 = BlockquoteButton.__super__.constructor.apply(this, arguments);
-      return _ref11;
+      _ref7 = BlockquoteButton.__super__.constructor.apply(this, arguments);
+      return _ref7;
     }
 
     BlockquoteButton.prototype.name = 'blockquote';
@@ -1885,7 +1997,7 @@
     BlockquoteButton.prototype.disableTag = 'pre';
 
     BlockquoteButton.prototype.command = function() {
-      var $contents, $endBlock, $startBlock, editor, endNode, node, range, results, startNode, _i, _len, _ref12,
+      var $contents, $endBlock, $startBlock, editor, endNode, node, range, results, startNode, _i, _len, _ref8,
         _this = this;
       editor = this.toolbar.editor;
       range = editor.selection.getRange();
@@ -1912,9 +2024,9 @@
         }
         return _results;
       });
-      _ref12 = results.reverse();
-      for (_i = 0, _len = _ref12.length; _i < _len; _i++) {
-        node = _ref12[_i];
+      _ref8 = results.reverse();
+      for (_i = 0, _len = _ref8.length; _i < _len; _i++) {
+        node = _ref8[_i];
         range.insertNode(node[0]);
       }
       editor.selection.restore();
@@ -1949,8 +2061,8 @@
     __extends(CodeButton, _super);
 
     function CodeButton() {
-      _ref12 = CodeButton.__super__.constructor.apply(this, arguments);
-      return _ref12;
+      _ref8 = CodeButton.__super__.constructor.apply(this, arguments);
+      return _ref8;
     }
 
     CodeButton.prototype.name = 'code';
@@ -1964,7 +2076,7 @@
     CodeButton.prototype.disableTag = 'li';
 
     CodeButton.prototype.command = function() {
-      var $contents, $endBlock, $startBlock, editor, endNode, node, range, results, startNode, _i, _len, _ref13,
+      var $contents, $endBlock, $startBlock, editor, endNode, node, range, results, startNode, _i, _len, _ref9,
         _this = this;
       editor = this.toolbar.editor;
       range = editor.selection.getRange();
@@ -1990,9 +2102,9 @@
         }
         return _results;
       });
-      _ref13 = results.reverse();
-      for (_i = 0, _len = _ref13.length; _i < _len; _i++) {
-        node = _ref13[_i];
+      _ref9 = results.reverse();
+      for (_i = 0, _len = _ref9.length; _i < _len; _i++) {
+        node = _ref9[_i];
         range.insertNode(node[0]);
       }
       editor.selection.setRangeAtEndOf(results[0]);
@@ -2026,8 +2138,8 @@
     __extends(LinkButton, _super);
 
     function LinkButton() {
-      _ref13 = LinkButton.__super__.constructor.apply(this, arguments);
-      return _ref13;
+      _ref9 = LinkButton.__super__.constructor.apply(this, arguments);
+      return _ref9;
     }
 
     LinkButton.prototype.name = 'link';
@@ -2040,28 +2152,58 @@
 
     LinkButton.prototype.disableTag = 'pre';
 
+    LinkButton.prototype.render = function() {
+      var args;
+      args = 1 <= arguments.length ? __slice.call(arguments, 0) : [];
+      LinkButton.__super__.render.apply(this, args);
+      return this.popover = new LinkPopover(this.toolbar.editor);
+    };
+
+    LinkButton.prototype.status = function($node) {
+      LinkButton.__super__.status.call(this, $node);
+      if (this.active) {
+        this.popover.show($node);
+      } else {
+        this.popover.hide();
+      }
+      return this.active;
+    };
+
     LinkButton.prototype.command = function() {
-      var $contents, $endBlock, $link, $newBlock, $startBlock, editor, endNode, range, startNode;
+      var $contents, $endBlock, $link, $newBlock, $startBlock, editor, endNode, range, startNode, txtNode,
+        _this = this;
       editor = this.toolbar.editor;
       range = editor.selection.getRange();
-      startNode = range.startContainer;
-      endNode = range.endContainer;
-      $startBlock = editor.util.closestBlockEl(startNode);
-      $endBlock = editor.util.closestBlockEl(endNode);
-      $contents = $(range.extractContents());
-      $link = $('<a/>', {
-        href: 'http://www.example.com',
-        target: '_blank',
-        text: editor.formatter.clearHtml($contents.contents(), false) || '链接文字'
-      });
-      if ($startBlock[0] === $endBlock[0]) {
-        range.insertNode($link[0]);
+      if (this.active) {
+        $link = $(range.commonAncestorContainer).closest('a');
+        txtNode = document.createTextNode($link.text());
+        $link.replaceWith(txtNode);
+        range.selectNode(txtNode);
       } else {
-        $newBlock = $('<p/>').append($link);
-        range.insertNode($newBlock[0]);
+        startNode = range.startContainer;
+        endNode = range.endContainer;
+        $startBlock = editor.util.closestBlockEl(startNode);
+        $endBlock = editor.util.closestBlockEl(endNode);
+        $contents = $(range.extractContents());
+        $link = $('<a/>', {
+          href: 'http://www.example.com',
+          target: '_blank',
+          text: editor.formatter.clearHtml($contents.contents(), false) || '链接文字'
+        });
+        if ($startBlock[0] === $endBlock[0]) {
+          range.insertNode($link[0]);
+        } else {
+          $newBlock = $('<p/>').append($link);
+          range.insertNode($newBlock[0]);
+        }
+        range.selectNodeContents($link[0]);
       }
-      range.selectNodeContents($link[0]);
       editor.selection.selectRange(range);
+      this.popover.one('popovershow', function() {
+        _this.popover.el.find('.link-text').focus();
+        _this.popover.textEl.focus();
+        return _this.popover.textEl[0].select();
+      });
       this.toolbar.editor.trigger('valuechanged');
       return this.toolbar.editor.trigger('selectionchanged');
     };
@@ -2069,6 +2211,62 @@
     return LinkButton;
 
   })(Button);
+
+  LinkPopover = (function(_super) {
+    __extends(LinkPopover, _super);
+
+    function LinkPopover() {
+      _ref10 = LinkPopover.__super__.constructor.apply(this, arguments);
+      return _ref10;
+    }
+
+    LinkPopover.prototype._tpl = "<div class=\"link-settings\">\n  <div class=\"settings-field\">\n    <label>文本</label>\n    <input class=\"link-text\" type=\"text\"/>\n  </div>\n  <div class=\"settings-field\">\n    <label>链接</label>\n    <input class=\"link-url\" type=\"text\"/>\n  </div>\n</div>";
+
+    LinkPopover.prototype.render = function() {
+      var _this = this;
+      this.el.addClass('link-popover').append(this._tpl);
+      this.textEl = this.el.find('.link-text');
+      this.urlEl = this.el.find('.link-url');
+      this.textEl.on('keyup', function(e) {
+        if (e.which === 13) {
+          return;
+        }
+        return _this.target.text(_this.textEl.val());
+      });
+      this.urlEl.on('keyup', function(e) {
+        if (e.which === 13) {
+          return;
+        }
+        return _this.target.attr('href', _this.urlEl.val());
+      });
+      return $([this.urlEl[0], this.textEl[0]]).on('keydown', function(e) {
+        var spaceNode;
+        if (e.which !== 13) {
+          return;
+        }
+        spaceNode = document.createTextNode(' ');
+        _this.target.after(spaceNode);
+        setTimeout(function() {
+          var range;
+          range = document.createRange();
+          _this.editor.selection.setRangeAfter(spaceNode, range);
+          return _this.hide();
+        }, 0);
+        return false;
+      });
+    };
+
+    LinkPopover.prototype.show = function() {
+      var args;
+      args = 1 <= arguments.length ? __slice.call(arguments, 0) : [];
+      LinkPopover.__super__.show.apply(this, args);
+      this.textEl.val(this.target.text());
+      return this.urlEl.val(this.target.attr('href'));
+    };
+
+    return LinkPopover;
+
+  })(Popover);
 
   Simditor.Toolbar.addButton(LinkButton);
 

@@ -14,8 +14,7 @@ module.exports = (grunt) ->
           join: true
         files:
           'scripts/simditor.js': [
-            'src/widget.coffee',
-            'src/plugin.coffee',
+            'src/module.coffee',
             'src/selection.coffee',
             'src/formatter.coffee',
             'src/inputManager.coffee',
@@ -24,6 +23,7 @@ module.exports = (grunt) ->
             'src/toolbar.coffee',
             'src/simditor.coffee',
             'src/buttons/button.coffee',
+            'src/buttons/popover.coffee',
             'src/buttons/bold.coffee',
             'src/buttons/italic.coffee',
             'src/buttons/underline.coffee',

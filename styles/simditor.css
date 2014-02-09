@@ -120,6 +120,26 @@
   font-size: 0;
   margin: 8px 0;
 }
+.simditor .simditor-popover {
+  display: none;
+  padding: 5px 8px 0;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.4);
+  border-radius: 2px;
+  position: absolute;
+  z-index: 2;
+}
+.simditor .simditor-popover .settings-field {
+  margin: 0 0 5px 0;
+  font-size: 12px;
+}
+.simditor .simditor-popover .settings-field label {
+  margin: 0 2px 0 0;
+}
+.simditor .simditor-popover .settings-field input[type=text] {
+  width: 200px;
+  box-sizing: border-box;
+  font-size: 12px;
+}
 
 .simditor .simditor-body, .editor-style {
   padding: 22px 15px;
@@ -146,6 +166,9 @@
 }
 .simditor .simditor-body a:hover, .simditor .simditor-body a:active, .editor-style a:hover, .editor-style a:active {
   outline: 0;
+}
+.simditor .simditor-body .selected, .editor-style .selected {
+  background: #b3d4fd;
 }
 .simditor .simditor-body h1, .simditor .simditor-body h2, .simditor .simditor-body h3, .simditor .simditor-body h4, .simditor .simditor-body h5, .simditor .simditor-body h6, .editor-style h1, .editor-style h2, .editor-style h3, .editor-style h4, .editor-style h5, .editor-style h6 {
   font-weight: normal;

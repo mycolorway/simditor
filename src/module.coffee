@@ -1,5 +1,6 @@
 
-class Widget
+class Module
+
   @extend: (obj) ->
     return unless obj? and typeof obj is 'object'
     for key, val of obj when key not in ['included', 'extended']
@@ -12,6 +13,24 @@ class Widget
       @::[key] = val
     obj.included?.call(@)
 
+  on: (args...) ->
+    $(@).on args...
+
+  one: (args...) ->
+    $(@).one args...
+
+  off: (args...) ->
+    $(@).off args...
+
+  trigger: (args...) ->
+    $(@).trigger args...
+
+  triggerHandler: (args...) ->
+    $(@).triggerHandler args...
+
+
+class Widget extends Module
+
   @connect: (cls) ->
     return unless typeof cls is 'function'
     @::_connectedClasses.push(cls)
@@ -20,6 +39,8 @@ class Widget
   _connectedClasses: []
 
   _init: ->
+
+  opts: {}
 
   constructor: (opts) ->
     $.extend @opts, opts
@@ -31,20 +52,20 @@ class Widget
 
     @_init()
 
-    instance._init() for instance in instances
-
-  on: (args...) ->
-    $(@).on args...
-
-  trigger: (args...) ->
-    $(@).trigger args...
-
-  triggerHandler: (args...) ->
-    $(@).triggerHandler args...
+    instance._init?() for instance in instances
 
   destroy: ->
 
-window.Widget = Widget
+
+class Plugin extends Module
+
+  opts: {}
+
+  constructor: (@widget) ->
+    $.extend(@opts, @widget.opts)
+
+  _init: ->
+
 
 
 # Hack: IE doesn't support Function.name

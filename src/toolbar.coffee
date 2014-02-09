@@ -9,6 +9,10 @@ class Toolbar extends Plugin
     wrapper: '<div class="simditor-toolbar"><ul></ul></div>'
     separator: '<li><span class="separator"></span></li>'
 
+  constructor: (args...) ->
+    super args...
+    @editor = @widget
+
   _init: ->
     return unless @opts.toolbar
 
@@ -48,6 +52,9 @@ class Toolbar extends Plugin
     @editor.on 'selectionchanged', =>
       @toolbarStatus()
 
+    @editor.on 'destroy', =>
+      @_buttons.length = 0
+
 
   _render: ->
     @wrapper = $(@_tpl.wrapper).prependTo(@editor.wrapper)
@@ -69,7 +76,7 @@ class Toolbar extends Plugin
     return unless @editor.inputManager.focused
 
     buttons = @_buttons[..]
-    success = @editor.util.traverseUp (node) =>
+    @editor.util.traverseUp (node) =>
       removeIndex = []
       for button, i in buttons
         continue if name? and button.name isnt name
@@ -78,7 +85,7 @@ class Toolbar extends Plugin
       buttons.splice(i, 1) for i in removeIndex
       return false if buttons.length == 0
 
-    button.setActive false for button in buttons unless success
+    #button.setActive false for button in buttons unless success
 
   # button instances
   _buttons: []

@@ -143,6 +143,35 @@
 			}
 		}
 	}
+
+	.simditor-popover {
+		display: none;
+		padding: 5px 8px 0;
+		box-shadow: 0 1px 4px rgba(0,0,0,0.4);
+		border-radius: 2px;
+		position: absolute;
+		z-index: 2;
+		
+
+		.settings-field {
+			margin: 0 0 5px 0;
+			font-size: 12px;
+
+			label {
+				margin: 0 2px 0 0;
+			}
+
+			input[type=text] {
+				width: 200px;
+				box-sizing: border-box;
+				font-size: 12px;
+			}
+		}
+
+		.link-popover {
+			
+		}
+	}
 }
 
 .simditor .simditor-body, .editor-style {
@@ -159,6 +188,10 @@
 	a:hover{ color: #0F769F; }
 	a:active{ color:#9E792E; }
 	a:hover, a:active{ outline: 0; }
+
+	.selected {
+		background: #b3d4fd;
+	}
 
 	h1,h2,h3,h4,h5,h6 {
 		font-weight: normal;

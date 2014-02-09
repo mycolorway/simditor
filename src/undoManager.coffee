@@ -8,8 +8,11 @@ class UndoManager extends Plugin
 
   _timer: null
 
-  _init: ->
+  constructor: (args...) ->
+    super args...
+    @editor = @widget
 
+  _init: ->
     @editor.inputManager.addShortcut 90, (e) =>
       if e.shiftKey
         @redo()

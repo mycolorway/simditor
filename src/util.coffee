@@ -1,9 +1,12 @@
 
 class Util extends Plugin
 
-  constructor: (@editor) ->
-    super @editor
+  constructor: (args...) ->
+    super args...
     @phBr = '' if @browser.msie
+    @editor = @widget
+
+  _init: ->
 
   phBr: '<br/>'
   
