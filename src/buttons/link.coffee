@@ -96,17 +96,13 @@ class LinkPopover extends Popover
       @target.attr 'href', @urlEl.val()
 
     $([@urlEl[0], @textEl[0]]).on 'keydown', (e) =>
-      return if e.which != 13
-      spaceNode = document.createTextNode(' ')
-      @target.after spaceNode
-
-      setTimeout =>
-        range = document.createRange()
-        @editor.selection.setRangeAfter spaceNode, range
-        @hide()
-      , 0
-
-      return false
+      if e.which == 13 or e.which == 27
+        setTimeout =>
+          range = document.createRange()
+          @editor.selection.setRangeAfter @target, range
+          @editor.body.focus()
+          @hide()
+        , 0
 
   show: (args...) ->
     super args...

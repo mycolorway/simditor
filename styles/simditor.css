@@ -1,6 +1,14 @@
+@charset "UTF-8";
 .simditor {
   overflow: hidden;
   position: relative;
+  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+}
+.simditor.simditor-mac {
+  font-family: "Helvetica Neue", "Hiragino Sans GB", "冬青黑体", Helvetica, Arial, sans-serif;
+}
+.simditor.simditor-linux {
+  font-family: Ubuntu, "WenQuanYi Micro Hei", "文泉驿微米黑", Helvetica, Arial, sans-serif;
 }
 .simditor .simditor-wrapper {
   position: relative;
@@ -202,6 +210,7 @@
 }
 .simditor .simditor-body b, .simditor .simditor-body strong, .editor-style b, .editor-style strong {
   font-weight: bold !important;
+  color: #e79852;
 }
 .simditor .simditor-body i, .simditor .simditor-body em, .editor-style i, .editor-style em {
   font-style: italic !important;

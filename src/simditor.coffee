@@ -71,6 +71,11 @@ class Simditor extends Widget
       .blur()
     @body.attr 'tabindex', @textarea.attr('tabindex')
 
+    if @util.os.mac
+      @el.addClass 'simditor-mac'
+    else if @util.os.linux
+      @el.addClass 'simditor-linux'
+
   _placeholder: ->
     children = @body.children()
     if children.length == 0 or (children.length == 1 and @util.isEmptyNode(children))

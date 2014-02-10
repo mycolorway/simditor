@@ -1,7 +1,17 @@
+@charset "UTF-8";
 
 .simditor {
 	overflow: hidden;
 	position: relative;
+	font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+
+	&.simditor-mac {
+		font-family: "Helvetica Neue", "Hiragino Sans GB", "冬青黑体", Helvetica, Arial, sans-serif;
+	}
+
+	&.simditor-linux {
+		font-family: Ubuntu, "WenQuanYi Micro Hei", "文泉驿微米黑", Helvetica, Arial, sans-serif;
+	}
 
 	.simditor-wrapper {
 		position: relative;
@@ -216,6 +226,7 @@
 
 	b, strong {
 		font-weight: bold!important;
+		color: #e79852;
 	}
 
 	i, em {

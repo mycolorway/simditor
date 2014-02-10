@@ -1106,6 +1106,28 @@
 
     Util.prototype.phBr = '<br/>';
 
+    Util.prototype.os = (function() {
+      if (/Mac/.test(navigator.appVersion)) {
+        return {
+          mac: true
+        };
+      } else if (/Linux/.test(navigator.appVersion)) {
+        return {
+          linux: true
+        };
+      } else if (/Win/.test(navigator.appVersion)) {
+        return {
+          win: true
+        };
+      } else if (/X11/.test(navigator.appVersion)) {
+        return {
+          unix: true
+        };
+      } else {
+        return {};
+      }
+    })();
+
     Util.prototype.browser = (function() {
       var chrome, firefox, ie, safari, ua;
       ua = navigator.userAgent;
@@ -1447,7 +1469,12 @@
       this.placeholderEl = this.wrapper.find('.simditor-placeholder').append(this.opts.placeholder);
       this.el.append(this.textarea).data('simditor', this);
       this.textarea.data('simditor', this).hide().blur();
-      return this.body.attr('tabindex', this.textarea.attr('tabindex'));
+      this.body.attr('tabindex', this.textarea.attr('tabindex'));
+      if (this.util.os.mac) {
+        return this.el.addClass('simditor-mac');
+      } else if (this.util.os.linux) {
+        return this.el.addClass('simditor-linux');
+      }
     };
 
     Simditor.prototype._placeholder = function() {
@@ -2240,19 +2267,15 @@
         return _this.target.attr('href', _this.urlEl.val());
       });
       return $([this.urlEl[0], this.textEl[0]]).on('keydown', function(e) {
-        var spaceNode;
-        if (e.which !== 13) {
-          return;
+        if (e.which === 13 || e.which === 27) {
+          return setTimeout(function() {
+            var range;
+            range = document.createRange();
+            _this.editor.selection.setRangeAfter(_this.target, range);
+            _this.editor.body.focus();
+            return _this.hide();
+          }, 0);
         }
-        spaceNode = document.createTextNode(' ');
-        _this.target.after(spaceNode);
-        setTimeout(function() {
-          var range;
-          range = document.createRange();
-          _this.editor.selection.setRangeAfter(spaceNode, range);
-          return _this.hide();
-        }, 0);
-        return false;
       });
     };
 

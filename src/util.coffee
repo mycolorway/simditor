@@ -9,7 +9,20 @@ class Util extends Plugin
   _init: ->
 
   phBr: '<br/>'
-  
+
+  os: (->
+    if /Mac/.test navigator.appVersion
+      mac: true
+    else if /Linux/.test navigator.appVersion
+      linux: true
+    else if /Win/.test navigator.appVersion
+      win: true
+    else if /X11/.test navigator.appVersion
+      unix: true
+    else
+      {}
+  )()
+
   browser: (->
     ua = navigator.userAgent
     ie = /(msie|trident)/i.test(ua)
