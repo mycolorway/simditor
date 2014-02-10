@@ -13,11 +13,11 @@ class UndoManager extends Plugin
     @editor = @widget
 
   _init: ->
-    @editor.inputManager.addShortcut 90, (e) =>
-      if e.shiftKey
-        @redo()
-      else
-        @undo()
+    @editor.inputManager.addShortcut 'cmd+90', (e) =>
+      @undo()
+
+    @editor.inputManager.addShortcut 'shift+cmd+90', (e) =>
+      @redo()
 
     @editor.on 'valuechanged', (e, src) =>
       return if src == 'undo' or !@editor.inputManager.focused

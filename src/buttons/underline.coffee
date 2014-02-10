@@ -11,7 +11,7 @@ class UnderlineButton extends Button
 
   disableTag: 'pre'
 
-  shortcut: 85
+  shortcut: 'cmd+85'
 
   status: ->
     active = document.queryCommandState('underline') is true

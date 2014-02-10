@@ -632,7 +632,7 @@
     };
 
     InputManager.prototype._onKeyDown = function(e) {
-      var $blockEl, $br, $prevBlockEl, metaKey, result, spaceNode, spaces, _ref, _ref1,
+      var $blockEl, $br, $prevBlockEl, metaKey, result, shortcutName, spaceNode, spaces, _ref, _ref1,
         _this = this;
       if (this.editor.triggerHandler(e) === false) {
         return false;
@@ -645,8 +645,23 @@
       if (metaKey && e.which === 86) {
         return;
       }
-      if (metaKey && this._shortcuts[e.which]) {
-        this._shortcuts[e.which].call(this, e);
+      shortcutName = [];
+      if (e.shiftKey) {
+        shortcutName.push('shift');
+      }
+      if (e.ctrlKey) {
+        shortcutName.push('ctrl');
+      }
+      if (e.altKey) {
+        shortcutName.push('alt');
+      }
+      if (e.metaKey) {
+        shortcutName.push('cmd');
+      }
+      shortcutName.push(e.which);
+      shortcutName = shortcutName.join('+');
+      if (this._shortcuts[shortcutName]) {
+        this._shortcuts[shortcutName].call(this, e);
         return false;
       }
       if (this.editor.util.browser.safari && e.which === 13 && e.shiftKey) {
@@ -869,13 +884,13 @@
     };
 
     InputManager.prototype._shortcuts = {
-      13: function(e) {
+      'cmd+13': function(e) {
         return this.editor.el.closest('form').find('button:submit').click();
       }
     };
 
-    InputManager.prototype.addShortcut = function(keyCode, handler) {
-      return this._shortcuts[keyCode] = $.proxy(handler, this);
+    InputManager.prototype.addShortcut = function(keys, handler) {
+      return this._shortcuts[keys] = $.proxy(handler, this);
     };
 
     return InputManager;
@@ -902,12 +917,11 @@
 
     UndoManager.prototype._init = function() {
       var _this = this;
-      this.editor.inputManager.addShortcut(90, function(e) {
-        if (e.shiftKey) {
-          return _this.redo();
-        } else {
-          return _this.undo();
-        }
+      this.editor.inputManager.addShortcut('cmd+90', function(e) {
+        return _this.undo();
+      });
+      this.editor.inputManager.addShortcut('shift+cmd+90', function(e) {
+        return _this.redo();
       });
       this.editor.on('valuechanged', function(e, src) {
         if (src === 'undo' || !_this.editor.inputManager.focused) {
@@ -1748,7 +1762,7 @@
 
     BoldButton.prototype.disableTag = 'pre';
 
-    BoldButton.prototype.shortcut = 66;
+    BoldButton.prototype.shortcut = 'cmd+66';
 
     BoldButton.prototype.status = function($node) {
       var active;
@@ -1793,7 +1807,7 @@
 
     ItalicButton.prototype.disableTag = 'pre';
 
-    ItalicButton.prototype.shortcut = 73;
+    ItalicButton.prototype.shortcut = 'cmd+73';
 
     ItalicButton.prototype.status = function() {
       var active;
@@ -1832,7 +1846,7 @@
 
     UnderlineButton.prototype.disableTag = 'pre';
 
-    UnderlineButton.prototype.shortcut = 85;
+    UnderlineButton.prototype.shortcut = 'cmd+85';
 
     UnderlineButton.prototype.status = function() {
       var active;

@@ -90,8 +90,16 @@ class InputManager extends Plugin
     return if metaKey and e.which == 86
 
     # handle predefined shortcuts
-    if metaKey and @_shortcuts[e.which]
-      @_shortcuts[e.which].call(this, e)
+    shortcutName = []
+    shortcutName.push 'shift' if e.shiftKey
+    shortcutName.push 'ctrl' if e.ctrlKey
+    shortcutName.push 'alt' if e.altKey
+    shortcutName.push 'cmd' if e.metaKey
+    shortcutName.push e.which
+    shortcutName = shortcutName.join '+'
+
+    if @_shortcuts[shortcutName]
+      @_shortcuts[shortcutName].call(this, e)
       return false
 
     # safari doesn't support shift + enter default behavior
@@ -294,13 +302,13 @@ class InputManager extends Plugin
 
   _shortcuts:
     # meta + enter: submit form
-    13: (e) ->
+    'cmd+13': (e) ->
       @editor.el.closest('form')
         .find('button:submit')
         .click()
 
-  addShortcut: (keyCode, handler) ->
-    @_shortcuts[keyCode] = $.proxy(handler, this)
+  addShortcut: (keys, handler) ->
+    @_shortcuts[keys] = $.proxy(handler, this)
 
 
 

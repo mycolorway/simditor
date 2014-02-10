@@ -11,7 +11,7 @@ class ItalicButton extends Button
 
   disableTag: 'pre'
 
-  shortcut: 73
+  shortcut: 'cmd+73'
 
   status: ->
     active = document.queryCommandState('italic') is true

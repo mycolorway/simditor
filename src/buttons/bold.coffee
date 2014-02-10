@@ -11,7 +11,7 @@ class BoldButton extends Button
 
   disableTag: 'pre'
 
-  shortcut: 66
+  shortcut: 'cmd+66'
 
   status: ($node) ->
     @setDisabled $node.is(@disableTag) if $node?
