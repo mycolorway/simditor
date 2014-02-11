@@ -13,7 +13,10 @@ class ItalicButton extends Button
 
   shortcut: 'cmd+73'
 
-  status: ->
+  status: ($node) ->
+    @setDisabled $node.is(@disableTag) if $node?
+    return @disabled if @disabled
+
     active = document.queryCommandState('italic') is true
     @setActive active
     active

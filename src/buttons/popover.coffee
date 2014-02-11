@@ -30,7 +30,7 @@ class Popover extends Module
 
     setTimeout =>
       targetPos = @target.position()
-      targetH = @target.height()
+      targetH = @target.outerHeight()
 
       if position is 'bottom'
         top = targetPos.top + targetH

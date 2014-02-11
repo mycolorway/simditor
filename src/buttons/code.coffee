@@ -11,6 +11,20 @@ class CodeButton extends Button
 
   disableTag: 'li'
 
+  render: (args...) ->
+    super args...
+    @popover = new CodePopover(@toolbar.editor)
+
+  status: ($node) ->
+    super $node
+
+    if @active
+      @popover.show($node)
+    else
+      @popover.hide()
+
+    @active
+
   command: ->
     editor =  @toolbar.editor
     range = editor.selection.getRange()
@@ -53,6 +67,57 @@ class CodeButton extends Button
       results.push(block)
 
     results
+
+
+class CodePopover extends Popover
+
+  _tpl: """
+    <div class="code-settings">
+      <div class="settings-field">
+        <select class="select-lang">
+          <option value="-1">选择语言</option>
+          <option value="c++">C++</option>
+          <option value="css">CSS</option>
+          <option value="coffeeScript">CoffeeScript</option>
+          <option value="html">Html,XML</option>
+          <option value="json">JSON</option>
+          <option value="java">Java</option>
+          <option value="js">JavaScript</option>
+          <option value="markdown">Markdown</option>
+          <option value="oc">Objective C</option>
+          <option value="php">PHP</option>
+          <option value="perl">Perl</option>
+          <option value="python">Python</option>
+          <option value="ruby">Ruby</option>
+          <option value="sql">SQL</option>
+        </select>
+      </div>
+    </div>
+  """
+
+  render: ->
+    @el.addClass('code-popover')
+      .append(@_tpl)
+    @selectEl = @el.find '.select-lang'
+
+    @selectEl.on 'change', (e) =>
+      lang = @selectEl.val()
+      oldLang = @target.attr('data-lang')
+      @target.removeClass('lang' + oldLang)
+        .removeAttr('data-lang')
+
+      if @lang isnt -1
+        @target.addClass('lang-' + lang) 
+        @target.attr('data-lang', lang)
+
+      #range = document.createRange()
+      #@editor.selection.setRangeAtEndOf(@target, range)
+      #@editor.body.focus()
+
+  show: (args...) ->
+    super args...
+    @lang = @target.attr('data-lang')
+    @selectEl.val(@lang) if @lang?
 
 
 Simditor.Toolbar.addButton(CodeButton)

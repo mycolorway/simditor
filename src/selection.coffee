@@ -102,7 +102,11 @@ class Selection extends Plugin
       contents = $node.contents()
       if contents.length > 0
         lastChild = contents.last()
-        range.setEnd(lastChild[0], @editor.util.getNodeLength(lastChild[0]) - 1)
+        lastText = lastChild.text()
+        if lastText.charAt(lastText.length - 1) is '\n'
+          range.setEnd(lastChild[0], @editor.util.getNodeLength(lastChild[0]) - 1)
+        else
+          range.setEnd(lastChild[0], @editor.util.getNodeLength(lastChild[0]))
       else
         range.setEnd(node, 0)
     else

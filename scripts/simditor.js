@@ -1,5 +1,5 @@
 (function() {
-  var BlockquoteButton, BoldButton, Button, CodeButton, Formatter, InputManager, ItalicButton, LinkButton, LinkPopover, ListButton, Module, OrderListButton, Plugin, Popover, Selection, Simditor, Toolbar, UnderlineButton, UndoManager, UnorderListButton, Util, Widget, _ref, _ref1, _ref10, _ref2, _ref3, _ref4, _ref5, _ref6, _ref7, _ref8, _ref9,
+  var BlockquoteButton, BoldButton, Button, CodeButton, CodePopover, Formatter, InputManager, ItalicButton, LinkButton, LinkPopover, ListButton, Module, OrderListButton, Plugin, Popover, Selection, Simditor, Toolbar, UnderlineButton, UndoManager, UnorderListButton, Util, Widget, _ref, _ref1, _ref10, _ref11, _ref2, _ref3, _ref4, _ref5, _ref6, _ref7, _ref8, _ref9,
     __slice = [].slice,
     __hasProp = {}.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
@@ -292,7 +292,7 @@
     };
 
     Selection.prototype.setRangeAtEndOf = function(node, range) {
-      var $node, contents, lastChild, nodeLength;
+      var $node, contents, lastChild, lastText, nodeLength;
       if (range == null) {
         range = this.getRange();
       }
@@ -302,7 +302,12 @@
         contents = $node.contents();
         if (contents.length > 0) {
           lastChild = contents.last();
-          range.setEnd(lastChild[0], this.editor.util.getNodeLength(lastChild[0]) - 1);
+          lastText = lastChild.text();
+          if (lastText.charAt(lastText.length - 1) === '\n') {
+            range.setEnd(lastChild[0], this.editor.util.getNodeLength(lastChild[0]) - 1);
+          } else {
+            range.setEnd(lastChild[0], this.editor.util.getNodeLength(lastChild[0]));
+          }
         } else {
           range.setEnd(node, 0);
         }
@@ -1711,7 +1716,7 @@
       return setTimeout(function() {
         var left, targetH, targetPos, top;
         targetPos = _this.target.position();
-        targetH = _this.target.height();
+        targetH = _this.target.outerHeight();
         if (position === 'bottom') {
           top = targetPos.top + targetH;
         } else if (position === 'top') {
@@ -1770,7 +1775,7 @@
         this.setDisabled($node.is(this.disableTag));
       }
       if (this.disabled) {
-        return this.disabled;
+        return true;
       }
       active = document.queryCommandState('bold') === true;
       this.setActive(active);
@@ -1809,8 +1814,14 @@
 
     ItalicButton.prototype.shortcut = 'cmd+73';
 
-    ItalicButton.prototype.status = function() {
+    ItalicButton.prototype.status = function($node) {
       var active;
+      if ($node != null) {
+        this.setDisabled($node.is(this.disableTag));
+      }
+      if (this.disabled) {
+        return this.disabled;
+      }
       active = document.queryCommandState('italic') === true;
       this.setActive(active);
       return active;
@@ -1848,8 +1859,14 @@
 
     UnderlineButton.prototype.shortcut = 'cmd+85';
 
-    UnderlineButton.prototype.status = function() {
+    UnderlineButton.prototype.status = function($node) {
       var active;
+      if ($node != null) {
+        this.setDisabled($node.is(this.disableTag));
+      }
+      if (this.disabled) {
+        return this.disabled;
+      }
       active = document.queryCommandState('underline') === true;
       this.setActive(active);
       return active;
@@ -2116,6 +2133,23 @@
 
     CodeButton.prototype.disableTag = 'li';
 
+    CodeButton.prototype.render = function() {
+      var args;
+      args = 1 <= arguments.length ? __slice.call(arguments, 0) : [];
+      CodeButton.__super__.render.apply(this, args);
+      return this.popover = new CodePopover(this.toolbar.editor);
+    };
+
+    CodeButton.prototype.status = function($node) {
+      CodeButton.__super__.status.call(this, $node);
+      if (this.active) {
+        this.popover.show($node);
+      } else {
+        this.popover.hide();
+      }
+      return this.active;
+    };
+
     CodeButton.prototype.command = function() {
       var $contents, $endBlock, $startBlock, editor, endNode, node, range, results, startNode, _i, _len, _ref9,
         _this = this;
@@ -2173,14 +2207,54 @@
 
   })(Button);
 
+  CodePopover = (function(_super) {
+    __extends(CodePopover, _super);
+
+    function CodePopover() {
+      _ref9 = CodePopover.__super__.constructor.apply(this, arguments);
+      return _ref9;
+    }
+
+    CodePopover.prototype._tpl = "<div class=\"code-settings\">\n  <div class=\"settings-field\">\n    <select class=\"select-lang\">\n      <option value=\"-1\">选择语言</option>\n      <option value=\"c++\">C++</option>\n      <option value=\"css\">CSS</option>\n      <option value=\"coffeeScript\">CoffeeScript</option>\n      <option value=\"html\">Html,XML</option>\n      <option value=\"json\">JSON</option>\n      <option value=\"java\">Java</option>\n      <option value=\"js\">JavaScript</option>\n      <option value=\"markdown\">Markdown</option>\n      <option value=\"oc\">Objective C</option>\n      <option value=\"php\">PHP</option>\n      <option value=\"perl\">Perl</option>\n      <option value=\"python\">Python</option>\n      <option value=\"ruby\">Ruby</option>\n      <option value=\"sql\">SQL</option>\n    </select>\n  </div>\n</div>";
+
+    CodePopover.prototype.render = function() {
+      var _this = this;
+      this.el.addClass('code-popover').append(this._tpl);
+      this.selectEl = this.el.find('.select-lang');
+      return this.selectEl.on('change', function(e) {
+        var lang, oldLang;
+        lang = _this.selectEl.val();
+        oldLang = _this.target.attr('data-lang');
+        _this.target.removeClass('lang' + oldLang).removeAttr('data-lang');
+        if (_this.lang !== -1) {
+          _this.target.addClass('lang-' + lang);
+          return _this.target.attr('data-lang', lang);
+        }
+      });
+    };
+
+    CodePopover.prototype.show = function() {
+      var args;
+      args = 1 <= arguments.length ? __slice.call(arguments, 0) : [];
+      CodePopover.__super__.show.apply(this, args);
+      this.lang = this.target.attr('data-lang');
+      if (this.lang != null) {
+        return this.selectEl.val(this.lang);
+      }
+    };
+
+    return CodePopover;
+
+  })(Popover);
+
   Simditor.Toolbar.addButton(CodeButton);
 
   LinkButton = (function(_super) {
     __extends(LinkButton, _super);
 
     function LinkButton() {
-      _ref9 = LinkButton.__super__.constructor.apply(this, arguments);
-      return _ref9;
+      _ref10 = LinkButton.__super__.constructor.apply(this, arguments);
+      return _ref10;
     }
 
     LinkButton.prototype.name = 'link';
@@ -2257,8 +2331,8 @@
     __extends(LinkPopover, _super);
 
     function LinkPopover() {
-      _ref10 = LinkPopover.__super__.constructor.apply(this, arguments);
-      return _ref10;
+      _ref11 = LinkPopover.__super__.constructor.apply(this, arguments);
+      return _ref11;
     }
 
     LinkPopover.prototype._tpl = "<div class=\"link-settings\">\n  <div class=\"settings-field\">\n    <label>文本</label>\n    <input class=\"link-text\" type=\"text\"/>\n  </div>\n  <div class=\"settings-field\">\n    <label>链接</label>\n    <input class=\"link-url\" type=\"text\"/>\n  </div>\n</div>";

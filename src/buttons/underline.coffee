@@ -13,7 +13,10 @@ class UnderlineButton extends Button
 
   shortcut: 'cmd+85'
 
-  status: ->
+  status: ($node) ->
+    @setDisabled $node.is(@disableTag) if $node?
+    return @disabled if @disabled
+
     active = document.queryCommandState('underline') is true
     @setActive active
     active

@@ -15,7 +15,7 @@ class BoldButton extends Button
 
   status: ($node) ->
     @setDisabled $node.is(@disableTag) if $node?
-    return @disabled if @disabled
+    return true if @disabled
 
     active = document.queryCommandState('bold') is true
     @setActive active
