@@ -102,6 +102,19 @@ class InputManager extends Plugin
       @_shortcuts[shortcutName].call(this, e)
       return false
 
+    # Check the condictional handlers
+    if e.which of @_inputHandlers
+      result = null
+      @editor.util.traverseUp (node) =>
+        return unless node.nodeType == 1
+        handler = @_inputHandlers[e.which]?[node.tagName.toLowerCase()]
+        result = handler?.call(@, e, $(node))
+        !result
+      if result
+        @editor.trigger 'valuechanged'
+        @editor.trigger 'selectionchanged'
+        return false
+
     # safari doesn't support shift + enter default behavior
     if @editor.util.browser.safari and e.which == 13 and e.shiftKey
       $br = $('<br/>')
@@ -128,26 +141,13 @@ class InputManager extends Plugin
         return false
 
     # Tab to indent
-    if e.which == 9 and (@opts.tabIndent or $blockEl.is 'pre')
+    if e.which == 9 and (@opts.tabIndent or $blockEl.is 'pre') and !$blockEl.is('li')
       spaces = if $blockEl.is 'pre' then '\u00A0\u00A0' else '\u00A0\u00A0\u00A0\u00A0'
       spaceNode = document.createTextNode spaces
       @editor.selection.insertNode spaceNode
       @editor.trigger 'valuechanged'
       @editor.trigger 'selectionchanged'
       return false
-
-    # Check the condictional handlers
-    if e.which of @_inputHandlers
-      result = null
-      @editor.util.traverseUp (node) =>
-        return unless node.nodeType == 1
-        handler = @_inputHandlers[e.which]?[node.tagName.toLowerCase()]
-        result = handler?.call(@, e, $(node))
-        !result
-      if result
-        @editor.trigger 'valuechanged'
-        @editor.trigger 'selectionchanged'
-        return false
 
     clearTimeout @_typing if @_typing
     @_typing = setTimeout =>
@@ -231,7 +231,8 @@ class InputManager extends Plugin
     , 0
 
   _inputHandlers:
-    13:
+    13: # enter
+
       # press enter in a empty list item
       li: (e, $node) ->
         return unless @editor.util.isEmptyNode $node
@@ -285,7 +286,7 @@ class InputManager extends Plugin
         @editor.selection.setRangeAtStartOf $closestBlock
         true
 
-    8:
+    8: # backspace
       pre: (e, $node) ->
         return unless @editor.selection.rangeAtStartOf $node
         codeStr = $node.html().replace('\n', '<br/>')
@@ -298,6 +299,43 @@ class InputManager extends Plugin
         return unless @editor.selection.rangeAtStartOf $node
         $firstChild = $node.children().first().unwrap()
         @editor.selection.setRangeAtStartOf $firstChild
+        true
+
+    9: #tab
+      li: (e, $node) ->
+
+        if e.shiftKey
+          $parent = $node.parent()
+          $parentLi = $parent.parent('li')
+          return true if $parentLi.length < 0
+
+          @editor.selection.save()
+
+          if $node.next('li').length > 0
+            $('<' + $parent[0].tagName + '/>')
+              .append($node.nextAll('li'))
+              .appendTo($node)
+
+          $node.insertAfter $parentLi
+          $parent.remove() if $parent.children('li').length < 1
+          @editor.selection.restore()
+        else
+          $parentLi = $node.prev('li')
+          return true if $parentLi.length < 1
+
+          @editor.selection.save()
+          tagName = $node.parent()[0].tagName
+          $childList = $parentLi.children('ul, ol')
+
+          if $childList.length > 0
+            $childList.append $node
+          else
+            $('<' + tagName + '/>')
+              .append($node)
+              .appendTo($parentLi)
+
+          @editor.selection.restore()
+
         true
 
   _shortcuts:

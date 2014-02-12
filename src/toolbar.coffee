@@ -77,12 +77,14 @@ class Toolbar extends Plugin
 
     buttons = @_buttons[..]
     @editor.util.traverseUp (node) =>
-      removeIndex = []
+      removeButtons = []
       for button, i in buttons
         continue if name? and button.name isnt name
-        removeIndex.push i if !button.status or button.status($(node)) is true
+        removeButtons.push button if !button.status or button.status($(node)) is true
 
-      buttons.splice(i, 1) for i in removeIndex
+      for button in removeButtons
+        i = $.inArray(button, buttons)
+        buttons.splice(i, 1)
       return false if buttons.length == 0
 
     #button.setActive false for button in buttons unless success

@@ -29,18 +29,19 @@ class Popover extends Module
     }).show()
 
     setTimeout =>
-      targetPos = @target.position()
+      wrapperOffset = @editor.wrapper.offset()
+      targetOffset = @target.offset()
       targetH = @target.outerHeight()
 
       if position is 'bottom'
-        top = targetPos.top + targetH
+        top = targetOffset.top - wrapperOffset.top + targetH
       else if position is 'top'
-        top = targetPos.top - @el.height()
+        top = targetOffset.top - wrapperOffset.top - @el.height()
 
-      left = Math.min(targetPos.left, @editor.wrapper.width() - @el.width())
+      left = Math.min(targetOffset.left - wrapperOffset.left, @editor.wrapper.width() - @el.width())
 
       @el.css({
-        top: top + @offset.top + parseFloat(@editor.wrapper.css('padding-top')),
+        top: top + @offset.top,
         left: left + @offset.left
       })
 

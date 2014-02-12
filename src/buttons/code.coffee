@@ -16,14 +16,14 @@ class CodeButton extends Button
     @popover = new CodePopover(@toolbar.editor)
 
   status: ($node) ->
-    super $node
+    result = super $node
 
     if @active
       @popover.show($node)
     else
       @popover.hide()
 
-    @active
+    result
 
   command: ->
     editor =  @toolbar.editor

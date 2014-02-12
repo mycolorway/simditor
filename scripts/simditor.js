@@ -669,6 +669,23 @@
         this._shortcuts[shortcutName].call(this, e);
         return false;
       }
+      if (e.which in this._inputHandlers) {
+        result = null;
+        this.editor.util.traverseUp(function(node) {
+          var handler, _ref2;
+          if (node.nodeType !== 1) {
+            return;
+          }
+          handler = (_ref2 = _this._inputHandlers[e.which]) != null ? _ref2[node.tagName.toLowerCase()] : void 0;
+          result = handler != null ? handler.call(_this, e, $(node)) : void 0;
+          return !result;
+        });
+        if (result) {
+          this.editor.trigger('valuechanged');
+          this.editor.trigger('selectionchanged');
+          return false;
+        }
+      }
       if (this.editor.util.browser.safari && e.which === 13 && e.shiftKey) {
         $br = $('<br/>');
         if (this.editor.selection.rangeAtEndOf($blockEl)) {
@@ -691,30 +708,13 @@
           return false;
         }
       }
-      if (e.which === 9 && (this.opts.tabIndent || $blockEl.is('pre'))) {
+      if (e.which === 9 && (this.opts.tabIndent || $blockEl.is('pre')) && !$blockEl.is('li')) {
         spaces = $blockEl.is('pre') ? '\u00A0\u00A0' : '\u00A0\u00A0\u00A0\u00A0';
         spaceNode = document.createTextNode(spaces);
         this.editor.selection.insertNode(spaceNode);
         this.editor.trigger('valuechanged');
         this.editor.trigger('selectionchanged');
         return false;
-      }
-      if (e.which in this._inputHandlers) {
-        result = null;
-        this.editor.util.traverseUp(function(node) {
-          var handler, _ref2;
-          if (node.nodeType !== 1) {
-            return;
-          }
-          handler = (_ref2 = _this._inputHandlers[e.which]) != null ? _ref2[node.tagName.toLowerCase()] : void 0;
-          result = handler != null ? handler.call(_this, e, $(node)) : void 0;
-          return !result;
-        });
-        if (result) {
-          this.editor.trigger('valuechanged');
-          this.editor.trigger('selectionchanged');
-          return false;
-        }
       }
       if (this._typing) {
         clearTimeout(this._typing);
@@ -883,6 +883,42 @@
           }
           $firstChild = $node.children().first().unwrap();
           this.editor.selection.setRangeAtStartOf($firstChild);
+          return true;
+        }
+      },
+      9: {
+        li: function(e, $node) {
+          var $childList, $parent, $parentLi, tagName;
+          if (e.shiftKey) {
+            $parent = $node.parent();
+            $parentLi = $parent.parent('li');
+            if ($parentLi.length < 0) {
+              return true;
+            }
+            this.editor.selection.save();
+            if ($node.next('li').length > 0) {
+              $('<' + $parent[0].tagName + '/>').append($node.nextAll('li')).appendTo($node);
+            }
+            $node.insertAfter($parentLi);
+            if ($parent.children('li').length < 1) {
+              $parent.remove();
+            }
+            this.editor.selection.restore();
+          } else {
+            $parentLi = $node.prev('li');
+            if ($parentLi.length < 1) {
+              return true;
+            }
+            this.editor.selection.save();
+            tagName = $node.parent()[0].tagName;
+            $childList = $parentLi.children('ul, ol');
+            if ($childList.length > 0) {
+              $childList.append($node);
+            } else {
+              $('<' + tagName + '/>').append($node).appendTo($parentLi);
+            }
+            this.editor.selection.restore();
+          }
           return true;
         }
       }
@@ -1387,19 +1423,20 @@
       }
       buttons = this._buttons.slice(0);
       return this.editor.util.traverseUp(function(node) {
-        var button, i, removeIndex, _i, _j, _len, _len1;
-        removeIndex = [];
+        var button, i, removeButtons, _i, _j, _len, _len1;
+        removeButtons = [];
         for (i = _i = 0, _len = buttons.length; _i < _len; i = ++_i) {
           button = buttons[i];
           if ((name != null) && button.name !== name) {
             continue;
           }
           if (!button.status || button.status($(node)) === true) {
-            removeIndex.push(i);
+            removeButtons.push(button);
           }
         }
-        for (_j = 0, _len1 = removeIndex.length; _j < _len1; _j++) {
-          i = removeIndex[_j];
+        for (_j = 0, _len1 = removeButtons.length; _j < _len1; _j++) {
+          button = removeButtons[_j];
+          i = $.inArray(button, buttons);
           buttons.splice(i, 1);
         }
         if (buttons.length === 0) {
@@ -1714,17 +1751,18 @@
         left: -9999
       }).show();
       return setTimeout(function() {
-        var left, targetH, targetPos, top;
-        targetPos = _this.target.position();
+        var left, targetH, targetOffset, top, wrapperOffset;
+        wrapperOffset = _this.editor.wrapper.offset();
+        targetOffset = _this.target.offset();
         targetH = _this.target.outerHeight();
         if (position === 'bottom') {
-          top = targetPos.top + targetH;
+          top = targetOffset.top - wrapperOffset.top + targetH;
         } else if (position === 'top') {
-          top = targetPos.top - _this.el.height();
+          top = targetOffset.top - wrapperOffset.top - _this.el.height();
         }
-        left = Math.min(targetPos.left, _this.editor.wrapper.width() - _this.el.width());
+        left = Math.min(targetOffset.left - wrapperOffset.left, _this.editor.wrapper.width() - _this.el.width());
         _this.el.css({
-          top: top + _this.offset.top + parseFloat(_this.editor.wrapper.css('padding-top')),
+          top: top + _this.offset.top,
           left: left + _this.offset.left
         });
         return _this.trigger('popovershow');
@@ -1896,6 +1934,26 @@
 
     ListButton.prototype.disableTag = 'pre';
 
+    ListButton.prototype.status = function($node) {
+      var anotherType;
+      if ($node != null) {
+        this.setDisabled($node.is(this.disableTag));
+      }
+      if (this.disabled) {
+        return true;
+      }
+      if ($node == null) {
+        return this.active;
+      }
+      anotherType = this.type === 'ul' ? 'ol' : 'ul';
+      if ($node.is(anotherType)) {
+        return true;
+      } else {
+        this.setActive($node.is(this.htmlTag));
+        return this.active;
+      }
+    };
+
     ListButton.prototype.command = function(param) {
       var $breakedEl, $contents, $endBlock, $startBlock, editor, endNode, node, range, results, startNode, _i, _len, _ref5,
         _this = this;
@@ -1917,6 +1975,9 @@
         if (editor.selection.rangeAtStartOf($breakedEl, range)) {
           range.setEndBefore($breakedEl[0]);
           range.collapse(false);
+          if ($breakedEl.children().length < 1) {
+            $breakedEl.remove();
+          }
         } else if (editor.selection.rangeAtEndOf($breakedEl, range)) {
           range.setEndAfter($breakedEl[0]);
           range.collapse(false);
@@ -2141,13 +2202,14 @@
     };
 
     CodeButton.prototype.status = function($node) {
-      CodeButton.__super__.status.call(this, $node);
+      var result;
+      result = CodeButton.__super__.status.call(this, $node);
       if (this.active) {
         this.popover.show($node);
       } else {
         this.popover.hide();
       }
-      return this.active;
+      return result;
     };
 
     CodeButton.prototype.command = function() {
@@ -2275,13 +2337,14 @@
     };
 
     LinkButton.prototype.status = function($node) {
-      LinkButton.__super__.status.call(this, $node);
+      var result;
+      result = LinkButton.__super__.status.call(this, $node);
       if (this.active) {
         this.popover.show($node);
       } else {
         this.popover.hide();
       }
-      return this.active;
+      return result;
     };
 
     LinkButton.prototype.command = function() {

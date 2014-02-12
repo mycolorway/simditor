@@ -5,6 +5,18 @@ class ListButton extends Button
 
   disableTag: 'pre'
 
+  status: ($node) ->
+    @setDisabled $node.is(@disableTag) if $node?
+    return true if @disabled
+    return @active unless $node?
+
+    anotherType = if @type == 'ul' then 'ol' else 'ul'
+    if $node.is anotherType
+      return true
+    else
+      @setActive $node.is(@htmlTag)
+      return @active
+
   command: (param) ->
     editor =  @toolbar.editor
     range = editor.selection.getRange()
@@ -28,6 +40,7 @@ class ListButton extends Button
       if editor.selection.rangeAtStartOf $breakedEl, range
         range.setEndBefore($breakedEl[0])
         range.collapse(false)
+        $breakedEl.remove() if $breakedEl.children().length < 1
       else if editor.selection.rangeAtEndOf $breakedEl, range
         range.setEndAfter($breakedEl[0])
         range.collapse(false)
