@@ -99,6 +99,8 @@ class Simditor extends Widget
     val
 
   destroy: ->
+    @trigger 'simditordestroy'
+
     @textarea.closest 'form'
       .off '.simditor .simditor-' + @id
 

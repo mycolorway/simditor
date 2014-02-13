@@ -96,7 +96,8 @@ class LinkPopover extends Popover
       @target.attr 'href', @urlEl.val()
 
     $([@urlEl[0], @textEl[0]]).on 'keydown', (e) =>
-      if e.which == 13 or e.which == 27
+      if e.which == 13 or e.which == 27 or (e.which == 9 and $(e.target).hasClass('link-url'))
+        e.preventDefault()
         setTimeout =>
           range = document.createRange()
           @editor.selection.setRangeAfter @target, range

@@ -9,7 +9,7 @@ class Formatter extends Plugin
     @editor.body.on 'click', 'a', (e) =>
       false
 
-  _allowedTags: ['p', 'ul', 'ol', 'li', 'blockquote', 'hr', 'pre', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'table']
+  _allowedTags: ['a', 'img', 'b', 'strong', 'i', 'u', 'p', 'ul', 'ol', 'li', 'blockquote', 'hr', 'pre', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'table']
 
   decorate: ($el = @editor.body) ->
     @editor.trigger 'decorate', [$el]
@@ -45,7 +45,7 @@ class Formatter extends Plugin
 
     findLinkNode $el
 
-    re = /(https?:\/\/|www\.)[\w\-\.\?&=\/]+/ig
+    re = /(https?:\/\/|www\.)[\w\-\.\?&=\/#%]+/ig
     for $node in linkNodes
       text = $node.text();
       replaceEls = [];
@@ -63,15 +63,16 @@ class Formatter extends Plugin
 
     $el
 
+  # make sure the direct children is block node
   format: ($el = @editor.body) ->
     if $el.is ':empty'
       $el.append '<p>' + @editor.util.phBr + '</p>'
       return $el
 
+    @cleanNode(n, true) for n in $el.contents()
+
     for node in $el.contents()
       if @editor.util.isBlockNode node
-        @cleanNode blockNode if blockNode?
-        @cleanNode node
         blockNode = null
       else
         blockNode = $('<p/>').insertBefore(node) unless blockNode?
@@ -86,19 +87,24 @@ class Formatter extends Plugin
     contents = $node.contents()
 
     if $node.is @_allowedTags.join(',')
+      # img inside a is not allowed
+      if $node.is('a') and $node.find('img').length > 0
+        contents.first().unwrap()
+
       # Clean attributes except `src` `alt` on `img` tag and `href` `target` on `a` tag
       for attr in $.makeArray($node[0].attributes)
-        if !($node.is 'img' and attr.name in ['src', 'alt']) and !($node.is 'a' and attr.name in ['href', 'target'])
+        if !($node.is('img') and attr.name in ['src', 'alt']) and !($node.is('a') and attr.name in ['href', 'target'])
           $node.removeAttr(attr.name)
     else if $node[0].nodeType == 1 and !$node.is ':empty'
-      $('<p/>').append(contents)
-        .insertBefore($node)
-      $node.remove()
+      #$('<p/>').append(contents)
+        #.insertBefore($node)
+      contents.first().unwrap()
     else
       $node.remove()
       contents = null
 
-    cleanNode n for n in contents if recursive and contents?
+    @cleanNode(n, true) for n in contents if recursive and contents?
+    null
 
   clearHtml: (html, lineBreak = true) ->
     container = $('<div/>').append(html)

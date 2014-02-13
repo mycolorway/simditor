@@ -52,7 +52,7 @@ class Toolbar extends Plugin
     @editor.on 'selectionchanged', =>
       @toolbarStatus()
 
-    @editor.on 'destroy', =>
+    @editor.on 'simditordestroy', =>
       @_buttons.length = 0
 
 

@@ -13,22 +13,21 @@ class InputManager extends Plugin
   _arrowKeys: [37..40]
 
   _init: ->
-    @_pasteArea = $('<textarea/>')
+    @_pasteArea = $('<div/>')
       .css({
         width: '1px',
         height: '1px',
         overflow: 'hidden',
-        resize: 'none',
         position: 'fixed',
         right: '0',
         bottom: '100px'
       })
-      .attr('tabIndex', '-1')
+      .attr({
+        tabIndex: '-1',
+        contentEditable: true
+      })
       .addClass('simditor-paste-area')
-      .appendTo(@.editor.el)
-
-    @editor.on 'destroy', =>
-      @_pasteArea.remove()
+      .appendTo(@editor.el)
 
     @editor.on 'valuechanged', =>
       # make sure each code block has a p following it
@@ -181,38 +180,30 @@ class InputManager extends Plugin
     @_pasteArea.focus()
 
     setTimeout =>
-      pasteContent = @_pasteArea.val()
-      @_pasteArea.val ''
+      if @_pasteArea.is(':empty')
+        pasteContent = null
+      else if codePaste
+        pasteContent = @editor.formatter.clearHtml @_pasteArea.html()
+      else
+        pasteContent = $('<div/>').append(@_pasteArea.contents())
+        @editor.formatter.format pasteContent
+        pasteContent = pasteContent.contents()
 
-      # clean paste content
-      unless codePaste
-        els = []
-        re = /(.*)(\n*)/g
-        while result = re.exec(pasteContent)
-          break if !result[0]
-          el = $('<p/>') unless el?
-          el.append(result[1])
-          if result[2].length > 1
-            els.push(el[0])
-            el = null
-          else if result[2].length == 1
-            el.append('<br/>')
-
-        els.push el[0] if el?
-
-        pasteContent = $(els)
-
+      @_pasteArea.empty()
       range = @editor.selection.restore()
 
-      if codePaste and pasteContent
+      if !pasteContent
+        return
+      else if codePaste
         node = document.createTextNode(pasteContent)
         @editor.selection.insertNode node, range
       else if pasteContent.length < 1
         return
-      else if pasteContent.length == 1
-        node = document.createTextNode(pasteContent.text())
-        @editor.selection.insertNode node, range
-      else if pasteContent.length > 1
+      else if pasteContent.length == 1 and pasteContent.is('p')
+        children = pasteContent.contents()
+        range.insertNode node for node in children
+        @editor.selection.setRangeAfter children.last()
+      else
         $blockEl = $blockEl.parent() if $blockEl.is 'li'
 
         if @editor.selection.rangeAtStartOf($blockEl, range)
@@ -228,7 +219,7 @@ class InputManager extends Plugin
 
       @editor.trigger 'valuechanged'
       @editor.trigger 'selectionchanged'
-    , 0
+    , 10
 
   _inputHandlers:
     13: # enter

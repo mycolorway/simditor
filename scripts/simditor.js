@@ -410,7 +410,7 @@
       });
     };
 
-    Formatter.prototype._allowedTags = ['p', 'ul', 'ol', 'li', 'blockquote', 'hr', 'pre', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'table'];
+    Formatter.prototype._allowedTags = ['a', 'img', 'b', 'strong', 'i', 'u', 'p', 'ul', 'ol', 'li', 'blockquote', 'hr', 'pre', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'table'];
 
     Formatter.prototype.decorate = function($el) {
       if ($el == null) {
@@ -456,7 +456,7 @@
         });
       };
       findLinkNode($el);
-      re = /(https?:\/\/|www\.)[\w\-\.\?&=\/]+/ig;
+      re = /(https?:\/\/|www\.)[\w\-\.\?&=\/#%]+/ig;
       for (_i = 0, _len = linkNodes.length; _i < _len; _i++) {
         $node = linkNodes[_i];
         text = $node.text();
@@ -476,7 +476,7 @@
     };
 
     Formatter.prototype.format = function($el) {
-      var blockNode, node, _i, _len, _ref, _results;
+      var blockNode, n, node, _i, _j, _len, _len1, _ref, _ref1, _results;
       if ($el == null) {
         $el = this.editor.body;
       }
@@ -485,14 +485,15 @@
         return $el;
       }
       _ref = $el.contents();
-      _results = [];
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-        node = _ref[_i];
+        n = _ref[_i];
+        this.cleanNode(n, true);
+      }
+      _ref1 = $el.contents();
+      _results = [];
+      for (_j = 0, _len1 = _ref1.length; _j < _len1; _j++) {
+        node = _ref1[_j];
         if (this.editor.util.isBlockNode(node)) {
-          if (typeof blockNode !== "undefined" && blockNode !== null) {
-            this.cleanNode(blockNode);
-          }
-          this.cleanNode(node);
           _results.push(blockNode = null);
         } else {
           if (blockNode == null) {
@@ -505,35 +506,36 @@
     };
 
     Formatter.prototype.cleanNode = function(node, recursive) {
-      var $node, attr, contents, n, _i, _j, _len, _len1, _ref, _ref1, _ref2, _results;
+      var $node, attr, contents, n, _i, _j, _len, _len1, _ref, _ref1, _ref2;
       $node = $(node);
       if ($node[0].nodeType === 3) {
         return;
       }
       contents = $node.contents();
       if ($node.is(this._allowedTags.join(','))) {
+        if ($node.is('a') && $node.find('img').length > 0) {
+          contents.first().unwrap();
+        }
         _ref = $.makeArray($node[0].attributes);
         for (_i = 0, _len = _ref.length; _i < _len; _i++) {
           attr = _ref[_i];
-          if (!($node.is('img' && ((_ref1 = attr.name) === 'src' || _ref1 === 'alt'))) && !($node.is('a' && ((_ref2 = attr.name) === 'href' || _ref2 === 'target')))) {
+          if (!($node.is('img') && ((_ref1 = attr.name) === 'src' || _ref1 === 'alt')) && !($node.is('a') && ((_ref2 = attr.name) === 'href' || _ref2 === 'target'))) {
             $node.removeAttr(attr.name);
           }
         }
       } else if ($node[0].nodeType === 1 && !$node.is(':empty')) {
-        $('<p/>').append(contents).insertBefore($node);
-        $node.remove();
+        contents.first().unwrap();
       } else {
         $node.remove();
         contents = null;
       }
       if (recursive && (contents != null)) {
-        _results = [];
         for (_j = 0, _len1 = contents.length; _j < _len1; _j++) {
           n = contents[_j];
-          _results.push(cleanNode(n));
+          this.cleanNode(n, true);
         }
-        return _results;
       }
+      return null;
     };
 
     Formatter.prototype.clearHtml = function(html, lineBreak) {
@@ -586,18 +588,17 @@
 
     InputManager.prototype._init = function() {
       var _this = this;
-      this._pasteArea = $('<textarea/>').css({
+      this._pasteArea = $('<div/>').css({
         width: '1px',
         height: '1px',
         overflow: 'hidden',
-        resize: 'none',
         position: 'fixed',
         right: '0',
         bottom: '100px'
-      }).attr('tabIndex', '-1').addClass('simditor-paste-area').appendTo(this.editor.el);
-      this.editor.on('destroy', function() {
-        return _this._pasteArea.remove();
-      });
+      }).attr({
+        tabIndex: '-1',
+        contentEditable: true
+      }).addClass('simditor-paste-area').appendTo(this.editor.el);
       this.editor.on('valuechanged', function() {
         return _this.editor.body.find('pre').each(function(i, pre) {
           var $pre;
@@ -753,42 +754,33 @@
       this.editor.selection.save();
       this._pasteArea.focus();
       return setTimeout(function() {
-        var el, els, insertPosition, node, pasteContent, range, re, result;
-        pasteContent = _this._pasteArea.val();
-        _this._pasteArea.val('');
-        if (!codePaste) {
-          els = [];
-          re = /(.*)(\n*)/g;
-          while (result = re.exec(pasteContent)) {
-            if (!result[0]) {
-              break;
-            }
-            if (typeof el === "undefined" || el === null) {
-              el = $('<p/>');
-            }
-            el.append(result[1]);
-            if (result[2].length > 1) {
-              els.push(el[0]);
-              el = null;
-            } else if (result[2].length === 1) {
-              el.append('<br/>');
-            }
-          }
-          if (el != null) {
-            els.push(el[0]);
-          }
-          pasteContent = $(els);
+        var children, insertPosition, node, pasteContent, range, _i, _len;
+        if (_this._pasteArea.is(':empty')) {
+          pasteContent = null;
+        } else if (codePaste) {
+          pasteContent = _this.editor.formatter.clearHtml(_this._pasteArea.html());
+        } else {
+          pasteContent = $('<div/>').append(_this._pasteArea.contents());
+          _this.editor.formatter.format(pasteContent);
+          pasteContent = pasteContent.contents();
         }
+        _this._pasteArea.empty();
         range = _this.editor.selection.restore();
-        if (codePaste && pasteContent) {
+        if (!pasteContent) {
+          return;
+        } else if (codePaste) {
           node = document.createTextNode(pasteContent);
           _this.editor.selection.insertNode(node, range);
         } else if (pasteContent.length < 1) {
           return;
-        } else if (pasteContent.length === 1) {
-          node = document.createTextNode(pasteContent.text());
-          _this.editor.selection.insertNode(node, range);
-        } else if (pasteContent.length > 1) {
+        } else if (pasteContent.length === 1 && pasteContent.is('p')) {
+          children = pasteContent.contents();
+          for (_i = 0, _len = children.length; _i < _len; _i++) {
+            node = children[_i];
+            range.insertNode(node);
+          }
+          _this.editor.selection.setRangeAfter(children.last());
+        } else {
           if ($blockEl.is('li')) {
             $blockEl = $blockEl.parent();
           }
@@ -805,7 +797,7 @@
         }
         _this.editor.trigger('valuechanged');
         return _this.editor.trigger('selectionchanged');
-      }, 0);
+      }, 10);
     };
 
     InputManager.prototype._inputHandlers = {
@@ -1388,7 +1380,7 @@
       this.editor.on('selectionchanged', function() {
         return _this.toolbarStatus();
       });
-      return this.editor.on('destroy', function() {
+      return this.editor.on('simditordestroy', function() {
         return _this._buttons.length = 0;
       });
     };
@@ -1562,6 +1554,7 @@
     };
 
     Simditor.prototype.destroy = function() {
+      this.trigger('simditordestroy');
       this.textarea.closest('form'.off('.simditor .simditor-' + this.id));
       this.selection.clear();
       this.textarea.insertBefore(this.el).hide().val(''.removeData('simditor'));
@@ -2418,7 +2411,8 @@
         return _this.target.attr('href', _this.urlEl.val());
       });
       return $([this.urlEl[0], this.textEl[0]]).on('keydown', function(e) {
-        if (e.which === 13 || e.which === 27) {
+        if (e.which === 13 || e.which === 27 || (e.which === 9 && $(e.target).hasClass('link-url'))) {
+          e.preventDefault();
           return setTimeout(function() {
             var range;
             range = document.createRange();
