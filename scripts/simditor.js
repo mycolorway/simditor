@@ -1753,7 +1753,7 @@
         } else if (position === 'top') {
           top = targetOffset.top - wrapperOffset.top - _this.el.height();
         }
-        left = Math.min(targetOffset.left - wrapperOffset.left, _this.editor.wrapper.width() - _this.el.width());
+        left = Math.min(targetOffset.left - wrapperOffset.left, _this.editor.wrapper.width() - _this.el.outerWidth() - 10);
         _this.el.css({
           top: top + _this.offset.top,
           left: left + _this.offset.left

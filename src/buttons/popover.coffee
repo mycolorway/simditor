@@ -38,7 +38,7 @@ class Popover extends Module
       else if position is 'top'
         top = targetOffset.top - wrapperOffset.top - @el.height()
 
-      left = Math.min(targetOffset.left - wrapperOffset.left, @editor.wrapper.width() - @el.width())
+      left = Math.min(targetOffset.left - wrapperOffset.left, @editor.wrapper.width() - @el.outerWidth() - 10)
 
       @el.css({
         top: top + @offset.top,
