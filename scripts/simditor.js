@@ -2453,7 +2453,7 @@
   ImageButton = (function(_super) {
     __extends(ImageButton, _super);
 
-    ImageButton.prototype._wrapperTpl = "<div class=\"simditor-image\" contenteditable=\"false\">\n  <div class=\"simditor-image-resize-handle right\"></div>\n  <div class=\"simditor-image-resize-handle bottom\"></div>\n  <div class=\"simditor-image-resize-handle right-bottom\"></div>\n</div>";
+    ImageButton.prototype._wrapperTpl = "<div class=\"simditor-image\" contenteditable=\"false\" tabindex=\"-1\">\n  <div class=\"simditor-image-resize-handle right\"></div>\n  <div class=\"simditor-image-resize-handle bottom\"></div>\n  <div class=\"simditor-image-resize-handle right-bottom\"></div>\n</div>";
 
     ImageButton.prototype.name = 'image';
 
@@ -2488,23 +2488,30 @@
       });
       this.editor.body.on('mousedown', '.simditor-image', function(e) {
         var $img;
-        _this.editor.body.blur();
-        _this.editor.body.find('.simditor-image').removeClass('selected');
-        $img = $(e.currentTarget).addClass('selected').focus();
-        _this.popover.show($img);
+        $img = $(e.currentTarget);
+        if ($img.hasClass('selected')) {
+          _this.popover.srcEl.blur();
+          _this.popover.titleEl.blur();
+          _this.popover.hide();
+          $img.removeClass('selected');
+        } else {
+          _this.editor.body.blur();
+          _this.editor.body.find('.simditor-image').removeClass('selected');
+          $img = $(e.currentTarget).addClass('selected').focus();
+          _this.popover.show($img);
+        }
         return false;
       });
       this.editor.on('selectionchanged', function() {
         return _this.popover.hide();
       });
-      $(document).on('keydown.simditor-' + this.editor.id, function(e) {
-        var $img;
-        $img = _this.editor.body.find('.simditor-image.selected');
-        if (e.which === 8 && $img.length > 0) {
-          _this.popover.hide();
-          $img.remove();
-          return false;
+      this.editor.body.on('keydown', '.simditor-image', function(e) {
+        if (e.which !== 8) {
+          return;
         }
+        _this.popover.hide();
+        $(e.currentTarget).remove();
+        return false;
       });
     }
 
@@ -2602,7 +2609,7 @@
       return this.loadImage($img, this.defaultImage, function() {
         _this.editor.trigger('valuechanged');
         $img.mousedown();
-        return setTimeout(function() {
+        return _this.popover.one('popovershow', function() {
           _this.popover.srcEl.focus();
           return _this.popover.srcEl[0].select();
         });
@@ -2662,6 +2669,8 @@
       return $([this.srcEl[0], this.titleEl[0]]).on('keydown', function(e) {
         if (e.which === 13 || e.which === 27 || (e.which === 9 && $(e.target).hasClass('image-title'))) {
           e.preventDefault();
+          _this.srcEl.blur();
+          _this.titleEl.blur();
           _this.target.removeClass('selected');
           return _this.hide();
         }

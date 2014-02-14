@@ -289,6 +289,7 @@
 .simditor .simditor-body .simditor-image, .editor-style .simditor-image {
   margin: 15px 0;
   cursor: pointer;
+  outline: none;
 }
 .simditor .simditor-body .simditor-image.selected, .editor-style .simditor-image.selected {
   background: none;

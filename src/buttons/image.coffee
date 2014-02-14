@@ -2,7 +2,7 @@
 class ImageButton extends Button
 
   _wrapperTpl: """
-    <div class="simditor-image" contenteditable="false">
+    <div class="simditor-image" contenteditable="false" tabindex="-1">
       <div class="simditor-image-resize-handle right"></div>
       <div class="simditor-image-resize-handle bottom"></div>
       <div class="simditor-image-resize-handle right-bottom"></div>
@@ -38,21 +38,29 @@ class ImageButton extends Button
         @undecorate $(img)
 
     @editor.body.on 'mousedown', '.simditor-image', (e) =>
-      @editor.body.blur()
-      @editor.body.find('.simditor-image').removeClass('selected')
-      $img = $(e.currentTarget).addClass('selected').focus()
-      @popover.show $img
+      $img = $(e.currentTarget)
+
+      if $img.hasClass 'selected'
+        @popover.srcEl.blur()
+        @popover.titleEl.blur()
+        @popover.hide()
+        $img.removeClass('selected')
+      else
+        @editor.body.blur()
+        @editor.body.find('.simditor-image').removeClass('selected')
+        $img = $(e.currentTarget).addClass('selected').focus()
+        @popover.show $img
+
       false
 
     @editor.on 'selectionchanged', =>
       @popover.hide()
 
-    $(document).on 'keydown.simditor-' + @editor.id, (e) =>
-      $img = @editor.body.find('.simditor-image.selected')
-      if e.which == 8 and $img.length > 0
-        @popover.hide()
-        $img.remove()
-        return false
+    @editor.body.on 'keydown', '.simditor-image', (e) =>
+      return unless e.which == 8
+      @popover.hide()
+      $(e.currentTarget).remove()
+      return false
 
   render: (args...) ->
     super args...
@@ -138,10 +146,9 @@ class ImageButton extends Button
       #@editor.trigger 'selectionchanged'
       $img.mousedown()
 
-      setTimeout =>
+      @popover.one 'popovershow', =>
         @popover.srcEl.focus()
         @popover.srcEl[0].select()
-
 
 
 class ImagePopover extends Popover
@@ -192,25 +199,16 @@ class ImagePopover extends Popover
     $([@srcEl[0], @titleEl[0]]).on 'keydown', (e) =>
       if e.which == 13 or e.which == 27 or (e.which == 9 and $(e.target).hasClass('image-title'))
         e.preventDefault()
+        @srcEl.blur()
+        @titleEl.blur()
         @target.removeClass('selected')
         @hide()
-        #setTimeout =>
-          #$nextBlock = @target.next()
-          #range = document.createRange()
-          #@editor.selection.setRangeAtStartOf @target.next(), range
-          #@editor.body.focus()
-        #, 0
 
   show: (args...) ->
     super args...
     $img = @target.find('img')
     @srcEl.val $img.attr('src')
     @titleEl.val $img.attr('title')
-
-  #hide: ->
-    #super()
-    #@srcEl.blur()
-    #@titleEl.blur()
 
 
 Simditor.Toolbar.addButton(ImageButton)
