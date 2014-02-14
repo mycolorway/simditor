@@ -87,7 +87,7 @@
   outline: none;
   overflow: hidden;
   color: #333333;
-  font-size: 16px;
+  font-size: 15px;
   line-height: 60px;
   text-align: center;
   margin: 0 1px;
@@ -151,13 +151,16 @@
 }
 
 .simditor .simditor-body, .editor-style {
-  padding: 22px 15px;
+  padding: 22px 15px 40px;
   font-size: 16px;
   font-family: helvetica,Arial;
   line-height: 1.5;
   color: #333;
   outline: none;
   word-wrap: break-word;
+}
+.simditor .simditor-body > :first-child, .editor-style > :first-child {
+  margin-top: 0 !important;
 }
 .simditor .simditor-body a, .editor-style a {
   color: #4298BA;
@@ -283,9 +286,19 @@
 .simditor .simditor-body td.active, .simditor .simditor-body th.active, .editor-style td.active, .editor-style th.active {
   background-color: #ffffee;
 }
-.simditor .simditor-body img, .editor-style img {
+.simditor .simditor-body .simditor-image, .editor-style .simditor-image {
+  margin: 15px 0;
+  cursor: pointer;
+}
+.simditor .simditor-body .simditor-image.selected, .editor-style .simditor-image.selected {
+  background: none;
+  box-shadow: 0 0 0 4px rgba(0, 0, 0, 0.2);
+}
+.simditor .simditor-body .simditor-image img, .editor-style .simditor-image img {
+  cursor: pointer;
   -ms-interpolation-mode: bicubic;
   vertical-align: bottom;
-  max-width: 600px;
-  max-height: 400px;
+}
+.simditor .simditor-body .simditor-image .simditor-image-resize-handle, .editor-style .simditor-image .simditor-image-resize-handle {
+  display: none;
 }

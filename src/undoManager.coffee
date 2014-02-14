@@ -20,7 +20,7 @@ class UndoManager extends Plugin
       @redo()
 
     @editor.on 'valuechanged', (e, src) =>
-      return if src == 'undo' or !@editor.inputManager.focused
+      return if src == 'undo'
 
       if @_timer
         clearTimeout @_timer

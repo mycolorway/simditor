@@ -12,14 +12,13 @@ class BlockquoteButton extends Button
   disableTag: 'pre'
 
   command: ->
-    editor =  @toolbar.editor
-    range = editor.selection.getRange()
+    range = @editor.selection.getRange()
     startNode = range.startContainer
     endNode = range.endContainer
-    $startBlock = editor.util.furthestBlockEl(startNode)
-    $endBlock = editor.util.furthestBlockEl(endNode)
+    $startBlock = @editor.util.furthestBlockEl(startNode)
+    $endBlock = @editor.util.furthestBlockEl(endNode)
 
-    editor.selection.save()
+    @editor.selection.save()
 
     range.setStartBefore $startBlock[0]
     range.setEndAfter $endBlock[0]
@@ -36,13 +35,12 @@ class BlockquoteButton extends Button
           results.push(c)
 
     range.insertNode node[0] for node in results.reverse()
-    editor.selection.restore()
+    @editor.selection.restore()
 
-    @toolbar.editor.trigger 'valuechanged'
-    @toolbar.editor.trigger 'selectionchanged'
+    @editor.trigger 'valuechanged'
+    @editor.trigger 'selectionchanged'
 
   _convertEl: (el) ->
-    editor = @toolbar.editor
     $el = $(el)
     results = []
 

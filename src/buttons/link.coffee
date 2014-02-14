@@ -13,7 +13,7 @@ class LinkButton extends Button
 
   render: (args...) ->
     super args...
-    @popover = new LinkPopover(@toolbar.editor)
+    @popover = new LinkPopover(@editor)
 
   status: ($node) ->
     result = super $node
@@ -26,8 +26,7 @@ class LinkButton extends Button
     result
 
   command: ->
-    editor =  @toolbar.editor
-    range = editor.selection.getRange()
+    range = @editor.selection.getRange()
 
     if @active
       $link = $(range.commonAncestorContainer).closest('a')
@@ -37,14 +36,14 @@ class LinkButton extends Button
     else
       startNode = range.startContainer
       endNode = range.endContainer
-      $startBlock = editor.util.closestBlockEl(startNode)
-      $endBlock = editor.util.closestBlockEl(endNode)
+      $startBlock = @editor.util.closestBlockEl(startNode)
+      $endBlock = @editor.util.closestBlockEl(endNode)
 
       $contents = $(range.extractContents())
       $link = $('<a/>', {
         href: 'http://www.example.com',
         target: '_blank',
-        text: editor.formatter.clearHtml($contents.contents(), false) || '链接文字'
+        text: @editor.formatter.clearHtml($contents.contents(), false) || '链接文字'
       })
 
       if $startBlock[0] == $endBlock[0]
@@ -55,15 +54,14 @@ class LinkButton extends Button
 
       range.selectNodeContents $link[0]
 
-    editor.selection.selectRange range
+    @editor.selection.selectRange range
 
     @popover.one 'popovershow', =>
-      @popover.el.find('.link-text').focus()
       @popover.textEl.focus()
       @popover.textEl[0].select()
 
-    @toolbar.editor.trigger 'valuechanged'
-    @toolbar.editor.trigger 'selectionchanged'
+    @editor.trigger 'valuechanged'
+    @editor.trigger 'selectionchanged'
 
 
 class LinkPopover extends Popover
@@ -103,6 +101,7 @@ class LinkPopover extends Popover
           @editor.selection.setRangeAfter @target, range
           @editor.body.focus()
           @hide()
+          @editor.trigger 'valuechanged'
         , 0
 
   show: (args...) ->

@@ -13,7 +13,7 @@ class CodeButton extends Button
 
   render: (args...) ->
     super args...
-    @popover = new CodePopover(@toolbar.editor)
+    @popover = new CodePopover(@editor)
 
   status: ($node) ->
     result = super $node
@@ -26,12 +26,11 @@ class CodeButton extends Button
     result
 
   command: ->
-    editor =  @toolbar.editor
-    range = editor.selection.getRange()
+    range = @editor.selection.getRange()
     startNode = range.startContainer
     endNode = range.endContainer
-    $startBlock = editor.util.closestBlockEl(startNode)
-    $endBlock = editor.util.closestBlockEl(endNode)
+    $startBlock = @editor.util.closestBlockEl(startNode)
+    $endBlock = @editor.util.closestBlockEl(endNode)
 
     range.setStartBefore $startBlock[0]
     range.setEndAfter $endBlock[0]
@@ -46,15 +45,14 @@ class CodeButton extends Button
           results[results.length - 1].append(c.contents())
         else
           results.push(c)
-    
-    range.insertNode node[0] for node in results.reverse()
-    editor.selection.setRangeAtEndOf results[0]
 
-    @toolbar.editor.trigger 'valuechanged'
-    @toolbar.editor.trigger 'selectionchanged'
+    range.insertNode node[0] for node in results.reverse()
+    @editor.selection.setRangeAtEndOf results[0]
+
+    @editor.trigger 'valuechanged'
+    @editor.trigger 'selectionchanged'
 
   _convertEl: (el) ->
-    editor = @toolbar.editor
     $el = $(el)
     results = []
 
@@ -62,7 +60,7 @@ class CodeButton extends Button
       block = $('<p/>').append($el.html().replace('\n', '<br/>'))
       results.push block
     else
-      codeStr = editor.formatter.clearHtml($el)
+      codeStr = @editor.formatter.clearHtml($el)
       block = $('<' + @htmlTag + '/>').append(codeStr)
       results.push(block)
 

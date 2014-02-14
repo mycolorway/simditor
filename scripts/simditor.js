@@ -1,5 +1,5 @@
 (function() {
-  var BlockquoteButton, BoldButton, Button, CodeButton, CodePopover, Formatter, InputManager, ItalicButton, LinkButton, LinkPopover, ListButton, Module, OrderListButton, Plugin, Popover, Selection, Simditor, Toolbar, UnderlineButton, UndoManager, UnorderListButton, Util, Widget, _ref, _ref1, _ref10, _ref11, _ref2, _ref3, _ref4, _ref5, _ref6, _ref7, _ref8, _ref9,
+  var BlockquoteButton, BoldButton, Button, CodeButton, CodePopover, Formatter, ImageButton, ImagePopover, InputManager, ItalicButton, LinkButton, LinkPopover, ListButton, Module, OrderListButton, Plugin, Popover, Selection, Simditor, Toolbar, UnderlineButton, UndoManager, UnorderListButton, Util, Widget, _ref, _ref1, _ref10, _ref11, _ref2, _ref3, _ref4, _ref5, _ref6, _ref7, _ref8, _ref9,
     __slice = [].slice,
     __hasProp = {}.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
@@ -190,12 +190,12 @@
       }
       node = $(node)[0];
       endNode = range.endContainer;
-      if (range.endOffset !== this.editor.util.getNodeLength(endNode)) {
-        return false;
-      }
       if (node === endNode) {
         return true;
       } else if (!$.contains(node, endNode)) {
+        return false;
+      }
+      if (range.endOffset !== this.editor.util.getNodeLength(endNode)) {
         return false;
       }
       result = true;
@@ -222,12 +222,12 @@
       }
       node = $(node)[0];
       startNode = range.startContainer;
-      if (range.startOffset !== 0) {
-        return false;
-      }
       if (node === startNode) {
         return true;
       } else if (!$.contains(node, startNode)) {
+        return false;
+      }
+      if (range.startOffset !== 0) {
         return false;
       }
       result = true;
@@ -412,6 +412,11 @@
 
     Formatter.prototype._allowedTags = ['a', 'img', 'b', 'strong', 'i', 'u', 'p', 'ul', 'ol', 'li', 'blockquote', 'hr', 'pre', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'table'];
 
+    Formatter.prototype._allowedAttributes = {
+      img: ['src', 'alt', 'width', 'height'],
+      a: ['href', 'target']
+    };
+
     Formatter.prototype.decorate = function($el) {
       if ($el == null) {
         $el = this.editor.body;
@@ -420,18 +425,10 @@
     };
 
     Formatter.prototype.undecorate = function($el) {
-      var emptyP, lastP;
       if ($el == null) {
         $el = this.editor.body.clone();
       }
       this.editor.trigger('undecorate', [$el]);
-      this.autolink($el);
-      lastP = $el.children().last('p');
-      while (lastP.is('p' && !lastP.text() && !lastP.find('img').length)) {
-        emptyP = lastP;
-        lastP = lastP.prev('p');
-        emptyP.remove();
-      }
       return $.trim($el.html());
     };
 
@@ -476,7 +473,7 @@
     };
 
     Formatter.prototype.format = function($el) {
-      var blockNode, n, node, _i, _j, _len, _len1, _ref, _ref1, _results;
+      var blockNode, n, node, _i, _j, _len, _len1, _ref, _ref1;
       if ($el == null) {
         $el = this.editor.body;
       }
@@ -490,37 +487,40 @@
         this.cleanNode(n, true);
       }
       _ref1 = $el.contents();
-      _results = [];
       for (_j = 0, _len1 = _ref1.length; _j < _len1; _j++) {
         node = _ref1[_j];
         if (this.editor.util.isBlockNode(node)) {
-          _results.push(blockNode = null);
+          blockNode = null;
         } else {
           if (blockNode == null) {
             blockNode = $('<p/>').insertBefore(node);
           }
-          _results.push(blockNode.append(node));
+          blockNode.append(node);
         }
       }
-      return _results;
+      return $el;
     };
 
     Formatter.prototype.cleanNode = function(node, recursive) {
-      var $node, attr, contents, n, _i, _j, _len, _len1, _ref, _ref1, _ref2;
+      var $node, allowedAttributes, attr, contents, isDecoration, n, _i, _j, _len, _len1, _ref, _ref1;
       $node = $(node);
       if ($node[0].nodeType === 3) {
         return;
       }
       contents = $node.contents();
-      if ($node.is(this._allowedTags.join(','))) {
+      isDecoration = $node.is('[class^="simditor-"]');
+      if ($node.is(this._allowedTags.join(',')) || isDecoration) {
         if ($node.is('a') && $node.find('img').length > 0) {
           contents.first().unwrap();
         }
-        _ref = $.makeArray($node[0].attributes);
-        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-          attr = _ref[_i];
-          if (!($node.is('img') && ((_ref1 = attr.name) === 'src' || _ref1 === 'alt')) && !($node.is('a') && ((_ref2 = attr.name) === 'href' || _ref2 === 'target'))) {
-            $node.removeAttr(attr.name);
+        if (!isDecoration) {
+          allowedAttributes = this._allowedAttributes[$node[0].tagName.toLowerCase()];
+          _ref = $.makeArray($node[0].attributes);
+          for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+            attr = _ref[_i];
+            if (!((allowedAttributes != null) && (_ref1 = attr.name, __indexOf.call(allowedAttributes, _ref1) >= 0))) {
+              $node.removeAttr(attr.name);
+            }
           }
         }
       } else if ($node[0].nodeType === 1 && !$node.is(':empty')) {
@@ -600,11 +600,11 @@
         contentEditable: true
       }).addClass('simditor-paste-area').appendTo(this.editor.el);
       this.editor.on('valuechanged', function() {
-        return _this.editor.body.find('pre').each(function(i, pre) {
-          var $pre;
-          $pre = $(pre);
-          if ($pre.next().length === 0) {
-            return $('<p/>').append(_this.editor.util.phBr).insertAfter($pre);
+        return _this.editor.body.find('pre, .simditor-image').each(function(i, el) {
+          var $el;
+          $el = $(el);
+          if (($el.parent().is('blockquote') || $el.parent()[0] === _this.editor.body[0]) && $el.next().length === 0) {
+            return $('<p/>').append(_this.editor.util.phBr).insertAfter($el);
           }
         });
       });
@@ -634,6 +634,9 @@
     };
 
     InputManager.prototype._onMouseUp = function(e) {
+      if ($(e.target).is('img, .simditor-image')) {
+        return;
+      }
       return this.editor.trigger('selectionchanged');
     };
 
@@ -762,6 +765,7 @@
         } else {
           pasteContent = $('<div/>').append(_this._pasteArea.contents());
           _this.editor.formatter.format(pasteContent);
+          _this.editor.formatter.decorate(pasteContent);
           pasteContent = pasteContent.contents();
         }
         _this._pasteArea.empty();
@@ -957,7 +961,7 @@
         return _this.redo();
       });
       this.editor.on('valuechanged', function(e, src) {
-        if (src === 'undo' || !_this.editor.inputManager.focused) {
+        if (src === 'undo') {
           return;
         }
         if (_this._timer) {
@@ -1345,7 +1349,7 @@
         return;
       }
       if (!$.isArray(this.opts.toolbar)) {
-        this.opts.toolbar = ['bold', 'italic', 'underline', '|', 'ol', 'ul', 'blockquote', 'code', '|', 'link'];
+        this.opts.toolbar = ['bold', 'italic', 'underline', '|', 'ol', 'ul', 'blockquote', 'code', '|', 'link', 'image'];
       }
       this._render();
       this.list.on('click', function(e) {
@@ -1402,7 +1406,7 @@
           throw new Error('simditor: invalid toolbar button "' + name + '"');
           continue;
         }
-        _results.push(this._buttons.push(new this.constructor.buttons[name](this)));
+        _results.push(this._buttons.push(new this.constructor.buttons[name](this.editor)));
       }
       return _results;
     };
@@ -1473,7 +1477,8 @@
 
     Simditor.prototype.opts = {
       textarea: null,
-      placeholder: 'Type here...'
+      placeholder: 'Type here...',
+      defaultImage: 'images/image.png'
     };
 
     Simditor.prototype._init = function() {
@@ -1547,7 +1552,14 @@
     };
 
     Simditor.prototype.sync = function() {
-      var val;
+      var emptyP, lastP, val;
+      this.formatter.autolink(this.body);
+      lastP = this.body.children().last('p');
+      while (lastP.is('p' && !lastP.text() && !lastP.find('img').length)) {
+        emptyP = lastP;
+        lastP = lastP.prev('p');
+        emptyP.remove();
+      }
       val = this.formatter.undecorate();
       this.textarea.val(val);
       return val;
@@ -1604,45 +1616,45 @@
 
     Button.prototype.shortcut = null;
 
-    function Button(toolbar) {
+    function Button(editor) {
       var _this = this;
-      this.toolbar = toolbar;
+      this.editor = editor;
       this.render();
       this.el.on('mousedown', function(e) {
         e.preventDefault();
-        if (_this.el.hasClass('disabled') || (_this.needFocus && !_this.toolbar.editor.inputManager.focused)) {
+        if (_this.el.hasClass('disabled') || (_this.needFocus && !_this.editor.inputManager.focused)) {
           return;
         }
         if (_this.menu) {
-          return _this.toolbar.wrapper.toggleClass('menu-on');
+          return _this.editor.toolbar.wrapper.toggleClass('menu-on');
         } else {
           return _this.command();
         }
       });
-      this.toolbar.list.on('mousedown', 'a.menu-item', function(e) {
+      this.editor.toolbar.list.on('mousedown', 'a.menu-item', function(e) {
         var btn, param;
         e.preventDefault();
         btn = $(e.currentTarget);
         if (btn.hasClass('disabled')) {
           return;
         }
-        _this.toolbar.wrapper.removeClass('menu-on');
+        _this.editor.toolbar.wrapper.removeClass('menu-on');
         param = btn.data('param');
         return _this.command(param);
       });
-      this.toolbar.editor.on('blur', function() {
+      this.editor.on('blur', function() {
         _this.setActive(false);
         return _this.setDisabled(false);
       });
       if (this.shortcut != null) {
-        this.toolbar.editor.inputManager.addShortcut(this.shortcut, function(e) {
+        this.editor.inputManager.addShortcut(this.shortcut, function(e) {
           return _this.el.mousedown();
         });
       }
     }
 
     Button.prototype.render = function() {
-      this.wrapper = $(this._tpl.item).appendTo(this.toolbar.list);
+      this.wrapper = $(this._tpl.item).appendTo(this.editor.toolbar.list);
       this.el = this.wrapper.find('a.toolbar-item');
       this.el.attr('title', this.title).addClass('toolbar-item-' + this.name).data('button', this);
       this.el.find('span').addClass(this.icon ? 'fa fa-' + this.icon : '').text(this.text);
@@ -1744,20 +1756,7 @@
         left: -9999
       }).show();
       return setTimeout(function() {
-        var left, targetH, targetOffset, top, wrapperOffset;
-        wrapperOffset = _this.editor.wrapper.offset();
-        targetOffset = _this.target.offset();
-        targetH = _this.target.outerHeight();
-        if (position === 'bottom') {
-          top = targetOffset.top - wrapperOffset.top + targetH;
-        } else if (position === 'top') {
-          top = targetOffset.top - wrapperOffset.top - _this.el.height();
-        }
-        left = Math.min(targetOffset.left - wrapperOffset.left, _this.editor.wrapper.width() - _this.el.outerWidth() - 10);
-        _this.el.css({
-          top: top + _this.offset.top,
-          left: left + _this.offset.left
-        });
+        _this.refresh(position);
         return _this.trigger('popovershow');
       }, 0);
     };
@@ -1767,6 +1766,26 @@
       this.active = false;
       this.el.hide();
       return this.trigger('popoverhide');
+    };
+
+    Popover.prototype.refresh = function(position) {
+      var left, targetH, targetOffset, top, wrapperOffset;
+      if (position == null) {
+        position = 'bottom';
+      }
+      wrapperOffset = this.editor.wrapper.offset();
+      targetOffset = this.target.offset();
+      targetH = this.target.outerHeight();
+      if (position === 'bottom') {
+        top = targetOffset.top - wrapperOffset.top + targetH;
+      } else if (position === 'top') {
+        top = targetOffset.top - wrapperOffset.top - this.el.height();
+      }
+      left = Math.min(targetOffset.left - wrapperOffset.left, this.editor.wrapper.width() - this.el.outerWidth() - 10);
+      return this.el.css({
+        top: top + this.offset.top,
+        left: left + this.offset.left
+      });
     };
 
     Popover.prototype.destroy = function() {
@@ -1815,8 +1834,8 @@
 
     BoldButton.prototype.command = function() {
       document.execCommand('bold');
-      this.toolbar.editor.trigger('valuechanged');
-      return this.toolbar.editor.trigger('selectionchanged');
+      this.editor.trigger('valuechanged');
+      return this.editor.trigger('selectionchanged');
     };
 
     return BoldButton;
@@ -1860,8 +1879,8 @@
 
     ItalicButton.prototype.command = function() {
       document.execCommand('italic');
-      this.toolbar.editor.trigger('valuechanged');
-      return this.toolbar.editor.trigger('selectionchanged');
+      this.editor.trigger('valuechanged');
+      return this.editor.trigger('selectionchanged');
     };
 
     return ItalicButton;
@@ -1905,8 +1924,8 @@
 
     UnderlineButton.prototype.command = function() {
       document.execCommand('underline');
-      this.toolbar.editor.trigger('valuechanged');
-      return this.toolbar.editor.trigger('selectionchanged');
+      this.editor.trigger('valuechanged');
+      return this.editor.trigger('selectionchanged');
     };
 
     return UnderlineButton;
@@ -1948,15 +1967,14 @@
     };
 
     ListButton.prototype.command = function(param) {
-      var $breakedEl, $contents, $endBlock, $startBlock, editor, endNode, node, range, results, startNode, _i, _len, _ref5,
+      var $breakedEl, $contents, $endBlock, $startBlock, endNode, node, range, results, startNode, _i, _len, _ref5,
         _this = this;
-      editor = this.toolbar.editor;
-      range = editor.selection.getRange();
+      range = this.editor.selection.getRange();
       startNode = range.startContainer;
       endNode = range.endContainer;
-      $startBlock = editor.util.closestBlockEl(startNode);
-      $endBlock = editor.util.closestBlockEl(endNode);
-      editor.selection.save();
+      $startBlock = this.editor.util.closestBlockEl(startNode);
+      $endBlock = this.editor.util.closestBlockEl(endNode);
+      this.editor.selection.save();
       range.setStartBefore($startBlock[0]);
       range.setEndAfter($endBlock[0]);
       if ($startBlock.is('li') && $endBlock.is('li') && $startBlock.parent()[0] === $endBlock.parent()[0]) {
@@ -1965,17 +1983,17 @@
       $contents = $(range.extractContents());
       if ($breakedEl != null) {
         $contents.wrapInner('<' + $breakedEl[0].tagName + '/>');
-        if (editor.selection.rangeAtStartOf($breakedEl, range)) {
+        if (this.editor.selection.rangeAtStartOf($breakedEl, range)) {
           range.setEndBefore($breakedEl[0]);
           range.collapse(false);
           if ($breakedEl.children().length < 1) {
             $breakedEl.remove();
           }
-        } else if (editor.selection.rangeAtEndOf($breakedEl, range)) {
+        } else if (this.editor.selection.rangeAtEndOf($breakedEl, range)) {
           range.setEndAfter($breakedEl[0]);
           range.collapse(false);
         } else {
-          $breakedEl = editor.selection.breakBlockEl($breakedEl, range);
+          $breakedEl = this.editor.selection.breakBlockEl($breakedEl, range);
           range.setEndBefore($breakedEl[0]);
           range.collapse(false);
         }
@@ -2000,22 +2018,21 @@
         node = _ref5[_i];
         range.insertNode(node[0]);
       }
-      editor.selection.restore();
-      this.toolbar.editor.trigger('valuechanged');
-      return this.toolbar.editor.trigger('selectionchanged');
+      this.editor.selection.restore();
+      this.editor.trigger('valuechanged');
+      return this.editor.trigger('selectionchanged');
     };
 
     ListButton.prototype._convertEl = function(el) {
-      var $el, anotherType, block, child, children, editor, results, _i, _len, _ref5,
+      var $el, anotherType, block, child, children, results, _i, _len, _ref5,
         _this = this;
-      editor = this.toolbar.editor;
       $el = $(el);
       results = [];
       anotherType = this.type === 'ul' ? 'ol' : 'ul';
       if ($el.is(this.type)) {
         $el.find('li').each(function(i, li) {
           var block;
-          block = $('<p/>').append($(li).html() || editor.util.phBr);
+          block = $('<p/>').append($(li).html() || _this.editor.util.phBr);
           return results.push(block);
         });
       } else if ($el.is(anotherType)) {
@@ -2032,7 +2049,7 @@
 
       } else {
         block = $('<' + this.type + '><li></li></' + this.type + '>');
-        block.find('li').append($el.html() || editor.util.phBr);
+        block.find('li').append($el.html() || this.editor.util.phBr);
         results.push(block);
       }
       return results;
@@ -2109,15 +2126,14 @@
     BlockquoteButton.prototype.disableTag = 'pre';
 
     BlockquoteButton.prototype.command = function() {
-      var $contents, $endBlock, $startBlock, editor, endNode, node, range, results, startNode, _i, _len, _ref8,
+      var $contents, $endBlock, $startBlock, endNode, node, range, results, startNode, _i, _len, _ref8,
         _this = this;
-      editor = this.toolbar.editor;
-      range = editor.selection.getRange();
+      range = this.editor.selection.getRange();
       startNode = range.startContainer;
       endNode = range.endContainer;
-      $startBlock = editor.util.furthestBlockEl(startNode);
-      $endBlock = editor.util.furthestBlockEl(endNode);
-      editor.selection.save();
+      $startBlock = this.editor.util.furthestBlockEl(startNode);
+      $endBlock = this.editor.util.furthestBlockEl(endNode);
+      this.editor.selection.save();
       range.setStartBefore($startBlock[0]);
       range.setEndAfter($endBlock[0]);
       $contents = $(range.extractContents());
@@ -2141,15 +2157,14 @@
         node = _ref8[_i];
         range.insertNode(node[0]);
       }
-      editor.selection.restore();
-      this.toolbar.editor.trigger('valuechanged');
-      return this.toolbar.editor.trigger('selectionchanged');
+      this.editor.selection.restore();
+      this.editor.trigger('valuechanged');
+      return this.editor.trigger('selectionchanged');
     };
 
     BlockquoteButton.prototype._convertEl = function(el) {
-      var $el, block, editor, results,
+      var $el, block, results,
         _this = this;
-      editor = this.toolbar.editor;
       $el = $(el);
       results = [];
       if ($el.is(this.htmlTag)) {
@@ -2191,7 +2206,7 @@
       var args;
       args = 1 <= arguments.length ? __slice.call(arguments, 0) : [];
       CodeButton.__super__.render.apply(this, args);
-      return this.popover = new CodePopover(this.toolbar.editor);
+      return this.popover = new CodePopover(this.editor);
     };
 
     CodeButton.prototype.status = function($node) {
@@ -2206,14 +2221,13 @@
     };
 
     CodeButton.prototype.command = function() {
-      var $contents, $endBlock, $startBlock, editor, endNode, node, range, results, startNode, _i, _len, _ref9,
+      var $contents, $endBlock, $startBlock, endNode, node, range, results, startNode, _i, _len, _ref9,
         _this = this;
-      editor = this.toolbar.editor;
-      range = editor.selection.getRange();
+      range = this.editor.selection.getRange();
       startNode = range.startContainer;
       endNode = range.endContainer;
-      $startBlock = editor.util.closestBlockEl(startNode);
-      $endBlock = editor.util.closestBlockEl(endNode);
+      $startBlock = this.editor.util.closestBlockEl(startNode);
+      $endBlock = this.editor.util.closestBlockEl(endNode);
       range.setStartBefore($startBlock[0]);
       range.setEndAfter($endBlock[0]);
       $contents = $(range.extractContents());
@@ -2237,21 +2251,20 @@
         node = _ref9[_i];
         range.insertNode(node[0]);
       }
-      editor.selection.setRangeAtEndOf(results[0]);
-      this.toolbar.editor.trigger('valuechanged');
-      return this.toolbar.editor.trigger('selectionchanged');
+      this.editor.selection.setRangeAtEndOf(results[0]);
+      this.editor.trigger('valuechanged');
+      return this.editor.trigger('selectionchanged');
     };
 
     CodeButton.prototype._convertEl = function(el) {
-      var $el, block, codeStr, editor, results;
-      editor = this.toolbar.editor;
+      var $el, block, codeStr, results;
       $el = $(el);
       results = [];
       if ($el.is(this.htmlTag)) {
         block = $('<p/>').append($el.html().replace('\n', '<br/>'));
         results.push(block);
       } else {
-        codeStr = editor.formatter.clearHtml($el);
+        codeStr = this.editor.formatter.clearHtml($el);
         block = $('<' + this.htmlTag + '/>').append(codeStr);
         results.push(block);
       }
@@ -2326,7 +2339,7 @@
       var args;
       args = 1 <= arguments.length ? __slice.call(arguments, 0) : [];
       LinkButton.__super__.render.apply(this, args);
-      return this.popover = new LinkPopover(this.toolbar.editor);
+      return this.popover = new LinkPopover(this.editor);
     };
 
     LinkButton.prototype.status = function($node) {
@@ -2341,10 +2354,9 @@
     };
 
     LinkButton.prototype.command = function() {
-      var $contents, $endBlock, $link, $newBlock, $startBlock, editor, endNode, range, startNode, txtNode,
+      var $contents, $endBlock, $link, $newBlock, $startBlock, endNode, range, startNode, txtNode,
         _this = this;
-      editor = this.toolbar.editor;
-      range = editor.selection.getRange();
+      range = this.editor.selection.getRange();
       if (this.active) {
         $link = $(range.commonAncestorContainer).closest('a');
         txtNode = document.createTextNode($link.text());
@@ -2353,13 +2365,13 @@
       } else {
         startNode = range.startContainer;
         endNode = range.endContainer;
-        $startBlock = editor.util.closestBlockEl(startNode);
-        $endBlock = editor.util.closestBlockEl(endNode);
+        $startBlock = this.editor.util.closestBlockEl(startNode);
+        $endBlock = this.editor.util.closestBlockEl(endNode);
         $contents = $(range.extractContents());
         $link = $('<a/>', {
           href: 'http://www.example.com',
           target: '_blank',
-          text: editor.formatter.clearHtml($contents.contents(), false) || '链接文字'
+          text: this.editor.formatter.clearHtml($contents.contents(), false) || '链接文字'
         });
         if ($startBlock[0] === $endBlock[0]) {
           range.insertNode($link[0]);
@@ -2369,14 +2381,13 @@
         }
         range.selectNodeContents($link[0]);
       }
-      editor.selection.selectRange(range);
+      this.editor.selection.selectRange(range);
       this.popover.one('popovershow', function() {
-        _this.popover.el.find('.link-text').focus();
         _this.popover.textEl.focus();
         return _this.popover.textEl[0].select();
       });
-      this.toolbar.editor.trigger('valuechanged');
-      return this.toolbar.editor.trigger('selectionchanged');
+      this.editor.trigger('valuechanged');
+      return this.editor.trigger('selectionchanged');
     };
 
     return LinkButton;
@@ -2418,7 +2429,8 @@
             range = document.createRange();
             _this.editor.selection.setRangeAfter(_this.target, range);
             _this.editor.body.focus();
-            return _this.hide();
+            _this.hide();
+            return _this.editor.trigger('valuechanged');
           }, 0);
         }
       });
@@ -2437,5 +2449,238 @@
   })(Popover);
 
   Simditor.Toolbar.addButton(LinkButton);
+
+  ImageButton = (function(_super) {
+    __extends(ImageButton, _super);
+
+    ImageButton.prototype._wrapperTpl = "<div class=\"simditor-image\" contenteditable=\"false\">\n  <div class=\"simditor-image-resize-handle right\"></div>\n  <div class=\"simditor-image-resize-handle bottom\"></div>\n  <div class=\"simditor-image-resize-handle right-bottom\"></div>\n</div>";
+
+    ImageButton.prototype.name = 'image';
+
+    ImageButton.prototype.icon = 'picture-o';
+
+    ImageButton.prototype.title = '插入图片';
+
+    ImageButton.prototype.htmlTag = 'img';
+
+    ImageButton.prototype.disableTag = 'pre, a, b, strong, i, u, table';
+
+    ImageButton.prototype.defaultImage = '';
+
+    ImageButton.prototype.maxWidth = 0;
+
+    function ImageButton() {
+      var args,
+        _this = this;
+      args = 1 <= arguments.length ? __slice.call(arguments, 0) : [];
+      ImageButton.__super__.constructor.apply(this, args);
+      this.defaultImage = this.editor.opts.defaultImage;
+      this.maxWidth = this.editor.wrapper.width();
+      this.editor.on('decorate', function(e, $el) {
+        return $el.find('img').each(function(i, img) {
+          return _this.decorate($(img));
+        });
+      });
+      this.editor.on('undecorate', function(e, $el) {
+        return $el.find('img').each(function(i, img) {
+          return _this.undecorate($(img));
+        });
+      });
+      this.editor.body.on('mousedown', '.simditor-image', function(e) {
+        var $img;
+        _this.editor.body.blur();
+        _this.editor.body.find('.simditor-image').removeClass('selected');
+        $img = $(e.currentTarget).addClass('selected').focus();
+        _this.popover.show($img);
+        return false;
+      });
+      this.editor.on('selectionchanged', function() {
+        return _this.popover.hide();
+      });
+      $(document).on('keydown.simditor-' + this.editor.id, function(e) {
+        var $img;
+        $img = _this.editor.body.find('.simditor-image.selected');
+        if (e.which === 8 && $img.length > 0) {
+          _this.popover.hide();
+          $img.remove();
+          return false;
+        }
+      });
+    }
+
+    ImageButton.prototype.render = function() {
+      var args;
+      args = 1 <= arguments.length ? __slice.call(arguments, 0) : [];
+      ImageButton.__super__.render.apply(this, args);
+      return this.popover = new ImagePopover(this);
+    };
+
+    ImageButton.prototype.status = function($node) {
+      if ($node != null) {
+        this.setDisabled($node.is(this.disableTag));
+      }
+      if (this.disabled) {
+        return true;
+      }
+    };
+
+    ImageButton.prototype.decorate = function($img) {
+      var $wrapper;
+      $wrapper = $img.parent('.simditor-image');
+      if ($wrapper.length > 0) {
+        return;
+      }
+      return $wrapper = $(this._wrapperTpl).insertBefore($img).prepend($img);
+    };
+
+    ImageButton.prototype.undecorate = function($img) {
+      var $wrapper;
+      $wrapper = $img.parent('.simditor-image');
+      if ($wrapper.length < 1) {
+        return;
+      }
+      $img.insertAfter($wrapper);
+      return $wrapper.remove();
+    };
+
+    ImageButton.prototype.loadImage = function($img, src, callback) {
+      var $wrapper, img,
+        _this = this;
+      $wrapper = $img.parent('.simditor-image');
+      img = new Image();
+      img.onload = function() {
+        var height, width;
+        if (width > _this.maxWidth) {
+          width = _this.maxWidth;
+          height = _this.maxWidth * img.height / img.width;
+        } else {
+          width = img.width;
+          height = img.height;
+        }
+        $img.attr({
+          src: src,
+          width: width,
+          height: height
+        });
+        $wrapper.width(width).height(height);
+        return callback(true);
+      };
+      img.onerror = function() {
+        return callback(false);
+      };
+      return img.src = src;
+    };
+
+    ImageButton.prototype.command = function() {
+      var $breakedEl, $endBlock, $img, $startBlock, endNode, range, startNode,
+        _this = this;
+      range = this.editor.selection.getRange();
+      startNode = range.startContainer;
+      endNode = range.endContainer;
+      $startBlock = this.editor.util.closestBlockEl(startNode);
+      $endBlock = this.editor.util.closestBlockEl(endNode);
+      range.deleteContents();
+      if ($startBlock[0] === $endBlock[0] && $startBlock.is('p')) {
+        if (this.editor.util.isEmptyNode($startBlock)) {
+          range.selectNode($startBlock[0]);
+          range.deleteContents();
+        } else if (this.editor.selection.rangeAtEndOf($startBlock, range)) {
+          range.setEndAfter($startBlock[0]);
+          range.collapse(false);
+        } else if (this.editor.selection.rangeAtStartOf($startBlock, range)) {
+          range.setEndBefore($startBlock[0]);
+          range.collapse(false);
+        } else {
+          $breakedEl = this.editor.selection.breakBlockEl($startBlock, range);
+          range.setEndBefore($breakedEl[0]);
+          range.collapse(false);
+        }
+      }
+      $img = $('<img/>');
+      range.insertNode($img[0]);
+      this.decorate($img);
+      return this.loadImage($img, this.defaultImage, function() {
+        _this.editor.trigger('valuechanged');
+        $img.mousedown();
+        return setTimeout(function() {
+          _this.popover.srcEl.focus();
+          return _this.popover.srcEl[0].select();
+        });
+      });
+    };
+
+    return ImageButton;
+
+  })(Button);
+
+  ImagePopover = (function(_super) {
+    __extends(ImagePopover, _super);
+
+    ImagePopover.prototype._tpl = "<div class=\"link-settings\">\n  <div class=\"settings-field\">\n    <label>地址</label>\n    <input class=\"image-src\" type=\"text\"/>\n  </div>\n  <div class=\"settings-field\">\n    <label>标题</label>\n    <input class=\"image-title\" type=\"text\"/>\n  </div>\n</div>";
+
+    ImagePopover.prototype.offset = {
+      top: 6,
+      left: -4
+    };
+
+    function ImagePopover(button) {
+      this.button = button;
+      ImagePopover.__super__.constructor.call(this, this.button.editor);
+    }
+
+    ImagePopover.prototype.render = function() {
+      var _this = this;
+      this.el.addClass('image-popover').append(this._tpl);
+      this.srcEl = this.el.find('.image-src');
+      this.titleEl = this.el.find('.image-title');
+      this.srcEl.on('keyup', function(e) {
+        if (e.which === 13) {
+          return;
+        }
+        if (_this.timer) {
+          clearTimeout(_this.timer);
+        }
+        return _this.timer = setTimeout(function() {
+          var $img, src;
+          src = _this.srcEl.val();
+          $img = _this.target.find('img');
+          return _this.button.loadImage($img, src, function(success) {
+            if (!success) {
+              return;
+            }
+            _this.refresh();
+            return _this.editor.trigger('valuechanged');
+          });
+        }, 200);
+      });
+      this.titleEl.on('keyup', function(e) {
+        if (e.which === 13) {
+          return;
+        }
+        return _this.target.find('img').attr('title', _this.titleEl.val());
+      });
+      return $([this.srcEl[0], this.titleEl[0]]).on('keydown', function(e) {
+        if (e.which === 13 || e.which === 27 || (e.which === 9 && $(e.target).hasClass('image-title'))) {
+          e.preventDefault();
+          _this.target.removeClass('selected');
+          return _this.hide();
+        }
+      });
+    };
+
+    ImagePopover.prototype.show = function() {
+      var $img, args;
+      args = 1 <= arguments.length ? __slice.call(arguments, 0) : [];
+      ImagePopover.__super__.show.apply(this, args);
+      $img = this.target.find('img');
+      this.srcEl.val($img.attr('src'));
+      return this.titleEl.val($img.attr('title'));
+    };
+
+    return ImagePopover;
+
+  })(Popover);
+
+  Simditor.Toolbar.addButton(ImageButton);
 
 }).call(this);

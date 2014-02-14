@@ -29,37 +29,37 @@ class Button extends Module
 
   shortcut: null
 
-  constructor: (@toolbar) ->
+  constructor: (@editor) ->
     @render()
 
     @el.on 'mousedown', (e) =>
       e.preventDefault()
-      return if @el.hasClass('disabled') or (@needFocus and !@toolbar.editor.inputManager.focused)
+      return if @el.hasClass('disabled') or (@needFocus and !@editor.inputManager.focused)
 
       if @menu
-        @toolbar.wrapper.toggleClass('menu-on')
+        @editor.toolbar.wrapper.toggleClass('menu-on')
       else
         @command()
 
-    @toolbar.list.on 'mousedown', 'a.menu-item', (e) =>
+    @editor.toolbar.list.on 'mousedown', 'a.menu-item', (e) =>
       e.preventDefault()
       btn = $(e.currentTarget)
       return if btn.hasClass 'disabled'
 
-      @toolbar.wrapper.removeClass('menu-on')
+      @editor.toolbar.wrapper.removeClass('menu-on')
       param = btn.data('param')
       @command(param)
 
-    @toolbar.editor.on 'blur', =>
+    @editor.on 'blur', =>
       @setActive false
       @setDisabled false
 
     if @shortcut?
-      @toolbar.editor.inputManager.addShortcut @shortcut, (e) =>
+      @editor.inputManager.addShortcut @shortcut, (e) =>
         @el.mousedown()
 
   render: ->
-    @wrapper = $(@_tpl.item).appendTo @toolbar.list
+    @wrapper = $(@_tpl.item).appendTo @editor.toolbar.list
     @el = @wrapper.find 'a.toolbar-item'
 
     @el.attr('title', @title)

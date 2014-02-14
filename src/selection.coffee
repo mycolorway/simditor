@@ -27,12 +27,12 @@ class Selection extends Plugin
     endNode = range.endContainer
     #node.normalize()
 
-    if range.endOffset != @editor.util.getNodeLength endNode
-      return false
-
     if node == endNode
       return true
     else if !$.contains(node, endNode)
+      return false
+
+    if range.endOffset != @editor.util.getNodeLength endNode 
       return false
 
     result = true
@@ -49,12 +49,12 @@ class Selection extends Plugin
     node = $(node)[0]
     startNode = range.startContainer
 
-    if range.startOffset != 0
-      return false
-
     if node == startNode
       return true
     else if !$.contains(node, startNode)
+      return false
+
+    if range.startOffset != 0
       return false
 
     result = true

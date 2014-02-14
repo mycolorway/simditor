@@ -23,8 +23,8 @@ class UnderlineButton extends Button
 
   command: ->
     document.execCommand 'underline'
-    @toolbar.editor.trigger 'valuechanged'
-    @toolbar.editor.trigger 'selectionchanged'
+    @editor.trigger 'valuechanged'
+    @editor.trigger 'selectionchanged'
 
 
 Simditor.Toolbar.addButton(UnderlineButton)

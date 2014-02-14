@@ -17,7 +17,7 @@ class Toolbar extends Plugin
     return unless @opts.toolbar
 
     unless $.isArray @opts.toolbar
-      @opts.toolbar = ['bold', 'italic', 'underline', '|', 'ol', 'ul', 'blockquote', 'code', '|', 'link']
+      @opts.toolbar = ['bold', 'italic', 'underline', '|', 'ol', 'ul', 'blockquote', 'code', '|', 'link', 'image']
 
     @_render()
     
@@ -70,7 +70,7 @@ class Toolbar extends Plugin
         throw new Error 'simditor: invalid toolbar button "' + name + '"'
         continue
       
-      @_buttons.push new @constructor.buttons[name](@)
+      @_buttons.push new @constructor.buttons[name](@editor)
 
   toolbarStatus: (name) ->
     return unless @editor.inputManager.focused

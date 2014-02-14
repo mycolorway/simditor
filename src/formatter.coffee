@@ -11,22 +11,15 @@ class Formatter extends Plugin
 
   _allowedTags: ['a', 'img', 'b', 'strong', 'i', 'u', 'p', 'ul', 'ol', 'li', 'blockquote', 'hr', 'pre', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'table']
 
+  _allowedAttributes:
+    img: ['src', 'alt', 'width', 'height']
+    a: ['href', 'target']
+
   decorate: ($el = @editor.body) ->
     @editor.trigger 'decorate', [$el]
 
   undecorate: ($el = @editor.body.clone()) ->
     @editor.trigger 'undecorate', [$el]
-
-    # generate `a` tag automatically
-    @autolink $el
-
-    # remove empty `p` tag at the end of content
-    lastP = $el.children().last 'p'
-    while lastP.is 'p' and !lastP.text() and !lastP.find('img').length
-      emptyP = lastP
-      lastP = lastP.prev 'p'
-      emptyP.remove()
-
     $.trim $el.html()
 
   autolink: ($el = @editor.body) ->
@@ -78,6 +71,8 @@ class Formatter extends Plugin
         blockNode = $('<p/>').insertBefore(node) unless blockNode?
         blockNode.append(node)
 
+    $el
+
   cleanNode: (node, recursive) ->
     $node = $(node)
 
@@ -85,16 +80,18 @@ class Formatter extends Plugin
       return
 
     contents = $node.contents()
+    isDecoration = $node.is('[class^="simditor-"]')
 
-    if $node.is @_allowedTags.join(',')
+    if $node.is(@_allowedTags.join(',')) or isDecoration
       # img inside a is not allowed
       if $node.is('a') and $node.find('img').length > 0
         contents.first().unwrap()
 
       # Clean attributes except `src` `alt` on `img` tag and `href` `target` on `a` tag
-      for attr in $.makeArray($node[0].attributes)
-        if !($node.is('img') and attr.name in ['src', 'alt']) and !($node.is('a') and attr.name in ['href', 'target'])
-          $node.removeAttr(attr.name)
+      unless isDecoration
+        allowedAttributes = @_allowedAttributes[$node[0].tagName.toLowerCase()]
+        for attr in $.makeArray($node[0].attributes)
+            $node.removeAttr(attr.name) unless allowedAttributes? and attr.name in allowedAttributes
     else if $node[0].nodeType == 1 and !$node.is ':empty'
       #$('<p/>').append(contents)
         #.insertBefore($node)

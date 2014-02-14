@@ -30,12 +30,12 @@ class InputManager extends Plugin
       .appendTo(@editor.el)
 
     @editor.on 'valuechanged', =>
-      # make sure each code block has a p following it
-      @editor.body.find('pre').each (i, pre) =>
-        $pre = $(pre)
-        if $pre.next().length == 0
+      # make sure each code block and img has a p following it
+      @editor.body.find('pre, .simditor-image').each (i, el) =>
+        $el = $(el)
+        if ($el.parent().is('blockquote') or $el.parent()[0] == @editor.body[0]) and $el.next().length == 0
           $('<p/>').append(@editor.util.phBr)
-            .insertAfter($pre)
+            .insertAfter($el)
 
     @editor.body.on('keydown', $.proxy(@_onKeyDown, @))
       .on('keyup', $.proxy(@_onKeyUp, @))
@@ -55,11 +55,6 @@ class InputManager extends Plugin
     @focused = true
 
     @editor.body.find('.selected').removeClass('selected')
-    #if $selectedNode.length
-    #range = @editor.selection.getRange()
-    #range.selectNode $selectedNode[0]
-    #@editor.selection.selectRange range
-    #$selectedNode.removeClass 'selected'
 
     setTimeout =>
       @editor.trigger 'focus'
@@ -73,6 +68,7 @@ class InputManager extends Plugin
     @editor.trigger 'blur'
 
   _onMouseUp: (e) ->
+    return if $(e.target).is('img, .simditor-image')
     @editor.trigger 'selectionchanged'
 
   _onKeyDown: (e) ->
@@ -187,6 +183,7 @@ class InputManager extends Plugin
       else
         pasteContent = $('<div/>').append(@_pasteArea.contents())
         @editor.formatter.format pasteContent
+        @editor.formatter.decorate pasteContent
         pasteContent = pasteContent.contents()
 
       @_pasteArea.empty()

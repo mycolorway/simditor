@@ -18,14 +18,13 @@ class ListButton extends Button
       return @active
 
   command: (param) ->
-    editor =  @toolbar.editor
-    range = editor.selection.getRange()
+    range = @editor.selection.getRange()
     startNode = range.startContainer
     endNode = range.endContainer
-    $startBlock = editor.util.closestBlockEl(startNode)
-    $endBlock = editor.util.closestBlockEl(endNode)
+    $startBlock = @editor.util.closestBlockEl(startNode)
+    $endBlock = @editor.util.closestBlockEl(endNode)
 
-    editor.selection.save()
+    @editor.selection.save()
 
     range.setStartBefore $startBlock[0]
     range.setEndAfter $endBlock[0]
@@ -37,15 +36,15 @@ class ListButton extends Button
 
     if $breakedEl?
       $contents.wrapInner('<' + $breakedEl[0].tagName + '/>')
-      if editor.selection.rangeAtStartOf $breakedEl, range
+      if @editor.selection.rangeAtStartOf $breakedEl, range
         range.setEndBefore($breakedEl[0])
         range.collapse(false)
         $breakedEl.remove() if $breakedEl.children().length < 1
-      else if editor.selection.rangeAtEndOf $breakedEl, range
+      else if @editor.selection.rangeAtEndOf $breakedEl, range
         range.setEndAfter($breakedEl[0])
         range.collapse(false)
       else
-        $breakedEl = editor.selection.breakBlockEl($breakedEl, range)
+        $breakedEl = @editor.selection.breakBlockEl($breakedEl, range)
         range.setEndBefore($breakedEl[0])
         range.collapse(false)
 
@@ -59,20 +58,19 @@ class ListButton extends Button
           results.push(c)
 
     range.insertNode node[0] for node in results.reverse()
-    editor.selection.restore()
+    @editor.selection.restore()
 
-    @toolbar.editor.trigger 'valuechanged'
-    @toolbar.editor.trigger 'selectionchanged'
+    @editor.trigger 'valuechanged'
+    @editor.trigger 'selectionchanged'
 
   _convertEl: (el) ->
-    editor = @toolbar.editor
     $el = $(el)
     results = []
     anotherType = if @type == 'ul' then 'ol' else 'ul'
     
     if $el.is @type
       $el.find('li').each (i, li) =>
-        block = $('<p/>').append($(li).html() || editor.util.phBr)
+        block = $('<p/>').append($(li).html() || @editor.util.phBr)
         results.push(block)
     else if $el.is anotherType
       block = $('<' + @type + '/>').append($el.html())
@@ -84,7 +82,7 @@ class ListButton extends Button
       # TODO
     else
       block = $('<' + @type + '><li></li></' + @type + '>')
-      block.find('li').append($el.html() || editor.util.phBr)
+      block.find('li').append($el.html() || @editor.util.phBr)
       results.push(block)
 
     results

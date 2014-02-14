@@ -23,8 +23,8 @@ class BoldButton extends Button
 
   command: ->
     document.execCommand 'bold'
-    @toolbar.editor.trigger 'valuechanged'
-    @toolbar.editor.trigger 'selectionchanged'
+    @editor.trigger 'valuechanged'
+    @editor.trigger 'selectionchanged'
 
 
 Simditor.Toolbar.addButton(BoldButton)
