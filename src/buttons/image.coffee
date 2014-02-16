@@ -38,18 +38,21 @@ class ImageButton extends Button
         @undecorate $(img)
 
     @editor.body.on 'mousedown', '.simditor-image', (e) =>
-      $img = $(e.currentTarget)
+      $imgWrapper = $(e.currentTarget)
 
-      if $img.hasClass 'selected'
+      if $imgWrapper.hasClass 'selected'
         @popover.srcEl.blur()
         @popover.titleEl.blur()
         @popover.hide()
-        $img.removeClass('selected')
+        $imgWrapper.removeClass('selected')
       else
         @editor.body.blur()
         @editor.body.find('.simditor-image').removeClass('selected')
-        $img = $(e.currentTarget).addClass('selected').focus()
-        @popover.show $img
+        $imgWrapper.addClass('selected').focus()
+        $img = $imgWrapper.find('img')
+        $imgWrapper.width $img.width()
+        $imgWrapper.height $img.height()
+        @popover.show $imgWrapper
 
       false
 

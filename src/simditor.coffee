@@ -95,17 +95,19 @@ class Simditor extends Widget
     @sync()
 
   sync: ->
+    cloneBody = @body.clone()
+
     # generate `a` tag automatically
-    @formatter.autolink @body
+    @formatter.autolink cloneBody
 
     # remove empty `p` tag at the end of content
-    lastP = @body.children().last 'p'
+    lastP = cloneBody.children().last 'p'
     while lastP.is 'p' and !lastP.text() and !lastP.find('img').length
       emptyP = lastP
       lastP = lastP.prev 'p'
       emptyP.remove()
 
-    val = @formatter.undecorate()
+    val = @formatter.undecorate cloneBody
     @textarea.val val
     val
 

@@ -65,7 +65,7 @@ class Formatter extends Plugin
     @cleanNode(n, true) for n in $el.contents()
 
     for node in $el.contents()
-      if @editor.util.isBlockNode node
+      if @editor.util.isBlockNode(node) or $(node).is('img')
         blockNode = null
       else
         blockNode = $('<p/>').insertBefore(node) unless blockNode?

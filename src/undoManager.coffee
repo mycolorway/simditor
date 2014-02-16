@@ -30,7 +30,7 @@ class UndoManager extends Plugin
         @_pushUndoState()
       , 300
 
-    @_pushUndoState()
+    #@_pushUndoState()
 
   _pushUndoState: ->
     if @_stack.length and @_index > -1
@@ -57,8 +57,8 @@ class UndoManager extends Plugin
 
     state = @_stack[@_index]
     @editor.body.html state.html
-    @editor.sync()
     @caretPosition state.caret
+    @editor.sync()
 
     @editor.trigger 'valuechanged', ['undo']
     @editor.trigger 'selectionchanged', ['undo']
@@ -70,8 +70,8 @@ class UndoManager extends Plugin
 
     state = @_stack[@_index]
     @editor.body.html state.html
-    @editor.sync()
     @caretPosition state.caret
+    @editor.sync()
 
     @editor.trigger 'valuechanged', ['undo']
     @editor.trigger 'selectionchanged', ['undo']
@@ -124,7 +124,6 @@ class UndoManager extends Plugin
     for offset in position[0...position.length - 1]
       childNodes = node.childNodes
       if offset > childNodes.length - 1
-        debugger
         node = null
         break
       node = childNodes[offset]

@@ -184,7 +184,7 @@
 }
 .simditor .simditor-body h1, .simditor .simditor-body h2, .simditor .simditor-body h3, .simditor .simditor-body h4, .simditor .simditor-body h5, .simditor .simditor-body h6, .editor-style h1, .editor-style h2, .editor-style h3, .editor-style h4, .editor-style h5, .editor-style h6 {
   font-weight: normal;
-  color: #333333 !important;
+  color: black !important;
   text-align: left !important;
   line-height: 1.6 !important;
   margin: 0.5em 0 !important;

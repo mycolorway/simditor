@@ -25,21 +25,25 @@ class Selection extends Plugin
 
     node = $(node)[0]
     endNode = range.endContainer
+    endNodeLength = @editor.util.getNodeLength endNode
     #node.normalize()
+    
+    if !(range.endOffset == endNodeLength - 1 and $(endNode).contents().last().is('br')) and range.endOffset != endNodeLength
+      return false
 
     if node == endNode
       return true
     else if !$.contains(node, endNode)
       return false
 
-    if range.endOffset != @editor.util.getNodeLength endNode 
-      return false
-
     result = true
     $(endNode).parentsUntil(node).addBack().each (i, n) =>
       nodes = $(n).parent().contents().filter ->
         !(this.nodeType == 3 && !this.nodeValue)
-      result = false unless nodes.last().get(0) == n
+      $lastChild = nodes.last()
+      unless $lastChild.get(0) == n or ($lastChild.is('br') and $lastChild.prev().get(0) == n)
+        result = false
+        return false
 
     result
 
@@ -49,12 +53,12 @@ class Selection extends Plugin
     node = $(node)[0]
     startNode = range.startContainer
 
+    if range.startOffset != 0
+      return false
+
     if node == startNode
       return true
     else if !$.contains(node, startNode)
-      return false
-
-    if range.startOffset != 0
       return false
 
     result = true

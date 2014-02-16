@@ -180,7 +180,7 @@
     };
 
     Selection.prototype.rangeAtEndOf = function(node, range) {
-      var endNode, result,
+      var endNode, endNodeLength, result,
         _this = this;
       if (range == null) {
         range = this.getRange();
@@ -190,22 +190,25 @@
       }
       node = $(node)[0];
       endNode = range.endContainer;
+      endNodeLength = this.editor.util.getNodeLength(endNode);
+      if (!(range.endOffset === endNodeLength - 1 && $(endNode).contents().last().is('br')) && range.endOffset !== endNodeLength) {
+        return false;
+      }
       if (node === endNode) {
         return true;
       } else if (!$.contains(node, endNode)) {
         return false;
       }
-      if (range.endOffset !== this.editor.util.getNodeLength(endNode)) {
-        return false;
-      }
       result = true;
       $(endNode).parentsUntil(node).addBack().each(function(i, n) {
-        var nodes;
+        var $lastChild, nodes;
         nodes = $(n).parent().contents().filter(function() {
           return !(this.nodeType === 3 && !this.nodeValue);
         });
-        if (nodes.last().get(0) !== n) {
-          return result = false;
+        $lastChild = nodes.last();
+        if (!($lastChild.get(0) === n || ($lastChild.is('br') && $lastChild.prev().get(0) === n))) {
+          result = false;
+          return false;
         }
       });
       return result;
@@ -222,12 +225,12 @@
       }
       node = $(node)[0];
       startNode = range.startContainer;
+      if (range.startOffset !== 0) {
+        return false;
+      }
       if (node === startNode) {
         return true;
       } else if (!$.contains(node, startNode)) {
-        return false;
-      }
-      if (range.startOffset !== 0) {
         return false;
       }
       result = true;
@@ -489,7 +492,7 @@
       _ref1 = $el.contents();
       for (_j = 0, _len1 = _ref1.length; _j < _len1; _j++) {
         node = _ref1[_j];
-        if (this.editor.util.isBlockNode(node)) {
+        if (this.editor.util.isBlockNode(node) || $(node).is('img')) {
           blockNode = null;
         } else {
           if (blockNode == null) {
@@ -960,7 +963,7 @@
       this.editor.inputManager.addShortcut('shift+cmd+90', function(e) {
         return _this.redo();
       });
-      this.editor.on('valuechanged', function(e, src) {
+      return this.editor.on('valuechanged', function(e, src) {
         if (src === 'undo') {
           return;
         }
@@ -972,7 +975,6 @@
           return _this._pushUndoState();
         }, 300);
       });
-      return this._pushUndoState();
     };
 
     UndoManager.prototype._pushUndoState = function() {
@@ -1004,8 +1006,8 @@
       this._index -= 1;
       state = this._stack[this._index];
       this.editor.body.html(state.html);
-      this.editor.sync();
       this.caretPosition(state.caret);
+      this.editor.sync();
       this.editor.trigger('valuechanged', ['undo']);
       return this.editor.trigger('selectionchanged', ['undo']);
     };
@@ -1018,8 +1020,8 @@
       this._index += 1;
       state = this._stack[this._index];
       this.editor.body.html(state.html);
-      this.editor.sync();
       this.caretPosition(state.caret);
+      this.editor.sync();
       this.editor.trigger('valuechanged', ['undo']);
       return this.editor.trigger('selectionchanged', ['undo']);
     };
@@ -1081,7 +1083,6 @@
         offset = _ref[_i];
         childNodes = node.childNodes;
         if (offset > childNodes.length - 1) {
-          debugger;
           node = null;
           break;
         }
@@ -1552,15 +1553,16 @@
     };
 
     Simditor.prototype.sync = function() {
-      var emptyP, lastP, val;
-      this.formatter.autolink(this.body);
-      lastP = this.body.children().last('p');
+      var cloneBody, emptyP, lastP, val;
+      cloneBody = this.body.clone();
+      this.formatter.autolink(cloneBody);
+      lastP = cloneBody.children().last('p');
       while (lastP.is('p' && !lastP.text() && !lastP.find('img').length)) {
         emptyP = lastP;
         lastP = lastP.prev('p');
         emptyP.remove();
       }
-      val = this.formatter.undecorate();
+      val = this.formatter.undecorate(cloneBody);
       this.textarea.val(val);
       return val;
     };
@@ -2487,18 +2489,21 @@
         });
       });
       this.editor.body.on('mousedown', '.simditor-image', function(e) {
-        var $img;
-        $img = $(e.currentTarget);
-        if ($img.hasClass('selected')) {
+        var $img, $imgWrapper;
+        $imgWrapper = $(e.currentTarget);
+        if ($imgWrapper.hasClass('selected')) {
           _this.popover.srcEl.blur();
           _this.popover.titleEl.blur();
           _this.popover.hide();
-          $img.removeClass('selected');
+          $imgWrapper.removeClass('selected');
         } else {
           _this.editor.body.blur();
           _this.editor.body.find('.simditor-image').removeClass('selected');
-          $img = $(e.currentTarget).addClass('selected').focus();
-          _this.popover.show($img);
+          $imgWrapper.addClass('selected').focus();
+          $img = $imgWrapper.find('img');
+          $imgWrapper.width($img.width());
+          $imgWrapper.height($img.height());
+          _this.popover.show($imgWrapper);
         }
         return false;
       });
