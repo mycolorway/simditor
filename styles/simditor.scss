@@ -162,7 +162,6 @@
 		border-radius: 2px;
 		position: absolute;
 		z-index: 2;
-		
 
 		.settings-field {
 			margin: 0 0 5px 0;
@@ -176,6 +175,22 @@
 				width: 200px;
 				box-sizing: border-box;
 				font-size: 12px;
+			}
+		}
+
+		&.link-popover {
+			.btn-unlink {
+				margin: 0 0 0 5px;
+				color: #333333;
+				font-size: 14px;
+
+				span {
+					opacity: 0.6;
+				}
+
+				&:hover span {
+					opacity: 1;
+				}
 			}
 		}
 	}

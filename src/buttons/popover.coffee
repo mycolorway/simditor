@@ -12,6 +12,7 @@ class Popover extends Module
   constructor: (@editor) ->
     @el = $('<div class="simditor-popover"></div>')
       .appendTo(@editor.wrapper)
+      .data('popover', @)
     @render()
 
     @editor.on 'blur.linkpopover', =>
@@ -28,12 +29,17 @@ class Popover extends Module
       left: -9999
     }).show()
 
+    @el.siblings('.simditor-popover').each (i, popover) =>
+      popover = $(popover).data('popover')
+      popover.hide() if popover.active
+
     setTimeout =>
       @refresh(position)
       @trigger 'popovershow'
     , 0
 
   hide: ->
+    @target.removeClass('selected') if @target
     @target = null
     @active = false
     @el.hide()

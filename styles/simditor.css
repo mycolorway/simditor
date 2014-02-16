@@ -149,6 +149,17 @@
   box-sizing: border-box;
   font-size: 12px;
 }
+.simditor .simditor-popover.link-popover .btn-unlink {
+  margin: 0 0 0 5px;
+  color: #333333;
+  font-size: 14px;
+}
+.simditor .simditor-popover.link-popover .btn-unlink span {
+  opacity: 0.6;
+}
+.simditor .simditor-popover.link-popover .btn-unlink:hover span {
+  opacity: 1;
+}
 
 .simditor .simditor-body, .editor-style {
   padding: 22px 15px 40px;

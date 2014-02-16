@@ -63,6 +63,7 @@ class ImageButton extends Button
       return unless e.which == 8
       @popover.hide()
       $(e.currentTarget).remove()
+      @editor.trigger 'valuechanged'
       return false
 
   render: (args...) ->

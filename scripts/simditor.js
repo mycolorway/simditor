@@ -1733,7 +1733,7 @@
     function Popover(editor) {
       var _this = this;
       this.editor = editor;
-      this.el = $('<div class="simditor-popover"></div>').appendTo(this.editor.wrapper);
+      this.el = $('<div class="simditor-popover"></div>').appendTo(this.editor.wrapper).data('popover', this);
       this.render();
       this.editor.on('blur.linkpopover', function() {
         if (_this.active && (_this.target != null)) {
@@ -1757,6 +1757,12 @@
       this.el.css({
         left: -9999
       }).show();
+      this.el.siblings('.simditor-popover').each(function(i, popover) {
+        popover = $(popover).data('popover');
+        if (popover.active) {
+          return popover.hide();
+        }
+      });
       return setTimeout(function() {
         _this.refresh(position);
         return _this.trigger('popovershow');
@@ -1764,6 +1770,9 @@
     };
 
     Popover.prototype.hide = function() {
+      if (this.target) {
+        this.target.removeClass('selected');
+      }
       this.target = null;
       this.active = false;
       this.el.hide();
@@ -2404,13 +2413,14 @@
       return _ref11;
     }
 
-    LinkPopover.prototype._tpl = "<div class=\"link-settings\">\n  <div class=\"settings-field\">\n    <label>文本</label>\n    <input class=\"link-text\" type=\"text\"/>\n  </div>\n  <div class=\"settings-field\">\n    <label>链接</label>\n    <input class=\"link-url\" type=\"text\"/>\n  </div>\n</div>";
+    LinkPopover.prototype._tpl = "<div class=\"link-settings\">\n  <div class=\"settings-field\">\n    <label>文本</label>\n    <input class=\"link-text\" type=\"text\"/>\n    <a class=\"btn-unlink\" href=\"javascript:;\" title=\"取消链接\"><span class=\"fa fa-unlink\"></span></a>\n  </div>\n  <div class=\"settings-field\">\n    <label>链接</label>\n    <input class=\"link-url\" type=\"text\"/>\n  </div>\n</div>";
 
     LinkPopover.prototype.render = function() {
       var _this = this;
       this.el.addClass('link-popover').append(this._tpl);
       this.textEl = this.el.find('.link-text');
       this.urlEl = this.el.find('.link-url');
+      this.unlinkEl = this.el.find('.btn-unlink');
       this.textEl.on('keyup', function(e) {
         if (e.which === 13) {
           return;
@@ -2423,7 +2433,7 @@
         }
         return _this.target.attr('href', _this.urlEl.val());
       });
-      return $([this.urlEl[0], this.textEl[0]]).on('keydown', function(e) {
+      $([this.urlEl[0], this.textEl[0]]).on('keydown', function(e) {
         if (e.which === 13 || e.which === 27 || (e.which === 9 && $(e.target).hasClass('link-url'))) {
           e.preventDefault();
           return setTimeout(function() {
@@ -2434,6 +2444,17 @@
             _this.hide();
             return _this.editor.trigger('valuechanged');
           }, 0);
+        }
+      });
+      return this.unlinkEl.on('click', function(e) {
+        var range, txtNode;
+        txtNode = document.createTextNode(_this.target.text());
+        _this.target.replaceWith(txtNode);
+        _this.hide();
+        range = document.createRange();
+        _this.editor.selection.setRangeAfter(txtNode, range);
+        if (!_this.editor.inputManager.focused) {
+          return _this.editor.body.focus();
         }
       });
     };
@@ -2516,6 +2537,7 @@
         }
         _this.popover.hide();
         $(e.currentTarget).remove();
+        _this.editor.trigger('valuechanged');
         return false;
       });
     }

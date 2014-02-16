@@ -71,6 +71,7 @@ class LinkPopover extends Popover
       <div class="settings-field">
         <label>文本</label>
         <input class="link-text" type="text"/>
+        <a class="btn-unlink" href="javascript:;" title="取消链接"><span class="fa fa-unlink"></span></a>
       </div>
       <div class="settings-field">
         <label>链接</label>
@@ -84,6 +85,7 @@ class LinkPopover extends Popover
       .append(@_tpl)
     @textEl = @el.find '.link-text'
     @urlEl = @el.find '.link-url'
+    @unlinkEl = @el.find '.btn-unlink'
 
     @textEl.on 'keyup', (e) =>
       return if e.which == 13
@@ -103,6 +105,15 @@ class LinkPopover extends Popover
           @hide()
           @editor.trigger 'valuechanged'
         , 0
+
+    @unlinkEl.on 'click', (e) =>
+      txtNode = document.createTextNode @target.text()
+      @target.replaceWith txtNode
+      @hide()
+
+      range = document.createRange()
+      @editor.selection.setRangeAfter txtNode, range
+      @editor.body.focus() unless @editor.inputManager.focused
 
   show: (args...) ->
     super args...
