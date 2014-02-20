@@ -49,8 +49,28 @@
 		background: transparent;
 
 		& > :first-child {
-			margin-top: 0;
+			margin-top: 0!important;
 		}
+
+		a.selected {
+			background: #b3d4fd;
+		}
+
+		.simditor-image {
+			margin: 15px 0;
+			cursor: pointer;
+			outline: none;
+
+			&.selected {
+				background: none;
+				box-shadow: 0 0 0 4px rgba(0,0,0,0.2);
+			}
+		
+			.simditor-image-resize-handle {
+				display: none;
+			}
+		}
+
 	}
 
 	.simditor-paste-area {
@@ -205,19 +225,11 @@
 	outline: none;
 	word-wrap: break-word;
 
-	& > :first-child {
-		margin-top: 0 !important;
-	}
-
 	a{ color: #4298BA; text-decoration: none; word-break: break-all;}
 	a:visited{ color: #4298BA; }
 	a:hover{ color: #0F769F; }
 	a:active{ color:#9E792E; }
 	a:hover, a:active{ outline: 0; }
-
-	.selected {
-		background: #b3d4fd;
-	}
 
 	h1,h2,h3,h4,h5,h6 {
 		font-weight: normal;
@@ -242,7 +254,7 @@
 
 	b, strong {
 		font-weight: bold!important;
-		color: #e79852;
+		/*color: #e79852;*/
 	}
 
 	i, em {
@@ -329,25 +341,10 @@
 		}
 	}
 
-	.simditor-image {
-		margin: 15px 0;
+	img {
 		cursor: pointer;
-		outline: none;
-
-		&.selected {
-			background: none;
-			box-shadow: 0 0 0 4px rgba(0,0,0,0.2);
-		}
-	
-		img {
-			cursor: pointer;
-			-ms-interpolation-mode: bicubic;
-			vertical-align: bottom;
-		}
-
-		.simditor-image-resize-handle {
-			display: none;
-		}
+		-ms-interpolation-mode: bicubic;
+		vertical-align: bottom;
 	}
 
 }

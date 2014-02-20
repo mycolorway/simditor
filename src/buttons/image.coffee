@@ -42,7 +42,6 @@ class ImageButton extends Button
 
       if $imgWrapper.hasClass 'selected'
         @popover.srcEl.blur()
-        @popover.titleEl.blur()
         @popover.hide()
         $imgWrapper.removeClass('selected')
       else
@@ -160,12 +159,8 @@ class ImagePopover extends Popover
   _tpl: """
     <div class="link-settings">
       <div class="settings-field">
-        <label>地址</label>
+        <label>图片地址</label>
         <input class="image-src" type="text"/>
-      </div>
-      <div class="settings-field">
-        <label>标题</label>
-        <input class="image-title" type="text"/>
       </div>
     </div>
   """
@@ -181,7 +176,6 @@ class ImagePopover extends Popover
     @el.addClass('image-popover')
       .append(@_tpl)
     @srcEl = @el.find '.image-src'
-    @titleEl = @el.find '.image-title'
 
     @srcEl.on 'keyup', (e) =>
       return if e.which == 13
@@ -194,17 +188,14 @@ class ImagePopover extends Popover
           return unless success
           @refresh()
           @editor.trigger 'valuechanged'
+
+        @timer = null
       , 200
 
-    @titleEl.on 'keyup', (e) =>
-      return if e.which == 13
-      @target.find('img').attr 'title', @titleEl.val()
-
-    $([@srcEl[0], @titleEl[0]]).on 'keydown', (e) =>
-      if e.which == 13 or e.which == 27 or (e.which == 9 and $(e.target).hasClass('image-title'))
+    @srcEl.on 'keydown', (e) =>
+      if e.which == 13 or e.which == 27 or e.which == 9
         e.preventDefault()
         @srcEl.blur()
-        @titleEl.blur()
         @target.removeClass('selected')
         @hide()
 
@@ -212,7 +203,6 @@ class ImagePopover extends Popover
     super args...
     $img = @target.find('img')
     @srcEl.val $img.attr('src')
-    @titleEl.val $img.attr('title')
 
 
 Simditor.Toolbar.addButton(ImageButton)

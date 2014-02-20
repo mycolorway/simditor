@@ -15,7 +15,7 @@ class Popover extends Module
       .data('popover', @)
     @render()
 
-    @editor.on 'blur.linkpopover', =>
+    @editor.on 'simditorblur.linkpopover', =>
       @target.addClass('selected') if @active and @target?
 
   render: ->
@@ -23,22 +23,29 @@ class Popover extends Module
   show: ($target, position = 'bottom') ->
     return unless $target?
     @target = $target
-    @active = true
 
-    @el.css({
-      left: -9999
-    }).show()
+    @el.siblings('.simditor-popover').each (i, el) =>
+      popover = $(el).data('popover')
+      popover.hide()
 
-    @el.siblings('.simditor-popover').each (i, popover) =>
-      popover = $(popover).data('popover')
-      popover.hide() if popover.active
-
-    setTimeout =>
+    if @active
       @refresh(position)
       @trigger 'popovershow'
-    , 0
+    else
+      console.log(1)
+      @active = true
+
+      @el.css({
+        left: -9999
+      }).show()
+
+      setTimeout =>
+        @refresh(position)
+        @trigger 'popovershow'
+      , 0
 
   hide: ->
+    return unless @active
     @target.removeClass('selected') if @target
     @target = null
     @active = false

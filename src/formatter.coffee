@@ -9,11 +9,12 @@ class Formatter extends Plugin
     @editor.body.on 'click', 'a', (e) =>
       false
 
-  _allowedTags: ['a', 'img', 'b', 'strong', 'i', 'u', 'p', 'ul', 'ol', 'li', 'blockquote', 'hr', 'pre', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'table']
+  _allowedTags: ['a', 'img', 'b', 'strong', 'i', 'u', 'p', 'ul', 'ol', 'li', 'blockquote', 'pre', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6']
 
   _allowedAttributes:
     img: ['src', 'alt', 'width', 'height']
     a: ['href', 'target']
+    pre: ['data-lang']
 
   decorate: ($el = @editor.body) ->
     @editor.trigger 'decorate', [$el]
@@ -118,4 +119,5 @@ class Formatter extends Plugin
           result += '\n'
 
     result
+
 

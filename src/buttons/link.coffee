@@ -20,7 +20,7 @@ class LinkButton extends Button
 
     if @active
       @popover.show($node)
-    else
+    else if @editor.util.isBlockNode($node)
       @popover.hide()
 
     result

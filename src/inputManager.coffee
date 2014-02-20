@@ -57,15 +57,16 @@ class InputManager extends Plugin
     @editor.body.find('.selected').removeClass('selected')
 
     setTimeout =>
-      @editor.trigger 'focus'
+      @editor.trigger 'simditorfocus'
       @editor.trigger 'selectionchanged'
     , 0
 
   _onBlur: (e) ->
     @editor.el.removeClass 'focus'
+    @editor.sync()
     @focused = false
 
-    @editor.trigger 'blur'
+    @editor.trigger 'simditorblur'
 
   _onMouseUp: (e) ->
     return if $(e.target).is('img, .simditor-image')
@@ -144,11 +145,21 @@ class InputManager extends Plugin
       @editor.trigger 'selectionchanged'
       return false
 
-    clearTimeout @_typing if @_typing
-    @_typing = setTimeout =>
-      @editor.trigger 'valuechanged'
-      @editor.trigger 'selectionchanged'
-      @_typing = false
+    if @_typing
+      clearTimeout @_typing if @_typing != true
+      @_typing = setTimeout =>
+        @editor.trigger 'valuechanged'
+        @editor.trigger 'selectionchanged'
+        @_typing = false
+      , 200
+    else
+      setTimeout =>
+        @editor.trigger 'valuechanged'
+        @editor.trigger 'selectionchanged'
+      , 10
+      @_typing = true
+
+    null
 
   _onKeyUp: (e) ->
     if @editor.triggerHandler(e) == false
@@ -335,8 +346,6 @@ class InputManager extends Plugin
 
   addShortcut: (keys, handler) ->
     @_shortcuts[keys] = $.proxy(handler, this)
-
-
 
 
 

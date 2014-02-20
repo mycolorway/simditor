@@ -28,7 +28,7 @@ class UndoManager extends Plugin
 
       @_timer = setTimeout =>
         @_pushUndoState()
-      , 300
+      , 200
 
     #@_pushUndoState()
 
@@ -53,6 +53,8 @@ class UndoManager extends Plugin
   undo: ->
     return if @_index < 1 or @_stack.length < 2
 
+    @editor.hidePopover()
+
     @_index -= 1
 
     state = @_stack[@_index]
@@ -65,6 +67,8 @@ class UndoManager extends Plugin
 
   redo: ->
     return if @_index < 0 or @_stack.length < @_index + 2
+
+    @editor.hidePopover()
 
     @_index += 1
 

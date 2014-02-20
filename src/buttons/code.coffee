@@ -20,7 +20,7 @@ class CodeButton extends Button
 
     if @active
       @popover.show($node)
-    else
+    else if @editor.util.isBlockNode($node)
       @popover.hide()
 
     result
@@ -101,7 +101,7 @@ class CodePopover extends Popover
     @selectEl.on 'change', (e) =>
       lang = @selectEl.val()
       oldLang = @target.attr('data-lang')
-      @target.removeClass('lang' + oldLang)
+      @target.removeClass('lang-' + oldLang)
         .removeAttr('data-lang')
 
       if @lang isnt -1

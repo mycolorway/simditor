@@ -96,3 +96,5 @@ class Toolbar extends Plugin
     @buttons[btn::name] = btn
 
   @buttons: {}
+
+

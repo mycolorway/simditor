@@ -174,3 +174,4 @@ class Selection extends Plugin
     @_selectionSaved = false
     range
 
+

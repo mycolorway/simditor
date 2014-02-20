@@ -67,6 +67,10 @@ class Plugin extends Module
   _init: ->
 
 
+window.Module = Module
+window.Widget = Widget
+window.Plugin = Plugin
+
 
 # Hack: IE doesn't support Function.name
 if Function::name == undefined && Object.defineProperty != undefined

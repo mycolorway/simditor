@@ -50,7 +50,7 @@ class Button extends Module
       param = btn.data('param')
       @command(param)
 
-    @editor.on 'blur', =>
+    @editor.on 'simditorblur', =>
       @setActive false
       @setDisabled false
 
@@ -110,3 +110,6 @@ class Button extends Module
     @active
 
   command: (param) ->
+
+
+window.SimditorButton = Button
