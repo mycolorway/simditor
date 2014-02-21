@@ -159,6 +159,19 @@ class InputManager extends Plugin
       , 10
       @_typing = true
 
+    # check the input hooks
+    if e.which == 32
+      cmd = @_hookStack.join ''
+      @_hookStack.length = 0
+
+      for hook in @_inputHooks
+        if (hook.cmd instanceof RegExp and hook.cmd.test(cmd)) or hook.cmd == cmd
+          hook.callback(hook, cmd)
+          break
+    else if @_hookKeyMap[e.which]
+      @_hookStack.push @_hookKeyMap[e.which]
+      @_hookStack.shift() if @_hookStack.length > 10
+
     null
 
   _onKeyUp: (e) ->
@@ -229,6 +242,7 @@ class InputManager extends Plugin
       @editor.trigger 'selectionchanged'
     , 10
 
+  # handlers which will be called when specific key is pressed in specific node
   _inputHandlers:
     13: # enter
 
@@ -302,7 +316,6 @@ class InputManager extends Plugin
 
     9: #tab
       li: (e, $node) ->
-
         if e.shiftKey
           $parent = $node.parent()
           $parentLi = $parent.parent('li')
@@ -336,6 +349,17 @@ class InputManager extends Plugin
           @editor.selection.restore()
 
         true
+
+  # a hook will be triggered when specific string was typed
+  _inputHooks: []
+
+  _hookKeyMap: {}
+
+  _hookStack: []
+
+  addInputHook: (hookOpt) ->
+    $.extend(@_hookKeyMap, hookOpt.key)
+    @_inputHooks.push hookOpt
 
   _shortcuts:
     # meta + enter: submit form

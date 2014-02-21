@@ -13,6 +13,7 @@ module.exports = (grunt) ->
           'src/undoManager.coffee',
           'src/util.coffee',
           'src/toolbar.coffee',
+          'src/mention.coffee',
           'src/core.coffee',
           'src/buttons/button.coffee',
           'src/buttons/popover.coffee',

@@ -72,7 +72,7 @@ class Uploader extends Module
     @uploading = true
 
   getFile: (fileObj) ->
-    if fileObj.constructor == window.File
+    if fileObj instanceof window.File
       name = fileObj.fileName ? fileObj.name
     else if $(fileObj).is('input:file')
       name = $input.val().replace(/.*(\/|\\)/, "")
