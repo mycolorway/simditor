@@ -140,7 +140,7 @@ class Simditor extends Widget
       popover.hide() if popover.active
 
   destroy: ->
-    @trigger 'simditordestroy'
+    @triggerHandler 'destroy'
 
     @textarea.closest('form')
       .off('.simditor .simditor-' + @id)

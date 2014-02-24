@@ -50,7 +50,7 @@ class Button extends Module
       param = btn.data('param')
       @command(param)
 
-    @editor.on 'simditorblur', =>
+    @editor.on 'blur', =>
       @setActive false
       @setDisabled false
 

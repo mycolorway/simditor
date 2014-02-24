@@ -73,7 +73,7 @@ class CodePopover extends Popover
     <div class="code-settings">
       <div class="settings-field">
         <select class="select-lang">
-          <option value="-1">选择语言</option>
+          <option value="-1">选择程序语言</option>
           <option value="c++">C++</option>
           <option value="css">CSS</option>
           <option value="coffeeScript">CoffeeScript</option>

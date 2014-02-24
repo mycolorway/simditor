@@ -1,6 +1,8 @@
 
 class Toolbar extends Plugin
 
+  @className: 'Toolbar'
+
   opts:
     toolbar: true
     toolbarFloat: true
@@ -52,7 +54,7 @@ class Toolbar extends Plugin
     @editor.on 'selectionchanged', =>
       @toolbarStatus()
 
-    @editor.on 'simditordestroy', =>
+    @editor.on 'destroy', =>
       @_buttons.length = 0
 
 

@@ -103,7 +103,10 @@ class ImageButton extends Button
       $img.attr({
         src: src,
         width: width,
-        height: height
+        height: height,
+        'data-origin-name': src,
+        'data-origin-src': src,
+        'data-origin-size': width + ',' + height
       })
 
       $wrapper.width(width)

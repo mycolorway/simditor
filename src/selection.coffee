@@ -1,5 +1,8 @@
 
 class Selection extends Plugin
+
+  @className: 'Selection'
+
   constructor: (args...) ->
     super args...
     @sel = document.getSelection()

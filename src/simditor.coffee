@@ -1,5 +1,8 @@
 
 class Selection extends Plugin
+
+  @className: 'Selection'
+
   constructor: (args...) ->
     super args...
     @sel = document.getSelection()
@@ -179,6 +182,8 @@ class Selection extends Plugin
 
 class Formatter extends Plugin
 
+  @className: 'Formatter'
+
   constructor: (args...) ->
     super args...
     @editor = @widget
@@ -190,7 +195,7 @@ class Formatter extends Plugin
   _allowedTags: ['a', 'img', 'b', 'strong', 'i', 'u', 'p', 'ul', 'ol', 'li', 'blockquote', 'pre', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6']
 
   _allowedAttributes:
-    img: ['src', 'alt', 'width', 'height']
+    img: ['src', 'alt', 'width', 'height', 'data-origin-src', 'data-origin-size', 'data-origin-name']
     a: ['href', 'target']
     pre: ['data-lang']
 
@@ -303,6 +308,8 @@ class Formatter extends Plugin
 
 class InputManager extends Plugin
 
+  @className: 'InputManager'
+
   opts:
     tabIndent: true
 
@@ -340,6 +347,7 @@ class InputManager extends Plugin
             .insertAfter($el)
 
     @editor.body.on('keydown', $.proxy(@_onKeyDown, @))
+      .on('keypress', $.proxy(@_onKeyPress, @))
       .on('keyup', $.proxy(@_onKeyUp, @))
       .on('mouseup', $.proxy(@_onMouseUp, @))
       .on('focus', $.proxy(@_onFocus, @))
@@ -359,7 +367,7 @@ class InputManager extends Plugin
     @editor.body.find('.selected').removeClass('selected')
 
     setTimeout =>
-      @editor.trigger 'simditorfocus'
+      @editor.triggerHandler 'focus'
       @editor.trigger 'selectionchanged'
     , 0
 
@@ -368,7 +376,7 @@ class InputManager extends Plugin
     @editor.sync()
     @focused = false
 
-    @editor.trigger 'simditorblur'
+    @editor.triggerHandler 'blur'
 
   _onMouseUp: (e) ->
     return if $(e.target).is('img, .simditor-image')
@@ -388,16 +396,9 @@ class InputManager extends Plugin
     return if metaKey and e.which == 86
 
     # handle predefined shortcuts
-    shortcutName = []
-    shortcutName.push 'shift' if e.shiftKey
-    shortcutName.push 'ctrl' if e.ctrlKey
-    shortcutName.push 'alt' if e.altKey
-    shortcutName.push 'cmd' if e.metaKey
-    shortcutName.push e.which
-    shortcutName = shortcutName.join '+'
-
-    if @_shortcuts[shortcutName]
-      @_shortcuts[shortcutName].call(this, e)
+    shortcutKey = @editor.util.getShortcutKey e
+    if @_shortcuts[shortcutKey]
+      @_shortcuts[shortcutKey].call(this, e)
       return false
 
     # Check the condictional handlers
@@ -462,6 +463,26 @@ class InputManager extends Plugin
       @_typing = true
 
     null
+
+  _onKeyPress: (e) ->
+    if @editor.triggerHandler(e) == false
+      return false
+    
+    # input hooks are limited in a single line
+    @_hookStack.length = 0 if e.which == 13
+
+    # check the input hooks
+    if e.which == 32
+      cmd = @_hookStack.join ''
+      @_hookStack.length = 0
+
+      for hook in @_inputHooks
+        if (hook.cmd instanceof RegExp and hook.cmd.test(cmd)) or hook.cmd == cmd
+          hook.callback(e, hook, cmd)
+          break
+    else if @_hookKeyMap[e.which]
+      @_hookStack.push @_hookKeyMap[e.which]
+      @_hookStack.shift() if @_hookStack.length > 10
 
   _onKeyUp: (e) ->
     if @editor.triggerHandler(e) == false
@@ -531,6 +552,7 @@ class InputManager extends Plugin
       @editor.trigger 'selectionchanged'
     , 10
 
+  # handlers which will be called when specific key is pressed in specific node
   _inputHandlers:
     13: # enter
 
@@ -604,7 +626,6 @@ class InputManager extends Plugin
 
     9: #tab
       li: (e, $node) ->
-
         if e.shiftKey
           $parent = $node.parent()
           $parentLi = $parent.parent('li')
@@ -639,6 +660,17 @@ class InputManager extends Plugin
 
         true
 
+  # a hook will be triggered when specific string was typed
+  _inputHooks: []
+
+  _hookKeyMap: {}
+
+  _hookStack: []
+
+  addInputHook: (hookOpt) ->
+    $.extend(@_hookKeyMap, hookOpt.key)
+    @_inputHooks.push hookOpt
+
   _shortcuts:
     # meta + enter: submit form
     'cmd+13': (e) ->
@@ -654,6 +686,9 @@ class InputManager extends Plugin
 
 
 class UndoManager extends Plugin
+
+  @className: 'UndoManager'
+
   _stack: []
 
   _index: -1
@@ -842,6 +877,8 @@ class UndoManager extends Plugin
 
 class Util extends Plugin
 
+  @className: 'Util'
+
   constructor: (args...) ->
     super args...
     @phBr = '' if @browser.msie
@@ -956,10 +993,21 @@ class Util extends Plugin
       result = callback n
       break if result == false
 
+  getShortcutKey: (e) ->
+    shortcutName = []
+    shortcutName.push 'shift' if e.shiftKey
+    shortcutName.push 'ctrl' if e.ctrlKey
+    shortcutName.push 'alt' if e.altKey
+    shortcutName.push 'cmd' if e.metaKey
+    shortcutName.push e.which
+    shortcutName.join '+'
+
 
 
 
 class Toolbar extends Plugin
+
+  @className: 'Toolbar'
 
   opts:
     toolbar: true
@@ -1012,7 +1060,7 @@ class Toolbar extends Plugin
     @editor.on 'selectionchanged', =>
       @toolbarStatus()
 
-    @editor.on 'simditordestroy', =>
+    @editor.on 'destroy', =>
       @_buttons.length = 0
 
 
@@ -1201,7 +1249,7 @@ class Simditor extends Widget
       popover.hide() if popover.active
 
   destroy: ->
-    @trigger 'simditordestroy'
+    @triggerHandler 'destroy'
 
     @textarea.closest('form')
       .off('.simditor .simditor-' + @id)
@@ -1273,7 +1321,7 @@ class Button extends Module
       param = btn.data('param')
       @command(param)
 
-    @editor.on 'simditorblur', =>
+    @editor.on 'blur', =>
       @setActive false
       @setDisabled false
 
@@ -1354,7 +1402,7 @@ class Popover extends Module
       .data('popover', @)
     @render()
 
-    @editor.on 'simditorblur.linkpopover', =>
+    @editor.on 'blur.linkpopover', =>
       @target.addClass('selected') if @active and @target?
 
   render: ->
@@ -1371,7 +1419,6 @@ class Popover extends Module
       @refresh(position)
       @trigger 'popovershow'
     else
-      console.log(1)
       @active = true
 
       @el.css({
@@ -1753,7 +1800,7 @@ class CodePopover extends Popover
     <div class="code-settings">
       <div class="settings-field">
         <select class="select-lang">
-          <option value="-1">选择语言</option>
+          <option value="-1">选择程序语言</option>
           <option value="c++">C++</option>
           <option value="css">CSS</option>
           <option value="coffeeScript">CoffeeScript</option>
@@ -2034,7 +2081,10 @@ class ImageButton extends Button
       $img.attr({
         src: src,
         width: width,
-        height: height
+        height: height,
+        'data-origin-name': src,
+        'data-origin-src': src,
+        'data-origin-size': width + ',' + height
       })
 
       $wrapper.width(width)

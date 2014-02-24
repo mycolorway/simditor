@@ -1,5 +1,8 @@
 
 class UndoManager extends Plugin
+
+  @className: 'UndoManager'
+
   _stack: []
 
   _index: -1

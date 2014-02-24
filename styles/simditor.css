@@ -1,6 +1,5 @@
 @charset "UTF-8";
 .simditor {
-  overflow: hidden;
   position: relative;
   font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
 }

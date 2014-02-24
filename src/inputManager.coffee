@@ -1,6 +1,8 @@
 
 class InputManager extends Plugin
 
+  @className: 'InputManager'
+
   opts:
     tabIndent: true
 
@@ -38,6 +40,7 @@ class InputManager extends Plugin
             .insertAfter($el)
 
     @editor.body.on('keydown', $.proxy(@_onKeyDown, @))
+      .on('keypress', $.proxy(@_onKeyPress, @))
       .on('keyup', $.proxy(@_onKeyUp, @))
       .on('mouseup', $.proxy(@_onMouseUp, @))
       .on('focus', $.proxy(@_onFocus, @))
@@ -57,7 +60,7 @@ class InputManager extends Plugin
     @editor.body.find('.selected').removeClass('selected')
 
     setTimeout =>
-      @editor.trigger 'simditorfocus'
+      @editor.triggerHandler 'focus'
       @editor.trigger 'selectionchanged'
     , 0
 
@@ -66,7 +69,7 @@ class InputManager extends Plugin
     @editor.sync()
     @focused = false
 
-    @editor.trigger 'simditorblur'
+    @editor.triggerHandler 'blur'
 
   _onMouseUp: (e) ->
     return if $(e.target).is('img, .simditor-image')
@@ -86,16 +89,9 @@ class InputManager extends Plugin
     return if metaKey and e.which == 86
 
     # handle predefined shortcuts
-    shortcutName = []
-    shortcutName.push 'shift' if e.shiftKey
-    shortcutName.push 'ctrl' if e.ctrlKey
-    shortcutName.push 'alt' if e.altKey
-    shortcutName.push 'cmd' if e.metaKey
-    shortcutName.push e.which
-    shortcutName = shortcutName.join '+'
-
-    if @_shortcuts[shortcutName]
-      @_shortcuts[shortcutName].call(this, e)
+    shortcutKey = @editor.util.getShortcutKey e
+    if @_shortcuts[shortcutKey]
+      @_shortcuts[shortcutKey].call(this, e)
       return false
 
     # Check the condictional handlers
@@ -159,6 +155,15 @@ class InputManager extends Plugin
       , 10
       @_typing = true
 
+    null
+
+  _onKeyPress: (e) ->
+    if @editor.triggerHandler(e) == false
+      return false
+    
+    # input hooks are limited in a single line
+    @_hookStack.length = 0 if e.which == 13
+
     # check the input hooks
     if e.which == 32
       cmd = @_hookStack.join ''
@@ -166,13 +171,11 @@ class InputManager extends Plugin
 
       for hook in @_inputHooks
         if (hook.cmd instanceof RegExp and hook.cmd.test(cmd)) or hook.cmd == cmd
-          hook.callback(hook, cmd)
+          hook.callback(e, hook, cmd)
           break
     else if @_hookKeyMap[e.which]
       @_hookStack.push @_hookKeyMap[e.which]
       @_hookStack.shift() if @_hookStack.length > 10
-
-    null
 
   _onKeyUp: (e) ->
     if @editor.triggerHandler(e) == false

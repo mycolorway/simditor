@@ -1,6 +1,8 @@
 
 class Formatter extends Plugin
 
+  @className: 'Formatter'
+
   constructor: (args...) ->
     super args...
     @editor = @widget
@@ -12,7 +14,7 @@ class Formatter extends Plugin
   _allowedTags: ['a', 'img', 'b', 'strong', 'i', 'u', 'p', 'ul', 'ol', 'li', 'blockquote', 'pre', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6']
 
   _allowedAttributes:
-    img: ['src', 'alt', 'width', 'height']
+    img: ['src', 'alt', 'width', 'height', 'data-origin-src', 'data-origin-size', 'data-origin-name']
     a: ['href', 'target']
     pre: ['data-lang']
 

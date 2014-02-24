@@ -13,7 +13,6 @@ module.exports = (grunt) ->
           'src/undoManager.coffee',
           'src/util.coffee',
           'src/toolbar.coffee',
-          'src/mention.coffee',
           'src/core.coffee',
           'src/buttons/button.coffee',
           'src/buttons/popover.coffee',
@@ -36,33 +35,11 @@ module.exports = (grunt) ->
           'styles/simditor.css': 'styles/simditor.scss'
     coffee:
       module:
-        files: 'lib/module.js': 'src/module.coffee'
+        files: 'lib/module.js': 'externals/simple-module/src/module.coffee'
       uploader:
-        files: 'lib/uploader.js': 'src/uploader.coffee'
+        files: 'lib/uploader.js': 'externals/simple-uploader/src/uploader.coffee'
       simditor:
         files: 'lib/simditor.js': 'src/simditor.coffee'
-        #options:
-          #join: true
-        #files:
-          #'scripts/simditor.js': [
-            #'src/selection.coffee',
-            #'src/formatter.coffee',
-            #'src/inputManager.coffee',
-            #'src/undoManager.coffee',
-            #'src/util.coffee',
-            #'src/toolbar.coffee',
-            #'src/simditor.coffee',
-            #'src/buttons/button.coffee',
-            #'src/buttons/popover.coffee',
-            #'src/buttons/bold.coffee',
-            #'src/buttons/italic.coffee',
-            #'src/buttons/underline.coffee',
-            #'src/buttons/list.coffee',
-            #'src/buttons/blockquote.coffee',
-            #'src/buttons/code.coffee',
-            #'src/buttons/link.coffee',
-            #'src/buttons/image.coffee'
-          #]
     watch:
       styles:
         files: ['styles/*.scss']

@@ -15,7 +15,7 @@ class Popover extends Module
       .data('popover', @)
     @render()
 
-    @editor.on 'simditorblur.linkpopover', =>
+    @editor.on 'blur.linkpopover', =>
       @target.addClass('selected') if @active and @target?
 
   render: ->
@@ -32,7 +32,6 @@ class Popover extends Module
       @refresh(position)
       @trigger 'popovershow'
     else
-      console.log(1)
       @active = true
 
       @el.css({

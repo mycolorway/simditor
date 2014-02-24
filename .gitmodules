@@ -1,0 +1,9 @@
+[submodule "externals/font-awesome"]
+	path = externals/font-awesome
+	url = git@github.com:FortAwesome/Font-Awesome.git
+[submodule "externals/simple-module"]
+	path = externals/simple-module
+	url = git@github.com:mycolorway/simple-module.git
+[submodule "externals/simple-uploader"]
+	path = externals/simple-uploader
+	url = git@github.com:mycolorway/simple-uploader.git
