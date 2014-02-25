@@ -267,8 +267,12 @@
 	ul, ol {
 		list-style:disc outside none;
 		margin: 15px 0;
-		padding: 0 0 0 30px;
+		padding: 0 0 0 40px;
 		line-height: 1.6;
+
+		ul, ol {
+			padding-left: 30px;
+		}
 	}
 
 	ol {
@@ -346,4 +350,9 @@
 		vertical-align: bottom;
 	}
 
+	@for $i from 0 through 10 {
+		*[data-indent="#{$i}"] {
+			margin-left: 40px * $i;
+		}
+	}
 }

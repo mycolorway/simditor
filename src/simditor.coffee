@@ -198,6 +198,13 @@ class Formatter extends Plugin
     img: ['src', 'alt', 'width', 'height', 'data-origin-src', 'data-origin-size', 'data-origin-name']
     a: ['href', 'target']
     pre: ['data-lang']
+    p: ['data-indent']
+    h1: ['data-indent']
+    h2: ['data-indent']
+    h3: ['data-indent']
+    h4: ['data-indent']
+    h5: ['data-indent']
+    h6: ['data-indent']
 
   decorate: ($el = @editor.body) ->
     @editor.trigger 'decorate', [$el]
@@ -309,9 +316,6 @@ class Formatter extends Plugin
 class InputManager extends Plugin
 
   @className: 'InputManager'
-
-  opts:
-    tabIndent: true
 
   constructor: (args...) ->
     super args...
@@ -440,12 +444,11 @@ class InputManager extends Plugin
         return false
 
     # Tab to indent
-    if e.which == 9 and (@opts.tabIndent or $blockEl.is 'pre') and !$blockEl.is('li')
-      spaces = if $blockEl.is 'pre' then '\u00A0\u00A0' else '\u00A0\u00A0\u00A0\u00A0'
-      spaceNode = document.createTextNode spaces
-      @editor.selection.insertNode spaceNode
-      @editor.trigger 'valuechanged'
-      @editor.trigger 'selectionchanged'
+    if e.which == 9
+      if e.shiftKey
+        @outdent()
+      else
+        @indent()
       return false
 
     if @_typing
@@ -467,7 +470,7 @@ class InputManager extends Plugin
   _onKeyPress: (e) ->
     if @editor.triggerHandler(e) == false
       return false
-    
+
     # input hooks are limited in a single line
     @_hookStack.length = 0 if e.which == 13
 
@@ -624,42 +627,6 @@ class InputManager extends Plugin
         @editor.selection.setRangeAtStartOf $firstChild
         true
 
-    9: #tab
-      li: (e, $node) ->
-        if e.shiftKey
-          $parent = $node.parent()
-          $parentLi = $parent.parent('li')
-          return true if $parentLi.length < 0
-
-          @editor.selection.save()
-
-          if $node.next('li').length > 0
-            $('<' + $parent[0].tagName + '/>')
-              .append($node.nextAll('li'))
-              .appendTo($node)
-
-          $node.insertAfter $parentLi
-          $parent.remove() if $parent.children('li').length < 1
-          @editor.selection.restore()
-        else
-          $parentLi = $node.prev('li')
-          return true if $parentLi.length < 1
-
-          @editor.selection.save()
-          tagName = $node.parent()[0].tagName
-          $childList = $parentLi.children('ul, ol')
-
-          if $childList.length > 0
-            $childList.append $node
-          else
-            $('<' + tagName + '/>')
-              .append($node)
-              .appendTo($parentLi)
-
-          @editor.selection.restore()
-
-        true
-
   # a hook will be triggered when specific string was typed
   _inputHooks: []
 
@@ -680,6 +647,75 @@ class InputManager extends Plugin
 
   addShortcut: (keys, handler) ->
     @_shortcuts[keys] = $.proxy(handler, this)
+
+  indent: () ->
+    $blockEl = @editor.util.closestBlockEl()
+    return unless $blockEl and $blockEl.length > 0
+
+    if $blockEl.is('pre')
+      spaceNode = document.createTextNode '\u00A0\u00A0'
+      @editor.selection.insertNode spaceNode
+    else if $blockEl.is('li')
+      $parentLi = $blockEl.prev('li')
+      return true if $parentLi.length < 1
+
+      @editor.selection.save()
+      tagName = $blockEl.parent()[0].tagName
+      $childList = $parentLi.children('ul, ol')
+
+      if $childList.length > 0
+        $childList.append $blockEl
+      else
+        $('<' + tagName + '/>')
+          .append($blockEl)
+          .appendTo($parentLi)
+
+      @editor.selection.restore()
+    else if $blockEl.is('p, h1, h2, h3, h4, h5, h6')
+      indentLevel = $blockEl.attr('data-indent') ? 0
+      indentLevel = indentLevel * 1 + 1
+      indentLevel = 10 if indentLevel > 10
+      $blockEl.attr 'data-indent', indentLevel
+    else
+      spaceNode = document.createTextNode '\u00A0\u00A0\u00A0\u00A0'
+      @editor.selection.insertNode spaceNode
+
+    @editor.trigger 'valuechanged'
+    @editor.trigger 'selectionchanged'
+
+  outdent: () ->
+    $blockEl = @editor.util.closestBlockEl()
+    return unless $blockEl and $blockEl.length > 0
+
+    if $blockEl.is('pre')
+      return
+    else if $blockEl.is('li')
+      $parent = $blockEl.parent()
+      $parentLi = $parent.parent('li')
+      return true if $parentLi.length < 0
+
+      @editor.selection.save()
+
+      if $blockEl.next('li').length > 0
+        $('<' + $parent[0].tagName + '/>')
+          .append($blockEl.nextAll('li'))
+          .appendTo($blockEl)
+
+      $blockEl.insertAfter $parentLi
+      $parent.remove() if $parent.children('li').length < 1
+      @editor.selection.restore()
+    else if $blockEl.is('p, h1, h2, h3, h4, h5, h6')
+      indentLevel = $blockEl.attr('data-indent') ? 0
+      indentLevel = indentLevel * 1 - 1
+      indentLevel = 0 if indentLevel < 0
+      $blockEl.attr 'data-indent', indentLevel
+    else
+      return
+
+    @editor.trigger 'valuechanged'
+    @editor.trigger 'selectionchanged'
+
+
 
 
 
@@ -1046,7 +1082,7 @@ class Toolbar extends Plugin
     return unless @opts.toolbar
 
     unless $.isArray @opts.toolbar
-      @opts.toolbar = ['bold', 'italic', 'underline', '|', 'ol', 'ul', 'blockquote', 'code', '|', 'link', 'image']
+      @opts.toolbar = ['bold', 'italic', 'underline', '|', 'ol', 'ul', 'blockquote', 'code', '|', 'link', 'image', '|', 'indent', 'outdent']
 
     @_render()
     
@@ -1225,7 +1261,7 @@ class Simditor extends Widget
 
   _placeholder: ->
     children = @body.children()
-    if children.length == 0 or (children.length == 1 and @util.isEmptyNode(children))
+    if children.length == 0 or (children.length == 1 and @util.isEmptyNode(children) and (children.data('indent') ? 0) < 1)
       @placeholderEl.show()
     else
       @placeholderEl.hide()
@@ -2240,5 +2276,44 @@ class ImagePopover extends Popover
 
 
 Simditor.Toolbar.addButton(ImageButton)
+
+
+
+
+class IndentButton extends Button
+
+  name: 'indent'
+
+  icon: 'indent'
+
+  title: '向右缩进'
+
+  status: ($node) ->
+    true
+
+  command: ->
+    @editor.inputManager.indent()
+
+
+Simditor.Toolbar.addButton(IndentButton)
+
+
+
+class OutdentButton extends Button
+
+  name: 'outdent'
+
+  icon: 'outdent'
+
+  title: '向左缩进'
+
+  status: ($node) ->
+    true
+
+  command: ->
+    @editor.inputManager.outdent()
+
+
+Simditor.Toolbar.addButton(OutdentButton)
 
 

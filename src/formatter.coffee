@@ -17,6 +17,13 @@ class Formatter extends Plugin
     img: ['src', 'alt', 'width', 'height', 'data-origin-src', 'data-origin-size', 'data-origin-name']
     a: ['href', 'target']
     pre: ['data-lang']
+    p: ['data-indent']
+    h1: ['data-indent']
+    h2: ['data-indent']
+    h3: ['data-indent']
+    h4: ['data-indent']
+    h5: ['data-indent']
+    h6: ['data-indent']
 
   decorate: ($el = @editor.body) ->
     @editor.trigger 'decorate', [$el]

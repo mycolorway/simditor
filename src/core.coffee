@@ -95,7 +95,7 @@ class Simditor extends Widget
 
   _placeholder: ->
     children = @body.children()
-    if children.length == 0 or (children.length == 1 and @util.isEmptyNode(children))
+    if children.length == 0 or (children.length == 1 and @util.isEmptyNode(children) and (children.data('indent') ? 0) < 1)
       @placeholderEl.show()
     else
       @placeholderEl.hide()
