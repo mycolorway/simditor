@@ -36,12 +36,12 @@ class Formatter extends Plugin
 
         if $node.contents().length
           findLinkNode $node
-        else if text = $node.text() and /https?:\/\/|www\./ig.test(text)
+        else if (text = $node.text()) and /https?:\/\/|www\./ig.test(text)
           linkNodes.push $node
 
     findLinkNode $el
 
-    re = /(https?:\/\/|www\.)[\w\-\.\?&=\/#%]+/ig
+    re = /(https?:\/\/|www\.)[\w\-\.\?&=\/#%:]+/ig
     for $node in linkNodes
       text = $node.text();
       replaceEls = [];
