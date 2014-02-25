@@ -12,6 +12,7 @@ class ListButton extends Button
 
     anotherType = if @type == 'ul' then 'ol' else 'ul'
     if $node.is anotherType
+      @setActive false
       return true
     else
       @setActive $node.is(@htmlTag)
@@ -44,29 +45,31 @@ class ListButton extends Button
         endLevel = getListLevel $endBlock
 
         if startLevel > endLevel
-          $startBlock = $endBlock
-          range.setStartBefore $startBlock[0]
-        else if startLevel < endLevel
-          $endBlock = $startBlock
-          range.setEndAfter $endBlock[0]
+          $parent = $endBlock.parent()
+        else
+          $parent = $startBlock.parent()
 
-        $breakedEl = $furthestStart
+        range.setStartBefore $parent[0]
+        range.setEndAfter $parent[0]
+      else
+        range.setStartBefore $furthestStart[0]
+        range.setEndAfter $furthestEnd[0]
 
     $contents = $(range.extractContents())
 
-    if $breakedEl?
-      $contents.wrapInner('<' + $breakedEl[0].tagName + '/>')
-      if @editor.selection.rangeAtStartOf $breakedEl, range
-        range.setEndBefore($breakedEl[0])
-        range.collapse(false)
-        $breakedEl.remove() if $breakedEl.children().length < 1
-      else if @editor.selection.rangeAtEndOf $breakedEl, range
-        range.setEndAfter($breakedEl[0])
-        range.collapse(false)
-      else
-        $breakedEl = @editor.selection.breakBlockEl($breakedEl, range)
-        range.setEndBefore($breakedEl[0])
-        range.collapse(false)
+    #if $breakedEl?
+      #$contents.wrapInner('<' + $breakedEl[0].tagName + '/>')
+      #if @editor.selection.rangeAtStartOf $breakedEl, range
+        #range.setEndBefore($breakedEl[0])
+        #range.collapse(false)
+        #$breakedEl.remove() if $breakedEl.children().length < 1
+      #else if @editor.selection.rangeAtEndOf $breakedEl, range
+        #range.setEndAfter($breakedEl[0])
+        #range.collapse(false)
+      #else
+        #$breakedEl = @editor.selection.breakBlockEl($breakedEl, range)
+        #range.setEndBefore($breakedEl[0])
+        #range.collapse(false)
 
     results = []
     $contents.children().each (i, el) =>
