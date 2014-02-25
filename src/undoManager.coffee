@@ -140,9 +140,9 @@ class UndoManager extends Plugin
   caretPosition: (caret) ->
     # calculate current caret state
     if !caret
-      return {} unless @editor.inputManager.focused
-
       range = @editor.selection.getRange()
+      return {} unless @editor.inputManager.focused and range?
+
       caret =
         start: []
         end: null

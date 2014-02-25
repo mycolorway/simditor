@@ -826,9 +826,9 @@ class UndoManager extends Plugin
   caretPosition: (caret) ->
     # calculate current caret state
     if !caret
-      return {} unless @editor.inputManager.focused
-
       range = @editor.selection.getRange()
+      return {} unless @editor.inputManager.focused and range?
+
       caret =
         start: []
         end: null
@@ -957,7 +957,7 @@ class Util extends Plugin
 
     if blockEl.length then blockEl.last() else null
 
-  furthestBlockEl: (node) ->
+  furthestNode: (node, filter) ->
     unless node?
       range = @editor.selection.getRange()
       node = range?.commonAncestorContainer
@@ -968,9 +968,30 @@ class Util extends Plugin
 
     blockEl = $node.parentsUntil(@editor.body).addBack()
     blockEl = blockEl.filter (i) =>
-      @isBlockNode blockEl.eq(i)
+      $n = blockEl.eq(i)
+      if $.isFunction filter
+        return filter $n
+      else
+        return $n.is(filter)
 
     if blockEl.length then blockEl.first() else null
+
+
+  furthestBlockEl: (node) ->
+    @furthestNode(node, @isBlockNode)
+    #unless node?
+      #range = @editor.selection.getRange()
+      #node = range?.commonAncestorContainer
+
+    #$node = $(node)
+
+    #return null unless $node.length
+
+    #blockEl = $node.parentsUntil(@editor.body).addBack()
+    #blockEl = blockEl.filter (i) =>
+      #@isBlockNode blockEl.eq(i)
+
+    #if blockEl.length then blockEl.first() else null
 
   getNodeLength: (node) ->
     switch node.nodeType
@@ -1588,8 +1609,28 @@ class ListButton extends Button
     range.setStartBefore $startBlock[0]
     range.setEndAfter $endBlock[0]
 
-    if $startBlock.is('li') and $endBlock.is('li') and $startBlock.parent()[0] == $endBlock.parent()[0]
-      $breakedEl = $startBlock.parent()
+    if $startBlock.is('li') and $endBlock.is('li')
+      $furthestStart = @editor.util.furthestNode $startBlock, 'ul, ol'
+      $furthestEnd = @editor.util.furthestNode $endBlock, 'ul, ol'
+      if $furthestStart.is $furthestEnd
+        getListLevel = ($li) ->
+          lvl = 1
+          while !$li.parent().is $furthestStart
+            lvl += 1
+            $li = $li.parent()
+          return lvl
+
+        startLevel = getListLevel $startBlock
+        endLevel = getListLevel $endBlock
+
+        if startLevel > endLevel
+          $startBlock = $endBlock
+          range.setStartBefore $startBlock[0]
+        else if startLevel < endLevel
+          $endBlock = $startBlock
+          range.setEndAfter $endBlock[0]
+
+        $breakedEl = $furthestStart
 
     $contents = $(range.extractContents())
 
@@ -1628,9 +1669,12 @@ class ListButton extends Button
     anotherType = if @type == 'ul' then 'ol' else 'ul'
     
     if $el.is @type
-      $el.find('li').each (i, li) =>
+      $el.children('li').each (i, li) =>
+        $li = $(li)
+        $childList = $li.children('ul, ol').remove()
         block = $('<p/>').append($(li).html() || @editor.util.phBr)
-        results.push(block)
+        results.push block
+        results.push $childList if $childList.length > 0
     else if $el.is anotherType
       block = $('<' + @type + '/>').append($el.html())
       results.push(block)
@@ -2031,6 +2075,9 @@ class ImageButton extends Button
         $imgWrapper.height $img.height()
         @popover.show $imgWrapper
 
+      false
+
+    @editor.body.on 'click', '.simditor-image', (e) =>
       false
 
     @editor.on 'selectionchanged', =>

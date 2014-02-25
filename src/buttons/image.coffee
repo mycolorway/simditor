@@ -55,6 +55,9 @@ class ImageButton extends Button
 
       false
 
+    @editor.body.on 'click', '.simditor-image', (e) =>
+      false
+
     @editor.on 'selectionchanged', =>
       @popover.hide()
 

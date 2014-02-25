@@ -81,7 +81,7 @@ class Util extends Plugin
 
     if blockEl.length then blockEl.last() else null
 
-  furthestBlockEl: (node) ->
+  furthestNode: (node, filter) ->
     unless node?
       range = @editor.selection.getRange()
       node = range?.commonAncestorContainer
@@ -92,9 +92,30 @@ class Util extends Plugin
 
     blockEl = $node.parentsUntil(@editor.body).addBack()
     blockEl = blockEl.filter (i) =>
-      @isBlockNode blockEl.eq(i)
+      $n = blockEl.eq(i)
+      if $.isFunction filter
+        return filter $n
+      else
+        return $n.is(filter)
 
     if blockEl.length then blockEl.first() else null
+
+
+  furthestBlockEl: (node) ->
+    @furthestNode(node, @isBlockNode)
+    #unless node?
+      #range = @editor.selection.getRange()
+      #node = range?.commonAncestorContainer
+
+    #$node = $(node)
+
+    #return null unless $node.length
+
+    #blockEl = $node.parentsUntil(@editor.body).addBack()
+    #blockEl = blockEl.filter (i) =>
+      #@isBlockNode blockEl.eq(i)
+
+    #if blockEl.length then blockEl.first() else null
 
   getNodeLength: (node) ->
     switch node.nodeType
