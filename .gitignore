@@ -13,6 +13,7 @@ results
 
 npm-debug.log
 node_modules
+externals
 
 .DS_Store
 .sass-cache
