@@ -49,7 +49,7 @@ class InputManager extends Plugin
 
     if @editor.textarea.attr 'autofocus'
       setTimeout =>
-        @editor.body.focus()
+        @editor.focus()
       , 0
 
   _onFocus: (e) ->

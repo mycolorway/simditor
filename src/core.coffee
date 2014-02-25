@@ -129,6 +129,9 @@ class Simditor extends Widget
     val
 
   focus: ->
+    $blockEl = @body.find('p, li, pre, h1, h2, h3, h4, h5, h6, td').first()
+    range = document.createRange()
+    @selection.setRangeAtStartOf $blockEl, range
     @body.focus()
 
   blur: ->
