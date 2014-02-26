@@ -343,7 +343,7 @@ class InputManager extends Plugin
       @editor.selection.insertNode spaceNode
     else if $blockEl.is('li')
       $parentLi = $blockEl.prev('li')
-      return true if $parentLi.length < 1
+      return if $parentLi.length < 1
 
       @editor.selection.save()
       tagName = $blockEl.parent()[0].tagName
@@ -378,7 +378,11 @@ class InputManager extends Plugin
     else if $blockEl.is('li')
       $parent = $blockEl.parent()
       $parentLi = $parent.parent('li')
-      return true if $parentLi.length < 0
+
+      if $parentLi.length < 1
+        button = @editor.toolbar.findButton $parent[0].tagName.toLowerCase()
+        button?.command()
+        return
 
       @editor.selection.save()
 

@@ -39,7 +39,8 @@ class Button extends Module
       if @menu
         @editor.toolbar.wrapper.toggleClass('menu-on')
       else
-        @command()
+      param = @el.data('param')
+      @command(param)
 
     @editor.toolbar.list.on 'mousedown', 'a.menu-item', (e) =>
       e.preventDefault()
@@ -64,7 +65,7 @@ class Button extends Module
 
     @el.attr('title', @title)
       .addClass('toolbar-item-' + @name)
-      .data('button', this)
+      .data('button', @)
 
     @el.find('span')
       .addClass(if @icon then 'fa fa-' + @icon else '')

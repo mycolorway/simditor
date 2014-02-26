@@ -91,6 +91,10 @@ class Toolbar extends Plugin
 
     #button.setActive false for button in buttons unless success
 
+  findButton: (name) ->
+    button = @list.find('.toolbar-item-' + name).data('button')
+    button ? null
+
   # button instances
   _buttons: []
 

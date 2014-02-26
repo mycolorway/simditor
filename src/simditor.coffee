@@ -657,7 +657,7 @@ class InputManager extends Plugin
       @editor.selection.insertNode spaceNode
     else if $blockEl.is('li')
       $parentLi = $blockEl.prev('li')
-      return true if $parentLi.length < 1
+      return if $parentLi.length < 1
 
       @editor.selection.save()
       tagName = $blockEl.parent()[0].tagName
@@ -692,7 +692,11 @@ class InputManager extends Plugin
     else if $blockEl.is('li')
       $parent = $blockEl.parent()
       $parentLi = $parent.parent('li')
-      return true if $parentLi.length < 0
+
+      if $parentLi.length < 1
+        button = @editor.toolbar.findButton $parent[0].tagName.toLowerCase()
+        button?.command()
+        return
 
       @editor.selection.save()
 
@@ -1154,6 +1158,10 @@ class Toolbar extends Plugin
 
     #button.setActive false for button in buttons unless success
 
+  findButton: (name) ->
+    button = @list.find('.toolbar-item-' + name).data('button')
+    button ? null
+
   # button instances
   _buttons: []
 
@@ -1370,7 +1378,8 @@ class Button extends Module
       if @menu
         @editor.toolbar.wrapper.toggleClass('menu-on')
       else
-        @command()
+      param = @el.data('param')
+      @command(param)
 
     @editor.toolbar.list.on 'mousedown', 'a.menu-item', (e) =>
       e.preventDefault()
@@ -1395,7 +1404,7 @@ class Button extends Module
 
     @el.attr('title', @title)
       .addClass('toolbar-item-' + @name)
-      .data('button', this)
+      .data('button', @)
 
     @el.find('span')
       .addClass(if @icon then 'fa fa-' + @icon else '')
