@@ -70,6 +70,12 @@
 			}
 		}
 
+		pre {
+			min-height: 28px;
+			box-sizing: border-box;
+			-moz-box-sizing: border-box;
+		}
+
 	}
 
 	.simditor-paste-area {
@@ -302,6 +308,10 @@
 		line-height: 18px;
 		background: #F0F0F0;
 		border-radius: 3px;
+		overflow-x: auto;
+		white-space: pre-wrap; /* CSS3 */
+		white-space: -moz-pre-wrap; /* Mozilla, post millennium */
+		white-space: -o-pre-wrap; /* Opera 7 */
 
 		p {
 			margin: 2px 0;

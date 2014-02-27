@@ -5,7 +5,7 @@ class IndentButton extends Button
 
   icon: 'indent'
 
-  title: '向右缩进'
+  title: '向右缩进（Tab）'
 
   status: ($node) ->
     true

@@ -3,11 +3,15 @@ class InputManager extends Plugin
 
   @className: 'InputManager'
 
+  opts:
+    pasteImage: false
+
   constructor: (args...) ->
     super args...
     @editor = @widget
+    @opts.pasteImage = 'inline' if @opts.pasteImage and typeof @opts.pasteImage != 'string'
 
-  _modifierKeys: [16, 17, 18, 91, 93]
+  _modifierKeys: [16, 17, 18, 91, 93, 224]
 
   _arrowKeys: [37..40]
 
@@ -44,6 +48,15 @@ class InputManager extends Plugin
       .on('blur', $.proxy(@_onBlur, @))
       .on('paste', $.proxy(@_onPaste, @))
 
+    # fix firefox cmd+left/right bug
+    if @editor.util.browser.firefox
+      @addShortcut 'cmd+37', (e) =>
+        e.preventDefault()
+        @editor.selection.sel.modify('move', 'backward', 'lineboundary')
+      @addShortcut 'cmd+39', (e) =>
+        e.preventDefault()
+        @editor.selection.sel.modify('move', 'forward', 'lineboundary')
+
     if @editor.textarea.attr 'autofocus'
       setTimeout =>
         @editor.focus()
@@ -76,6 +89,12 @@ class InputManager extends Plugin
     if @editor.triggerHandler(e) == false
       return false
 
+    # handle predefined shortcuts
+    shortcutKey = @editor.util.getShortcutKey e
+    if @_shortcuts[shortcutKey]
+      @_shortcuts[shortcutKey].call(this, e)
+      return false
+
     if e.which in @_modifierKeys or e.which in @_arrowKeys
       return
 
@@ -84,12 +103,6 @@ class InputManager extends Plugin
 
     # paste shortcut
     return if metaKey and e.which == 86
-
-    # handle predefined shortcuts
-    shortcutKey = @editor.util.getShortcutKey e
-    if @_shortcuts[shortcutKey]
-      @_shortcuts[shortcutKey].call(this, e)
-      return false
 
     # Check the condictional handlers
     if e.which of @_inputHandlers
@@ -181,7 +194,8 @@ class InputManager extends Plugin
       @editor.trigger 'selectionchanged'
       return
 
-    if e.which == 8 and @editor.body.is ':empty'
+    if e.which == 8 and (@editor.body.is(':empty') or (@editor.body.children().length == 1 and @editor.body.children().is('br')))
+      @editor.body.empty()
       p = $('<p/>').append(@editor.util.phBr)
         .appendTo(@editor.body)
       @editor.selection.setRangeAtStartOf p
@@ -190,6 +204,23 @@ class InputManager extends Plugin
   _onPaste: (e) ->
     if @editor.triggerHandler(e) == false
       return false
+
+    if e.originalEvent.clipboardData && e.originalEvent.clipboardData.items && e.originalEvent.clipboardData.items.length > 0
+      pasteItem = e.originalEvent.clipboardData.items[0]
+
+      # paste file in chrome
+      if /^image\//.test pasteItem.type
+        imageFile = pasteItem.getAsFile()
+        return unless imageFile? and @opts.pasteImage
+
+        unless imageFile.name
+          imageFile.name = "来自剪贴板的图片.png";
+
+        uploadOpt = {}
+        uploadOpt[@opts.pasteImage] = true
+        @editor.uploader?.upload(imageFile, uploadOpt)
+        return false
+
 
     $blockEl = @editor.util.closestBlockEl()
     codePaste = $blockEl.is 'pre'
@@ -207,10 +238,14 @@ class InputManager extends Plugin
         pasteContent = $('<div/>').append(@_pasteArea.contents())
         @editor.formatter.format pasteContent
         @editor.formatter.decorate pasteContent
+        @editor.formatter.beautify pasteContent.children()
         pasteContent = pasteContent.contents()
 
       @_pasteArea.empty()
       range = @editor.selection.restore()
+
+      if @editor.triggerHandler('pasting', [pasteContent]) == false
+        return
 
       if !pasteContent
         return
@@ -219,10 +254,29 @@ class InputManager extends Plugin
         @editor.selection.insertNode node, range
       else if pasteContent.length < 1
         return
-      else if pasteContent.length == 1 and pasteContent.is('p')
-        children = pasteContent.contents()
-        range.insertNode node for node in children
-        @editor.selection.setRangeAfter children.last()
+      else if pasteContent.length == 1
+        if pasteContent.is('p')
+          children = pasteContent.contents()
+          @editor.selection.insertNode node for node in children
+
+        # paste image in firefox
+        else if pasteContent.is('.simditor-image')
+          $img = pasteContent.find('img')
+
+          # firefox
+          if dataURLtoBlob && $img.is('img[src^="data:image/png;base64"]')
+            return unless @opts.pasteImage
+            blob = dataURLtoBlob $img.attr( "src" )
+            blob.name = "来自剪贴板的图片.png"
+
+            uploadOpt = {}
+            uploadOpt[@opts.pasteImage] = true
+            @editor.uploader?.upload(blob, uploadOpt)
+            return
+
+          # cannot paste image in safari
+          else if imgEl.is('img[src^="webkit-fake-url://"]')
+            return
       else
         $blockEl = $blockEl.parent() if $blockEl.is 'li'
 
@@ -374,6 +428,7 @@ class InputManager extends Plugin
     return unless $blockEl and $blockEl.length > 0
 
     if $blockEl.is('pre')
+      # TODO: outdent in code block
       return
     else if $blockEl.is('li')
       $parent = $blockEl.parent()

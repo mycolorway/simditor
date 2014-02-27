@@ -170,6 +170,9 @@ class Selection extends Plugin
       startCaret.remove()
       endCaret.remove()
       @selectRange range
+
+      # firefox won't auto focus while applying new range
+      @editor.body.focus()
     else
       startCaret.remove()
       endCaret.remove()

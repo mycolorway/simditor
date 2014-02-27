@@ -17,9 +17,11 @@ class UndoManager extends Plugin
 
   _init: ->
     @editor.inputManager.addShortcut 'cmd+90', (e) =>
+      e.preventDefault()
       @undo()
 
     @editor.inputManager.addShortcut 'shift+cmd+90', (e) =>
+      e.preventDefault()
       @redo()
 
     @editor.on 'valuechanged', (e, src) =>
@@ -128,11 +130,17 @@ class UndoManager extends Plugin
   _getNodeByPosition: (position) ->
     node = @editor.body[0]
 
-    for offset in position[0...position.length - 1]
+    for offset, i in position[0...position.length - 1]
       childNodes = node.childNodes
       if offset > childNodes.length - 1
-        node = null
-        break
+        # when pre is empty, the text node will be lost
+        if i == position.length - 2 and $(node).is('pre')
+          child = document.createTextNode ''
+          node.appendChild child
+          childNodes = node.childNodes
+        else
+          node = null
+          break
       node = childNodes[offset]
 
     node

@@ -5,7 +5,7 @@ class OutdentButton extends Button
 
   icon: 'outdent'
 
-  title: '向左缩进'
+  title: '向左缩进（Shift + Tab）'
 
   status: ($node) ->
     true

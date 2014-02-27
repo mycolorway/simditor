@@ -58,6 +58,11 @@
 .simditor .simditor-body .simditor-image .simditor-image-resize-handle {
   display: none;
 }
+.simditor .simditor-body pre {
+  min-height: 28px;
+  box-sizing: border-box;
+  -moz-box-sizing: border-box;
+}
 .simditor .simditor-paste-area {
   background: transparent;
   border: none;
@@ -273,6 +278,13 @@
   line-height: 18px;
   background: #F0F0F0;
   border-radius: 3px;
+  overflow-x: auto;
+  white-space: pre-wrap;
+  /* CSS3 */
+  white-space: -moz-pre-wrap;
+  /* Mozilla, post millennium */
+  white-space: -o-pre-wrap;
+  /* Opera 7 */
 }
 .simditor .simditor-body pre p, .editor-style pre p {
   margin: 2px 0;

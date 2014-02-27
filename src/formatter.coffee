@@ -11,7 +11,7 @@ class Formatter extends Plugin
     @editor.body.on 'click', 'a', (e) =>
       false
 
-  _allowedTags: ['a', 'img', 'b', 'strong', 'i', 'u', 'p', 'ul', 'ol', 'li', 'blockquote', 'pre', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6']
+  _allowedTags: ['br', 'a', 'img', 'b', 'strong', 'i', 'u', 'p', 'ul', 'ol', 'li', 'blockquote', 'pre', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6']
 
   _allowedAttributes:
     img: ['src', 'alt', 'width', 'height', 'data-origin-src', 'data-origin-size', 'data-origin-name']
@@ -75,7 +75,11 @@ class Formatter extends Plugin
     @cleanNode(n, true) for n in $el.contents()
 
     for node in $el.contents()
-      if @editor.util.isBlockNode(node) or $(node).is('img')
+      $node = $(node)
+      if $node.is('br')
+        blockNode = null if blockNode?
+        $node.remove()
+      else if @editor.util.isBlockNode(node) or $node.is('img')
         blockNode = null
       else
         blockNode = $('<p/>').insertBefore(node) unless blockNode?
@@ -87,6 +91,8 @@ class Formatter extends Plugin
     $node = $(node)
 
     if $node[0].nodeType == 3
+      text = $node.text().replace(/(\r\n|\n|\r)/gm, '<br/>')
+      $node.replaceWith $('<div/>').html(text).contents()
       return
 
     contents = $node.contents()
@@ -103,14 +109,14 @@ class Formatter extends Plugin
         for attr in $.makeArray($node[0].attributes)
             $node.removeAttr(attr.name) unless allowedAttributes? and attr.name in allowedAttributes
     else if $node[0].nodeType == 1 and !$node.is ':empty'
-      #$('<p/>').append(contents)
-        #.insertBefore($node)
+      if $node.is('div, article, dl, header, footer, tr')
+        $node.append('<br/>')
       contents.first().unwrap()
     else
       $node.remove()
       contents = null
 
-    @cleanNode(n, true) for n in contents if recursive and contents?
+    @cleanNode(n, true) for n in contents if recursive and contents? and !$node.is('pre')
     null
 
   clearHtml: (html, lineBreak = true) ->
@@ -124,9 +130,21 @@ class Formatter extends Plugin
         $node = $(node)
         contents = $node.contents()
         result += @clearHtml contents if contents.length > 0
-        if lineBreak and $node.is 'p, div, li, tr, pre, address, artticle, aside, dd, figcaption, footer, h1, h2, h3, h4, h5, h6, header'
+        if lineBreak and $node.is 'br, p, div, li, tr, pre, address, artticle, aside, dl, figcaption, footer, h1, h2, h3, h4, h5, h6, header'
           result += '\n'
 
     result
+
+  # remove empty nodes and useless paragraph
+  beautify: ($contents) ->
+    uselessP = ($el) ->
+      !!($el.is('p') and !$el.text() and $el.children(':not(br)').length < 1)
+
+    $contents.each (i, el) =>
+      $el = $(el)
+      $el.remove() if $el.is(':not(img, br):empty')
+      $el.remove() if uselessP($el) #and uselessP($el.prev())
+      $el.find(':not(img, br):empty').remove()
+
 
 

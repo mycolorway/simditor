@@ -170,6 +170,9 @@ class Selection extends Plugin
       startCaret.remove()
       endCaret.remove()
       @selectRange range
+
+      # firefox won't auto focus while applying new range
+      @editor.body.focus()
     else
       startCaret.remove()
       endCaret.remove()
@@ -192,7 +195,7 @@ class Formatter extends Plugin
     @editor.body.on 'click', 'a', (e) =>
       false
 
-  _allowedTags: ['a', 'img', 'b', 'strong', 'i', 'u', 'p', 'ul', 'ol', 'li', 'blockquote', 'pre', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6']
+  _allowedTags: ['br', 'a', 'img', 'b', 'strong', 'i', 'u', 'p', 'ul', 'ol', 'li', 'blockquote', 'pre', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6']
 
   _allowedAttributes:
     img: ['src', 'alt', 'width', 'height', 'data-origin-src', 'data-origin-size', 'data-origin-name']
@@ -256,7 +259,11 @@ class Formatter extends Plugin
     @cleanNode(n, true) for n in $el.contents()
 
     for node in $el.contents()
-      if @editor.util.isBlockNode(node) or $(node).is('img')
+      $node = $(node)
+      if $node.is('br')
+        blockNode = null if blockNode?
+        $node.remove()
+      else if @editor.util.isBlockNode(node) or $node.is('img')
         blockNode = null
       else
         blockNode = $('<p/>').insertBefore(node) unless blockNode?
@@ -268,6 +275,8 @@ class Formatter extends Plugin
     $node = $(node)
 
     if $node[0].nodeType == 3
+      text = $node.text().replace(/(\r\n|\n|\r)/gm, '<br/>')
+      $node.replaceWith $('<div/>').html(text).contents()
       return
 
     contents = $node.contents()
@@ -284,14 +293,14 @@ class Formatter extends Plugin
         for attr in $.makeArray($node[0].attributes)
             $node.removeAttr(attr.name) unless allowedAttributes? and attr.name in allowedAttributes
     else if $node[0].nodeType == 1 and !$node.is ':empty'
-      #$('<p/>').append(contents)
-        #.insertBefore($node)
+      if $node.is('div, article, dl, header, footer, tr')
+        $node.append('<br/>')
       contents.first().unwrap()
     else
       $node.remove()
       contents = null
 
-    @cleanNode(n, true) for n in contents if recursive and contents?
+    @cleanNode(n, true) for n in contents if recursive and contents? and !$node.is('pre')
     null
 
   clearHtml: (html, lineBreak = true) ->
@@ -305,10 +314,22 @@ class Formatter extends Plugin
         $node = $(node)
         contents = $node.contents()
         result += @clearHtml contents if contents.length > 0
-        if lineBreak and $node.is 'p, div, li, tr, pre, address, artticle, aside, dd, figcaption, footer, h1, h2, h3, h4, h5, h6, header'
+        if lineBreak and $node.is 'br, p, div, li, tr, pre, address, artticle, aside, dl, figcaption, footer, h1, h2, h3, h4, h5, h6, header'
           result += '\n'
 
     result
+
+  # remove empty nodes and useless paragraph
+  beautify: ($contents) ->
+    uselessP = ($el) ->
+      !!($el.is('p') and !$el.text() and $el.children(':not(br)').length < 1)
+
+    $contents.each (i, el) =>
+      $el = $(el)
+      $el.remove() if $el.is(':not(img, br):empty')
+      $el.remove() if uselessP($el) #and uselessP($el.prev())
+      $el.find(':not(img, br):empty').remove()
+
 
 
 
@@ -317,11 +338,15 @@ class InputManager extends Plugin
 
   @className: 'InputManager'
 
+  opts:
+    pasteImage: false
+
   constructor: (args...) ->
     super args...
     @editor = @widget
+    @opts.pasteImage = 'inline' if @opts.pasteImage and typeof @opts.pasteImage != 'string'
 
-  _modifierKeys: [16, 17, 18, 91, 93]
+  _modifierKeys: [16, 17, 18, 91, 93, 224]
 
   _arrowKeys: [37..40]
 
@@ -358,6 +383,15 @@ class InputManager extends Plugin
       .on('blur', $.proxy(@_onBlur, @))
       .on('paste', $.proxy(@_onPaste, @))
 
+    # fix firefox cmd+left/right bug
+    if @editor.util.browser.firefox
+      @addShortcut 'cmd+37', (e) =>
+        e.preventDefault()
+        @editor.selection.sel.modify('move', 'backward', 'lineboundary')
+      @addShortcut 'cmd+39', (e) =>
+        e.preventDefault()
+        @editor.selection.sel.modify('move', 'forward', 'lineboundary')
+
     if @editor.textarea.attr 'autofocus'
       setTimeout =>
         @editor.focus()
@@ -390,6 +424,12 @@ class InputManager extends Plugin
     if @editor.triggerHandler(e) == false
       return false
 
+    # handle predefined shortcuts
+    shortcutKey = @editor.util.getShortcutKey e
+    if @_shortcuts[shortcutKey]
+      @_shortcuts[shortcutKey].call(this, e)
+      return false
+
     if e.which in @_modifierKeys or e.which in @_arrowKeys
       return
 
@@ -398,12 +438,6 @@ class InputManager extends Plugin
 
     # paste shortcut
     return if metaKey and e.which == 86
-
-    # handle predefined shortcuts
-    shortcutKey = @editor.util.getShortcutKey e
-    if @_shortcuts[shortcutKey]
-      @_shortcuts[shortcutKey].call(this, e)
-      return false
 
     # Check the condictional handlers
     if e.which of @_inputHandlers
@@ -495,7 +529,8 @@ class InputManager extends Plugin
       @editor.trigger 'selectionchanged'
       return
 
-    if e.which == 8 and @editor.body.is ':empty'
+    if e.which == 8 and (@editor.body.is(':empty') or (@editor.body.children().length == 1 and @editor.body.children().is('br')))
+      @editor.body.empty()
       p = $('<p/>').append(@editor.util.phBr)
         .appendTo(@editor.body)
       @editor.selection.setRangeAtStartOf p
@@ -504,6 +539,23 @@ class InputManager extends Plugin
   _onPaste: (e) ->
     if @editor.triggerHandler(e) == false
       return false
+
+    if e.originalEvent.clipboardData && e.originalEvent.clipboardData.items && e.originalEvent.clipboardData.items.length > 0
+      pasteItem = e.originalEvent.clipboardData.items[0]
+
+      # paste file in chrome
+      if /^image\//.test pasteItem.type
+        imageFile = pasteItem.getAsFile()
+        return unless imageFile? and @opts.pasteImage
+
+        unless imageFile.name
+          imageFile.name = "来自剪贴板的图片.png";
+
+        uploadOpt = {}
+        uploadOpt[@opts.pasteImage] = true
+        @editor.uploader?.upload(imageFile, uploadOpt)
+        return false
+
 
     $blockEl = @editor.util.closestBlockEl()
     codePaste = $blockEl.is 'pre'
@@ -521,10 +573,14 @@ class InputManager extends Plugin
         pasteContent = $('<div/>').append(@_pasteArea.contents())
         @editor.formatter.format pasteContent
         @editor.formatter.decorate pasteContent
+        @editor.formatter.beautify pasteContent.children()
         pasteContent = pasteContent.contents()
 
       @_pasteArea.empty()
       range = @editor.selection.restore()
+
+      if @editor.triggerHandler('pasting', [pasteContent]) == false
+        return
 
       if !pasteContent
         return
@@ -533,10 +589,29 @@ class InputManager extends Plugin
         @editor.selection.insertNode node, range
       else if pasteContent.length < 1
         return
-      else if pasteContent.length == 1 and pasteContent.is('p')
-        children = pasteContent.contents()
-        range.insertNode node for node in children
-        @editor.selection.setRangeAfter children.last()
+      else if pasteContent.length == 1
+        if pasteContent.is('p')
+          children = pasteContent.contents()
+          @editor.selection.insertNode node for node in children
+
+        # paste image in firefox
+        else if pasteContent.is('.simditor-image')
+          $img = pasteContent.find('img')
+
+          # firefox
+          if dataURLtoBlob && $img.is('img[src^="data:image/png;base64"]')
+            return unless @opts.pasteImage
+            blob = dataURLtoBlob $img.attr( "src" )
+            blob.name = "来自剪贴板的图片.png"
+
+            uploadOpt = {}
+            uploadOpt[@opts.pasteImage] = true
+            @editor.uploader?.upload(blob, uploadOpt)
+            return
+
+          # cannot paste image in safari
+          else if imgEl.is('img[src^="webkit-fake-url://"]')
+            return
       else
         $blockEl = $blockEl.parent() if $blockEl.is 'li'
 
@@ -688,6 +763,7 @@ class InputManager extends Plugin
     return unless $blockEl and $blockEl.length > 0
 
     if $blockEl.is('pre')
+      # TODO: outdent in code block
       return
     else if $blockEl.is('li')
       $parent = $blockEl.parent()
@@ -743,9 +819,11 @@ class UndoManager extends Plugin
 
   _init: ->
     @editor.inputManager.addShortcut 'cmd+90', (e) =>
+      e.preventDefault()
       @undo()
 
     @editor.inputManager.addShortcut 'shift+cmd+90', (e) =>
+      e.preventDefault()
       @redo()
 
     @editor.on 'valuechanged', (e, src) =>
@@ -854,11 +932,17 @@ class UndoManager extends Plugin
   _getNodeByPosition: (position) ->
     node = @editor.body[0]
 
-    for offset in position[0...position.length - 1]
+    for offset, i in position[0...position.length - 1]
       childNodes = node.childNodes
       if offset > childNodes.length - 1
-        node = null
-        break
+        # when pre is empty, the text node will be lost
+        if i == position.length - 2 and $(node).is('pre')
+          child = document.createTextNode ''
+          node.appendChild child
+          childNodes = node.childNodes
+        else
+          node = null
+          break
       node = childNodes[offset]
 
     node
@@ -1882,7 +1966,10 @@ class CodeButton extends Button
       block = $('<p/>').append($el.html().replace('\n', '<br/>'))
       results.push block
     else
-      codeStr = @editor.formatter.clearHtml($el)
+      if $el.children().length == 1 and $el.children().is('br')
+        codeStr = ''
+      else
+        codeStr = @editor.formatter.clearHtml($el)
       block = $('<' + @htmlTag + '/>').append(codeStr)
       results.push(block)
 
@@ -2295,7 +2382,7 @@ class IndentButton extends Button
 
   icon: 'indent'
 
-  title: '向右缩进'
+  title: '向右缩进（Tab）'
 
   status: ($node) ->
     true
@@ -2314,7 +2401,7 @@ class OutdentButton extends Button
 
   icon: 'outdent'
 
-  title: '向左缩进'
+  title: '向左缩进（Shift + Tab）'
 
   status: ($node) ->
     true
