@@ -15,10 +15,10 @@ Reference these files in your html page:
 <link media="all" rel="stylesheet" type="text/css" href="styles/simditor.css" />
 
 <script type="text/javascript" src="scripts/jquery-2.0.3.js"></script>
+<script type="text/javascript" src="scripts/module.js"></script>
+<script type="text/javascript" src="scripts/uploader.js"></script>
 <script type="text/javascript" src="scripts/simditor.js"></script>
 ```
-
-Notice: `font-awesome.css` is optional which is used to provide icon image for our toolbar button. You can customize the style of editor as you like by modifying `simditor.css` or writing your own to override it. jQuery 2.0+ is required.
 
 Then initialize the editor in your script:
 
@@ -27,6 +27,15 @@ var editor = new Simditor({
   textarea: $('#textarea-id')
 });
 ```
+
+### Dependence
+
+Simditor is built on jQuery 2.0+ and [Mycolorway Simple Module](https://github.com/mycolorway/simple-module) which is a CoffeeScript base class for component development.
+
+[FontAwesome](https://github.com/FortAwesome/Font-Awesome) is also required if you don't want to customize your own toolbar button.
+
+[Mycolorway Simple Uploader](https://github.com/mycolorway/simple-uploader) is optional for local image uploading.
+
 
 ### Documentation
 Not ready yet...
