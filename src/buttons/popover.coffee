@@ -18,6 +18,11 @@ class Popover extends Module
     @editor.on 'blur.linkpopover', =>
       @target.addClass('selected') if @active and @target?
 
+    @el.on 'mouseenter', (e) =>
+      @el.addClass 'hover'
+    @el.on 'mouseleave', (e) =>
+      @el.removeClass 'hover'
+
   render: ->
 
   show: ($target, position = 'bottom') ->

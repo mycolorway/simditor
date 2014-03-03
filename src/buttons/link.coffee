@@ -40,10 +40,11 @@ class LinkButton extends Button
       $endBlock = @editor.util.closestBlockEl(endNode)
 
       $contents = $(range.extractContents())
+      linkText = @editor.formatter.clearHtml($contents.contents(), false)
       $link = $('<a/>', {
         href: 'http://www.example.com',
         target: '_blank',
-        text: @editor.formatter.clearHtml($contents.contents(), false) || '链接文字'
+        text: linkText || '链接文字'
       })
 
       if $startBlock[0] == $endBlock[0]
@@ -57,8 +58,12 @@ class LinkButton extends Button
     @editor.selection.selectRange range
 
     @popover.one 'popovershow', =>
-      @popover.textEl.focus()
-      @popover.textEl[0].select()
+      if linkText
+        @popover.urlEl.focus()
+        @popover.urlEl[0].select()
+      else
+        @popover.textEl.focus()
+        @popover.textEl[0].select()
 
     @editor.trigger 'valuechanged'
     @editor.trigger 'selectionchanged'
@@ -71,7 +76,7 @@ class LinkPopover extends Popover
       <div class="settings-field">
         <label>文本</label>
         <input class="link-text" type="text"/>
-        <a class="btn-unlink" href="javascript:;" title="取消链接"><span class="fa fa-unlink"></span></a>
+        <a class="btn-unlink" href="javascript:;" title="取消链接" tabindex="-1"><span class="fa fa-unlink"></span></a>
       </div>
       <div class="settings-field">
         <label>链接</label>
@@ -96,7 +101,7 @@ class LinkPopover extends Popover
       @target.attr 'href', @urlEl.val()
 
     $([@urlEl[0], @textEl[0]]).on 'keydown', (e) =>
-      if e.which == 13 or e.which == 27 or (e.which == 9 and $(e.target).hasClass('link-url'))
+      if e.which == 13 or e.which == 27 or (!e.shiftKey and e.which == 9 and $(e.target).hasClass('link-url'))
         e.preventDefault()
         setTimeout =>
           range = document.createRange()
