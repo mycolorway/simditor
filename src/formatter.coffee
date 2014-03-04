@@ -11,7 +11,7 @@ class Formatter extends Plugin
     @editor.body.on 'click', 'a', (e) =>
       false
 
-  _allowedTags: ['br', 'a', 'img', 'b', 'strong', 'i', 'u', 'p', 'ul', 'ol', 'li', 'blockquote', 'pre', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6']
+  _allowedTags: ['br', 'a', 'img', 'b', 'strong', 'i', 'u', 'p', 'ul', 'ol', 'li', 'blockquote', 'pre', 'h1', 'h2', 'h3', 'h4']
 
   _allowedAttributes:
     img: ['src', 'alt', 'width', 'height', 'data-origin-src', 'data-origin-size', 'data-origin-name']
@@ -22,8 +22,6 @@ class Formatter extends Plugin
     h2: ['data-indent']
     h3: ['data-indent']
     h4: ['data-indent']
-    h5: ['data-indent']
-    h6: ['data-indent']
 
   decorate: ($el = @editor.body) ->
     @editor.trigger 'decorate', [$el]
@@ -130,7 +128,7 @@ class Formatter extends Plugin
         $node = $(node)
         contents = $node.contents()
         result += @clearHtml contents if contents.length > 0
-        if lineBreak and $node.is 'br, p, div, li, tr, pre, address, artticle, aside, dl, figcaption, footer, h1, h2, h3, h4, h5, h6, header'
+        if lineBreak and $node.is 'br, p, div, li, tr, pre, address, artticle, aside, dl, figcaption, footer, h1, h2, h3, h4, header'
           result += '\n'
 
     result

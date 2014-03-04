@@ -64,7 +64,7 @@ class Util extends Plugin
     if !node or node.nodeType == 3
       return false
 
-    /^(div|p|ul|ol|li|blockquote|hr|pre|h1|h2|h3|h4|h5|h6|table)$/.test node.nodeName.toLowerCase()
+    /^(div|p|ul|ol|li|blockquote|hr|pre|h1|h2|h3|h4|table)$/.test node.nodeName.toLowerCase()
 
   closestBlockEl: (node) ->
     unless node?

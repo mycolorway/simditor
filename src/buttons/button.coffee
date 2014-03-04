@@ -37,12 +37,12 @@ class Button extends Module
       return if @el.hasClass('disabled') or (@needFocus and !@editor.inputManager.focused)
 
       if @menu
-        @editor.toolbar.wrapper.toggleClass('menu-on')
+        @wrapper.toggleClass('menu-on')
       else
-      param = @el.data('param')
-      @command(param)
+        param = @el.data('param')
+        @command(param)
 
-    @editor.toolbar.list.on 'mousedown', 'a.menu-item', (e) =>
+    @wrapper.on 'mousedown', 'a.menu-item', (e) =>
       e.preventDefault()
       btn = $(e.currentTarget)
       return if btn.hasClass 'disabled'
@@ -50,6 +50,7 @@ class Button extends Module
       @editor.toolbar.wrapper.removeClass('menu-on')
       param = btn.data('param')
       @command(param)
+      @wrapper.removeClass('menu-on')
 
     @editor.on 'blur', =>
       @setActive false
@@ -88,10 +89,10 @@ class Button extends Module
       $menuItemEl = $(@_tpl.menuItem).appendTo @menuEl
       $menuBtntnEl = $menuItemEl.find('a.menu-item')
         .attr(
-          'title': menuItem.title
+          'title': menuItem.title ? menuItem.text,
+          'data-param': menuItem.param
         )
         .addClass('menu-item-' + menuItem.name)
-        .data('param', menuItem.param)
         .find('span')
         .text(menuItem.text)
 

@@ -59,7 +59,7 @@ class ImageButton extends Button
       false
 
     @editor.on 'selectionchanged', =>
-      @popover.hide()
+      @popover.hide() if @popover.active
 
     @editor.body.on 'keydown', '.simditor-image', (e) =>
       return unless e.which == 8

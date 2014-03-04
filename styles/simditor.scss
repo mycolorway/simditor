@@ -127,6 +127,7 @@
 					font-size: 15px;
 					line-height: 60px;
 					text-align: center;
+					text-decoration: none;
 					margin: 0 1px;
 
 					span {
@@ -145,7 +146,6 @@
 						}
 					}
 
-
 					&.disabled {
 						cursor: default;
 
@@ -153,29 +153,105 @@
 							opacity: 0.3;
 						}
 					}
+
+					&.toolbar-item-title {
+						span:before {
+							content: "T";
+							font-size: 19px;
+							font-weight: bold;
+							font-family: 'Times New Roman';
+						}
+
+						&.active-h1 span:before {
+							content: 'H1';
+							font-size: 18px;
+						}
+
+						&.active-h2 span:before {
+							content: 'H2';
+							font-size: 18px;
+						}
+
+						&.active-h3 span:before {
+							content: 'H3';
+							font-size: 18px;
+						}
+					}
+				}
+
+				&.menu-on {
+					.toolbar-item {
+						position: relative;
+						z-index: 21;
+						background: #ffffff;
+						box-shadow: 0 -3px 3px rgba(0,0,0,0.2);
+					}
+
+					.toolbar-menu {
+						display: block;
+					}
 				}
 			}
 		}
 
-		.menu {
-			position: relative;
+		.toolbar-menu {
+			display: none;
+			position: absolute;
+			top: 59px;
+			left: 1px;
+			z-index: 20;
+			background: #ffffff;
+			text-align: left;
+			box-shadow: 0 0 3px rgba(0,0,0,0.2);
 
-			ul {
-				display: none;
-				z-index: 998;
-				position: absolute;
-				top: 100%;
-				left: 0;
-				text-align: left;
+			& > ul {
+				min-width: 160px;
+				list-style: none;
+				margin: 0;
+				padding: 10px 0;
+
+				& > li {
+
+					.menu-item {
+						display: block;
+						font-size:16px;
+						line-height: 2em;
+						padding: 0 10px;
+						text-decoration: none;
+						color: #666666;
+						
+						&:hover {
+							background: #f6f6f6;
+						}
+
+						&.menu-item-h1 {
+							font-size: 24px;
+							color: #333333;
+						}
+
+						&.menu-item-h2 {
+							font-size: 22px;
+							color: #333333;
+						}
+
+						&.menu-item-h3 {
+							font-size: 20px;
+							color: #333333;
+						}
+					}
+
+					.separator {
+						display: block;
+						border-top: 1px solid #cccccc;
+						height: 0;
+						line-height: 0;
+						font-size: 0;
+						margin: 6px 0;
+					}
+				}
+
 			}
 
-			.horizontal-line {
-				border-top: 1px solid #f0eadf;
-				height: 0;
-				line-height: 0;
-				font-size: 0;
-				margin: 8px 0;
-			}
 		}
 	}
 

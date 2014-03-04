@@ -411,7 +411,7 @@ class InputManager extends Plugin
           .appendTo($parentLi)
 
       @editor.selection.restore()
-    else if $blockEl.is('p, h1, h2, h3, h4, h5, h6')
+    else if $blockEl.is('p, h1, h2, h3, h4')
       indentLevel = $blockEl.attr('data-indent') ? 0
       indentLevel = indentLevel * 1 + 1
       indentLevel = 10 if indentLevel > 10
@@ -449,7 +449,7 @@ class InputManager extends Plugin
       $blockEl.insertAfter $parentLi
       $parent.remove() if $parent.children('li').length < 1
       @editor.selection.restore()
-    else if $blockEl.is('p, h1, h2, h3, h4, h5, h6')
+    else if $blockEl.is('p, h1, h2, h3, h4')
       indentLevel = $blockEl.attr('data-indent') ? 0
       indentLevel = indentLevel * 1 - 1
       indentLevel = 0 if indentLevel < 0

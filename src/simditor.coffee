@@ -195,7 +195,7 @@ class Formatter extends Plugin
     @editor.body.on 'click', 'a', (e) =>
       false
 
-  _allowedTags: ['br', 'a', 'img', 'b', 'strong', 'i', 'u', 'p', 'ul', 'ol', 'li', 'blockquote', 'pre', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6']
+  _allowedTags: ['br', 'a', 'img', 'b', 'strong', 'i', 'u', 'p', 'ul', 'ol', 'li', 'blockquote', 'pre', 'h1', 'h2', 'h3', 'h4']
 
   _allowedAttributes:
     img: ['src', 'alt', 'width', 'height', 'data-origin-src', 'data-origin-size', 'data-origin-name']
@@ -206,8 +206,6 @@ class Formatter extends Plugin
     h2: ['data-indent']
     h3: ['data-indent']
     h4: ['data-indent']
-    h5: ['data-indent']
-    h6: ['data-indent']
 
   decorate: ($el = @editor.body) ->
     @editor.trigger 'decorate', [$el]
@@ -314,7 +312,7 @@ class Formatter extends Plugin
         $node = $(node)
         contents = $node.contents()
         result += @clearHtml contents if contents.length > 0
-        if lineBreak and $node.is 'br, p, div, li, tr, pre, address, artticle, aside, dl, figcaption, footer, h1, h2, h3, h4, h5, h6, header'
+        if lineBreak and $node.is 'br, p, div, li, tr, pre, address, artticle, aside, dl, figcaption, footer, h1, h2, h3, h4, header'
           result += '\n'
 
     result
@@ -746,7 +744,7 @@ class InputManager extends Plugin
           .appendTo($parentLi)
 
       @editor.selection.restore()
-    else if $blockEl.is('p, h1, h2, h3, h4, h5, h6')
+    else if $blockEl.is('p, h1, h2, h3, h4')
       indentLevel = $blockEl.attr('data-indent') ? 0
       indentLevel = indentLevel * 1 + 1
       indentLevel = 10 if indentLevel > 10
@@ -784,7 +782,7 @@ class InputManager extends Plugin
       $blockEl.insertAfter $parentLi
       $parent.remove() if $parent.children('li').length < 1
       @editor.selection.restore()
-    else if $blockEl.is('p, h1, h2, h3, h4, h5, h6')
+    else if $blockEl.is('p, h1, h2, h3, h4')
       indentLevel = $blockEl.attr('data-indent') ? 0
       indentLevel = indentLevel * 1 - 1
       indentLevel = 0 if indentLevel < 0
@@ -1064,7 +1062,7 @@ class Util extends Plugin
     if !node or node.nodeType == 3
       return false
 
-    /^(div|p|ul|ol|li|blockquote|hr|pre|h1|h2|h3|h4|h5|h6|table)$/.test node.nodeName.toLowerCase()
+    /^(div|p|ul|ol|li|blockquote|hr|pre|h1|h2|h3|h4|table)$/.test node.nodeName.toLowerCase()
 
   closestBlockEl: (node) ->
     unless node?
@@ -1387,7 +1385,7 @@ class Simditor extends Widget
     val
 
   focus: ->
-    $blockEl = @body.find('p, li, pre, h1, h2, h3, h4, h5, h6, td').first()
+    $blockEl = @body.find('p, li, pre, h1, h2, h3, h4, td').first()
     range = document.createRange()
     @selection.setRangeAtStartOf $blockEl, range
     @body.focus()
@@ -1460,12 +1458,12 @@ class Button extends Module
       return if @el.hasClass('disabled') or (@needFocus and !@editor.inputManager.focused)
 
       if @menu
-        @editor.toolbar.wrapper.toggleClass('menu-on')
+        @wrapper.toggleClass('menu-on')
       else
-      param = @el.data('param')
-      @command(param)
+        param = @el.data('param')
+        @command(param)
 
-    @editor.toolbar.list.on 'mousedown', 'a.menu-item', (e) =>
+    @wrapper.on 'mousedown', 'a.menu-item', (e) =>
       e.preventDefault()
       btn = $(e.currentTarget)
       return if btn.hasClass 'disabled'
@@ -1473,6 +1471,7 @@ class Button extends Module
       @editor.toolbar.wrapper.removeClass('menu-on')
       param = btn.data('param')
       @command(param)
+      @wrapper.removeClass('menu-on')
 
     @editor.on 'blur', =>
       @setActive false
@@ -1511,10 +1510,10 @@ class Button extends Module
       $menuItemEl = $(@_tpl.menuItem).appendTo @menuEl
       $menuBtntnEl = $menuItemEl.find('a.menu-item')
         .attr(
-          'title': menuItem.title
+          'title': menuItem.title ? menuItem.text,
+          'data-param': menuItem.param
         )
         .addClass('menu-item-' + menuItem.name)
-        .data('param', menuItem.param)
         .find('span')
         .text(menuItem.text)
 
@@ -1618,6 +1617,92 @@ class Popover extends Module
     @active = false
     @editor.off('.linkpopover')
     @el.remove()
+
+
+class TitleButton extends Button
+
+  name: 'title'
+
+  title: '加粗文字'
+
+  htmlTag: 'h1, h2, h3, h4'
+
+  disableTag: 'pre'
+
+  menu: [{
+    name: 'normal',
+    text: '普通文本',
+    param: 'p'
+  }, '|', {
+    name: 'h1',
+    text: '标题 1',
+    param: 'h1'
+  }, {
+    name: 'h2',
+    text: '标题 2',
+    param: 'h2'
+  }, {
+    name: 'h3',
+    text: '标题 3',
+    param: 'h3'
+  }]
+
+  setActive: (active, param) ->
+    @active = active
+    if active
+      @el.addClass('active active-' + param)
+    else
+      @el.removeClass('active active-p active-h1 active-h2 active-h3')
+
+  status: ($node) ->
+    @setDisabled $node.is(@disableTag) if $node?
+    return true if @disabled
+
+    if $node?
+      param = $node[0].tagName?.toLowerCase()
+      @setActive $node.is(@htmlTag), param
+    @active
+
+  command: (param) ->
+    range = @editor.selection.getRange()
+    startNode = range.startContainer
+    endNode = range.endContainer
+    $startBlock = @editor.util.closestBlockEl(startNode)
+    $endBlock = @editor.util.closestBlockEl(endNode)
+
+    @editor.selection.save()
+
+    range.setStartBefore $startBlock[0]
+    range.setEndAfter $endBlock[0]
+
+    $contents = $(range.extractContents())
+
+    results = []
+    $contents.children().each (i, el) =>
+      converted = @_convertEl el, param
+      results.push(c) for c in converted
+
+    range.insertNode node[0] for node in results.reverse()
+    @editor.selection.restore()
+
+    @editor.trigger 'valuechanged'
+    @editor.trigger 'selectionchanged'
+
+  _convertEl: (el, param) ->
+    $el = $(el)
+    results = []
+
+    if $el.is param
+      results.push $el
+    else
+      $block = $('<' + param + '/>').append($el.contents())
+      results.push($block)
+
+    results
+
+
+Simditor.Toolbar.addButton(TitleButton)
+
 
 
 class BoldButton extends Button
@@ -2229,7 +2314,7 @@ class ImageButton extends Button
       false
 
     @editor.on 'selectionchanged', =>
-      @popover.hide()
+      @popover.hide() if @popover.active
 
     @editor.body.on 'keydown', '.simditor-image', (e) =>
       return unless e.which == 8

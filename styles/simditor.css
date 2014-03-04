@@ -109,6 +109,7 @@
   font-size: 15px;
   line-height: 60px;
   text-align: center;
+  text-decoration: none;
   margin: 0 1px;
 }
 .simditor .simditor-toolbar > ul > li > .toolbar-item span {
@@ -129,23 +130,79 @@
 .simditor .simditor-toolbar > ul > li > .toolbar-item.disabled span {
   opacity: 0.3;
 }
-.simditor .simditor-toolbar .menu {
+.simditor .simditor-toolbar > ul > li > .toolbar-item.toolbar-item-title span:before {
+  content: "T";
+  font-size: 19px;
+  font-weight: bold;
+  font-family: 'Times New Roman';
+}
+.simditor .simditor-toolbar > ul > li > .toolbar-item.toolbar-item-title.active-h1 span:before {
+  content: 'H1';
+  font-size: 18px;
+}
+.simditor .simditor-toolbar > ul > li > .toolbar-item.toolbar-item-title.active-h2 span:before {
+  content: 'H2';
+  font-size: 18px;
+}
+.simditor .simditor-toolbar > ul > li > .toolbar-item.toolbar-item-title.active-h3 span:before {
+  content: 'H3';
+  font-size: 18px;
+}
+.simditor .simditor-toolbar > ul > li.menu-on .toolbar-item {
   position: relative;
+  z-index: 21;
+  background: #ffffff;
+  box-shadow: 0 -3px 3px rgba(0, 0, 0, 0.2);
 }
-.simditor .simditor-toolbar .menu ul {
+.simditor .simditor-toolbar > ul > li.menu-on .toolbar-menu {
+  display: block;
+}
+.simditor .simditor-toolbar .toolbar-menu {
   display: none;
-  z-index: 998;
   position: absolute;
-  top: 100%;
-  left: 0;
+  top: 59px;
+  left: 1px;
+  z-index: 20;
+  background: #ffffff;
   text-align: left;
+  box-shadow: 0 0 3px rgba(0, 0, 0, 0.2);
 }
-.simditor .simditor-toolbar .menu .horizontal-line {
-  border-top: 1px solid #f0eadf;
+.simditor .simditor-toolbar .toolbar-menu > ul {
+  min-width: 160px;
+  list-style: none;
+  margin: 0;
+  padding: 10px 0;
+}
+.simditor .simditor-toolbar .toolbar-menu > ul > li .menu-item {
+  display: block;
+  font-size: 16px;
+  line-height: 2em;
+  padding: 0 10px;
+  text-decoration: none;
+  color: #666666;
+}
+.simditor .simditor-toolbar .toolbar-menu > ul > li .menu-item:hover {
+  background: #f6f6f6;
+}
+.simditor .simditor-toolbar .toolbar-menu > ul > li .menu-item.menu-item-h1 {
+  font-size: 24px;
+  color: #333333;
+}
+.simditor .simditor-toolbar .toolbar-menu > ul > li .menu-item.menu-item-h2 {
+  font-size: 22px;
+  color: #333333;
+}
+.simditor .simditor-toolbar .toolbar-menu > ul > li .menu-item.menu-item-h3 {
+  font-size: 20px;
+  color: #333333;
+}
+.simditor .simditor-toolbar .toolbar-menu > ul > li .separator {
+  display: block;
+  border-top: 1px solid #cccccc;
   height: 0;
   line-height: 0;
   font-size: 0;
-  margin: 8px 0;
+  margin: 6px 0;
 }
 .simditor .simditor-popover {
   display: none;
