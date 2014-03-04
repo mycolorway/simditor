@@ -55,10 +55,11 @@ class Toolbar extends Plugin
       @toolbarStatus()
 
     @editor.on 'destroy', =>
-      @_buttons.length = 0
+      @buttons.length = 0
 
 
   _render: ->
+    @buttons = []
     @wrapper = $(@_tpl.wrapper).prependTo(@editor.wrapper)
     @list = @wrapper.find('ul')
     @editor.wrapper.addClass('toolbar-enabled')
@@ -72,12 +73,12 @@ class Toolbar extends Plugin
         throw new Error 'simditor: invalid toolbar button "' + name + '"'
         continue
       
-      @_buttons.push new @constructor.buttons[name](@editor)
+      @buttons.push new @constructor.buttons[name](@editor)
 
   toolbarStatus: (name) ->
     return unless @editor.inputManager.focused
 
-    buttons = @_buttons[..]
+    buttons = @buttons[..]
     @editor.util.traverseUp (node) =>
       removeButtons = []
       for button, i in buttons
@@ -94,9 +95,6 @@ class Toolbar extends Plugin
   findButton: (name) ->
     button = @list.find('.toolbar-item-' + name).data('button')
     button ? null
-
-  # button instances
-  _buttons: []
 
   @addButton: (btn) ->
     @buttons[btn::name] = btn

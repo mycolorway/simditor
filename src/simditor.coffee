@@ -646,21 +646,36 @@ class InputManager extends Plugin
         return unless @editor.util.isEmptyNode $node
         e.preventDefault()
         range = @editor.selection.getRange()
+        listEl = $node.parent()
 
-        if !$node.next('li').length
-          listEl = $node.parent()
-          newBlockEl = $('<p/>').append(@editor.util.phBr).insertAfter(listEl)
-
-          if $node.siblings('li').length
-            $node.remove()
+        # item in the middle of list
+        if $node.next('li').length > 0
+          # in a nested list
+          if listEl.parent('li').length > 0
+            newBlockEl = $('<li/>').append(@editor.util.phBr).insertAfter(listEl.parent('li'))
+            newListEl = $('<' + listEl[0].tagName + '/>').append($node.nextAll('li'))
+            newBlockEl.append newListEl
+          # in a root list
           else
-            listEl.remove()
+            newBlockEl = $('<p/>').append(@editor.util.phBr).insertAfter(listEl)
+            newListEl = $('<' + listEl[0].tagName + '/>').append($node.nextAll('li'))
+            newBlockEl.after newListEl
 
-          range.setEnd(newBlockEl[0], 0)
+        # item at the end of list
         else
-          newLi = $('<li/>').append(@editor.util.phBr).insertAfter($node)
-          range.setEnd(newLi[0], 0)
+          # in a nested list
+          if listEl.parent('li').length > 0
+            newBlockEl = $('<li/>').append(@editor.util.phBr).insertAfter(listEl.parent('li'))
+          # in a root list
+          else
+            newBlockEl = $('<p/>').append(@editor.util.phBr).insertAfter(listEl)
 
+        if $node.prev('li').length
+          $node.remove()
+        else
+          listEl.remove()
+
+        range.setEnd(newBlockEl[0], 0)
         range.collapse(false)
         @editor.selection.selectRange(range)
         true
@@ -695,6 +710,41 @@ class InputManager extends Plugin
         true
 
     8: # backspace
+
+      # press delete in a empty li which has a nested list
+      li: (e, $node) ->
+        $childList = $node.children('ul, ol')
+        $prevNode = $node.prev('li')
+        return unless $childList.length > 0 and $prevNode.length > 0
+
+        text = ''
+        $textNode = null
+        $node.contents().each (i, n) =>
+          if n.nodeType == 3 and n.nodeValue
+            text += n.nodeValue
+            $textNode = $(n)
+        if $textNode and text.length == 1 and @editor.util.browser.firefox and !$textNode.next('br').length
+          $br = $(@editor.util.phBr).insertAfter $textNode
+          $textNode.remove()
+          @editor.selection.setRangeBefore $br
+          return true
+        else if text.length > 0
+          return
+
+        range = document.createRange()
+        $prevChildList = $prevNode.children('ul, ol')
+        if $prevChildList.length > 0
+          $newLi = $('<li/>').append(@editor.util.phBr).appendTo($prevChildList)
+          $prevChildList.append $childList.children('li')
+          $node.remove()
+          @editor.selection.setRangeAtEndOf $newLi, range
+        else
+          @editor.selection.setRangeAtEndOf $prevNode, range
+          $prevNode.append $childList
+          $node.remove()
+          @editor.selection.selectRange range
+        true
+
       pre: (e, $node) ->
         return unless @editor.selection.rangeAtStartOf $node
         codeStr = $node.html().replace('\n', '<br/>')
@@ -1213,10 +1263,11 @@ class Toolbar extends Plugin
       @toolbarStatus()
 
     @editor.on 'destroy', =>
-      @_buttons.length = 0
+      @buttons.length = 0
 
 
   _render: ->
+    @buttons = []
     @wrapper = $(@_tpl.wrapper).prependTo(@editor.wrapper)
     @list = @wrapper.find('ul')
     @editor.wrapper.addClass('toolbar-enabled')
@@ -1230,12 +1281,12 @@ class Toolbar extends Plugin
         throw new Error 'simditor: invalid toolbar button "' + name + '"'
         continue
       
-      @_buttons.push new @constructor.buttons[name](@editor)
+      @buttons.push new @constructor.buttons[name](@editor)
 
   toolbarStatus: (name) ->
     return unless @editor.inputManager.focused
 
-    buttons = @_buttons[..]
+    buttons = @buttons[..]
     @editor.util.traverseUp (node) =>
       removeButtons = []
       for button, i in buttons
@@ -1252,9 +1303,6 @@ class Toolbar extends Plugin
   findButton: (name) ->
     button = @list.find('.toolbar-item-' + name).data('button')
     button ? null
-
-  # button instances
-  _buttons: []
 
   @addButton: (btn) ->
     @buttons[btn::name] = btn
