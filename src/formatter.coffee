@@ -89,7 +89,7 @@ class Formatter extends Plugin
     $node = $(node)
 
     if $node[0].nodeType == 3
-      text = $node.text().replace(/(\r\n|\n|\r)/gm, '<br/>')
+      text = $node.text().replace(/(\r\n|\n|\r)/gm, '')
       $node.replaceWith $('<div/>').html(text).contents()
       return
 

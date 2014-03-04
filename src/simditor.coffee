@@ -273,7 +273,7 @@ class Formatter extends Plugin
     $node = $(node)
 
     if $node[0].nodeType == 3
-      text = $node.text().replace(/(\r\n|\n|\r)/gm, '<br/>')
+      text = $node.text().replace(/(\r\n|\n|\r)/gm, '')
       $node.replaceWith $('<div/>').html(text).contents()
       return
 
@@ -610,6 +610,15 @@ class InputManager extends Plugin
           # cannot paste image in safari
           else if imgEl.is('img[src^="webkit-fake-url://"]')
             return
+        else if $blockEl.is('p') and @editor.util.isEmptyNode $blockEl
+          $blockEl.replaceWith pasteContent
+          @editor.selection.setRangeAtEndOf(pasteContent, range)
+        else if pasteContent.is('ul, ol') and $blockEl.is 'li'
+          $blockEl.parent().after pasteContent
+          @editor.selection.setRangeAtEndOf(pasteContent, range)
+        else
+          $blockEl.after pasteContent
+          @editor.selection.setRangeAtEndOf(pasteContent, range)
       else
         $blockEl = $blockEl.parent() if $blockEl.is 'li'
 
