@@ -57,6 +57,8 @@ class Toolbar extends Plugin
     @editor.on 'destroy', =>
       @buttons.length = 0
 
+    $(document).on 'mousedown.simditor-' + @editor.id, (e) =>
+      @list.find('li.menu-on').removeClass('menu-on')
 
   _render: ->
     @buttons = []

@@ -1265,6 +1265,8 @@ class Toolbar extends Plugin
     @editor.on 'destroy', =>
       @buttons.length = 0
 
+    $(document).on 'mousedown.simditor-' + @editor.id, (e) =>
+      @list.find('li.menu-on').removeClass('menu-on')
 
   _render: ->
     @buttons = []
@@ -1512,27 +1514,31 @@ class Button extends Module
 
     @el.on 'mousedown', (e) =>
       e.preventDefault()
-      return if @el.hasClass('disabled') or (@needFocus and !@editor.inputManager.focused)
-
       if @menu
         @wrapper.toggleClass('menu-on')
-      else
-        param = @el.data('param')
-        @command(param)
+        return false
+
+      return false if @el.hasClass('disabled') or (@needFocus and !@editor.inputManager.focused)
+
+      param = @el.data('param')
+      @command(param)
+      false
 
     @wrapper.on 'mousedown', 'a.menu-item', (e) =>
       e.preventDefault()
       btn = $(e.currentTarget)
-      return if btn.hasClass 'disabled'
+      @wrapper.removeClass('menu-on')
+      return false if btn.hasClass('disabled') or (@needFocus and !@editor.inputManager.focused)
 
       @editor.toolbar.wrapper.removeClass('menu-on')
       param = btn.data('param')
       @command(param)
-      @wrapper.removeClass('menu-on')
+      false
 
     @editor.on 'blur', =>
       @setActive false
       @setDisabled false
+
 
     if @shortcut?
       @editor.inputManager.addShortcut @shortcut, (e) =>
