@@ -1357,15 +1357,17 @@ class Simditor extends Widget
       form.on 'reset.simditor-' + @id, =>
         @setValue ''
 
-    @setValue @textarea.val() ? ''
+    # set default value after all plugins are connected
+    @on 'pluginconnected', =>
+      @setValue @textarea.val() || ''
 
-    if @opts.placeholder
-      @on 'valuechanged', =>
-        @_placeholder()
+      if @opts.placeholder
+        @on 'valuechanged', =>
+          @_placeholder()
 
-    setTimeout =>
-      @trigger 'valuechanged'
-    , 0
+      setTimeout =>
+        @trigger 'valuechanged'
+      , 0
 
     # Disable the resizing of `img` and `table`
     #if @browser.mozilla
