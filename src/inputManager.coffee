@@ -134,10 +134,13 @@ class InputManager extends Plugin
 
     # Remove hr node
     if e.which == 8
-      $prevBlockEl = $blockEl.prev()
-      if $prevBlockEl.is 'hr' and @editor.selection.rangeAtStartOf $blockEl
+      $rootBlock = @editor.util.furthestBlockEl()
+      $prevBlockEl = $rootBlock.prev()
+      if $prevBlockEl.is('hr') and @editor.selection.rangeAtStartOf $rootBlock
         # TODO: need to test on IE
+        @editor.selection.save()
         $prevBlockEl.remove()
+        @editor.selection.restore()
         @editor.trigger 'valuechanged'
         @editor.trigger 'selectionchanged'
         return false

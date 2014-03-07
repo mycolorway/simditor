@@ -467,10 +467,13 @@ class InputManager extends Plugin
 
     # Remove hr node
     if e.which == 8
-      $prevBlockEl = $blockEl.prev()
-      if $prevBlockEl.is 'hr' and @editor.selection.rangeAtStartOf $blockEl
+      $rootBlock = @editor.util.furthestBlockEl()
+      $prevBlockEl = $rootBlock.prev()
+      if $prevBlockEl.is('hr') and @editor.selection.rangeAtStartOf $rootBlock
         # TODO: need to test on IE
+        @editor.selection.save()
         $prevBlockEl.remove()
+        @editor.selection.restore()
         @editor.trigger 'valuechanged'
         @editor.trigger 'selectionchanged'
         return false
@@ -2572,4 +2575,42 @@ class OutdentButton extends Button
 
 Simditor.Toolbar.addButton(OutdentButton)
 
+
+
+
+class HrButton extends Button
+
+  name: 'hr'
+
+  icon: 'minus'
+
+  title: '分隔线'
+
+  htmlTag: 'hr'
+
+  status: ($node) ->
+    true
+
+  command: ->
+    $rootBlock = @editor.util.furthestBlockEl()
+    $nextBlock = $rootBlock.next()
+
+    if $nextBlock.length > 0
+      @editor.selection.save()
+    else
+      $newBlock = $('<p/>').append @editor.util.phBr
+
+    $hr = $('<hr/>').insertAfter $rootBlock
+
+    if $newBlock
+      $newBlock.insertAfter $hr
+      @editor.selection.setRangeAtStartOf $newBlock
+    else
+      @editor.selection.restore()
+
+    @editor.trigger 'valuechanged'
+    @editor.trigger 'selectionchanged'
+
+
+Simditor.Toolbar.addButton(HrButton)
 
