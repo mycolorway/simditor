@@ -3,6 +3,7 @@ class ImageButton extends Button
 
   _wrapperTpl: """
     <div class="simditor-image" contenteditable="false" tabindex="-1">
+      <div class='simditor-image-progress-bar'><div><span></span></div></div>
       <div class="simditor-image-resize-handle right"></div>
       <div class="simditor-image-resize-handle bottom"></div>
       <div class="simditor-image-resize-handle right-bottom"></div>
@@ -167,6 +168,10 @@ class ImagePopover extends Popover
       <div class="settings-field">
         <label>图片地址</label>
         <input class="image-src" type="text"/>
+        <a class="btn-upload" href="javascript:;" title="上传图片" tabindex="-1">
+          <span class="fa fa-upload"></span>
+          <input type="file" title="上传图片" name="upload-file"  accept="image/*"">
+        </a>
       </div>
     </div>
   """
@@ -182,6 +187,7 @@ class ImagePopover extends Popover
     @el.addClass('image-popover')
       .append(@_tpl)
     @srcEl = @el.find '.image-src'
+    @input = @el.find 'input[name=upload-file]'
 
     @srcEl.on 'keyup', (e) =>
       return if e.which == 13
@@ -204,6 +210,89 @@ class ImagePopover extends Popover
         @srcEl.blur()
         @target.removeClass('selected')
         @hide()
+
+    @input.on 'click mousedown', (e) =>
+      e.stopPropagation()
+
+    @_initUploader()
+
+  _initUploader: ->
+
+    @input.on 'change', (e) =>
+      @editor.uploader.upload(@input, {
+        inlineImage: true
+      })
+      @input.val ''
+
+    @editor.uploader.on 'beforeupload', (e, file) =>
+      return unless file.inlineImage
+
+      $img = @target.find("img")
+      @editor.uploader.readImageFile file.obj, (img) =>
+        if img
+          @button.loadImage $img, img.src, (success) =>
+            return unless success
+            @refresh()
+            @editor.trigger 'valuechanged'
+        else
+          # 提示 仅上传图片
+
+      $bar = @target.find(".simditor-image-progress-bar")
+      $bar.show()
+      $img.css('opacity', '0.8')
+
+      if not @editor.uploader.html5
+        $bar.text('正在上传...').addClass('hint')
+
+    @editor.uploader.on 'uploadprogress', (e, file, loaded, total) =>
+      return unless file.inlineImage
+
+      percent = loaded / total
+
+      if percent > 0.99
+        percent = "正在处理...";
+        @target.find(".simditor-image-progress-bar").text(percent).addClass('hint')
+      else
+        percent = (percent * 100).toFixed(0) + "%"
+        @target.find(".simditor-image-progress-bar span").width(percent)
+
+    @editor.uploader.on 'uploadsuccess', (e, file, result) =>
+      return unless file.inlineImage
+
+      $img = @target.find("img")
+      $img.css('opacity', '1')
+
+      @target.find(".simditor-image-progress-bar").hide().removeClass('hint')
+      @srcEl.val result.file_path
+      @button.loadImage $img, result.file_path, (success) =>
+        return unless success
+        @editor.trigger 'valuechanged'
+
+    @editor.uploader.on 'uploadcomplete', (e, file, result) =>
+      return unless file.inlineImage
+
+    @editor.uploader.on 'uploaderror', (e, file, xhr) =>
+      return if xhr.statusText == 'abort'
+
+      if xhr.responseText
+        result = $.parseJSON(xhr.responseText)
+
+
+    # @editor.on 'destroy', =>
+    #   @attachmentList.find('.link-cancel').click()
+    #   @editor.el.closest('form').trigger('uploadcomplete')
+
+    # @editor.el
+    #   .data('droppable', 'true')
+    #   .attr('data-droppable', 'true')
+    #   .on 'dropCustom', (e, evt, files) =>
+    #     e.preventDefault()
+    #     e.stopPropagation()
+    #     if files && files.length
+    #       @editor.uploader.upload($.makeArray(files), {
+    #         attachment: true
+    #       })
+
 
   show: (args...) ->
     super args...

@@ -19,6 +19,7 @@
     "grunt-contrib-sass": "~0.5.0",
     "grunt-contrib-watch": "~0.5.3",
     "grunt-contrib-coffee": "~0.8.0",
-    "grunt-contrib-concat": "~0.3.0"
+    "grunt-contrib-concat": "~0.3.0",
+    "grunt-express": "~1.2.1"
   }
 }
