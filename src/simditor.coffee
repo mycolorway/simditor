@@ -293,7 +293,15 @@ class Formatter extends Plugin
     else if $node[0].nodeType == 1 and !$node.is ':empty'
       if $node.is('div, article, dl, header, footer, tr')
         $node.append('<br/>')
-      contents.first().unwrap()
+        contents.first().unwrap()
+      else if $node.is 'table'
+        $p = $('<p/>')
+        $node.find('tr').each (i, tr) =>
+          $p.append($(tr).text() + '<br/>')
+        $node.replaceWith $p
+        contents = null
+      else
+        contents.first().unwrap()
     else
       $node.remove()
       contents = null
@@ -366,8 +374,8 @@ class InputManager extends Plugin
       .appendTo(@editor.el)
 
     @editor.on 'valuechanged', =>
-      # make sure each code block and img has a p following it
-      @editor.body.find('pre, .simditor-image').each (i, el) =>
+      # make sure each code block, img and table has a p following it
+      @editor.body.find('pre, .simditor-image, .simditor-table').each (i, el) =>
         $el = $(el)
         if ($el.parent().is('blockquote') or $el.parent()[0] == @editor.body[0]) and $el.next().length == 0
           $('<p/>').append(@editor.util.phBr)
@@ -1432,6 +1440,7 @@ class Simditor extends Widget
 
   sync: ->
     cloneBody = @body.clone()
+    @formatter.undecorate cloneBody
     @formatter.format cloneBody
 
     # generate `a` tag automatically
@@ -1444,9 +1453,10 @@ class Simditor extends Widget
       lastP = lastP.prev 'p'
       emptyP.remove()
 
-    val = @formatter.undecorate cloneBody
+    val = $.trim(cloneBody.html())
     @textarea.val val
     val
+    
 
   focus: ->
     $blockEl = @body.find('p, li, pre, h1, h2, h3, h4, td').first()
@@ -1549,6 +1559,11 @@ class Button extends Module
       @editor.inputManager.addShortcut @shortcut, (e) =>
         @el.mousedown()
 
+    for tag in @htmlTag.split ','
+      tag = $.trim tag
+      if tag && $.inArray(tag, @editor.formatter._allowedTags) < 0
+        @editor.formatter._allowedTags.push tag
+
   render: ->
     @wrapper = $(@_tpl.item).appendTo @editor.toolbar.list
     @el = @wrapper.find 'a.toolbar-item'
@@ -1564,6 +1579,7 @@ class Button extends Module
     return unless @menu
 
     @menuWrapper = $(@_tpl.menuWrapper).appendTo(@wrapper)
+    @menuWrapper.addClass 'toolbar-menu-' + @name
     @renderMenu()
 
   renderMenu: ->
@@ -2613,4 +2629,124 @@ class HrButton extends Button
 
 
 Simditor.Toolbar.addButton(HrButton)
+
+
+
+class TableButton extends Button
+
+  name: 'table'
+
+  icon: 'table'
+
+  title: '表格'
+
+  htmlTag: 'table'
+
+  disableTag: 'pre, li, blockquote'
+
+  menu: true
+
+  constructor: (args...) ->
+    super args...
+
+    @editor.on 'decorate', (e, $el) =>
+      $el.find('table').each (i, table) =>
+        @decorate $(table)
+
+    @editor.on 'undecorate', (e, $el) =>
+      $el.find('table').each (i, table) =>
+        @undecorate $(table)
+
+    @editor.on 'selectionchanged.table', (e) =>
+      @editor.body.find('.simditor-table td').removeClass('active')
+      range = @editor.selection.getRange()
+      $(range.commonAncestorContainer)
+        .closest('td', @editor.body)
+        .addClass('active')
+
+    @editor.on 'blur.table', (e) =>
+      @editor.body.find('.simditor-table td').removeClass('active')
+
+  decorate: ($table) ->
+    return if $table.parent('.simditor-table').length > 0
+    $table.wrap '<div class="simditor-table"></div>'
+    $table.parent()
+
+  undecorate: ($table) ->
+    return unless $table.parent('.simditor-table').length > 0
+    $table.parent().replaceWith($table)
+
+  renderMenu: ->
+    $('''
+      <div class="menu-create-table">
+      </div>
+      <div class="menu-edit-table">
+        <ul>
+          <li><a tabindex="-1" unselectable="on" class="menu-item" href="javascript:;" data-param="deleteTable"><span>删除表格</span></a></li>
+        </ul>
+      </div>
+    ''').appendTo(@menuWrapper)
+
+    @createMenu = @menuWrapper.find('.menu-create-table')
+    @editMenu = @menuWrapper.find('.menu-edit-table')
+    @createTable(6, 6).appendTo @createMenu
+
+    @createMenu.on 'mouseenter', 'td', (e) =>
+      @createMenu.find('td').removeClass('selected')
+
+      $td = $(e.currentTarget)
+      $tr = $td.parent()
+      num = $tr.find('td').index($td) + 1
+      $tr.prevAll('tr').addBack().find('td:lt(' + num + ')').addClass('selected')
+
+    @createMenu.on 'mouseleave', (e) =>
+      $(e.currentTarget).find('td').removeClass('selected')
+
+    @createMenu.on 'mousedown', 'td', (e) =>
+      @wrapper.removeClass('menu-on')
+      return unless @editor.inputManager.focused
+
+      $td = $(e.currentTarget)
+      $tr = $td.parent()
+      colNum = $tr.find('td').index($td) + 1
+      rowNum = $tr.prevAll('tr').length + 1
+      $table = @decorate @createTable(rowNum, colNum, true)
+
+      $closestBlock = @editor.util.closestBlockEl()
+      if @editor.util.isEmptyNode $closestBlock
+        $closestBlock.replaceWith $table
+      else
+        $closestBlock.after $table
+
+      @editor.selection.setRangeAtStartOf $table.find('td:first')
+      @editor.trigger 'valuechanged'
+      @editor.trigger 'selectionchanged'
+      false
+
+  createTable: (row, col, phBr) ->
+    $table = $('<table/>')
+    $tbody = $('<tbody/>').appendTo $table
+    for r in [0...row]
+      $tr = $('<tr/>').appendTo $tbody
+      for c in [0...col]
+        $td = $('<td/>').appendTo $tr
+        $td.append(@editor.util.phBr) if phBr
+    $table
+
+  setActive: (active) ->
+    super active
+
+    if active
+      @createMenu.hide()
+      @editMenu.show()
+    else
+      @createMenu.show()
+      @editMenu.hide()
+
+  command: (param) ->
+    #if param == 'deleteTable'
+      # TODO
+
+
+Simditor.Toolbar.addButton TableButton
 

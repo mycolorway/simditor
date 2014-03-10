@@ -64,6 +64,11 @@ class Button extends Module
       @editor.inputManager.addShortcut @shortcut, (e) =>
         @el.mousedown()
 
+    for tag in @htmlTag.split ','
+      tag = $.trim tag
+      if tag && $.inArray(tag, @editor.formatter._allowedTags) < 0
+        @editor.formatter._allowedTags.push tag
+
   render: ->
     @wrapper = $(@_tpl.item).appendTo @editor.toolbar.list
     @el = @wrapper.find 'a.toolbar-item'
@@ -79,6 +84,7 @@ class Button extends Module
     return unless @menu
 
     @menuWrapper = $(@_tpl.menuWrapper).appendTo(@wrapper)
+    @menuWrapper.addClass 'toolbar-menu-' + @name
     @renderMenu()
 
   renderMenu: ->

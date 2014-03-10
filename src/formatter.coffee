@@ -109,7 +109,15 @@ class Formatter extends Plugin
     else if $node[0].nodeType == 1 and !$node.is ':empty'
       if $node.is('div, article, dl, header, footer, tr')
         $node.append('<br/>')
-      contents.first().unwrap()
+        contents.first().unwrap()
+      else if $node.is 'table'
+        $p = $('<p/>')
+        $node.find('tr').each (i, tr) =>
+          $p.append($(tr).text() + '<br/>')
+        $node.replaceWith $p
+        contents = null
+      else
+        contents.first().unwrap()
     else
       $node.remove()
       contents = null

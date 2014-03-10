@@ -114,6 +114,7 @@ class Simditor extends Widget
 
   sync: ->
     cloneBody = @body.clone()
+    @formatter.undecorate cloneBody
     @formatter.format cloneBody
 
     # generate `a` tag automatically
@@ -126,9 +127,10 @@ class Simditor extends Widget
       lastP = lastP.prev 'p'
       emptyP.remove()
 
-    val = @formatter.undecorate cloneBody
+    val = $.trim(cloneBody.html())
     @textarea.val val
     val
+    
 
   focus: ->
     $blockEl = @body.find('p, li, pre, h1, h2, h3, h4, td').first()

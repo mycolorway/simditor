@@ -33,8 +33,8 @@ class InputManager extends Plugin
       .appendTo(@editor.el)
 
     @editor.on 'valuechanged', =>
-      # make sure each code block and img has a p following it
-      @editor.body.find('pre, .simditor-image').each (i, el) =>
+      # make sure each code block, img and table has a p following it
+      @editor.body.find('pre, .simditor-image, .simditor-table').each (i, el) =>
         $el = $(el)
         if ($el.parent().is('blockquote') or $el.parent()[0] == @editor.body[0]) and $el.next().length == 0
           $('<p/>').append(@editor.util.phBr)
