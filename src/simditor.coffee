@@ -1329,7 +1329,8 @@ class Simditor extends Widget
     placeholder: false
     defaultImage: 'images/image.png'
     params: null
-    upload: true
+    upload:
+      url: '/upload'
 
   _init: ->
     @textarea = $(@opts.textarea);
@@ -2488,7 +2489,7 @@ class ImagePopover extends Popover
         <input class="image-src" type="text"/>
         <a class="btn-upload" href="javascript:;" title="上传图片" tabindex="-1">
           <span class="fa fa-upload"></span>
-          <input type="file" title="上传图片" name="upload-file"  accept="image/*"">
+          <input type="file" title="上传图片" name="upload_file"  accept="image/*"">
         </a>
       </div>
     </div>
@@ -2505,7 +2506,7 @@ class ImagePopover extends Popover
     @el.addClass('image-popover')
       .append(@_tpl)
     @srcEl = @el.find '.image-src'
-    @input = @el.find 'input[name=upload-file]'
+    @input = @el.find 'input[name=upload_file]'
 
     @srcEl.on 'keyup', (e) =>
       return if e.which == 13
@@ -2552,8 +2553,6 @@ class ImagePopover extends Popover
             return unless success
             @refresh()
             @editor.trigger 'valuechanged'
-        else
-          # 提示 仅上传图片
 
       $bar = @target.find(".simditor-image-progress-bar")
       $bar.show()

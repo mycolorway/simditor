@@ -55,6 +55,7 @@ module.exports = (grunt) ->
         options:
           port: 3000
           server: 'express.js'
+          bases: '../simditor'
 
 
 
