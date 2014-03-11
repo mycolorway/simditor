@@ -2342,11 +2342,14 @@ class ImageButton extends Button
 
   maxWidth: 0
 
+  maxHeight: 0
+
   constructor: (args...) ->
     super args...
 
     @defaultImage = @editor.opts.defaultImage
-    @maxWidth = @editor.wrapper.width()
+    @maxWidth = @editor.body.width()
+    @maxHeight = $(window).height()
 
     @editor.on 'decorate', (e, $el) =>
       $el.find('img').each (i, img) =>
@@ -2415,12 +2418,14 @@ class ImageButton extends Button
     img = new Image()
 
     img.onload = =>
+      width = img.width
+      height = img.height
       if width > @maxWidth
+        height = @maxWidth * height / width
         width = @maxWidth
-        height = @maxWidth * img.height / img.width
-      else
-        width = img.width
-        height = img.height
+      if height > @maxHeight
+        width = @maxHeight * width / height
+        height = @maxHeight
 
       $img.attr({
         src: src,
@@ -2488,7 +2493,7 @@ class ImagePopover extends Popover
         <input class="image-src" type="text"/>
         <a class="btn-upload" href="javascript:;" title="上传图片" tabindex="-1">
           <span class="fa fa-upload"></span>
-          <input type="file" title="上传图片" name="upload_file" >
+          <input type="file" title="上传图片" name="upload_file" accept="image/*">
         </a>
       </div>
     </div>
@@ -2560,7 +2565,7 @@ class ImagePopover extends Popover
             $bar.text('正在上传...').addClass('hint')
 
         else
-          if simple? && simple.message?
+          if simple? and simple.message?
             simple.message("请选择JPG，JPEG，PNG，GIF或ICO格式的图片文件")
           else
             alert("请选择JPG，JPEG，PNG，GIF或ICO格式的图片文件")
