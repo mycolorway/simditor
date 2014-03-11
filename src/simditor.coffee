@@ -1584,6 +1584,8 @@ class Button extends Module
       e.preventDefault()
       if @menu
         @wrapper.toggleClass('menu-on')
+          .siblings('li')
+          .removeClass('menu-on')
         return false
 
       return false if @el.hasClass('disabled') or (@needFocus and !@editor.inputManager.focused)
