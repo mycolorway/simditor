@@ -272,10 +272,9 @@ class ImagePopover extends Popover
       return unless file.inlineImage
 
       $img = @target.find("img")
-
-      @target.find(".mask, .simditor-image-progress-bar").remove()
       @srcEl.val result.file_path
       @button.loadImage $img, result.file_path, (success) =>
+        @target.find(".mask, .simditor-image-progress-bar").remove()
         return unless success
         @editor.trigger 'valuechanged'
 
