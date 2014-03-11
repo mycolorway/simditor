@@ -2322,7 +2322,6 @@ class ImageButton extends Button
 
   _wrapperTpl: """
     <div class="simditor-image" contenteditable="false" tabindex="-1">
-      <div class='simditor-image-progress-bar'><div><span></span></div></div>
       <div class="simditor-image-resize-handle right"></div>
       <div class="simditor-image-resize-handle bottom"></div>
       <div class="simditor-image-resize-handle right-bottom"></div>
@@ -2489,7 +2488,7 @@ class ImagePopover extends Popover
         <input class="image-src" type="text"/>
         <a class="btn-upload" href="javascript:;" title="上传图片" tabindex="-1">
           <span class="fa fa-upload"></span>
-          <input type="file" title="上传图片" name="upload_file"  accept="image/*"">
+          <input type="file" title="上传图片" name="upload_file" >
         </a>
       </div>
     </div>
@@ -2554,12 +2553,20 @@ class ImagePopover extends Popover
             @refresh()
             @editor.trigger 'valuechanged'
 
-      $bar = @target.find(".simditor-image-progress-bar")
-      $bar.show()
-      $img.css('opacity', '0.8')
+          @target.append '<div class="mask"></div>'
+          $bar = @target.append '<div class="simditor-image-progress-bar"><div><span></span></div></div>'
 
-      if not @editor.uploader.html5
-        $bar.text('正在上传...').addClass('hint')
+          if not @editor.uploader.html5
+            $bar.text('正在上传...').addClass('hint')
+
+        else
+          if simple? && simple.message?
+            simple.message("请选择JPG，JPEG，PNG，GIF或ICO格式的图片文件")
+          else
+            alert("请选择JPG，JPEG，PNG，GIF或ICO格式的图片文件")
+
+          return false
+
 
     @editor.uploader.on 'uploadprogress', (e, file, loaded, total) =>
       return unless file.inlineImage
@@ -2577,9 +2584,8 @@ class ImagePopover extends Popover
       return unless file.inlineImage
 
       $img = @target.find("img")
-      $img.css('opacity', '1')
 
-      @target.find(".simditor-image-progress-bar").hide().removeClass('hint')
+      @target.find(".mask, .simditor-image-progress-bar").remove()
       @srcEl.val result.file_path
       @button.loadImage $img, result.file_path, (success) =>
         return unless success
@@ -2591,24 +2597,10 @@ class ImagePopover extends Popover
     @editor.uploader.on 'uploaderror', (e, file, xhr) =>
       return if xhr.statusText == 'abort'
 
+      @target.find(".mask, .simditor-image-progress-bar").remove()
+
       if xhr.responseText
         result = $.parseJSON(xhr.responseText)
-
-
-    # @editor.on 'destroy', =>
-    #   @attachmentList.find('.link-cancel').click()
-    #   @editor.el.closest('form').trigger('uploadcomplete')
-
-    # @editor.el
-    #   .data('droppable', 'true')
-    #   .attr('data-droppable', 'true')
-    #   .on 'dropCustom', (e, evt, files) =>
-    #     e.preventDefault()
-    #     e.stopPropagation()
-    #     if files && files.length
-    #       @editor.uploader.upload($.makeArray(files), {
-    #         attachment: true
-    #       })
 
 
   show: (args...) ->
