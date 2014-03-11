@@ -2541,6 +2541,8 @@ class ImagePopover extends Popover
 
   _initUploader: ->
 
+    @defaultImage = @editor.opts.defaultImage
+
     @input.on 'change', (e) =>
       @editor.uploader.upload(@input, {
         inlineImage: true
@@ -2559,9 +2561,9 @@ class ImagePopover extends Popover
             @editor.trigger 'valuechanged'
 
           @target.append '<div class="mask"></div>'
-          $bar = @target.append '<div class="simditor-image-progress-bar"><div><span></span></div></div>'
+          $bar = $('<div class="simditor-image-progress-bar"><div><span></span></div></div>').appendTo @target
 
-          if not @editor.uploader.html5
+          unless @editor.uploader.html5
             $bar.text('正在上传...').addClass('hint')
 
         else
@@ -2588,6 +2590,8 @@ class ImagePopover extends Popover
     @editor.uploader.on 'uploadsuccess', (e, file, result) =>
       return unless file.inlineImage
 
+      @editor.uploader.trigger 'uploaderror'
+
       $img = @target.find("img")
 
       @target.find(".mask, .simditor-image-progress-bar").remove()
@@ -2602,10 +2606,17 @@ class ImagePopover extends Popover
     @editor.uploader.on 'uploaderror', (e, file, xhr) =>
       return if xhr.statusText == 'abort'
 
+      $img = @target.find("img")
       @target.find(".mask, .simditor-image-progress-bar").remove()
+      @button.loadImage $img, @defaultImage, =>
+        @editor.trigger 'valuechanged'
 
       if xhr.responseText
         result = $.parseJSON(xhr.responseText)
+        if simple? and simple.message?
+          simple.message(result.msg)
+        else
+          alert(result.msg)
 
 
   show: (args...) ->
