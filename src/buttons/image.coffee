@@ -271,8 +271,6 @@ class ImagePopover extends Popover
     @editor.uploader.on 'uploadsuccess', (e, file, result) =>
       return unless file.inlineImage
 
-      @editor.uploader.trigger 'uploaderror'
-
       $img = @target.find("img")
 
       @target.find(".mask, .simditor-image-progress-bar").remove()
@@ -293,11 +291,16 @@ class ImagePopover extends Popover
         @editor.trigger 'valuechanged'
 
       if xhr.responseText
-        result = $.parseJSON(xhr.responseText)
+        try
+          result = $.parseJSON xhr.responseText
+          msg = result.msg
+        catch e
+          msg = '上传出错了'
+
         if simple? and simple.message?
-          simple.message(result.msg)
+          simple.message(msg)
         else
-          alert(result.msg)
+          alert(msg)
 
 
   show: (args...) ->
