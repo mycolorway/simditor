@@ -3,6 +3,7 @@ class Simditor extends Widget
   @connect Util
   @connect UndoManager
   @connect InputManager
+  @connect Keystroke
   @connect Formatter
   @connect Selection
   @connect Toolbar

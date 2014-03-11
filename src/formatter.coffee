@@ -116,6 +116,12 @@ class Formatter extends Plugin
           $p.append($(tr).text() + '<br/>')
         $node.replaceWith $p
         contents = null
+      else if $node.is 'thead, tfoot'
+        $node.remove()
+        contents = null
+      else if $node.is 'th'
+        $td = $('<td/>').append $node.contents()
+        $node.replaceWith $td
       else
         contents.first().unwrap()
     else

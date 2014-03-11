@@ -10,6 +10,7 @@ module.exports = (grunt) ->
           'src/selection.coffee',
           'src/formatter.coffee',
           'src/inputManager.coffee',
+          'src/keystroke.coffee',
           'src/undoManager.coffee',
           'src/util.coffee',
           'src/toolbar.coffee',

@@ -16,6 +16,11 @@ class TableButton extends Button
   constructor: (args...) ->
     super args...
 
+    @editor.formatter._allowedTags.push 'tbody'
+    @editor.formatter._allowedTags.push 'tr'
+    @editor.formatter._allowedTags.push 'td'
+    @editor.formatter._allowedAttributes['td'] = ['rowspan', 'colspan']
+
     @editor.on 'decorate', (e, $el) =>
       $el.find('table').each (i, table) =>
         @decorate $(table)
@@ -34,6 +39,35 @@ class TableButton extends Button
     @editor.on 'blur.table', (e) =>
       @editor.body.find('.simditor-table td').removeClass('active')
 
+    # press left arrow in td
+    @editor.inputManager.addKeystrokeHandler '37', 'td', (e, $node) =>
+      @editor.util.outdent()
+      true
+
+    # press right arrow in td
+    @editor.inputManager.addKeystrokeHandler '39', 'td', (e, $node) =>
+      @editor.util.indent()
+      true
+
+    # press up arrow in td
+    @editor.inputManager.addKeystrokeHandler '38', 'td', (e, $node) =>
+      $tr = $node.parent 'tr'
+      $prevTr = $tr.prev 'tr'
+      return true unless $prevTr.length > 0
+      index = $tr.find('td').index($node)
+      @editor.selection.setRangeAtEndOf $prevTr.find('td').eq(index)
+      true
+
+    # press down arrow in td
+    @editor.inputManager.addKeystrokeHandler '40', 'td', (e, $node) =>
+      $tr = $node.parent 'tr'
+      $nextTr = $tr.next 'tr'
+      return true unless $nextTr.length > 0
+      index = $tr.find('td').index($node)
+      @editor.selection.setRangeAtEndOf $nextTr.find('td').eq(index)
+      true
+
+
   decorate: ($table) ->
     return if $table.parent('.simditor-table').length > 0
     $table.wrap '<div class="simditor-table"></div>'
@@ -49,6 +83,14 @@ class TableButton extends Button
       </div>
       <div class="menu-edit-table">
         <ul>
+          <li><a tabindex="-1" unselectable="on" class="menu-item" href="javascript:;" data-param="deleteRow"><span>删除行</span></a></li>
+          <li><a tabindex="-1" unselectable="on" class="menu-item" href="javascript:;" data-param="insertRowAbove"><span>在上面插入行</span></a></li>
+          <li><a tabindex="-1" unselectable="on" class="menu-item" href="javascript:;" data-param="insertRowBelow"><span>在下面插入行</span></a></li>
+          <li><span class="separator"></span></li>
+          <li><a tabindex="-1" unselectable="on" class="menu-item" href="javascript:;" data-param="deleteCol"><span>删除列</span></a></li>
+          <li><a tabindex="-1" unselectable="on" class="menu-item" href="javascript:;" data-param="insertColLeft"><span>在左边插入列</span></a></li>
+          <li><a tabindex="-1" unselectable="on" class="menu-item" href="javascript:;" data-param="insertColRight"><span>在右边插入列</span></a></li>
+          <li><span class="separator"></span></li>
           <li><a tabindex="-1" unselectable="on" class="menu-item" href="javascript:;" data-param="deleteTable"><span>删除表格</span></a></li>
         </ul>
       </div>
@@ -110,9 +152,89 @@ class TableButton extends Button
       @createMenu.show()
       @editMenu.hide()
 
+  deleteRow: ($td) ->
+    $tr = $td.parent 'tr'
+    if $tr.siblings('tr').length < 1
+      @deleteTable $td
+    else
+      $newTr = $tr.next 'tr'
+      $newTr = $tr.prev 'tr' unless $newTr.length > 0
+      index = $tr.find('td').index($td)
+      $tr.remove()
+      @editor.selection.setRangeAtEndOf $newTr.find('td').eq(index)
+
+  insertRow: ($td, direction = 'after') ->
+    $tr = $td.parent 'tr'
+    $table = $tr.closest 'table'
+
+    colNum = 0
+    $table.find('tr').each (i, tr) =>
+      colNum = Math.max colNum, $(tr).find('td').length
+
+    $newTr = $('<tr/>')
+    for i in [1..colNum]
+      $('<td/>').append(@editor.util.phBr).appendTo($newTr)
+
+    $tr[direction] $newTr
+    index = $tr.find('td').index($td)
+    @editor.selection.setRangeAtStartOf $newTr.find('td').eq(index)
+
+  deleteCol: ($td) ->
+    $tr = $td.parent 'tr'
+    if $tr.siblings('tr').length < 1 and $td.siblings('td').length < 1
+      @deleteTable $td
+    else
+      index = $tr.find('td').index($td)
+      $newTd = $td.next 'td'
+      $newTd = $tr.prev 'td' unless $newTd.length > 0
+      $table = $tr.closest 'table'
+
+      $table.find('tr').each (i, tr) =>
+        $(tr).find('td').eq(index).remove()
+
+      @editor.selection.setRangeAtEndOf $newTd
+
+  insertCol: ($td, direction = 'after') ->
+    $tr = $td.parent 'tr'
+    index = $tr.find('td').index($td)
+    $table = $td.closest 'table'
+    $table.find('tr').each (i, tr) =>
+      $newTd = $('<td/>').append(@editor.util.phBr)
+      $(tr).find('td').eq(index)[direction] $newTd
+
+    $newTd = if direction == 'after' then $td.next('td') else $td.prev('td')
+    @editor.selection.setRangeAtStartOf $newTd
+
+  deleteTable: ($td) ->
+    $table = $td.closest '.simditor-table'
+    $block = $table.next('p')
+    $table.remove()
+    @editor.selection.setRangeAtStartOf($block) if $block.length > 0
+
   command: (param) ->
-    #if param == 'deleteTable'
-      # TODO
+    range = @editor.selection.getRange()
+    $td = $(range.commonAncestorContainer).closest('td')
+    return unless $td.length > 0
+
+    if param == 'deleteRow'
+      @deleteRow $td
+    else if param == 'insertRowAbove'
+      @insertRow $td, 'before'
+    else if param == 'insertRowBelow'
+      @insertRow $td
+    else if param == 'deleteCol'
+      @deleteCol $td
+    else if param == 'insertColLeft'
+      @insertCol $td, 'before'
+    else if param == 'insertColRight'
+      @insertCol $td
+    else if param == 'deleteTable'
+      @deleteTable $td
+    else
+      return
+
+    @editor.trigger 'valuechanged'
+    @editor.trigger 'selectionchanged'
 
 
 Simditor.Toolbar.addButton TableButton

@@ -95,6 +95,24 @@ class InputManager extends Plugin
       @_shortcuts[shortcutKey].call(this, e)
       return false
 
+    # Check the condictional handlers
+    if e.which of @_keystrokeHandlers
+      result = @_keystrokeHandlers[e.which]['*']?(e)
+      if result
+        @editor.trigger 'valuechanged'
+        @editor.trigger 'selectionchanged'
+        return false
+
+      @editor.util.traverseUp (node) =>
+        return unless node.nodeType == 1
+        handler = @_keystrokeHandlers[e.which]?[node.tagName.toLowerCase()]
+        result = handler?(e, $(node))
+        !result
+      if result
+        @editor.trigger 'valuechanged'
+        @editor.trigger 'selectionchanged'
+        return false
+
     if e.which in @_modifierKeys or e.which in @_arrowKeys
       return
 
@@ -103,55 +121,6 @@ class InputManager extends Plugin
 
     # paste shortcut
     return if metaKey and e.which == 86
-
-    # Check the condictional handlers
-    if e.which of @_inputHandlers
-      result = null
-      @editor.util.traverseUp (node) =>
-        return unless node.nodeType == 1
-        handler = @_inputHandlers[e.which]?[node.tagName.toLowerCase()]
-        result = handler?.call(@, e, $(node))
-        !result
-      if result
-        @editor.trigger 'valuechanged'
-        @editor.trigger 'selectionchanged'
-        return false
-
-    # safari doesn't support shift + enter default behavior
-    if @editor.util.browser.safari and e.which == 13 and e.shiftKey
-      $br = $('<br/>')
-
-      if @editor.selection.rangeAtEndOf $blockEl
-        @editor.selection.insertNode $br
-        @editor.selection.insertNode $('<br/>')
-        @editor.selection.setRangeBefore $br
-      else
-        @editor.selection.insertNode $br
-
-      @editor.trigger 'valuechanged'
-      @editor.trigger 'selectionchanged'
-      return false
-
-    # Remove hr node
-    if e.which == 8
-      $rootBlock = @editor.util.furthestBlockEl()
-      $prevBlockEl = $rootBlock.prev()
-      if $prevBlockEl.is('hr') and @editor.selection.rangeAtStartOf $rootBlock
-        # TODO: need to test on IE
-        @editor.selection.save()
-        $prevBlockEl.remove()
-        @editor.selection.restore()
-        @editor.trigger 'valuechanged'
-        @editor.trigger 'selectionchanged'
-        return false
-
-    # Tab to indent
-    if e.which == 9
-      if e.shiftKey
-        @outdent()
-      else
-        @indent()
-      return false
 
     if @_typing
       clearTimeout @_typing if @_typing != true
@@ -307,129 +276,16 @@ class InputManager extends Plugin
       @editor.trigger 'selectionchanged'
     , 10
 
+
   # handlers which will be called when specific key is pressed in specific node
-  _inputHandlers:
-    13: # enter
+  _keystrokeHandlers: {}
 
-      # press enter in a empty list item
-      li: (e, $node) ->
-        return unless @editor.util.isEmptyNode $node
-        e.preventDefault()
-        range = @editor.selection.getRange()
-        listEl = $node.parent()
+  addKeystrokeHandler: (key, node, handler) ->
+    @_keystrokeHandlers[key] = {} unless @_keystrokeHandlers[key]
+    @_keystrokeHandlers[key][node] = handler
 
-        # item in the middle of list
-        if $node.next('li').length > 0
-          # in a nested list
-          if listEl.parent('li').length > 0
-            newBlockEl = $('<li/>').append(@editor.util.phBr).insertAfter(listEl.parent('li'))
-            newListEl = $('<' + listEl[0].tagName + '/>').append($node.nextAll('li'))
-            newBlockEl.append newListEl
-          # in a root list
-          else
-            newBlockEl = $('<p/>').append(@editor.util.phBr).insertAfter(listEl)
-            newListEl = $('<' + listEl[0].tagName + '/>').append($node.nextAll('li'))
-            newBlockEl.after newListEl
 
-        # item at the end of list
-        else
-          # in a nested list
-          if listEl.parent('li').length > 0
-            newBlockEl = $('<li/>').append(@editor.util.phBr).insertAfter(listEl.parent('li'))
-          # in a root list
-          else
-            newBlockEl = $('<p/>').append(@editor.util.phBr).insertAfter(listEl)
-
-        if $node.prev('li').length
-          $node.remove()
-        else
-          listEl.remove()
-
-        range.setEnd(newBlockEl[0], 0)
-        range.collapse(false)
-        @editor.selection.selectRange(range)
-        true
-
-      # press enter in a code block: insert \n instead of br
-      pre: (e, $node) ->
-        e.preventDefault()
-        range = @editor.selection.getRange()
-        breakNode = null
-
-        range.deleteContents()
-
-        if !@editor.util.browser.msie && @editor.selection.rangeAtEndOf $node
-          breakNode = document.createTextNode('\n\n')
-          range.insertNode breakNode
-          range.setEnd breakNode, 1
-        else
-          breakNode = document.createTextNode('\n')
-          range.insertNode breakNode
-          range.setStartAfter breakNode
-
-        range.collapse(false)
-        @editor.selection.selectRange range
-        true
-
-      # press enter in the last paragraph of blockquote, just leave the block quote
-      blockquote: (e, $node) ->
-        $closestBlock = @editor.util.closestBlockEl()
-        return unless $closestBlock.is('p') and !$closestBlock.next().length and @editor.util.isEmptyNode $closestBlock
-        $node.after $closestBlock
-        @editor.selection.setRangeAtStartOf $closestBlock
-        true
-
-    8: # backspace
-
-      # press delete in a empty li which has a nested list
-      li: (e, $node) ->
-        $childList = $node.children('ul, ol')
-        $prevNode = $node.prev('li')
-        return unless $childList.length > 0 and $prevNode.length > 0
-
-        text = ''
-        $textNode = null
-        $node.contents().each (i, n) =>
-          if n.nodeType == 3 and n.nodeValue
-            text += n.nodeValue
-            $textNode = $(n)
-        if $textNode and text.length == 1 and @editor.util.browser.firefox and !$textNode.next('br').length
-          $br = $(@editor.util.phBr).insertAfter $textNode
-          $textNode.remove()
-          @editor.selection.setRangeBefore $br
-          return true
-        else if text.length > 0
-          return
-
-        range = document.createRange()
-        $prevChildList = $prevNode.children('ul, ol')
-        if $prevChildList.length > 0
-          $newLi = $('<li/>').append(@editor.util.phBr).appendTo($prevChildList)
-          $prevChildList.append $childList.children('li')
-          $node.remove()
-          @editor.selection.setRangeAtEndOf $newLi, range
-        else
-          @editor.selection.setRangeAtEndOf $prevNode, range
-          $prevNode.append $childList
-          $node.remove()
-          @editor.selection.selectRange range
-        true
-
-      pre: (e, $node) ->
-        return unless @editor.selection.rangeAtStartOf $node
-        codeStr = $node.html().replace('\n', '<br/>')
-        $newNode = $('<p/>').append(codeStr || @editor.util.phBr).insertAfter $node
-        $node.remove()
-        @editor.selection.setRangeAtStartOf $newNode
-        true
-
-      blockquote: (e, $node) ->
-        return unless @editor.selection.rangeAtStartOf $node
-        $firstChild = $node.children().first().unwrap()
-        @editor.selection.setRangeAtStartOf $firstChild
-        true
-
-  # a hook will be triggered when specific string was typed
+  # a hook will be triggered when specific string typed
   _inputHooks: []
 
   _hookKeyMap: {}
@@ -439,6 +295,7 @@ class InputManager extends Plugin
   addInputHook: (hookOpt) ->
     $.extend(@_hookKeyMap, hookOpt.key)
     @_inputHooks.push hookOpt
+
 
   _shortcuts:
     # meta + enter: submit form
@@ -450,77 +307,6 @@ class InputManager extends Plugin
   addShortcut: (keys, handler) ->
     @_shortcuts[keys] = $.proxy(handler, this)
 
-  indent: () ->
-    $blockEl = @editor.util.closestBlockEl()
-    return unless $blockEl and $blockEl.length > 0
-
-    if $blockEl.is('pre')
-      spaceNode = document.createTextNode '\u00A0\u00A0'
-      @editor.selection.insertNode spaceNode
-    else if $blockEl.is('li')
-      $parentLi = $blockEl.prev('li')
-      return if $parentLi.length < 1
-
-      @editor.selection.save()
-      tagName = $blockEl.parent()[0].tagName
-      $childList = $parentLi.children('ul, ol')
-
-      if $childList.length > 0
-        $childList.append $blockEl
-      else
-        $('<' + tagName + '/>')
-          .append($blockEl)
-          .appendTo($parentLi)
-
-      @editor.selection.restore()
-    else if $blockEl.is('p, h1, h2, h3, h4')
-      indentLevel = $blockEl.attr('data-indent') ? 0
-      indentLevel = indentLevel * 1 + 1
-      indentLevel = 10 if indentLevel > 10
-      $blockEl.attr 'data-indent', indentLevel
-    else
-      spaceNode = document.createTextNode '\u00A0\u00A0\u00A0\u00A0'
-      @editor.selection.insertNode spaceNode
-
-    @editor.trigger 'valuechanged'
-    @editor.trigger 'selectionchanged'
-
-  outdent: () ->
-    $blockEl = @editor.util.closestBlockEl()
-    return unless $blockEl and $blockEl.length > 0
-
-    if $blockEl.is('pre')
-      # TODO: outdent in code block
-      return
-    else if $blockEl.is('li')
-      $parent = $blockEl.parent()
-      $parentLi = $parent.parent('li')
-
-      if $parentLi.length < 1
-        button = @editor.toolbar.findButton $parent[0].tagName.toLowerCase()
-        button?.command()
-        return
-
-      @editor.selection.save()
-
-      if $blockEl.next('li').length > 0
-        $('<' + $parent[0].tagName + '/>')
-          .append($blockEl.nextAll('li'))
-          .appendTo($blockEl)
-
-      $blockEl.insertAfter $parentLi
-      $parent.remove() if $parent.children('li').length < 1
-      @editor.selection.restore()
-    else if $blockEl.is('p, h1, h2, h3, h4')
-      indentLevel = $blockEl.attr('data-indent') ? 0
-      indentLevel = indentLevel * 1 - 1
-      indentLevel = 0 if indentLevel < 0
-      $blockEl.attr 'data-indent', indentLevel
-    else
-      return
-
-    @editor.trigger 'valuechanged'
-    @editor.trigger 'selectionchanged'
 
 
 

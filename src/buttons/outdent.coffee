@@ -11,7 +11,7 @@ class OutdentButton extends Button
     true
 
   command: ->
-    @editor.inputManager.outdent()
+    @editor.util.outdent()
 
 
 Simditor.Toolbar.addButton(OutdentButton)

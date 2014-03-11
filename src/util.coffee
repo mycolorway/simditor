@@ -147,4 +147,90 @@ class Util extends Plugin
     shortcutName.push e.which
     shortcutName.join '+'
 
+  indent: () ->
+    $blockEl = @editor.util.closestBlockEl()
+    return false unless $blockEl and $blockEl.length > 0
 
+    if $blockEl.is('pre')
+      spaceNode = document.createTextNode '\u00A0\u00A0'
+      @editor.selection.insertNode spaceNode
+    else if $blockEl.is('li')
+      $parentLi = $blockEl.prev('li')
+      return false if $parentLi.length < 1
+
+      @editor.selection.save()
+      tagName = $blockEl.parent()[0].tagName
+      $childList = $parentLi.children('ul, ol')
+
+      if $childList.length > 0
+        $childList.append $blockEl
+      else
+        $('<' + tagName + '/>')
+          .append($blockEl)
+          .appendTo($parentLi)
+
+      @editor.selection.restore()
+    else if $blockEl.is 'p, h1, h2, h3, h4'
+      indentLevel = $blockEl.attr('data-indent') ? 0
+      indentLevel = indentLevel * 1 + 1
+      indentLevel = 10 if indentLevel > 10
+      $blockEl.attr 'data-indent', indentLevel
+    else if $blockEl.is 'table'
+      range = @editor.selection.getRange()
+      $td = $(range.commonAncestorContainer).closest('td')
+      $nextTd = $td.next('td')
+      $nextTd = $td.parent('tr').next('tr').find('td:first') unless $nextTd.length > 0
+      return false unless $td.length > 0 and $nextTd.length > 0
+      @editor.selection.setRangeAtEndOf $nextTd
+    else
+      spaceNode = document.createTextNode '\u00A0\u00A0\u00A0\u00A0'
+      @editor.selection.insertNode spaceNode
+
+    @editor.trigger 'valuechanged'
+    @editor.trigger 'selectionchanged'
+    true
+
+  outdent: () ->
+    $blockEl = @editor.util.closestBlockEl()
+    return false unless $blockEl and $blockEl.length > 0
+
+    if $blockEl.is('pre')
+      # TODO: outdent in code block
+      return false
+    else if $blockEl.is('li')
+      $parent = $blockEl.parent()
+      $parentLi = $parent.parent('li')
+
+      if $parentLi.length < 1
+        button = @editor.toolbar.findButton $parent[0].tagName.toLowerCase()
+        button?.command()
+        return false
+
+      @editor.selection.save()
+
+      if $blockEl.next('li').length > 0
+        $('<' + $parent[0].tagName + '/>')
+          .append($blockEl.nextAll('li'))
+          .appendTo($blockEl)
+
+      $blockEl.insertAfter $parentLi
+      $parent.remove() if $parent.children('li').length < 1
+      @editor.selection.restore()
+    else if $blockEl.is 'p, h1, h2, h3, h4'
+      indentLevel = $blockEl.attr('data-indent') ? 0
+      indentLevel = indentLevel * 1 - 1
+      indentLevel = 0 if indentLevel < 0
+      $blockEl.attr 'data-indent', indentLevel
+    else if $blockEl.is 'table'
+      range = @editor.selection.getRange()
+      $td = $(range.commonAncestorContainer).closest('td')
+      $prevTd = $td.prev('td')
+      $prevTd = $td.parent('tr').prev('tr').find('td:last') unless $prevTd.length > 0
+      return false unless $td.length > 0 and $prevTd.length > 0
+      @editor.selection.setRangeAtEndOf $prevTd
+    else
+      return false
+
+    @editor.trigger 'valuechanged'
+    @editor.trigger 'selectionchanged'
+    true

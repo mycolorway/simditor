@@ -11,7 +11,7 @@ class IndentButton extends Button
     true
 
   command: ->
-    @editor.inputManager.indent()
+    @editor.util.indent()
 
 
 Simditor.Toolbar.addButton(IndentButton)
