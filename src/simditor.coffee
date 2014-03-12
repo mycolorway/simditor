@@ -1393,8 +1393,7 @@ class Simditor extends Widget
     placeholder: false
     defaultImage: 'images/image.png'
     params: null
-    upload:
-      url: '/upload'
+    upload: false
 
   _init: ->
     @textarea = $(@opts.textarea);
@@ -2589,7 +2588,6 @@ class ImagePopover extends Popover
     @el.addClass('image-popover')
       .append(@_tpl)
     @srcEl = @el.find '.image-src'
-    @input = @el.find 'input[name=upload_file]'
 
     @srcEl.on 'keyup', (e) =>
       return if e.which == 13
@@ -2613,14 +2611,17 @@ class ImagePopover extends Popover
         @target.removeClass('selected')
         @hide()
 
-    @input.on 'click mousedown', (e) =>
-      e.stopPropagation()
-
     @_initUploader()
 
   _initUploader: ->
+    unless @editor.uploader?
+      @el.find('.btn-upload').remove()
+      return
 
-    @defaultImage = @editor.opts.defaultImage
+    @input = @el.find 'input:file'
+
+    @input.on 'click mousedown', (e) =>
+      e.stopPropagation()
 
     @input.on 'change', (e) =>
       @editor.uploader.upload(@input, {
@@ -2677,7 +2678,7 @@ class ImagePopover extends Popover
 
       $img = @target.find("img")
       @target.find(".mask, .simditor-image-progress-bar").remove()
-      @button.loadImage $img, @defaultImage, =>
+      @button.loadImage $img, @button.defaultImage, =>
         @editor.trigger 'valuechanged'
 
       if xhr.responseText
