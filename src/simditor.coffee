@@ -419,6 +419,7 @@ class InputManager extends Plugin
     setTimeout =>
       @editor.triggerHandler 'focus'
       @editor.trigger 'selectionchanged'
+      @editor.undoManager.updateCaretState()
     , 0
 
   _onBlur: (e) ->
@@ -431,6 +432,7 @@ class InputManager extends Plugin
   _onMouseUp: (e) ->
     return if $(e.target).is('img, .simditor-image')
     @editor.trigger 'selectionchanged'
+    @editor.undoManager.updateCaretState()
 
   _onKeyDown: (e) ->
     if @editor.triggerHandler(e) == false
@@ -511,6 +513,7 @@ class InputManager extends Plugin
 
     if e.which in @_arrowKeys
       @editor.trigger 'selectionchanged'
+      @editor.undoManager.updateCaretState()
       return
 
     if e.which == 8 and (@editor.body.is(':empty') or (@editor.body.children().length == 1 and @editor.body.children().is('br')))
@@ -871,8 +874,6 @@ class UndoManager extends Plugin
         @_pushUndoState()
       , 200
 
-    #@_pushUndoState()
-
   _pushUndoState: ->
     if @_stack.length and @_index > -1
       currentState = @_stack[@_index]
@@ -920,6 +921,12 @@ class UndoManager extends Plugin
 
     @editor.trigger 'valuechanged', ['undo']
     @editor.trigger 'selectionchanged', ['undo']
+
+  updateCaretState: () ->
+    return unless @_stack.length and @_index > -1
+
+    currentState = @_stack[@_index]
+    currentState.caret = @caretPosition()
 
   _getNodeOffset: (node, index) ->
     if index
@@ -2799,10 +2806,11 @@ class TableButton extends Button
   constructor: (args...) ->
     super args...
 
-    @editor.formatter._allowedTags.push 'tbody'
-    @editor.formatter._allowedTags.push 'tr'
-    @editor.formatter._allowedTags.push 'td'
-    @editor.formatter._allowedAttributes['td'] = ['rowspan', 'colspan']
+    $.merge @editor.formatter._allowedTags.push, ['tbody', 'tr', 'td', 'colgroup', 'col']
+    $.extend(@editor.formatter._allowedAttributes, {
+      td: ['rowspan', 'colspan'],
+      col: ['width']
+    })
 
     @editor.on 'decorate', (e, $el) =>
       $el.find('table').each (i, table) =>
@@ -2860,10 +2868,14 @@ class TableButton extends Button
       @editor.selection.setRangeAtEndOf $nextTr.find('td').eq(index)
       true
 
+  initResize: ($table) ->
+    $wrapper = $table.parent '.simditor-table'
+
 
   decorate: ($table) ->
     return if $table.parent('.simditor-table').length > 0
     $table.wrap '<div class="simditor-table"></div>'
+    @initResize $table
     $table.parent()
 
   undecorate: ($table) ->

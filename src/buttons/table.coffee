@@ -16,10 +16,11 @@ class TableButton extends Button
   constructor: (args...) ->
     super args...
 
-    @editor.formatter._allowedTags.push 'tbody'
-    @editor.formatter._allowedTags.push 'tr'
-    @editor.formatter._allowedTags.push 'td'
-    @editor.formatter._allowedAttributes['td'] = ['rowspan', 'colspan']
+    $.merge @editor.formatter._allowedTags.push, ['tbody', 'tr', 'td', 'colgroup', 'col']
+    $.extend(@editor.formatter._allowedAttributes, {
+      td: ['rowspan', 'colspan'],
+      col: ['width']
+    })
 
     @editor.on 'decorate', (e, $el) =>
       $el.find('table').each (i, table) =>
@@ -77,10 +78,14 @@ class TableButton extends Button
       @editor.selection.setRangeAtEndOf $nextTr.find('td').eq(index)
       true
 
+  initResize: ($table) ->
+    $wrapper = $table.parent '.simditor-table'
+
 
   decorate: ($table) ->
     return if $table.parent('.simditor-table').length > 0
     $table.wrap '<div class="simditor-table"></div>'
+    @initResize $table
     $table.parent()
 
   undecorate: ($table) ->

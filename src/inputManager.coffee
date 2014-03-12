@@ -72,6 +72,7 @@ class InputManager extends Plugin
     setTimeout =>
       @editor.triggerHandler 'focus'
       @editor.trigger 'selectionchanged'
+      @editor.undoManager.updateCaretState()
     , 0
 
   _onBlur: (e) ->
@@ -84,6 +85,7 @@ class InputManager extends Plugin
   _onMouseUp: (e) ->
     return if $(e.target).is('img, .simditor-image')
     @editor.trigger 'selectionchanged'
+    @editor.undoManager.updateCaretState()
 
   _onKeyDown: (e) ->
     if @editor.triggerHandler(e) == false
@@ -164,6 +166,7 @@ class InputManager extends Plugin
 
     if e.which in @_arrowKeys
       @editor.trigger 'selectionchanged'
+      @editor.undoManager.updateCaretState()
       return
 
     if e.which == 8 and (@editor.body.is(':empty') or (@editor.body.children().length == 1 and @editor.body.children().is('br')))
