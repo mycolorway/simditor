@@ -109,6 +109,23 @@
 			}
 		}
 
+		.simditor-table {
+			position: relative;
+
+			&.resizing {
+				cursor: col-resize;
+			}
+
+			.resize-handle {
+				position: absolute;
+				left: 0;
+				top: 0;
+				width: 5px;
+				height: 100%;
+				cursor: col-resize;
+			}
+		}
+
 		pre {
 			min-height: 28px;
 			box-sizing: border-box;
@@ -493,9 +510,8 @@
 	}
 
 	table {
-		max-width: 700px;
-		table-layout: fixed;
 		width: 100%;
+		table-layout: fixed;
 		border-collapse: collapse;
 		border-spacing: 0;
 		margin: 15px 0;

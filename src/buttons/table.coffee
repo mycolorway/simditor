@@ -80,7 +80,47 @@ class TableButton extends Button
 
   initResize: ($table) ->
     $wrapper = $table.parent '.simditor-table'
+    $colgroup = $('<colgroup/>').prependTo $table
 
+    $table.find('tr:first td').each (i, td) =>
+      $col = $('<col/>').appendTo $colgroup
+
+    $resizeHandle = $('<div class="resize-handle"></div>')
+      .appendTo($wrapper)
+
+    $wrapper.on 'mouseenter', 'td', (e) =>
+      return if $wrapper.hasClass('resizing')
+      $td = $(e.currentTarget)
+      index = $td.parent().find('td').index($td)
+      $col = $colgroup.find('col').eq(index)
+      $resizeHandle
+        .css( 'left', $td.position().left + $td.outerWidth() - 2)
+        .data('td', $td)
+        .data('col', $col)
+        .show()
+
+    $wrapper.on 'mouseleave', (e) =>
+      $resizeHandle.hide()
+
+    $wrapper.on 'mousedown', '.resize-handle', (e) =>
+      $handle = $(e.currentTarget)
+      $td = $handle.data 'td'
+      $col = $handle.data 'col'
+      startX = e.pageX
+      startWidth = $td.outerWidth() * 1
+      startLeft = $handle.css('left')
+
+      $(document).on 'mousemove.simditor-resize-table', (e) =>
+        deltaX = e.pageX - startX
+        $col.attr 'width', startWidth + deltaX
+        $handle.css 'left', startLeft + deltaX
+
+      $(document).one 'mouseup.simditor-resize-table', (e) =>
+        $(document).off '.simditor-resize-table'
+        $wrapper.removeClass 'resizing'
+
+      $wrapper.addClass 'resizing'
+      false
 
   decorate: ($table) ->
     return if $table.parent('.simditor-table').length > 0
@@ -134,7 +174,7 @@ class TableButton extends Button
       $tr = $td.parent()
       colNum = $tr.find('td').index($td) + 1
       rowNum = $tr.prevAll('tr').length + 1
-      $table = @decorate @createTable(rowNum, colNum, true)
+      $table = @createTable(rowNum, colNum, true)
 
       $closestBlock = @editor.util.closestBlockEl()
       if @editor.util.isEmptyNode $closestBlock
@@ -142,6 +182,7 @@ class TableButton extends Button
       else
         $closestBlock.after $table
 
+      @decorate $table
       @editor.selection.setRangeAtStartOf $table.find('td:first')
       @editor.trigger 'valuechanged'
       @editor.trigger 'selectionchanged'
@@ -204,8 +245,10 @@ class TableButton extends Button
       $newTd = $tr.prev 'td' unless $newTd.length > 0
       $table = $tr.closest 'table'
 
+      $table.find('col').eq(index).remove()
       $table.find('tr').each (i, tr) =>
         $(tr).find('td').eq(index).remove()
+
 
       @editor.selection.setRangeAtEndOf $newTd
 
@@ -216,6 +259,9 @@ class TableButton extends Button
     $table.find('tr').each (i, tr) =>
       $newTd = $('<td/>').append(@editor.util.phBr)
       $(tr).find('td').eq(index)[direction] $newTd
+
+    $newCol = $('<col/>')
+    $table.find('col').eq(index)[direction] $newCol
 
     $newTd = if direction == 'after' then $td.next('td') else $td.prev('td')
     @editor.selection.setRangeAtStartOf $newTd

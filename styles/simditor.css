@@ -93,6 +93,20 @@
 .simditor .simditor-body .simditor-image .simditor-image-resize-handle {
   display: none;
 }
+.simditor .simditor-body .simditor-table {
+  position: relative;
+}
+.simditor .simditor-body .simditor-table.resizing {
+  cursor: col-resize;
+}
+.simditor .simditor-body .simditor-table .resize-handle {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 5px;
+  height: 100%;
+  cursor: col-resize;
+}
 .simditor .simditor-body pre {
   min-height: 28px;
   box-sizing: border-box;
@@ -431,9 +445,8 @@
   padding: 0;
 }
 .simditor .simditor-body table, .editor-style table {
-  max-width: 700px;
-  table-layout: fixed;
   width: 100%;
+  table-layout: fixed;
   border-collapse: collapse;
   border-spacing: 0;
   margin: 15px 0;
