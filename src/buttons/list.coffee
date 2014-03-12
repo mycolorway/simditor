@@ -3,7 +3,7 @@ class ListButton extends Button
 
   type: ''
 
-  disableTag: 'pre'
+  disableTag: 'pre, table'
 
   status: ($node) ->
     @setDisabled $node.is(@disableTag) if $node?

@@ -75,6 +75,7 @@
   color: #ffffff;
 }
 .simditor .simditor-body .simditor-image .simditor-image-progress-bar.hint {
+  font-size: 12px;
   background: transparent;
   border: none;
   text-align: center;

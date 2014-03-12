@@ -9,7 +9,7 @@ class BlockquoteButton extends Button
 
   htmlTag: 'blockquote'
 
-  disableTag: 'pre'
+  disableTag: 'pre, table'
 
   command: ->
     range = @editor.selection.getRange()

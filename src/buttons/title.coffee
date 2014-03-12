@@ -7,7 +7,7 @@ class TitleButton extends Button
 
   htmlTag: 'h1, h2, h3, h4'
 
-  disableTag: 'pre'
+  disableTag: 'pre, table'
 
   menu: [{
     name: 'normal',

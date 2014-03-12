@@ -1773,7 +1773,7 @@ class TitleButton extends Button
 
   htmlTag: 'h1, h2, h3, h4'
 
-  disableTag: 'pre'
+  disableTag: 'pre, table'
 
   menu: [{
     name: 'normal',
@@ -1951,7 +1951,7 @@ class ListButton extends Button
 
   type: ''
 
-  disableTag: 'pre'
+  disableTag: 'pre, table'
 
   status: ($node) ->
     @setDisabled $node.is(@disableTag) if $node?
@@ -2091,7 +2091,7 @@ class BlockquoteButton extends Button
 
   htmlTag: 'blockquote'
 
-  disableTag: 'pre'
+  disableTag: 'pre, table'
 
   command: ->
     range = @editor.selection.getRange()
@@ -2151,7 +2151,7 @@ class CodeButton extends Button
 
   htmlTag: 'pre'
 
-  disableTag: 'li'
+  disableTag: 'li, table'
 
   render: (args...) ->
     super args...
@@ -2452,9 +2452,9 @@ class ImageButton extends Button
         @editor.body.blur()
         @editor.body.find('.simditor-image').removeClass('selected')
         $imgWrapper.addClass('selected').focus()
-        #$img = $imgWrapper.find('img')
-        #$imgWrapper.width $img.width()
-        #$imgWrapper.height $img.height()
+        $img = $imgWrapper.find('img')
+        $imgWrapper.width $img.width()
+        $imgWrapper.height $img.height()
         @popover.show $imgWrapper
 
       false
@@ -2650,7 +2650,7 @@ class ImagePopover extends Popover
           @srcEl.val('正在上传...')
           @target.append '<div class="mask"></div>'
           $bar = $('<div class="simditor-image-progress-bar"><div><span></span></div></div>').appendTo @target
-          $bar.text('正在上传...').addClass('hint') unless @editor.uploader.html5
+          $bar.text('正在上传').addClass('hint') unless @editor.uploader.html5
 
         if img
           @button.loadImage $img, img.src, () =>
@@ -2665,7 +2665,7 @@ class ImagePopover extends Popover
       percent = loaded / total
 
       if percent > 0.99
-        percent = "正在处理...";
+        percent = "正在处理";
         @target.find(".simditor-image-progress-bar").text(percent).addClass('hint')
       else
         percent = (percent * 100).toFixed(0) + "%"

@@ -9,7 +9,7 @@ class CodeButton extends Button
 
   htmlTag: 'pre'
 
-  disableTag: 'li'
+  disableTag: 'li, table'
 
   render: (args...) ->
     super args...
