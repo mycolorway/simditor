@@ -32,9 +32,19 @@ class TableButton extends Button
     @editor.on 'selectionchanged.table', (e) =>
       @editor.body.find('.simditor-table td').removeClass('active')
       range = @editor.selection.getRange()
-      $(range.commonAncestorContainer)
-        .closest('td', @editor.body)
+      return unless range?
+      $container = $(range.commonAncestorContainer)
+
+      if range.collapsed and $container.is('.simditor-table')
+        if @editor.selection.rangeAtStartOf $container
+          $container = $container.find('td:first')
+        else if @editor.selection.rangeAtEndOf $container
+          $container = $container.find('td:last')
+        @editor.selection.setRangeAtEndOf $container
+
+      $container.closest('td', @editor.body)
         .addClass('active')
+
 
     @editor.on 'blur.table', (e) =>
       @editor.body.find('.simditor-table td').removeClass('active')

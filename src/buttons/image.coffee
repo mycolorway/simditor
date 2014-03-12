@@ -51,9 +51,9 @@ class ImageButton extends Button
         @editor.body.blur()
         @editor.body.find('.simditor-image').removeClass('selected')
         $imgWrapper.addClass('selected').focus()
-        $img = $imgWrapper.find('img')
-        $imgWrapper.width $img.width()
-        $imgWrapper.height $img.height()
+        #$img = $imgWrapper.find('img')
+        #$imgWrapper.width $img.width()
+        #$imgWrapper.height $img.height()
         @popover.show $imgWrapper
 
       false
@@ -127,7 +127,7 @@ class ImageButton extends Button
 
     img.src = src
 
-  command: ->
+  createImage: () ->
     range = @editor.selection.getRange()
     startNode = range.startContainer
     endNode = range.endContainer
@@ -154,10 +154,13 @@ class ImageButton extends Button
     $img = $('<img/>')
     range.insertNode $img[0]
     @decorate $img
+    $img
+
+  command: () ->
+    $img = @createImage()
 
     @loadImage $img, @defaultImage, =>
       @editor.trigger 'valuechanged'
-      #@editor.trigger 'selectionchanged'
       $img.mousedown()
 
       @popover.one 'popovershow', =>
@@ -226,38 +229,35 @@ class ImagePopover extends Popover
 
     @input.on 'change', (e) =>
       @editor.uploader.upload(@input, {
-        inlineImage: true
+        inline: true
       })
       @input.val ''
 
     @editor.uploader.on 'beforeupload', (e, file) =>
-      return unless file.inlineImage
+      return unless file.inline
 
-      $img = @target.find("img")
+      if @target
+        $img = @target.find("img")
+      else
+        $img = @button.createImage()
+        $img.mousedown()
+
       @editor.uploader.readImageFile file.obj, (img) =>
-        if img
-          @button.loadImage $img, img.src, (success) =>
-            return unless success
-            @refresh()
-            @editor.trigger 'valuechanged'
-
+        prepare = () =>
+          @srcEl.val('正在上传...')
           @target.append '<div class="mask"></div>'
           $bar = $('<div class="simditor-image-progress-bar"><div><span></span></div></div>').appendTo @target
+          $bar.text('正在上传...').addClass('hint') unless @editor.uploader.html5
 
-          unless @editor.uploader.html5
-            $bar.text('正在上传...').addClass('hint')
-
+        if img
+          @button.loadImage $img, img.src, () =>
+            @refresh()
+            prepare()
         else
-          if simple? and simple.message?
-            simple.message("请选择JPG，JPEG，PNG，GIF或ICO格式的图片文件")
-          else
-            alert("请选择JPG，JPEG，PNG，GIF或ICO格式的图片文件")
-
-          return false
-
+          prepare()
 
     @editor.uploader.on 'uploadprogress', (e, file, loaded, total) =>
-      return unless file.inlineImage
+      return unless file.inline
 
       percent = loaded / total
 
@@ -269,17 +269,13 @@ class ImagePopover extends Popover
         @target.find(".simditor-image-progress-bar span").width(percent)
 
     @editor.uploader.on 'uploadsuccess', (e, file, result) =>
-      return unless file.inlineImage
+      return unless file.inline
 
       $img = @target.find("img")
-      @srcEl.val result.file_path
-      @button.loadImage $img, result.file_path, (success) =>
+      @button.loadImage $img, result.file_path, () =>
         @target.find(".mask, .simditor-image-progress-bar").remove()
-        return unless success
+        @srcEl.val result.file_path
         @editor.trigger 'valuechanged'
-
-    @editor.uploader.on 'uploadcomplete', (e, file, result) =>
-      return unless file.inlineImage
 
     @editor.uploader.on 'uploaderror', (e, file, xhr) =>
       return if xhr.statusText == 'abort'
