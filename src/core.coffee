@@ -15,7 +15,8 @@ class Simditor extends Widget
     placeholder: false
     defaultImage: 'images/image.png'
     params: null
-    upload: true
+    upload:
+      url: '/upload'
 
   _init: ->
     @textarea = $(@opts.textarea);

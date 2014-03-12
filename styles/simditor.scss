@@ -59,12 +59,51 @@
 			margin: 15px 0;
 			cursor: pointer;
 			outline: none;
+			position: relative;
 
 			&.selected {
 				background: none;
 				box-shadow: 0 0 0 4px rgba(0,0,0,0.2);
 			}
-		
+
+			.mask {
+				position: absolute;
+				background: rgba(0,0,0,0.4);
+				width: 100%;
+				height: 100%;
+				top: 0;
+			}
+
+			.simditor-image-progress-bar {
+				border: 1px solid #cccccc;
+				background: #ffffff;
+				padding: 2px;
+				margin: 0 auto;
+				border-radius: 10px;
+				position: relative;
+				top: -50%;
+				width: 100px;
+				color: #ffffff;
+
+				&.hint {
+					background: transparent;
+					border: none;
+					text-align: center;
+				}
+
+				div {
+					width: 100px;
+					height: 5px;
+					span {
+						display: block;
+						width: 1%;
+						height: 100%;
+						background: #0f769f;
+						border-radius: 10px;
+					}
+				}
+			}
+
 			.simditor-image-resize-handle {
 				display: none;
 			}
@@ -137,7 +176,7 @@
 					&:hover span {
 						opacity: 1;
 					}
-					
+
 					&.active {
 						background: #eeeeee;
 
@@ -219,7 +258,7 @@
 						padding: 0 10px;
 						text-decoration: none;
 						color: #666666;
-						
+
 						&:hover {
 							background: #f6f6f6;
 						}
@@ -313,20 +352,28 @@
 			}
 		}
 
-		&.link-popover {
-			.btn-unlink {
-				margin: 0 0 0 5px;
-				color: #333333;
-				font-size: 14px;
+		&.link-popover .btn-unlink,
+		&.image-popover .btn-upload {
+			margin: 0 0 0 5px;
+			color: #333333;
+			font-size: 14px;
 
-				span {
-					opacity: 0.6;
-				}
-
-				&:hover span {
-					opacity: 1;
-				}
+			span {
+				opacity: 0.6;
 			}
+
+			&:hover span {
+				opacity: 1;
+			}
+		}
+
+		&.image-popover input[type=file] {
+			position: absolute;
+			right: 0px;
+			top: 0px;
+			opacity: 0;
+			height: 100%;
+			width: 28px;
 		}
 	}
 }

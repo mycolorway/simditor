@@ -50,10 +50,45 @@
   margin: 15px 0;
   cursor: pointer;
   outline: none;
+  position: relative;
 }
 .simditor .simditor-body .simditor-image.selected {
   background: none;
   box-shadow: 0 0 0 4px rgba(0, 0, 0, 0.2);
+}
+.simditor .simditor-body .simditor-image .mask {
+  position: absolute;
+  background: rgba(0, 0, 0, 0.4);
+  width: 100%;
+  height: 100%;
+  top: 0;
+}
+.simditor .simditor-body .simditor-image .simditor-image-progress-bar {
+  border: 1px solid #cccccc;
+  background: #ffffff;
+  padding: 2px;
+  margin: 0 auto;
+  border-radius: 10px;
+  position: relative;
+  top: -50%;
+  width: 100px;
+  color: #ffffff;
+}
+.simditor .simditor-body .simditor-image .simditor-image-progress-bar.hint {
+  background: transparent;
+  border: none;
+  text-align: center;
+}
+.simditor .simditor-body .simditor-image .simditor-image-progress-bar div {
+  width: 100px;
+  height: 5px;
+}
+.simditor .simditor-body .simditor-image .simditor-image-progress-bar div span {
+  display: block;
+  width: 1%;
+  height: 100%;
+  background: #0f769f;
+  border-radius: 10px;
 }
 .simditor .simditor-body .simditor-image .simditor-image-resize-handle {
   display: none;
@@ -252,16 +287,24 @@
   box-sizing: border-box;
   font-size: 12px;
 }
-.simditor .simditor-popover.link-popover .btn-unlink {
+.simditor .simditor-popover.link-popover .btn-unlink, .simditor .simditor-popover.image-popover .btn-upload {
   margin: 0 0 0 5px;
   color: #333333;
   font-size: 14px;
 }
-.simditor .simditor-popover.link-popover .btn-unlink span {
+.simditor .simditor-popover.link-popover .btn-unlink span, .simditor .simditor-popover.image-popover .btn-upload span {
   opacity: 0.6;
 }
-.simditor .simditor-popover.link-popover .btn-unlink:hover span {
+.simditor .simditor-popover.link-popover .btn-unlink:hover span, .simditor .simditor-popover.image-popover .btn-upload:hover span {
   opacity: 1;
+}
+.simditor .simditor-popover.image-popover input[type=file] {
+  position: absolute;
+  right: 0px;
+  top: 0px;
+  opacity: 0;
+  height: 100%;
+  width: 28px;
 }
 
 .simditor .simditor-body, .editor-style {

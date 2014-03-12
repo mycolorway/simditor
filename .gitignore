@@ -18,3 +18,4 @@ upload
 
 .DS_Store
 .sass-cache
+/upload

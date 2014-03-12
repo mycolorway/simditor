@@ -33,7 +33,7 @@ module.exports = (grunt) ->
         ]
         dest: 'src/simditor.coffee'
 
-    sass: 
+    sass:
       styles:
         options:
           style: 'expanded'
@@ -53,12 +53,21 @@ module.exports = (grunt) ->
       scripts:
         files: ['src/*.coffee', 'src/buttons/*.coffee']
         tasks: ['concat', 'coffee']
+    express:
+      server:
+        options:
+          port: 3000
+          server: 'express.js'
+          bases: '../simditor'
+
+
 
   grunt.loadNpmTasks 'grunt-contrib-sass'
   grunt.loadNpmTasks 'grunt-contrib-coffee'
   grunt.loadNpmTasks 'grunt-contrib-concat'
   grunt.loadNpmTasks 'grunt-contrib-watch'
+  grunt.loadNpmTasks 'grunt-express'
 
   grunt.registerTask 'default', ['watch']
-
+  grunt.registerTask('server', ['express', 'express-keepalive']);
 

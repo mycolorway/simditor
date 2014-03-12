@@ -1393,7 +1393,8 @@ class Simditor extends Widget
     placeholder: false
     defaultImage: 'images/image.png'
     params: null
-    upload: true
+    upload:
+      url: '/upload'
 
   _init: ->
     @textarea = $(@opts.textarea);
@@ -2417,11 +2418,14 @@ class ImageButton extends Button
 
   maxWidth: 0
 
+  maxHeight: 0
+
   constructor: (args...) ->
     super args...
 
     @defaultImage = @editor.opts.defaultImage
-    @maxWidth = @editor.wrapper.width()
+    @maxWidth = @editor.body.width()
+    @maxHeight = $(window).height()
 
     @editor.on 'decorate', (e, $el) =>
       $el.find('img').each (i, img) =>
@@ -2490,12 +2494,14 @@ class ImageButton extends Button
     img = new Image()
 
     img.onload = =>
+      width = img.width
+      height = img.height
       if width > @maxWidth
+        height = @maxWidth * height / width
         width = @maxWidth
-        height = @maxWidth * img.height / img.width
-      else
-        width = img.width
-        height = img.height
+      if height > @maxHeight
+        width = @maxHeight * width / height
+        height = @maxHeight
 
       $img.attr({
         src: src,
@@ -2561,6 +2567,10 @@ class ImagePopover extends Popover
       <div class="settings-field">
         <label>图片地址</label>
         <input class="image-src" type="text"/>
+        <a class="btn-upload" href="javascript:;" title="上传图片" tabindex="-1">
+          <span class="fa fa-upload"></span>
+          <input type="file" title="上传图片" name="upload_file" accept="image/*">
+        </a>
       </div>
     </div>
   """
@@ -2576,6 +2586,7 @@ class ImagePopover extends Popover
     @el.addClass('image-popover')
       .append(@_tpl)
     @srcEl = @el.find '.image-src'
+    @input = @el.find 'input[name=upload_file]'
 
     @srcEl.on 'keyup', (e) =>
       return if e.which == 13
@@ -2598,6 +2609,93 @@ class ImagePopover extends Popover
         @srcEl.blur()
         @target.removeClass('selected')
         @hide()
+
+    @input.on 'click mousedown', (e) =>
+      e.stopPropagation()
+
+    @_initUploader()
+
+  _initUploader: ->
+
+    @defaultImage = @editor.opts.defaultImage
+
+    @input.on 'change', (e) =>
+      @editor.uploader.upload(@input, {
+        inlineImage: true
+      })
+      @input.val ''
+
+    @editor.uploader.on 'beforeupload', (e, file) =>
+      return unless file.inlineImage
+
+      $img = @target.find("img")
+      @editor.uploader.readImageFile file.obj, (img) =>
+        if img
+          @button.loadImage $img, img.src, (success) =>
+            return unless success
+            @refresh()
+            @editor.trigger 'valuechanged'
+
+          @target.append '<div class="mask"></div>'
+          $bar = $('<div class="simditor-image-progress-bar"><div><span></span></div></div>').appendTo @target
+
+          unless @editor.uploader.html5
+            $bar.text('正在上传...').addClass('hint')
+
+        else
+          if simple? and simple.message?
+            simple.message("请选择JPG，JPEG，PNG，GIF或ICO格式的图片文件")
+          else
+            alert("请选择JPG，JPEG，PNG，GIF或ICO格式的图片文件")
+
+          return false
+
+
+    @editor.uploader.on 'uploadprogress', (e, file, loaded, total) =>
+      return unless file.inlineImage
+
+      percent = loaded / total
+
+      if percent > 0.99
+        percent = "正在处理...";
+        @target.find(".simditor-image-progress-bar").text(percent).addClass('hint')
+      else
+        percent = (percent * 100).toFixed(0) + "%"
+        @target.find(".simditor-image-progress-bar span").width(percent)
+
+    @editor.uploader.on 'uploadsuccess', (e, file, result) =>
+      return unless file.inlineImage
+
+      $img = @target.find("img")
+      @srcEl.val result.file_path
+      @button.loadImage $img, result.file_path, (success) =>
+        @target.find(".mask, .simditor-image-progress-bar").remove()
+        return unless success
+        @editor.trigger 'valuechanged'
+
+    @editor.uploader.on 'uploadcomplete', (e, file, result) =>
+      return unless file.inlineImage
+
+    @editor.uploader.on 'uploaderror', (e, file, xhr) =>
+      return if xhr.statusText == 'abort'
+
+      $img = @target.find("img")
+      @target.find(".mask, .simditor-image-progress-bar").remove()
+      @button.loadImage $img, @defaultImage, =>
+        @editor.trigger 'valuechanged'
+
+      if xhr.responseText
+        try
+          result = $.parseJSON xhr.responseText
+          msg = result.msg
+        catch e
+          msg = '上传出错了'
+
+        if simple? and simple.message?
+          simple.message(msg)
+        else
+          alert(msg)
+
 
   show: (args...) ->
     super args...
