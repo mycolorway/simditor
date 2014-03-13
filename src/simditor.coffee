@@ -419,7 +419,6 @@ class InputManager extends Plugin
     setTimeout =>
       @editor.triggerHandler 'focus'
       @editor.trigger 'selectionchanged'
-      @editor.undoManager.update()
     , 0
 
   _onBlur: (e) ->
