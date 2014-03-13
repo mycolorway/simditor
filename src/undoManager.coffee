@@ -83,10 +83,12 @@ class UndoManager extends Plugin
     @editor.trigger 'valuechanged', ['undo']
     @editor.trigger 'selectionchanged', ['undo']
 
-  updateCaretState: () ->
+  update: () ->
     return unless @_stack.length and @_index > -1
 
     currentState = @_stack[@_index]
+    html = @editor.body.html()
+    currentState.html = html
     currentState.caret = @caretPosition()
 
   _getNodeOffset: (node, index) ->

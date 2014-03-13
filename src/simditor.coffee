@@ -419,7 +419,7 @@ class InputManager extends Plugin
     setTimeout =>
       @editor.triggerHandler 'focus'
       @editor.trigger 'selectionchanged'
-      @editor.undoManager.updateCaretState()
+      @editor.undoManager.update()
     , 0
 
   _onBlur: (e) ->
@@ -432,7 +432,7 @@ class InputManager extends Plugin
   _onMouseUp: (e) ->
     return if $(e.target).is('img, .simditor-image')
     @editor.trigger 'selectionchanged'
-    @editor.undoManager.updateCaretState()
+    @editor.undoManager.update()
 
   _onKeyDown: (e) ->
     if @editor.triggerHandler(e) == false
@@ -513,7 +513,7 @@ class InputManager extends Plugin
 
     if e.which in @_arrowKeys
       @editor.trigger 'selectionchanged'
-      @editor.undoManager.updateCaretState()
+      @editor.undoManager.update()
       return
 
     if e.which == 8 and (@editor.body.is(':empty') or (@editor.body.children().length == 1 and @editor.body.children().is('br')))
@@ -922,10 +922,12 @@ class UndoManager extends Plugin
     @editor.trigger 'valuechanged', ['undo']
     @editor.trigger 'selectionchanged', ['undo']
 
-  updateCaretState: () ->
+  update: () ->
     return unless @_stack.length and @_index > -1
 
     currentState = @_stack[@_index]
+    html = @editor.body.html()
+    currentState.html = html
     currentState.caret = @caretPosition()
 
   _getNodeOffset: (node, index) ->
