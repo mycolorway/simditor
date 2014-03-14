@@ -16,14 +16,27 @@ class LinkButton extends Button
     @popover = new LinkPopover(@editor)
 
   status: ($node) ->
-    result = super $node
+    @setDisabled $node.is(@disableTag) if $node?
+    return true if @disabled
 
-    if @active
+    return @active unless $node?
+
+    showPopover = true
+    if !$node.is(@htmlTag)
+      @setActive false
+      showPopover = false
+    else if @editor.selection.rangeAtEndOf($node)
+      @setActive true
+      showPopover = false
+    else
+      @setActive true
+
+    if showPopover
       @popover.show($node)
     else if @editor.util.isBlockNode($node)
       @popover.hide()
 
-    result
+    @active
 
   command: ->
     range = @editor.selection.getRange()
