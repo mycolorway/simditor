@@ -1,6 +1,6 @@
 @charset "UTF-8";
 
-$toolbarHeight: 60px;
+$simditor-toolbar-height: 60px;
 
 .simditor {
 	position: relative;
@@ -21,7 +21,7 @@ $toolbarHeight: 60px;
 		.simditor-placeholder {
 			display: none;
 			position: absolute;
-			top: $toolbarHeight;
+			top: $simditor-toolbar-height;
 			left: 0;
 			z-index: 0;
 			padding: 22px 15px;
@@ -33,21 +33,13 @@ $toolbarHeight: 60px;
 		}
 
 		&.toolbar-floating {
-			padding-top: $toolbarHeight;
-
-			.simditor-placeholder {
-				top: $toolbarHeight;
-			}
+			padding-top: $simditor-toolbar-height;
 
 			.simditor-toolbar {
-				height: $toolbarHeight + 6px;
 				position: fixed;
 				top: 0;
 				z-index: 10;
-
-				& > ul {
-					box-shadow: 0 0 6px rgba(0,0,0,0.1);
-				}
+				box-shadow: 0 0 6px rgba(0,0,0,0.1);
 			}
 		}
 	}
@@ -159,15 +151,14 @@ $toolbarHeight: 60px;
 	}
 
 	.simditor-toolbar {
+		border-bottom: 1px solid #eeeeee;
+		background: #ffffff;
 		width: 100%;
-		overflow: hidden;
 
 		& > ul {
-			height: 60px;
+			height: $simditor-toolbar-height;
 			margin: 0;
 			padding: 0;
-			border-bottom: 1px solid #eeeeee;
-			background: #ffffff;
 			list-style: none;
 
 			& > li {
@@ -187,12 +178,12 @@ $toolbarHeight: 60px;
 					display: block;
 					float: left;
 					width: 50px;
-					height: 60px;
+					height: $simditor-toolbar-height;
 					outline: none;
 					overflow: hidden;
 					color: #333333;
 					font-size: 15px;
-					line-height: 60px;
+					line-height: $simditor-toolbar-height;
 					text-align: center;
 					text-decoration: none;
 					margin: 0 1px;

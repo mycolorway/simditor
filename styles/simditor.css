@@ -29,16 +29,10 @@
 .simditor .simditor-wrapper.toolbar-floating {
   padding-top: 60px;
 }
-.simditor .simditor-wrapper.toolbar-floating .simditor-placeholder {
-  top: 60px;
-}
 .simditor .simditor-wrapper.toolbar-floating .simditor-toolbar {
-  height: 66px;
   position: fixed;
   top: 0;
   z-index: 10;
-}
-.simditor .simditor-wrapper.toolbar-floating .simditor-toolbar > ul {
   box-shadow: 0 0 6px rgba(0, 0, 0, 0.1);
 }
 .simditor .simditor-body {
@@ -131,15 +125,14 @@
   outline: none;
 }
 .simditor .simditor-toolbar {
+  border-bottom: 1px solid #eeeeee;
+  background: #ffffff;
   width: 100%;
-  overflow: hidden;
 }
 .simditor .simditor-toolbar > ul {
   height: 60px;
   margin: 0;
   padding: 0;
-  border-bottom: 1px solid #eeeeee;
-  background: #ffffff;
   list-style: none;
 }
 .simditor .simditor-toolbar > ul > li {
