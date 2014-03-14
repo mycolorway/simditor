@@ -2203,7 +2203,7 @@ class CodeButton extends Button
       block = $('<p/>').append($el.html().replace('\n', '<br/>'))
       results.push block
     else
-      if $el.children().length == 1 and $el.children().is('br')
+      if !$el.text() and $el.children().length == 1 and $el.children().is('br')
         codeStr = ''
       else
         codeStr = @editor.formatter.clearHtml($el)
@@ -2419,7 +2419,7 @@ class ImageButton extends Button
 
   htmlTag: 'img'
 
-  disableTag: 'pre, a, b, strong, i, u, table'
+  disableTag: 'pre, table'
 
   defaultImage: ''
 

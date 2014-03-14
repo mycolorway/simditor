@@ -56,6 +56,9 @@
   background: none;
   box-shadow: 0 0 0 4px rgba(0, 0, 0, 0.2);
 }
+.simditor .simditor-body .simditor-image img {
+  margin: 0;
+}
 .simditor .simditor-body .simditor-image .mask {
   position: absolute;
   background: rgba(0, 0, 0, 0.4);
@@ -467,6 +470,8 @@
   background-color: #ffffee;
 }
 .simditor .simditor-body img, .editor-style img {
+  margin: 15px 0;
+  display: block;
   cursor: pointer;
   -ms-interpolation-mode: bicubic;
   vertical-align: bottom;
