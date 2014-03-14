@@ -33,23 +33,16 @@ class Toolbar extends Plugin
       @list.find('.menu-on').removeClass('.menu-on')
 
     if @opts.toolbarFloat
+      @wrapper.width @wrapper.outerWidth()
+      @wrapper.css 'left', @wrapper.offset().left
       $(window).on 'scroll.simditor-' + @editor.id, (e) =>
         topEdge = @editor.wrapper.offset().top
-        bottomEdge = topEdge + @editor.wrapper.outerHeight() - 100
         scrollTop = $(document).scrollTop()
-        top = 0
 
         if scrollTop <= topEdge
-          top = 0
-          @wrapper.removeClass('floating')
-        else if bottomEdge > scrollTop > topEdge
-          top = scrollTop - topEdge
-          @wrapper.addClass('floating')
+          @editor.wrapper.removeClass('toolbar-floating')
         else
-          top = bottomEdge - topEdge
-          @wrapper.addClass('floating')
-
-        @wrapper.css 'top', top
+          @editor.wrapper.addClass('toolbar-floating')
 
     @editor.on 'selectionchanged', =>
       @toolbarStatus()
@@ -64,7 +57,6 @@ class Toolbar extends Plugin
     @buttons = []
     @wrapper = $(@_tpl.wrapper).prependTo(@editor.wrapper)
     @list = @wrapper.find('ul')
-    @editor.wrapper.addClass('toolbar-enabled')
 
     for name in @opts.toolbar
       if name == '|'

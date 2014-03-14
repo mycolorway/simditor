@@ -1,5 +1,7 @@
 @charset "UTF-8";
 
+$toolbarHeight: 60px;
+
 .simditor {
 	position: relative;
 	font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
@@ -19,7 +21,7 @@
 		.simditor-placeholder {
 			display: none;
 			position: absolute;
-			top: 0;
+			top: $toolbarHeight;
 			left: 0;
 			z-index: 0;
 			padding: 22px 15px;
@@ -30,11 +32,22 @@
 			background: transparent;
 		}
 
-		&.toolbar-enabled {
-			padding-top: 60px;
+		&.toolbar-floating {
+			padding-top: $toolbarHeight;
 
 			.simditor-placeholder {
-				top: 60px;
+				top: $toolbarHeight;
+			}
+
+			.simditor-toolbar {
+				height: $toolbarHeight + 6px;
+				position: fixed;
+				top: 0;
+				z-index: 10;
+
+				& > ul {
+					box-shadow: 0 0 6px rgba(0,0,0,0.1);
+				}
 			}
 		}
 	}
@@ -147,21 +160,14 @@
 
 	.simditor-toolbar {
 		width: 100%;
-		position: absolute;
-		top: 0;
-		left: 0;
-		z-index: 10;
-		background: #ffffff;
-		border-bottom: 1px solid #eeeeee;
-
-		&.floating {
-			box-shadow: 0 0 6px rgba(0,0,0,0.1);
-		}
+		overflow: hidden;
 
 		& > ul {
 			height: 60px;
 			margin: 0;
 			padding: 0;
+			border-bottom: 1px solid #eeeeee;
+			background: #ffffff;
 			list-style: none;
 
 			& > li {
