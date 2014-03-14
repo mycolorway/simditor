@@ -255,7 +255,7 @@ $simditor-toolbar-height: 60px;
 		.toolbar-menu {
 			display: none;
 			position: absolute;
-			top: 59px;
+			top: $simditor-toolbar-height - 1px;
 			left: 1px;
 			z-index: 20;
 			background: #ffffff;
