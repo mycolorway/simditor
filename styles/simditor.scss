@@ -344,6 +344,21 @@ $simditor-toolbar-height: 60px;
 					display: none;
 				}
 			}
+
+			&.toolbar-menu-image {
+				.menu-item-upload-image {
+					position: relative;
+
+					input[type=file] {
+						position: absolute;
+						right: 0px;
+						top: 0px;
+						opacity: 0;
+						height: 100%;
+						width: 100%;
+					}
+				}
+			}
 		}
 	}
 
@@ -386,13 +401,18 @@ $simditor-toolbar-height: 60px;
 			}
 		}
 
-		&.image-popover input[type=file] {
-			position: absolute;
-			right: 0px;
-			top: 0px;
-			opacity: 0;
-			height: 100%;
-			width: 28px;
+		&.image-popover .btn-upload {
+			position: relative;
+			display: inline-block;
+			
+			input[type=file] {
+				position: absolute;
+				right: 0px;
+				top: 0px;
+				opacity: 0;
+				height: 100%;
+				width: 28px;
+			}
 		}
 	}
 }

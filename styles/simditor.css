@@ -280,6 +280,17 @@
 .simditor .simditor-toolbar .toolbar-menu.toolbar-menu-table .menu-edit-table {
   display: none;
 }
+.simditor .simditor-toolbar .toolbar-menu.toolbar-menu-image .menu-item-upload-image {
+  position: relative;
+}
+.simditor .simditor-toolbar .toolbar-menu.toolbar-menu-image .menu-item-upload-image input[type=file] {
+  position: absolute;
+  right: 0px;
+  top: 0px;
+  opacity: 0;
+  height: 100%;
+  width: 100%;
+}
 .simditor .simditor-popover {
   display: none;
   padding: 5px 8px 0;
@@ -312,7 +323,11 @@
 .simditor .simditor-popover.link-popover .btn-unlink:hover span, .simditor .simditor-popover.image-popover .btn-upload:hover span {
   opacity: 1;
 }
-.simditor .simditor-popover.image-popover input[type=file] {
+.simditor .simditor-popover.image-popover .btn-upload {
+  position: relative;
+  display: inline-block;
+}
+.simditor .simditor-popover.image-popover .btn-upload input[type=file] {
   position: absolute;
   right: 0px;
   top: 0px;

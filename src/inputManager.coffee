@@ -66,6 +66,7 @@ class InputManager extends Plugin
     @editor.el.addClass('focus')
       .removeClass('error')
     @focused = true
+    @lastCaretPosition = null
 
     @editor.body.find('.selected').removeClass('selected')
 
@@ -78,6 +79,7 @@ class InputManager extends Plugin
     @editor.el.removeClass 'focus'
     @editor.sync()
     @focused = false
+    @lastCaretPosition = @editor.undoManager.currentState()?.caret
 
     @editor.triggerHandler 'blur'
 

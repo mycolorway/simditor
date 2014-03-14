@@ -46,7 +46,7 @@ class Button extends Module
       @command(param)
       false
 
-    @wrapper.on 'mousedown', 'a.menu-item', (e) =>
+    @wrapper.on 'click', 'a.menu-item', (e) =>
       e.preventDefault()
       btn = $(e.currentTarget)
       @wrapper.removeClass('menu-on')
@@ -55,6 +55,9 @@ class Button extends Module
       @editor.toolbar.wrapper.removeClass('menu-on')
       param = btn.data('param')
       @command(param)
+      false
+
+    @wrapper.on 'mousedown', 'a.menu-item', (e) =>
       false
 
     @editor.on 'blur', =>

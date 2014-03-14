@@ -36,9 +36,7 @@ class UndoManager extends Plugin
       , 200
 
   _pushUndoState: ->
-    if @_stack.length and @_index > -1
-      currentState = @_stack[@_index]
-
+    currentState = @currentState()
     html = @editor.body.html()
     return if currentState and currentState.html == html
 
@@ -52,6 +50,12 @@ class UndoManager extends Plugin
     if @_stack.length > @_capacity
       @_stack.shift()
       @_index -= 1
+
+  currentState: ->
+    if @_stack.length and @_index > -1
+      @_stack[@_index]
+    else
+      null
 
   undo: ->
     return if @_index < 1 or @_stack.length < 2
@@ -84,9 +88,9 @@ class UndoManager extends Plugin
     @editor.trigger 'selectionchanged', ['undo']
 
   update: () ->
-    return unless @_stack.length and @_index > -1
+    currentState = @currentState()
+    return unless currentState
 
-    currentState = @_stack[@_index]
     html = @editor.body.html()
     currentState.html = html
     currentState.caret = @caretPosition()
