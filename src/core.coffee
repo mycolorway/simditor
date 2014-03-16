@@ -135,6 +135,7 @@ class Simditor extends Widget
 
   focus: ->
     $blockEl = @body.find('p, li, pre, h1, h2, h3, h4, td').first()
+    return unless $blockEl.length > 0
     range = document.createRange()
     @selection.setRangeAtStartOf $blockEl, range
     @body.focus()

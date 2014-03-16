@@ -10,6 +10,14 @@ class Selection extends Plugin
 
   _init: ->
 
+    @editor.on 'selectionchanged', (e) =>
+      range = @editor.selection.getRange()
+      return unless range?
+      $container = $(range.commonAncestorContainer)
+
+      if range.collapsed and $container.is('.simditor-body')
+        @editor.blur()
+
   clear: ->
     @sel.removeAllRanges()
 
@@ -1520,6 +1528,7 @@ class Simditor extends Widget
 
   focus: ->
     $blockEl = @body.find('p, li, pre, h1, h2, h3, h4, td').first()
+    return unless $blockEl.length > 0
     range = document.createRange()
     @selection.setRangeAtStartOf $blockEl, range
     @body.focus()
@@ -2487,8 +2496,15 @@ class ImageButton extends Button
     @editor.body.on 'click', '.simditor-image', (e) =>
       false
 
-    @editor.on 'selectionchanged', =>
-      @popover.hide() if @popover.active
+    @editor.on 'selectionchanged.image', =>
+      range = @editor.selection.getRange()
+      return unless range?
+      $container = $(range.commonAncestorContainer)
+
+      if range.collapsed and $container.is('.simditor-image')
+        $container.mousedown()
+      else if @popover.active
+        @popover.hide() if @popover.active
 
     @editor.body.on 'keydown', '.simditor-image', (e) =>
       return unless e.which == 8

@@ -10,6 +10,14 @@ class Selection extends Plugin
 
   _init: ->
 
+    @editor.on 'selectionchanged', (e) =>
+      range = @editor.selection.getRange()
+      return unless range?
+      $container = $(range.commonAncestorContainer)
+
+      if range.collapsed and $container.is('.simditor-body')
+        @editor.blur()
+
   clear: ->
     @sel.removeAllRanges()
 
