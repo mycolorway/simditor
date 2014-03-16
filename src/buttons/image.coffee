@@ -252,20 +252,26 @@ class ImageButton extends Button
 
     range.deleteContents()
 
-    if $startBlock[0] == $endBlock[0] and $startBlock.is('p')
-      if @editor.util.isEmptyNode $startBlock
-        range.selectNode $startBlock[0]
-        range.deleteContents()
-      else if @editor.selection.rangeAtEndOf $startBlock, range
+    if $startBlock[0] == $endBlock[0]
+      if $startBlock.is 'li'
+        $startBlock = @editor.util.furthestNode($startBlock, 'ul, ol')
+        $endBlock = $startBlock
         range.setEndAfter($startBlock[0])
         range.collapse(false)
-      else if @editor.selection.rangeAtStartOf $startBlock, range
-        range.setEndBefore($startBlock[0])
-        range.collapse(false)
-      else
-        $breakedEl = @editor.selection.breakBlockEl($startBlock, range)
-        range.setEndBefore($breakedEl[0])
-        range.collapse(false)
+      else if $startBlock.is 'p'
+        if @editor.util.isEmptyNode $startBlock
+          range.selectNode $startBlock[0]
+          range.deleteContents()
+        else if @editor.selection.rangeAtEndOf $startBlock, range
+          range.setEndAfter($startBlock[0])
+          range.collapse(false)
+        else if @editor.selection.rangeAtStartOf $startBlock, range
+          range.setEndBefore($startBlock[0])
+          range.collapse(false)
+        else
+          $breakedEl = @editor.selection.breakBlockEl($startBlock, range)
+          range.setEndBefore($breakedEl[0])
+          range.collapse(false)
 
     $img = $('<img/>')
     range.insertNode $img[0]

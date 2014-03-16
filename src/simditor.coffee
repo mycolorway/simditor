@@ -701,11 +701,11 @@ class Keystroke extends Plugin
         true
 
 
-    # Remove hr node
+    # Remove hr and img node
     @editor.inputManager.addKeystrokeHandler '8', '*', (e) =>
       $rootBlock = @editor.util.furthestBlockEl()
       $prevBlockEl = $rootBlock.prev()
-      if $prevBlockEl.is('hr') and @editor.selection.rangeAtStartOf $rootBlock
+      if $prevBlockEl.is('hr, .simditor-image') and @editor.selection.rangeAtStartOf $rootBlock
         # TODO: need to test on IE
         @editor.selection.save()
         $prevBlockEl.remove()
@@ -2678,20 +2678,26 @@ class ImageButton extends Button
 
     range.deleteContents()
 
-    if $startBlock[0] == $endBlock[0] and $startBlock.is('p')
-      if @editor.util.isEmptyNode $startBlock
-        range.selectNode $startBlock[0]
-        range.deleteContents()
-      else if @editor.selection.rangeAtEndOf $startBlock, range
+    if $startBlock[0] == $endBlock[0]
+      if $startBlock.is 'li'
+        $startBlock = @editor.util.furthestNode($startBlock, 'ul, ol')
+        $endBlock = $startBlock
         range.setEndAfter($startBlock[0])
         range.collapse(false)
-      else if @editor.selection.rangeAtStartOf $startBlock, range
-        range.setEndBefore($startBlock[0])
-        range.collapse(false)
-      else
-        $breakedEl = @editor.selection.breakBlockEl($startBlock, range)
-        range.setEndBefore($breakedEl[0])
-        range.collapse(false)
+      else if $startBlock.is 'p'
+        if @editor.util.isEmptyNode $startBlock
+          range.selectNode $startBlock[0]
+          range.deleteContents()
+        else if @editor.selection.rangeAtEndOf $startBlock, range
+          range.setEndAfter($startBlock[0])
+          range.collapse(false)
+        else if @editor.selection.rangeAtStartOf $startBlock, range
+          range.setEndBefore($startBlock[0])
+          range.collapse(false)
+        else
+          $breakedEl = @editor.selection.breakBlockEl($startBlock, range)
+          range.setEndBefore($breakedEl[0])
+          range.collapse(false)
 
     $img = $('<img/>')
     range.insertNode $img[0]
