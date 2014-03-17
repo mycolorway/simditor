@@ -15,7 +15,7 @@ class Selection extends Plugin
       return unless range?
       $container = $(range.commonAncestorContainer)
 
-      if range.collapsed and $container.is('.simditor-body')
+      if range.collapsed and $container.is('.simditor-body') and @editor.util.isBlockNode($container.children())
         @editor.blur()
 
   clear: ->

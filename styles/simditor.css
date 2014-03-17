@@ -49,6 +49,9 @@
 .simditor .simditor-body a.selected {
   background: #b3d4fd;
 }
+.simditor .simditor-body a.simditor-mention {
+  cursor: pointer;
+}
 .simditor .simditor-body .simditor-image {
   margin: 15px 0;
   cursor: pointer;

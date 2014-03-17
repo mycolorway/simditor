@@ -22,7 +22,7 @@ class LinkButton extends Button
     return @active unless $node?
 
     showPopover = true
-    if !$node.is(@htmlTag)
+    if !$node.is(@htmlTag) or $node.is('[class^="simditor-"]')
       @setActive false
       showPopover = false
     else if @editor.selection.rangeAtEndOf($node)
