@@ -108,8 +108,13 @@ $simditor-toolbar-height: 60px;
 				div {
 					width: 100px;
 					height: 5px;
+					margin: 0;
+					padding: 0;
+
 					span {
 						display: block;
+						margin: 0;
+						padding: 0;
 						width: 1%;
 						height: 100%;
 						background: #0f769f;
@@ -564,7 +569,6 @@ $simditor-toolbar-height: 60px;
 	img {
 		margin: 15px 0;
 		display: block;
-		cursor: pointer;
 		-ms-interpolation-mode: bicubic;
 		vertical-align: bottom;
 	}

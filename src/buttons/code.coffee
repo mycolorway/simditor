@@ -61,7 +61,7 @@ class CodeButton extends Button
       results.push block
     else
       if !$el.text() and $el.children().length == 1 and $el.children().is('br')
-        codeStr = ''
+        codeStr = '\n'
       else
         codeStr = @editor.formatter.clearHtml($el)
       block = $('<' + @htmlTag + '/>').append(codeStr)

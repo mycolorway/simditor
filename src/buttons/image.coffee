@@ -149,6 +149,7 @@ class ImageButton extends Button
           prepare()
 
     @editor.uploader.on 'uploadprogress', (e, file, loaded, total) =>
+      debugger
       return unless file.inline
 
       percent = loaded / total
@@ -227,10 +228,7 @@ class ImageButton extends Button
       $img.attr({
         src: src,
         width: width,
-        height: height,
-        'data-origin-name': src,
-        'data-origin-src': src,
-        'data-origin-size': width + ',' + height
+        height: height
       })
 
       $wrapper.width(width)
