@@ -5,7 +5,7 @@ class Util extends Plugin
 
   constructor: (args...) ->
     super args...
-    @phBr = '' if @browser.msie
+    @phBr = '' if @browser.msie and @browser.version < 11
     @editor = @widget
 
   _init: ->

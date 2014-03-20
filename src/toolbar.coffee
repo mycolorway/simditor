@@ -45,7 +45,7 @@ class Toolbar extends Plugin
         else
           @editor.wrapper.addClass('toolbar-floating')
 
-    @editor.on 'selectionchanged', =>
+    @editor.on 'selectionchanged focus', =>
       @toolbarStatus()
 
     @editor.on 'destroy', =>

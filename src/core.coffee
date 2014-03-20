@@ -131,7 +131,6 @@ class Simditor extends Widget
     val = $.trim(cloneBody.html())
     @textarea.val val
     val
-    
 
   focus: ->
     $blockEl = @body.find('p, li, pre, h1, h2, h3, h4, td').first()
@@ -168,3 +167,9 @@ class Simditor extends Widget
 
 
 window.Simditor = Simditor
+
+
+class TestPlugin extends Plugin
+
+class Test extends Widget
+  @connect TestPlugin

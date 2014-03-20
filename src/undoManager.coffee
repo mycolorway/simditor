@@ -16,11 +16,18 @@ class UndoManager extends Plugin
     @editor = @widget
 
   _init: ->
-    @editor.inputManager.addShortcut 'cmd+90', (e) =>
+    if @editor.util.os.mac
+      undoShortcut = 'cmd+90'
+      redoShortcut = 'shift+cmd+89'
+    else
+      undoShortcut = 'ctrl+90'
+      redoShortcut = 'ctrl+89'
+
+    @editor.inputManager.addShortcut undoShortcut, (e) =>
       e.preventDefault()
       @undo()
 
-    @editor.inputManager.addShortcut 'shift+cmd+90', (e) =>
+    @editor.inputManager.addShortcut redoShortcut, (e) =>
       e.preventDefault()
       @redo()
 

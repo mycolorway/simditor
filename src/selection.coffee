@@ -10,7 +10,7 @@ class Selection extends Plugin
 
   _init: ->
 
-    @editor.on 'selectionchanged', (e) =>
+    @editor.on 'selectionchanged focus', (e) =>
       range = @editor.selection.getRange()
       return unless range?
       $container = $(range.commonAncestorContainer)
@@ -19,7 +19,9 @@ class Selection extends Plugin
         @editor.blur()
 
   clear: ->
-    @sel.removeAllRanges()
+    try
+      @sel.removeAllRanges()
+    catch e
 
   getRange: ->
     if !@editor.inputManager.focused or !@sel.rangeCount
@@ -28,7 +30,7 @@ class Selection extends Plugin
     return @sel.getRangeAt 0
 
   selectRange: (range) ->
-    @sel.removeAllRanges()
+    @clear()
     @sel.addRange(range)
 
   rangeAtEndOf: (node, range = @getRange()) ->
@@ -50,7 +52,7 @@ class Selection extends Plugin
     result = true
     $(endNode).parentsUntil(node).addBack().each (i, n) =>
       nodes = $(n).parent().contents().filter ->
-        !(this.nodeType == 3 && !this.nodeValue)
+        !(this != n && this.nodeType == 3 && !this.nodeValue)
       $lastChild = nodes.last()
       unless $lastChild.get(0) == n or ($lastChild.is('br') and $lastChild.prev().get(0) == n)
         result = false
@@ -75,7 +77,7 @@ class Selection extends Plugin
     result = true
     $(startNode).parentsUntil(node).addBack().each (i, n) =>
       nodes = $(n).parent().contents().filter ->
-        !(this.nodeType == 3 && !this.nodeValue)
+        !(this != n && this.nodeType == 3 && !this.nodeValue)
       result = false unless nodes.first().get(0) == n
 
     result
@@ -153,7 +155,7 @@ class Selection extends Plugin
     range.collapse(false)
     range.insertNode(endCaret[0])
 
-    @sel.removeAllRanges()
+    @clear()
     @_selectionSaved = true
 
   restore: () ->
@@ -180,7 +182,7 @@ class Selection extends Plugin
       @selectRange range
 
       # firefox won't auto focus while applying new range
-      @editor.body.focus()
+      @editor.body.focus() if @editor.util.browser.firefox
     else
       startCaret.remove()
       endCaret.remove()

@@ -92,9 +92,13 @@
 .simditor .simditor-body .simditor-image .simditor-image-progress-bar div {
   width: 100px;
   height: 5px;
+  margin: 0;
+  padding: 0;
 }
 .simditor .simditor-body .simditor-image .simditor-image-progress-bar div span {
   display: block;
+  margin: 0;
+  padding: 0;
   width: 1%;
   height: 100%;
   background: #0f769f;
@@ -285,14 +289,15 @@
 }
 .simditor .simditor-toolbar .toolbar-menu.toolbar-menu-image .menu-item-upload-image {
   position: relative;
+  overflow: hidden;
 }
 .simditor .simditor-toolbar .toolbar-menu.toolbar-menu-image .menu-item-upload-image input[type=file] {
   position: absolute;
   right: 0px;
   top: 0px;
   opacity: 0;
-  height: 100%;
-  width: 100%;
+  font-size: 100px;
+  cursor: pointer;
 }
 .simditor .simditor-popover {
   display: none;
@@ -486,7 +491,6 @@
 .simditor .simditor-body img, .editor-style img {
   margin: 15px 0;
   display: block;
-  cursor: pointer;
   -ms-interpolation-mode: bicubic;
   vertical-align: bottom;
 }

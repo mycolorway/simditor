@@ -111,10 +111,6 @@ class CodePopover extends Popover
         @target.addClass('lang-' + lang) 
         @target.attr('data-lang', lang)
 
-      #range = document.createRange()
-      #@editor.selection.setRangeAtEndOf(@target, range)
-      #@editor.body.focus()
-
   show: (args...) ->
     super args...
     @lang = @target.attr('data-lang')

@@ -10,7 +10,7 @@ class Selection extends Plugin
 
   _init: ->
 
-    @editor.on 'selectionchanged', (e) =>
+    @editor.on 'selectionchanged focus', (e) =>
       range = @editor.selection.getRange()
       return unless range?
       $container = $(range.commonAncestorContainer)
@@ -19,7 +19,9 @@ class Selection extends Plugin
         @editor.blur()
 
   clear: ->
-    @sel.removeAllRanges()
+    try
+      @sel.removeAllRanges()
+    catch e
 
   getRange: ->
     if !@editor.inputManager.focused or !@sel.rangeCount
@@ -28,7 +30,7 @@ class Selection extends Plugin
     return @sel.getRangeAt 0
 
   selectRange: (range) ->
-    @sel.removeAllRanges()
+    @clear()
     @sel.addRange(range)
 
   rangeAtEndOf: (node, range = @getRange()) ->
@@ -50,7 +52,7 @@ class Selection extends Plugin
     result = true
     $(endNode).parentsUntil(node).addBack().each (i, n) =>
       nodes = $(n).parent().contents().filter ->
-        !(this.nodeType == 3 && !this.nodeValue)
+        !(this != n && this.nodeType == 3 && !this.nodeValue)
       $lastChild = nodes.last()
       unless $lastChild.get(0) == n or ($lastChild.is('br') and $lastChild.prev().get(0) == n)
         result = false
@@ -75,7 +77,7 @@ class Selection extends Plugin
     result = true
     $(startNode).parentsUntil(node).addBack().each (i, n) =>
       nodes = $(n).parent().contents().filter ->
-        !(this.nodeType == 3 && !this.nodeValue)
+        !(this != n && this.nodeType == 3 && !this.nodeValue)
       result = false unless nodes.first().get(0) == n
 
     result
@@ -153,7 +155,7 @@ class Selection extends Plugin
     range.collapse(false)
     range.insertNode(endCaret[0])
 
-    @sel.removeAllRanges()
+    @clear()
     @_selectionSaved = true
 
   restore: () ->
@@ -180,7 +182,7 @@ class Selection extends Plugin
       @selectRange range
 
       # firefox won't auto focus while applying new range
-      @editor.body.focus()
+      @editor.body.focus() if @editor.util.browser.firefox
     else
       startCaret.remove()
       endCaret.remove()
@@ -427,7 +429,7 @@ class InputManager extends Plugin
 
     setTimeout =>
       @editor.triggerHandler 'focus'
-      @editor.trigger 'selectionchanged'
+      #@editor.trigger 'selectionchanged'
     , 0
 
   _onBlur: (e) ->
@@ -864,11 +866,18 @@ class UndoManager extends Plugin
     @editor = @widget
 
   _init: ->
-    @editor.inputManager.addShortcut 'cmd+90', (e) =>
+    if @editor.util.os.mac
+      undoShortcut = 'cmd+90'
+      redoShortcut = 'shift+cmd+89'
+    else
+      undoShortcut = 'ctrl+90'
+      redoShortcut = 'ctrl+89'
+
+    @editor.inputManager.addShortcut undoShortcut, (e) =>
       e.preventDefault()
       @undo()
 
-    @editor.inputManager.addShortcut 'shift+cmd+90', (e) =>
+    @editor.inputManager.addShortcut redoShortcut, (e) =>
       e.preventDefault()
       @redo()
 
@@ -1061,7 +1070,7 @@ class Util extends Plugin
 
   constructor: (args...) ->
     super args...
-    @phBr = '' if @browser.msie
+    @phBr = '' if @browser.msie and @browser.version < 11
     @editor = @widget
 
   _init: ->
@@ -1338,7 +1347,7 @@ class Toolbar extends Plugin
         else
           @editor.wrapper.addClass('toolbar-floating')
 
-    @editor.on 'selectionchanged', =>
+    @editor.on 'selectionchanged focus', =>
       @toolbarStatus()
 
     @editor.on 'destroy', =>
@@ -1524,7 +1533,6 @@ class Simditor extends Widget
     val = $.trim(cloneBody.html())
     @textarea.val val
     val
-    
 
   focus: ->
     $blockEl = @body.find('p, li, pre, h1, h2, h3, h4, td').first()
@@ -1561,6 +1569,12 @@ class Simditor extends Widget
 
 
 window.Simditor = Simditor
+
+
+class TestPlugin extends Plugin
+
+class Test extends Widget
+  @connect TestPlugin
 
 
 class Button extends Module
@@ -2215,7 +2229,7 @@ class CodeButton extends Button
       results.push block
     else
       if !$el.text() and $el.children().length == 1 and $el.children().is('br')
-        codeStr = ''
+        codeStr = '\n'
       else
         codeStr = @editor.formatter.clearHtml($el)
       block = $('<' + @htmlTag + '/>').append(codeStr)
@@ -2264,10 +2278,6 @@ class CodePopover extends Popover
       if @lang isnt -1
         @target.addClass('lang-' + lang) 
         @target.attr('data-lang', lang)
-
-      #range = document.createRange()
-      #@editor.selection.setRangeAtEndOf(@target, range)
-      #@editor.body.focus()
 
   show: (args...) ->
     super args...
@@ -2400,7 +2410,7 @@ class LinkPopover extends Popover
         setTimeout =>
           range = document.createRange()
           @editor.selection.setRangeAfter @target, range
-          @editor.body.focus()
+          @editor.body.focus() if @editor.util.browser.firefox
           @hide()
           @editor.trigger 'valuechanged'
         , 0
@@ -2412,7 +2422,7 @@ class LinkPopover extends Popover
 
       range = document.createRange()
       @editor.selection.setRangeAfter txtNode, range
-      @editor.body.focus() unless @editor.inputManager.focused
+      @editor.body.focus() if @editor.util.browser.firefox and !@editor.inputManager.focused
 
   show: (args...) ->
     super args...
@@ -2534,13 +2544,12 @@ class ImageButton extends Button
         })
         $input.val ''
       else if @editor.inputManager.lastCaretPosition
-        @editor.undoManager.caretPosition @editor.inputManager.lastCaretPosition
-        setTimeout =>
+        @editor.one 'focus', (e) =>
           @editor.uploader.upload($input, {
             inline: true
           })
-          $input.val ''
-        , 20
+          $input = $input.clone(true).replaceAll($input)
+        @editor.undoManager.caretPosition @editor.inputManager.lastCaretPosition
       @wrapper.removeClass('menu-on')
 
     @_initUploader()
@@ -2575,7 +2584,6 @@ class ImageButton extends Button
           prepare()
 
     @editor.uploader.on 'uploadprogress', (e, file, loaded, total) =>
-      debugger
       return unless file.inline
 
       percent = loaded / total
@@ -2653,8 +2661,7 @@ class ImageButton extends Button
 
       $img.attr({
         src: src,
-        width: width,
-        height: height
+        width: width
       })
 
       $wrapper.width(width)
@@ -2780,7 +2787,8 @@ class ImagePopover extends Popover
         inline: true,
         imgWrapper: @target
       })
-      @input.val ''
+
+      @input = @input.clone(true).replaceAll(@input)
 
   show: (args...) ->
     super args...

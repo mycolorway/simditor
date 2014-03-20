@@ -357,14 +357,15 @@ $simditor-toolbar-height: 60px;
 			&.toolbar-menu-image {
 				.menu-item-upload-image {
 					position: relative;
+					overflow: hidden;
 
 					input[type=file] {
 						position: absolute;
 						right: 0px;
 						top: 0px;
 						opacity: 0;
-						height: 100%;
-						width: 100%;
+						font-size: 100px;
+						cursor: pointer;
 					}
 				}
 			}

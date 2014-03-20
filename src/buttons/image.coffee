@@ -108,13 +108,12 @@ class ImageButton extends Button
         })
         $input.val ''
       else if @editor.inputManager.lastCaretPosition
-        @editor.undoManager.caretPosition @editor.inputManager.lastCaretPosition
-        setTimeout =>
+        @editor.one 'focus', (e) =>
           @editor.uploader.upload($input, {
             inline: true
           })
-          $input.val ''
-        , 20
+          $input = $input.clone(true).replaceAll($input)
+        @editor.undoManager.caretPosition @editor.inputManager.lastCaretPosition
       @wrapper.removeClass('menu-on')
 
     @_initUploader()
@@ -149,7 +148,6 @@ class ImageButton extends Button
           prepare()
 
     @editor.uploader.on 'uploadprogress', (e, file, loaded, total) =>
-      debugger
       return unless file.inline
 
       percent = loaded / total
@@ -227,8 +225,7 @@ class ImageButton extends Button
 
       $img.attr({
         src: src,
-        width: width,
-        height: height
+        width: width
       })
 
       $wrapper.width(width)
@@ -354,7 +351,8 @@ class ImagePopover extends Popover
         inline: true,
         imgWrapper: @target
       })
-      @input.val ''
+
+      @input = @input.clone(true).replaceAll(@input)
 
   show: (args...) ->
     super args...
