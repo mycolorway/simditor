@@ -4,15 +4,6 @@ $simditor-toolbar-height: 60px;
 
 .simditor {
 	position: relative;
-	font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
-
-	&.simditor-mac {
-		font-family: "Helvetica Neue", "Hiragino Sans GB", "冬青黑体", Helvetica, Arial, sans-serif;
-	}
-
-	&.simditor-linux {
-		font-family: Ubuntu, "WenQuanYi Micro Hei", "文泉驿微米黑", Helvetica, Arial, sans-serif;
-	}
 
 	.simditor-wrapper {
 		position: relative;
@@ -139,9 +130,11 @@ $simditor-toolbar-height: 60px;
 				position: absolute;
 				left: 0;
 				top: 0;
-				width: 5px;
+				width: 10px;
 				height: 100%;
 				cursor: col-resize;
+				background: #ccc;
+				opacity: 0.5;
 			}
 		}
 
@@ -430,7 +423,7 @@ $simditor-toolbar-height: 60px;
 .simditor .simditor-body, .editor-style {
 	padding: 22px 15px 40px;
 	font-size: 16px;
-	font-family: helvetica,Arial;
+	font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
 	line-height: 1.5;
 	color: #333;
 	outline: none;

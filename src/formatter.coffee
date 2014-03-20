@@ -78,9 +78,16 @@ class Formatter extends Plugin
         blockNode = null if blockNode?
         $node.remove()
       else if @editor.util.isBlockNode(node) or $node.is('img')
-        blockNode = null
+        if $node.is('li')
+          if blockNode and blockNode.is('ul, ol')
+            blockNode.append node
+          else
+            blockNode = $('<ul/>').insertBefore(node)
+            blockNode.append node
+        else
+          blockNode = null
       else
-        blockNode = $('<p/>').insertBefore(node) unless blockNode?
+        blockNode = $('<p/>').insertBefore(node) if !blockNode or blockNode.is('ul, ol')
         blockNode.append(node)
 
     $el

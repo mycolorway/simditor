@@ -233,7 +233,7 @@ class InputManager extends Plugin
       else if pasteContent.length == 1
         if pasteContent.is('p')
           children = pasteContent.contents()
-          @editor.selection.insertNode node for node in children
+          @editor.selection.insertNode node, range for node in children
 
         # paste image in firefox
         else if pasteContent.is('.simditor-image')

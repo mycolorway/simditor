@@ -87,7 +87,7 @@ class Selection extends Plugin
 
     node = $(node)[0]
     range.insertNode node
-    @setRangeAfter node
+    @setRangeAfter node, range
 
   setRangeAfter: (node, range = @getRange()) ->
     return unless range?
@@ -272,9 +272,16 @@ class Formatter extends Plugin
         blockNode = null if blockNode?
         $node.remove()
       else if @editor.util.isBlockNode(node) or $node.is('img')
-        blockNode = null
+        if $node.is('li')
+          if blockNode and blockNode.is('ul, ol')
+            blockNode.append node
+          else
+            blockNode = $('<ul/>').insertBefore(node)
+            blockNode.append node
+        else
+          blockNode = null
       else
-        blockNode = $('<p/>').insertBefore(node) unless blockNode?
+        blockNode = $('<p/>').insertBefore(node) if !blockNode or blockNode.is('ul, ol')
         blockNode.append(node)
 
     $el
@@ -590,7 +597,7 @@ class InputManager extends Plugin
       else if pasteContent.length == 1
         if pasteContent.is('p')
           children = pasteContent.contents()
-          @editor.selection.insertNode node for node in children
+          @editor.selection.insertNode node, range for node in children
 
         # paste image in firefox
         else if pasteContent.is('.simditor-image')
@@ -2474,8 +2481,8 @@ class ImageButton extends Button
     super @editor
 
     @defaultImage = @editor.opts.defaultImage
-    @maxWidth = @editor.body.width()
-    @maxHeight = $(window).height()
+    @maxWidth = @editor.opts.maxImageWidth || @editor.body.width()
+    @maxHeight = @editor.opts.maxImageHeight || $(window).height()
 
     @editor.on 'decorate', (e, $el) =>
       $el.find('img').each (i, img) =>
@@ -2661,7 +2668,10 @@ class ImageButton extends Button
 
       $img.attr({
         src: src,
-        width: width
+        width: width,
+        'data-origin-src': src,
+        'data-origin-name': '图片',
+        'data-origin-size': width + ',' + height
       })
 
       $wrapper.width(width)
@@ -2967,13 +2977,25 @@ class TableButton extends Button
     $resizeHandle = $('<div class="resize-handle"></div>')
       .appendTo($wrapper)
 
-    $wrapper.on 'mouseenter', 'td', (e) =>
+    $wrapper.on 'mousemove', 'td', (e) =>
       return if $wrapper.hasClass('resizing')
+      x = e.pageX - $(e.currentTarget).offset().left;
       $td = $(e.currentTarget)
+      $td = $td.prev() if x < 5 and $td.prev().length > 0
+
+      if $resizeHandle.data('td')?.is($td)
+        $resizeHandle.show()
+        return
+
       index = $td.parent().find('td').index($td)
       $col = $colgroup.find('col').eq(index)
+
+      if $resizeHandle.data('col')?.is($col)
+        $resizeHandle.show()
+        return
+
       $resizeHandle
-        .css( 'left', $td.position().left + $td.outerWidth() - 2)
+        .css( 'left', $td.position().left + $td.outerWidth() - 5)
         .data('td', $td)
         .data('col', $col)
         .show()
@@ -2987,11 +3009,21 @@ class TableButton extends Button
       $col = $handle.data 'col'
       startX = e.pageX
       startWidth = $td.outerWidth() * 1
-      startLeft = $handle.css('left')
+      startLeft = parseFloat $handle.css('left')
+      maxWidth = $td.closest('.simditor-table').width() / 2
+      minWidth = 50
 
       $(document).on 'mousemove.simditor-resize-table', (e) =>
         deltaX = e.pageX - startX
-        $col.attr 'width', startWidth + deltaX
+        width = startWidth + deltaX
+        if width > maxWidth
+          width = maxWidth
+          deltaX = maxWidth - startWidth
+        else if width < minWidth
+          width = minWidth
+          deltaX = minWidth - startWidth
+
+        $col.attr 'width', width
         $handle.css 'left', startLeft + deltaX
 
       $(document).one 'mouseup.simditor-resize-table', (e) =>

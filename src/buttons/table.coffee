@@ -88,13 +88,25 @@ class TableButton extends Button
     $resizeHandle = $('<div class="resize-handle"></div>')
       .appendTo($wrapper)
 
-    $wrapper.on 'mouseenter', 'td', (e) =>
+    $wrapper.on 'mousemove', 'td', (e) =>
       return if $wrapper.hasClass('resizing')
+      x = e.pageX - $(e.currentTarget).offset().left;
       $td = $(e.currentTarget)
+      $td = $td.prev() if x < 5 and $td.prev().length > 0
+
+      if $resizeHandle.data('td')?.is($td)
+        $resizeHandle.show()
+        return
+
       index = $td.parent().find('td').index($td)
       $col = $colgroup.find('col').eq(index)
+
+      if $resizeHandle.data('col')?.is($col)
+        $resizeHandle.show()
+        return
+
       $resizeHandle
-        .css( 'left', $td.position().left + $td.outerWidth() - 2)
+        .css( 'left', $td.position().left + $td.outerWidth() - 5)
         .data('td', $td)
         .data('col', $col)
         .show()
@@ -108,11 +120,21 @@ class TableButton extends Button
       $col = $handle.data 'col'
       startX = e.pageX
       startWidth = $td.outerWidth() * 1
-      startLeft = $handle.css('left')
+      startLeft = parseFloat $handle.css('left')
+      maxWidth = $td.closest('.simditor-table').width() / 2
+      minWidth = 50
 
       $(document).on 'mousemove.simditor-resize-table', (e) =>
         deltaX = e.pageX - startX
-        $col.attr 'width', startWidth + deltaX
+        width = startWidth + deltaX
+        if width > maxWidth
+          width = maxWidth
+          deltaX = maxWidth - startWidth
+        else if width < minWidth
+          width = minWidth
+          deltaX = minWidth - startWidth
+
+        $col.attr 'width', width
         $handle.css 'left', startLeft + deltaX
 
       $(document).one 'mouseup.simditor-resize-table', (e) =>

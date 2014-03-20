@@ -38,8 +38,8 @@ class ImageButton extends Button
     super @editor
 
     @defaultImage = @editor.opts.defaultImage
-    @maxWidth = @editor.body.width()
-    @maxHeight = $(window).height()
+    @maxWidth = @editor.opts.maxImageWidth || @editor.body.width()
+    @maxHeight = @editor.opts.maxImageHeight || $(window).height()
 
     @editor.on 'decorate', (e, $el) =>
       $el.find('img').each (i, img) =>
@@ -225,7 +225,10 @@ class ImageButton extends Button
 
       $img.attr({
         src: src,
-        width: width
+        width: width,
+        'data-origin-src': src,
+        'data-origin-name': '图片',
+        'data-origin-size': width + ',' + height
       })
 
       $wrapper.width(width)

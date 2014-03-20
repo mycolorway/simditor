@@ -87,7 +87,7 @@ class Selection extends Plugin
 
     node = $(node)[0]
     range.insertNode node
-    @setRangeAfter node
+    @setRangeAfter node, range
 
   setRangeAfter: (node, range = @getRange()) ->
     return unless range?
