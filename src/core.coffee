@@ -16,6 +16,7 @@ class Simditor extends Widget
     defaultImage: 'images/image.png'
     params: null
     upload: false
+    tabIndent: true
 
   _init: ->
     @textarea = $(@opts.textarea);

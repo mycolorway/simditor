@@ -27,7 +27,7 @@ class ImageButton extends Button
 
   menu: [{
     name: 'upload-image',
-    text: '本地上传'
+    text: '本地图片'
   }, {
     name: 'external-image',
     text: '外链图片'
@@ -206,7 +206,7 @@ class ImageButton extends Button
     $wrapper = $img.parent('.simditor-image')
     return if $wrapper.length < 1
 
-    $img.insertAfter $wrapper
+    $img.insertAfter $wrapper unless $img.is('img[src^="data:image/png;base64"]')
     $wrapper.remove()
 
   loadImage: ($img, src, callback) ->

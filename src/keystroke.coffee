@@ -41,6 +41,8 @@ class Keystroke extends Plugin
 
     # Tab to indent
     @editor.inputManager.addKeystrokeHandler '9', '*', (e) =>
+      return unless @editor.opts.tabIndent
+
       if e.shiftKey
         @editor.util.outdent()
       else

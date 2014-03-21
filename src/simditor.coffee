@@ -724,6 +724,8 @@ class Keystroke extends Plugin
 
     # Tab to indent
     @editor.inputManager.addKeystrokeHandler '9', '*', (e) =>
+      return unless @editor.opts.tabIndent
+
       if e.shiftKey
         @editor.util.outdent()
       else
@@ -1425,6 +1427,7 @@ class Simditor extends Widget
     defaultImage: 'images/image.png'
     params: null
     upload: false
+    tabIndent: true
 
   _init: ->
     @textarea = $(@opts.textarea);
@@ -2470,7 +2473,7 @@ class ImageButton extends Button
 
   menu: [{
     name: 'upload-image',
-    text: '本地上传'
+    text: '本地图片'
   }, {
     name: 'external-image',
     text: '外链图片'
@@ -2649,7 +2652,7 @@ class ImageButton extends Button
     $wrapper = $img.parent('.simditor-image')
     return if $wrapper.length < 1
 
-    $img.insertAfter $wrapper
+    $img.insertAfter $wrapper unless $img.is('img[src^="data:image/png;base64"]')
     $wrapper.remove()
 
   loadImage: ($img, src, callback) ->
@@ -2969,19 +2972,29 @@ class TableButton extends Button
 
   initResize: ($table) ->
     $wrapper = $table.parent '.simditor-table'
-    $colgroup = $('<colgroup/>').prependTo $table
 
-    $table.find('tr:first td').each (i, td) =>
-      $col = $('<col/>').appendTo $colgroup
+    $colgroup = $table.find 'colgroup'
+    if $colgroup.length < 1
+      $colgroup = $('<colgroup/>').prependTo $table
+
+      tableWidth = $table.width()
+      $table.find('tr:first td').each (i, td) =>
+        $col = $('<col/>').appendTo $colgroup
+        $col.attr 'width', ($(td).outerWidth() / tableWidth * 100) + '%'
+
 
     $resizeHandle = $('<div class="resize-handle"></div>')
       .appendTo($wrapper)
 
     $wrapper.on 'mousemove', 'td', (e) =>
       return if $wrapper.hasClass('resizing')
-      x = e.pageX - $(e.currentTarget).offset().left;
       $td = $(e.currentTarget)
+      x = e.pageX - $(e.currentTarget).offset().left;
       $td = $td.prev() if x < 5 and $td.prev().length > 0
+
+      if $td.next('td').length < 1
+        $resizeHandle.hide()
+        return
 
       if $resizeHandle.data('td')?.is($td)
         $resizeHandle.show()
@@ -3005,26 +3018,33 @@ class TableButton extends Button
 
     $wrapper.on 'mousedown', '.resize-handle', (e) =>
       $handle = $(e.currentTarget)
-      $td = $handle.data 'td'
-      $col = $handle.data 'col'
+      $leftTd = $handle.data 'td'
+      $leftCol = $handle.data 'col'
+      $rightTd = $leftTd.next('td')
+      $rightCol = $leftCol.next('col')
       startX = e.pageX
-      startWidth = $td.outerWidth() * 1
-      startLeft = parseFloat $handle.css('left')
-      maxWidth = $td.closest('.simditor-table').width() / 2
+      startLeftWidth = $leftTd.outerWidth() * 1
+      startRightWidth = $rightTd.outerWidth() * 1
+      startHandleLeft = parseFloat $handle.css('left')
+      tableWidth = $leftTd.closest('table').width()
       minWidth = 50
 
       $(document).on 'mousemove.simditor-resize-table', (e) =>
         deltaX = e.pageX - startX
-        width = startWidth + deltaX
-        if width > maxWidth
-          width = maxWidth
-          deltaX = maxWidth - startWidth
-        else if width < minWidth
-          width = minWidth
-          deltaX = minWidth - startWidth
+        leftWidth = startLeftWidth + deltaX
+        rightWidth = startRightWidth - deltaX
+        if leftWidth < minWidth
+          leftWidth = minWidth
+          deltaX = minWidth - startLeftWidth
+          rightWidth = startRightWidth - deltaX
+        else if rightWidth < minWidth
+          rightWidth = minWidth
+          deltaX = startRightWidth - minWidth
+          leftWidth = startLeftWidth + deltaX
 
-        $col.attr 'width', width
-        $handle.css 'left', startLeft + deltaX
+        $leftCol.attr 'width', (leftWidth / tableWidth * 100) + '%'
+        $rightCol.attr 'width', (rightWidth / tableWidth * 100) + '%'
+        $handle.css 'left', startHandleLeft + deltaX
 
       $(document).one 'mouseup.simditor-resize-table', (e) =>
         $(document).off '.simditor-resize-table'
