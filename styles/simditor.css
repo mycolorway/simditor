@@ -112,8 +112,6 @@
   width: 10px;
   height: 100%;
   cursor: col-resize;
-  background: #ccc;
-  opacity: 0.5;
 }
 .simditor .simditor-body pre {
   min-height: 28px;
