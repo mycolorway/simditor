@@ -36,10 +36,6 @@ Simditor is built on jQuery 2.0+ and [Mycolorway Simple Module](https://github.c
 
 [Mycolorway Simple Uploader](https://github.com/mycolorway/simple-uploader) is optional for local image uploading.
 
-
-### Documentation
-Not ready yet...
-
 ### Support or Contact
 Any thoughts or uncomfortable experience, be free to contact me: farthinker@gmail.com.
 
