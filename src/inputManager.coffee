@@ -34,7 +34,7 @@ class InputManager extends Plugin
 
     @editor.on 'valuechanged', =>
       # make sure each code block, img and table has a p following it
-      @editor.body.find('pre, .simditor-image, .simditor-table').each (i, el) =>
+      @editor.body.find('hr, pre, .simditor-image, .simditor-table').each (i, el) =>
         $el = $(el)
         if ($el.parent().is('blockquote') or $el.parent()[0] == @editor.body[0]) and $el.next().length == 0
           $('<p/>').append(@editor.util.phBr)

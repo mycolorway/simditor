@@ -411,7 +411,8 @@
   line-height: 1.6;
 }
 .simditor .simditor-body ul ul, .simditor .simditor-body ul ol, .simditor .simditor-body ol ul, .simditor .simditor-body ol ol, .editor-style ul ul, .editor-style ul ol, .editor-style ol ul, .editor-style ol ol {
-  padding-left: 30px;
+  padding-left: 25px;
+  margin: 0;
 }
 .simditor .simditor-body ul ul, .simditor .simditor-body ol ul, .editor-style ul ul, .editor-style ol ul {
   list-style: circle outside none;
@@ -483,10 +484,11 @@
   background-color: #ffffee;
 }
 .simditor .simditor-body img, .editor-style img {
-  margin: 15px 0;
+  margin: 20px 0;
   display: block;
   -ms-interpolation-mode: bicubic;
   vertical-align: bottom;
+  box-shadow: 0 0 8px rgba(0, 0, 0, 0.3);
 }
 .simditor .simditor-body *[data-indent="0"], .editor-style *[data-indent="0"] {
   margin-left: 0px;

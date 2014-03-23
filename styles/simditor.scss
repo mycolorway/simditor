@@ -476,7 +476,8 @@ $simditor-toolbar-height: 60px;
 		line-height: 1.6;
 
 		ul, ol {
-			padding-left: 30px;
+			padding-left: 25px;
+			margin: 0;
 		}
 
 		ul {
@@ -561,10 +562,11 @@ $simditor-toolbar-height: 60px;
 
 
 	img {
-		margin: 15px 0;
+		margin: 20px 0;
 		display: block;
 		-ms-interpolation-mode: bicubic;
 		vertical-align: bottom;
+		box-shadow: 0 0 8px rgba(0, 0, 0, .3);
 	}
 
 	@for $i from 0 through 10 {

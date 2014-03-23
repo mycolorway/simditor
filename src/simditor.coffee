@@ -10,13 +10,13 @@ class Selection extends Plugin
 
   _init: ->
 
-    @editor.on 'selectionchanged focus', (e) =>
-      range = @editor.selection.getRange()
-      return unless range?
-      $container = $(range.commonAncestorContainer)
+    #@editor.on 'selectionchanged focus', (e) =>
+      #range = @editor.selection.getRange()
+      #return unless range?
+      #$container = $(range.commonAncestorContainer)
 
-      if range.collapsed and $container.is('.simditor-body') and @editor.util.isBlockNode($container.children())
-        @editor.blur()
+      #if range.collapsed and $container.is('.simditor-body') and @editor.util.isBlockNode($container.children())
+        #@editor.blur()
 
   clear: ->
     try
@@ -398,7 +398,7 @@ class InputManager extends Plugin
 
     @editor.on 'valuechanged', =>
       # make sure each code block, img and table has a p following it
-      @editor.body.find('pre, .simditor-image, .simditor-table').each (i, el) =>
+      @editor.body.find('hr, pre, .simditor-image, .simditor-table').each (i, el) =>
         $el = $(el)
         if ($el.parent().is('blockquote') or $el.parent()[0] == @editor.body[0]) and $el.next().length == 0
           $('<p/>').append(@editor.util.phBr)
@@ -2908,7 +2908,7 @@ class TableButton extends Button
   constructor: (args...) ->
     super args...
 
-    $.merge @editor.formatter._allowedTags.push, ['tbody', 'tr', 'td', 'colgroup', 'col']
+    $.merge @editor.formatter._allowedTags, ['tbody', 'tr', 'td', 'colgroup', 'col']
     $.extend(@editor.formatter._allowedAttributes, {
       td: ['rowspan', 'colspan'],
       col: ['width']
@@ -2931,7 +2931,7 @@ class TableButton extends Button
       if range.collapsed and $container.is('.simditor-table')
         if @editor.selection.rangeAtStartOf $container
           $container = $container.find('td:first')
-        else if @editor.selection.rangeAtEndOf $container
+        else
           $container = $container.find('td:last')
         @editor.selection.setRangeAtEndOf $container
 
@@ -2943,14 +2943,14 @@ class TableButton extends Button
       @editor.body.find('.simditor-table td').removeClass('active')
 
     # press left arrow in td
-    @editor.inputManager.addKeystrokeHandler '37', 'td', (e, $node) =>
-      @editor.util.outdent()
-      true
+    #@editor.inputManager.addKeystrokeHandler '37', 'td', (e, $node) =>
+      #@editor.util.outdent()
+      #true
 
     # press right arrow in td
-    @editor.inputManager.addKeystrokeHandler '39', 'td', (e, $node) =>
-      @editor.util.indent()
-      true
+    #@editor.inputManager.addKeystrokeHandler '39', 'td', (e, $node) =>
+      #@editor.util.indent()
+      #true
 
     # press up arrow in td
     @editor.inputManager.addKeystrokeHandler '38', 'td', (e, $node) =>
@@ -2983,7 +2983,7 @@ class TableButton extends Button
         $col.attr 'width', ($(td).outerWidth() / tableWidth * 100) + '%'
 
 
-    $resizeHandle = $('<div class="resize-handle"></div>')
+    $resizeHandle = $('<div class="resize-handle" contenteditable="false"></div>')
       .appendTo($wrapper)
 
     $wrapper.on 'mousemove', 'td', (e) =>
