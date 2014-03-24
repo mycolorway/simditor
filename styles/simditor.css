@@ -416,7 +416,7 @@
   list-style: circle outside none;
 }
 .simditor .simditor-body ul ul ul, .simditor .simditor-body ol ul ul, .editor-style ul ul ul, .editor-style ol ul ul {
-  list-style: disc outside none;
+  list-style: square outside none;
 }
 .simditor .simditor-body ol, .editor-style ol {
   list-style: decimal;

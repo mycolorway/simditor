@@ -735,13 +735,15 @@ class Keystroke extends Plugin
 
     # press enter in a empty list item
     @editor.inputManager.addKeystrokeHandler '13', 'li', (e, $node) =>
-      return unless @editor.util.isEmptyNode $node
-      e.preventDefault()
-      range = @editor.selection.getRange()
+      $cloneNode = $node.clone()
+      $cloneNode.find('ul, ol').remove()
+      return unless @editor.util.isEmptyNode($cloneNode) and $node.is(@editor.util.closestBlockEl())
       listEl = $node.parent()
 
       # item in the middle of list
       if $node.next('li').length > 0
+        return unless @editor.util.isEmptyNode($node)
+
         # in a nested list
         if listEl.parent('li').length > 0
           newBlockEl = $('<li/>').append(@editor.util.phBr).insertAfter(listEl.parent('li'))
@@ -757,19 +759,22 @@ class Keystroke extends Plugin
       else
         # in a nested list
         if listEl.parent('li').length > 0
-          newBlockEl = $('<li/>').append(@editor.util.phBr).insertAfter(listEl.parent('li'))
+          newBlockEl = $('<li/>').insertAfter(listEl.parent('li'))
+          if $node.contents().length > 0
+            newBlockEl.append $node.contents()
+          else
+            newBlockEl.append @editor.util.phBr
         # in a root list
         else
           newBlockEl = $('<p/>').append(@editor.util.phBr).insertAfter(listEl)
+          newBlockEl.after $node.children('ul, ol') if $node.children('ul, ol').length > 0
 
       if $node.prev('li').length
         $node.remove()
       else
         listEl.remove()
 
-      range.setEnd(newBlockEl[0], 0)
-      range.collapse(false)
-      @editor.selection.selectRange(range)
+      @editor.selection.setRangeAtStartOf newBlockEl
       true
 
 
