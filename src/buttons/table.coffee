@@ -84,12 +84,10 @@ class TableButton extends Button
     $colgroup = $table.find 'colgroup'
     if $colgroup.length < 1
       $colgroup = $('<colgroup/>').prependTo $table
-
-      tableWidth = $table.width()
       $table.find('tr:first td').each (i, td) =>
         $col = $('<col/>').appendTo $colgroup
-        $col.attr 'width', ($(td).outerWidth() / tableWidth * 100) + '%'
 
+    @refreshTableWidth $table
 
     $resizeHandle = $('<div class="resize-handle" contenteditable="false"></div>')
       .appendTo($wrapper)
@@ -237,6 +235,13 @@ class TableButton extends Button
         $td.append(@editor.util.phBr) if phBr
     $table
 
+  refreshTableWidth: ($table)->
+    tableWidth = $table.width()
+    cols = $table.find('col')
+    $table.find('tr:first td').each (i, td) =>
+      $col = cols.eq(i)
+      $col.attr 'width', ($(td).outerWidth() / tableWidth * 100) + '%'
+
   setActive: (active) ->
     super active
 
@@ -287,7 +292,7 @@ class TableButton extends Button
       $table.find('col').eq(index).remove()
       $table.find('tr').each (i, tr) =>
         $(tr).find('td').eq(index).remove()
-
+      @refreshTableWidth $table
 
       @editor.selection.setRangeAtEndOf $newTd
 
@@ -295,12 +300,20 @@ class TableButton extends Button
     $tr = $td.parent 'tr'
     index = $tr.find('td').index($td)
     $table = $td.closest 'table'
+    $col = $table.find('col').eq(index)
+
     $table.find('tr').each (i, tr) =>
       $newTd = $('<td/>').append(@editor.util.phBr)
       $(tr).find('td').eq(index)[direction] $newTd
 
     $newCol = $('<col/>')
-    $table.find('col').eq(index)[direction] $newCol
+    $col[direction] $newCol
+
+    tableWidth = $table.width()
+    width = Math.max parseFloat($col.attr('width')) / 2, 50 / tableWidth * 100
+    $col.attr 'width', width + '%'
+    $newCol.attr 'width', width + '%'
+    @refreshTableWidth $table
 
     $newTd = if direction == 'after' then $td.next('td') else $td.prev('td')
     @editor.selection.setRangeAtStartOf $newTd
