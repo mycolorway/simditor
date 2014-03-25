@@ -97,7 +97,8 @@ class Formatter extends Plugin
 
     if $node[0].nodeType == 3
       text = $node.text().replace(/(\r\n|\n|\r)/gm, '')
-      $node.replaceWith $('<div/>').html(text).contents()
+      textNode = document.createTextNode text
+      $node.replaceWith textNode
       return
 
     contents = $node.contents()

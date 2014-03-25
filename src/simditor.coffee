@@ -291,7 +291,8 @@ class Formatter extends Plugin
 
     if $node[0].nodeType == 3
       text = $node.text().replace(/(\r\n|\n|\r)/gm, '')
-      $node.replaceWith $('<div/>').html(text).contents()
+      textNode = document.createTextNode text
+      $node.replaceWith textNode
       return
 
     contents = $node.contents()
@@ -1136,7 +1137,7 @@ class Util extends Plugin
 
   isEmptyNode: (node) ->
     $node = $(node)
-    !$node.text() and !$node.find(':not(br)').length
+    !$node.text() and !$node.find(':not(br, span)').length
 
   isBlockNode: (node) ->
     node = $(node)[0]
