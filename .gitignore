@@ -13,7 +13,7 @@ results
 
 npm-debug.log
 node_modules
-externals
+externals/!express.js
 upload
 
 .DS_Store
