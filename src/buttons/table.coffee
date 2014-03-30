@@ -87,9 +87,10 @@ class TableButton extends Button
       $table.find('tr:first td').each (i, td) =>
         $col = $('<col/>').appendTo $colgroup
 
-    @refreshTableWidth $table
+      @refreshTableWidth $table
 
-    $resizeHandle = $('<div class="resize-handle" contenteditable="false"></div>')
+
+    $resizeHandle = $('<div class="simditor-resize-handle" contenteditable="false"></div>')
       .appendTo($wrapper)
 
     $wrapper.on 'mousemove', 'td', (e) =>
@@ -122,7 +123,7 @@ class TableButton extends Button
     $wrapper.on 'mouseleave', (e) =>
       $resizeHandle.hide()
 
-    $wrapper.on 'mousedown', '.resize-handle', (e) =>
+    $wrapper.on 'mousedown', '.simditor-resize-handle', (e) =>
       $handle = $(e.currentTarget)
       $leftTd = $handle.data 'td'
       $leftCol = $handle.data 'col'
@@ -160,7 +161,9 @@ class TableButton extends Button
       false
 
   decorate: ($table) ->
-    return if $table.parent('.simditor-table').length > 0
+    if $table.parent('.simditor-table').length > 0
+      @undecorate $table
+
     $table.wrap '<div class="simditor-table"></div>'
     @initResize $table
     $table.parent()

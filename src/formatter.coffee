@@ -11,7 +11,7 @@ class Formatter extends Plugin
     @editor.body.on 'click', 'a', (e) =>
       false
 
-  _allowedTags: ['br', 'a', 'img', 'b', 'strong', 'i', 'u', 'p', 'ul', 'ol', 'li', 'blockquote', 'pre', 'h1', 'h2', 'h3', 'h4']
+  _allowedTags: ['br', 'a', 'img', 'b', 'strong', 'i', 'u', 'p', 'ul', 'ol', 'li', 'blockquote', 'pre', 'h1', 'h2', 'h3', 'h4', 'hr']
 
   _allowedAttributes:
     img: ['src', 'alt', 'width', 'height', 'data-origin-src', 'data-origin-size', 'data-origin-name']
@@ -162,9 +162,9 @@ class Formatter extends Plugin
 
     $contents.each (i, el) =>
       $el = $(el)
-      $el.remove() if $el.is(':not(img, br):empty')
+      $el.remove() if $el.is(':not(img, br, col, td, hr, [class^="simditor-"]):empty')
       $el.remove() if uselessP($el) #and uselessP($el.prev())
-      $el.find(':not(img, br):empty').remove()
+      $el.find(':not(img, br, col, td, hr, [class^="simditor-"]):empty').remove()
 
 
 

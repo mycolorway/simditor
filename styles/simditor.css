@@ -105,7 +105,7 @@
 .simditor .simditor-body .simditor-table.resizing {
   cursor: col-resize;
 }
-.simditor .simditor-body .simditor-table .resize-handle {
+.simditor .simditor-body .simditor-table .simditor-resize-handle {
   position: absolute;
   left: 0;
   top: 0;
