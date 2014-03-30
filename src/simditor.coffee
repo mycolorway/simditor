@@ -2558,7 +2558,7 @@ class ImageButton extends Button
         @editor.uploader.upload($input, {
           inline: true
         })
-        $input.val ''
+        $input = $input.clone(true).replaceAll($input)
       else if @editor.inputManager.lastCaretPosition
         @editor.one 'focus', (e) =>
           @editor.uploader.upload($input, {
