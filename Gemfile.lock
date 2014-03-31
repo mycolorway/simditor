@@ -1,0 +1,16 @@
+GEM
+  remote: http://ruby.taobao.org/
+  specs:
+    coffee-script (2.2.0)
+      coffee-script-source
+      execjs
+    coffee-script-source (1.7.0)
+    execjs (2.0.2)
+    sass (3.3.4)
+
+PLATFORMS
+  ruby
+
+DEPENDENCIES
+  coffee-script
+  sass

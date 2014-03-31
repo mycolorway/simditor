@@ -34,25 +34,32 @@ module.exports = (grunt) ->
         dest: 'src/simditor.coffee'
 
     sass:
-      styles:
+      simditor:
         options:
           style: 'expanded'
+          bundleExec: true
         files:
           'styles/simditor.css': 'styles/simditor.scss'
     coffee:
-      module:
-        files: 'lib/module.js': 'externals/simple-module/src/module.coffee'
-      uploader:
-        files: 'lib/uploader.js': 'externals/simple-uploader/src/uploader.coffee'
       simditor:
-        files: 'lib/simditor.js': 'src/simditor.coffee'
+        files:
+          'lib/module.js': 'externals/simple-module/src/module.coffee'
+          'lib/uploader.js': 'externals/simple-uploader/src/uploader.coffee'
+          'lib/simditor.js': 'src/simditor.coffee'
+      demo:
+        files:
+          'lib/simditor-all.js': [
+            'externals/simple-module/src/module.coffee',
+            'externals/simple-uploader/src/uploader.coffee',
+            'src/simditor.coffee'
+          ]
     watch:
       styles:
         files: ['styles/*.scss']
-        tasks: ['sass']
+        tasks: ['sass:simditor']
       scripts:
         files: ['src/*.coffee', 'src/buttons/*.coffee']
-        tasks: ['concat', 'coffee']
+        tasks: ['concat', 'coffee:simditor']
     express:
       server:
         options:
@@ -68,6 +75,6 @@ module.exports = (grunt) ->
   grunt.loadNpmTasks 'grunt-contrib-watch'
   grunt.loadNpmTasks 'grunt-express'
 
-  grunt.registerTask 'default', ['watch']
+  grunt.registerTask 'default', ['sass', 'coffee', 'watch']
   grunt.registerTask 'server', ['express', 'express-keepalive']
 

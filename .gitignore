@@ -18,4 +18,6 @@ upload
 
 .DS_Store
 .sass-cache
+.bundle
+vendor
 /upload
