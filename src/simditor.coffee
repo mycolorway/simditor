@@ -2680,7 +2680,7 @@ class ImageButton extends Button
         width: width,
         'data-origin-src': src,
         'data-origin-name': '图片',
-        'data-origin-size': width + ',' + height
+        'data-origin-size': img.width + ',' + img.height
       })
 
       $wrapper.width(width)
