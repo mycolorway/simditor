@@ -1,10 +1,10 @@
-var express = require('express');
-var app = express();
-var path = require('path');
+// nodejs server for upload testing
 
-app.use(express.bodyParser({
-  uploadDir: path.resolve(__dirname, '../upload')
-}));
+var express = require('express');
+var path = require('path')
+var app = express();
+
+app.use(express.bodyParser({uploadDir:'./upload'}));
 
 app.get('/', function(req, res) {
   res.sendfile(path.resolve('demo.html'));
@@ -14,7 +14,7 @@ module.exports = app;
 var fs = require('fs');
 app.post('/upload', function(req, res) {
 	var tmp_path = req.files.upload_file.path;
-	var target_path = path.resolve(__dirname, '../upload/', req.files.upload_file.name);
+	var target_path = path.resolve('upload/', req.files.upload_file.name);
 	fs.rename(tmp_path, target_path, function(err) {
 		if (err) throw err;
 		fs.unlink(tmp_path, function() {
@@ -23,3 +23,4 @@ app.post('/upload', function(req, res) {
 		});
 	});
 });
+

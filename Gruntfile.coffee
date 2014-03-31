@@ -69,5 +69,5 @@ module.exports = (grunt) ->
   grunt.loadNpmTasks 'grunt-express'
 
   grunt.registerTask 'default', ['watch']
-  grunt.registerTask('server', ['express', 'express-keepalive']);
+  grunt.registerTask 'server', ['express', 'express-keepalive']
 
