@@ -199,7 +199,7 @@ class InputManager extends Plugin
 
 
     $blockEl = @editor.util.closestBlockEl()
-    codePaste = $blockEl.is 'pre'
+    cleanPaste = $blockEl.is 'pre, table'
     @editor.selection.deleteRangeContents()
     @editor.selection.save()
 
@@ -208,8 +208,9 @@ class InputManager extends Plugin
     setTimeout =>
       if @_pasteArea.is(':empty')
         pasteContent = null
-      else if codePaste
+      else if cleanPaste
         pasteContent = @editor.formatter.clearHtml @_pasteArea.html()
+        pasteContent = pasteContent.replace /\n/g, '<br/>' if $blockEl.is('table')
       else
         pasteContent = $('<div/>').append(@_pasteArea.contents())
         @editor.formatter.format pasteContent
@@ -225,9 +226,9 @@ class InputManager extends Plugin
 
       if !pasteContent
         return
-      else if codePaste
-        node = document.createTextNode(pasteContent)
-        @editor.selection.insertNode node, range
+      else if cleanPaste
+        pasteContent = $('<div/>').append(pasteContent)
+        @editor.selection.insertNode($(node)[0], range) for node in pasteContent.contents()
       else if pasteContent.length < 1
         return
       else if pasteContent.length == 1
