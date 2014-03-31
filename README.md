@@ -1,10 +1,10 @@
 ### What is Simditor
+
+**LIVE DEMO:** [http://mycolorway.github.io/simditor/demo.html](http://mycolorway.github.io/simditor/demo.html) 
+
 Simditor is a simple WYSIWYG editor which aims at providing top writing experience on web page.
 
 Instead of extending it to be over-powerful, we choose to keep it simple and tight while improving every single feature for the best user expeirence. It is also extreamly easy to be extended, if sometimes it couldn't cover your needs.
-
-Check [here](http://mycolorway.github.io/simditor/demo.html) for a live demo.
-
 
 ### How to Use
 
@@ -37,6 +37,10 @@ Simditor is built on jQuery 2.0+ and [Mycolorway Simple Module](https://github.c
 [Mycolorway Simple Uploader](https://github.com/mycolorway/simple-uploader) is optional for local image uploading.
 
 ### Support or Contact
-Any thoughts or uncomfortable experience, be free to contact me: farthinker@gmail.com.
 
+Any thoughts or uncomfortable experience, be free to contact me: [farthinker@gmail.com](mailto:farthinker@gmail.com).
+
+### License
+
+Licensed under MIT.
 
