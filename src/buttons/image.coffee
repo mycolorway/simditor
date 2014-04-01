@@ -95,24 +95,30 @@ class ImageButton extends Button
     super()
 
     $uploadItem = @menuEl.find('.menu-item-upload-image')
-    $input = $('<input type="file" title="上传图片" name="upload_file" accept="image/*">')
-      .appendTo($uploadItem)
+    $input = null;
 
-    $input.on 'click mousedown', (e) =>
+    createInput = =>
+      $input.remove() if $input
+      $input = $('<input type="file" title="上传图片" name="upload_file" accept="image/*">')
+        .appendTo($uploadItem)
+
+    createInput()
+
+    $uploadItem.on 'click mousedown', 'input[name=upload_file]', (e) =>
       e.stopPropagation()
 
-    $input.on 'change', (e) =>
+    $uploadItem.on 'change', 'input[name=upload_file]', (e) =>
       if @editor.inputManager.focused
         @editor.uploader.upload($input, {
           inline: true
         })
-        $input = $input.clone(true).replaceAll($input)
+        createInput()
       else if @editor.inputManager.lastCaretPosition
         @editor.one 'focus', (e) =>
           @editor.uploader.upload($input, {
             inline: true
           })
-          $input = $input.clone(true).replaceAll($input)
+          createInput()
         @editor.undoManager.caretPosition @editor.inputManager.lastCaretPosition
       @wrapper.removeClass('menu-on')
 
@@ -297,7 +303,6 @@ class ImagePopover extends Popover
         <input class="image-src" type="text"/>
         <a class="btn-upload" href="javascript:;" title="上传图片" tabindex="-1">
           <span class="fa fa-upload"></span>
-          <input type="file" title="上传图片" name="upload_file" accept="image/*">
         </a>
       </div>
     </div>
@@ -340,22 +345,27 @@ class ImagePopover extends Popover
     @_initUploader()
 
   _initUploader: ->
+    $uploadBtn = @el.find('.btn-upload')
     unless @editor.uploader?
-      @el.find('.btn-upload').remove()
+      $uploadBtn.remove()
       return
 
-    @input = @el.find 'input:file'
+    createInput = =>
+      @input.remove() if @input
+      @input = $('<input type="file" title="上传图片" name="upload_file" accept="image/*">')
+        .appendTo($uploadBtn)
 
-    @input.on 'click mousedown', (e) =>
+    createInput()
+
+    @el.on 'click mousedown', 'input[name=upload_file]', (e) =>
       e.stopPropagation()
 
-    @input.on 'change', (e) =>
+    @el.on 'change', 'input[name=upload_file]', (e) =>
       @editor.uploader.upload(@input, {
         inline: true,
         imgWrapper: @target
       })
-
-      @input = @input.clone(true).replaceAll(@input)
+      createInput()
 
   show: (args...) ->
     super args...
