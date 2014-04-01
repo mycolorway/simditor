@@ -7,7 +7,7 @@ class Toolbar extends Plugin
     toolbar: true
     toolbarFloat: true
 
-  _tpl: 
+  _tpl:
     wrapper: '<div class="simditor-toolbar"><ul></ul></div>'
     separator: '<li><span class="separator"></span></li>'
 
@@ -19,10 +19,10 @@ class Toolbar extends Plugin
     return unless @opts.toolbar
 
     unless $.isArray @opts.toolbar
-      @opts.toolbar = ['bold', 'italic', 'underline', '|', 'ol', 'ul', 'blockquote', 'code', '|', 'link', 'image', '|', 'indent', 'outdent']
+      @opts.toolbar = ['bold', 'italic', 'underline', 'strikethrough', '|', 'ol', 'ul', 'blockquote', 'code', '|', 'link', 'image', '|', 'indent', 'outdent']
 
     @_render()
-    
+
     @list.on 'click', (e) =>
       false
 
@@ -67,7 +67,7 @@ class Toolbar extends Plugin
       unless @constructor.buttons[name]
         throw new Error 'simditor: invalid toolbar button "' + name + '"'
         continue
-      
+
       @buttons.push new @constructor.buttons[name](@editor)
 
   toolbarStatus: (name) ->

@@ -405,7 +405,7 @@ $simditor-toolbar-height: 60px;
 		&.image-popover .btn-upload {
 			position: relative;
 			display: inline-block;
-			
+
 			input[type=file] {
 				position: absolute;
 				right: 0px;
@@ -465,6 +465,10 @@ $simditor-toolbar-height: 60px;
 
 	u {
 		text-decoration: underline;
+	}
+
+	s, strike, del {
+		text-decoration: line-through;
 	}
 
 	ul, ol {

@@ -205,7 +205,7 @@ class Formatter extends Plugin
     @editor.body.on 'click', 'a', (e) =>
       false
 
-  _allowedTags: ['br', 'a', 'img', 'b', 'strong', 'i', 'u', 'p', 'ul', 'ol', 'li', 'blockquote', 'pre', 'h1', 'h2', 'h3', 'h4', 'hr']
+  _allowedTags: ['br', 'a', 'img', 'b', 'strong', 'i', 'u', 'del', 'strike', 'p', 'ul', 'ol', 'li', 'blockquote', 'pre', 'h1', 'h2', 'h3', 'h4', 'hr']
 
   _allowedAttributes:
     img: ['src', 'alt', 'width', 'height', 'data-origin-src', 'data-origin-size', 'data-origin-name']
@@ -1325,7 +1325,7 @@ class Toolbar extends Plugin
     toolbar: true
     toolbarFloat: true
 
-  _tpl: 
+  _tpl:
     wrapper: '<div class="simditor-toolbar"><ul></ul></div>'
     separator: '<li><span class="separator"></span></li>'
 
@@ -1337,10 +1337,10 @@ class Toolbar extends Plugin
     return unless @opts.toolbar
 
     unless $.isArray @opts.toolbar
-      @opts.toolbar = ['bold', 'italic', 'underline', '|', 'ol', 'ul', 'blockquote', 'code', '|', 'link', 'image', '|', 'indent', 'outdent']
+      @opts.toolbar = ['bold', 'italic', 'underline', 'strikethrough', '|', 'ol', 'ul', 'blockquote', 'code', '|', 'link', 'image', '|', 'indent', 'outdent']
 
     @_render()
-    
+
     @list.on 'click', (e) =>
       false
 
@@ -1385,7 +1385,7 @@ class Toolbar extends Plugin
       unless @constructor.buttons[name]
         throw new Error 'simditor: invalid toolbar button "' + name + '"'
         continue
-      
+
       @buttons.push new @constructor.buttons[name](@editor)
 
   toolbarStatus: (name) ->
@@ -3254,3 +3254,32 @@ class TableButton extends Button
 
 Simditor.Toolbar.addButton TableButton
 
+
+
+class StrikethroughButton extends Button
+
+  name: 'strikethrough'
+
+  icon: 'strikethrough'
+
+  title: '删除线文字'
+
+  htmlTag: 'del'
+
+  disableTag: 'pre'
+
+  status: ($node) ->
+    @setDisabled $node.is(@disableTag) if $node?
+    return true if @disabled
+
+    active = document.queryCommandState('strikethrough') is true
+    @setActive active
+    active
+
+  command: ->
+    document.execCommand 'strikethrough'
+    @editor.trigger 'valuechanged'
+    @editor.trigger 'selectionchanged'
+
+
+Simditor.Toolbar.addButton(StrikethroughButton)

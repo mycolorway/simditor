@@ -30,6 +30,7 @@ module.exports = (grunt) ->
           'src/buttons/outdent.coffee',
           'src/buttons/hr.coffee',
           'src/buttons/table.coffee',
+          'src/buttons/strikethrough.coffee'
         ]
         dest: 'src/simditor.coffee'
 
