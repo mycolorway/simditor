@@ -205,7 +205,7 @@ class Formatter extends Plugin
     @editor.body.on 'click', 'a', (e) =>
       false
 
-  _allowedTags: ['br', 'a', 'img', 'b', 'strong', 'i', 'u', 'del', 'strike', 'p', 'ul', 'ol', 'li', 'blockquote', 'pre', 'h1', 'h2', 'h3', 'h4', 'hr']
+  _allowedTags: ['br', 'a', 'img', 'b', 'strong', 'i', 'u', 'strike', 'p', 'ul', 'ol', 'li', 'blockquote', 'pre', 'h1', 'h2', 'h3', 'h4', 'hr']
 
   _allowedAttributes:
     img: ['src', 'alt', 'width', 'height', 'data-origin-src', 'data-origin-size', 'data-origin-name']
@@ -3264,7 +3264,7 @@ class StrikethroughButton extends Button
 
   title: '删除线文字'
 
-  htmlTag: 'del'
+  htmlTag: 'strike'
 
   disableTag: 'pre'
 

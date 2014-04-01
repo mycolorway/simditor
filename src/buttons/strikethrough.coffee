@@ -7,7 +7,7 @@ class StrikethroughButton extends Button
 
   title: '删除线文字'
 
-  htmlTag: 'del'
+  htmlTag: 'strike'
 
   disableTag: 'pre'
 
