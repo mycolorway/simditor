@@ -402,6 +402,9 @@
 .simditor .simditor-body u, .editor-style u {
   text-decoration: underline;
 }
+.simditor .simditor-body s, .simditor .simditor-body strike, .simditor .simditor-body del, .editor-style s, .editor-style strike, .editor-style del {
+  text-decoration: line-through;
+}
 .simditor .simditor-body ul, .simditor .simditor-body ol, .editor-style ul, .editor-style ol {
   list-style: disc outside none;
   margin: 15px 0;
