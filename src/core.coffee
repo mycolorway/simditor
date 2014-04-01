@@ -12,9 +12,9 @@ class Simditor extends Widget
 
   opts:
     textarea: null
-    placeholder: false
+    placeholder: ''
     defaultImage: 'images/image.png'
-    params: null
+    params: {}
     upload: false
     tabIndent: true
 
