@@ -1812,7 +1812,7 @@ class TitleButton extends Button
 
   name: 'title'
 
-  title: '加粗文字'
+  title: '标题文字'
 
   htmlTag: 'h1, h2, h3, h4'
 
