@@ -1,0 +1,442 @@
+/**
+ * Eric Meyer's Reset CSS v2.0 (http://meyerweb.com/eric/tools/css/reset/)
+ * http://cssreset.com
+ */
+html, body, div, span, applet, object, iframe,
+h1, h2, h3, h4, h5, h6, p, blockquote, pre,
+a, abbr, acronym, address, big, cite, code,
+del, dfn, em, img, ins, kbd, q, s, samp,
+small, strike, strong, sub, sup, tt, var,
+b, u, i, center,
+dl, dt, dd, ol, ul, li,
+fieldset, form, label, legend,
+table, caption, tbody, tfoot, thead, tr, th, td,
+article, aside, canvas, details, embed,
+figure, figcaption, footer, header, hgroup,
+menu, nav, output, ruby, section, summary,
+time, mark, audio, video {
+  margin: 0;
+  padding: 0;
+  border: 0;
+  font-size: 100%;
+  font: inherit;
+  vertical-align: baseline;
+}
+
+/* HTML5 display-role reset for older browsers */
+article, aside, details, figcaption, figure,
+footer, header, hgroup, menu, nav, section {
+  display: block;
+}
+
+body {
+  line-height: 1;
+}
+
+ol, ul {
+  list-style: none;
+}
+
+blockquote, q {
+  quotes: none;
+}
+
+blockquote:before, blockquote:after,
+q:before, q:after {
+  content: '';
+  content: none;
+}
+
+table {
+  border-collapse: collapse;
+  border-spacing: 0;
+}
+
+.highlight .hll {
+  background-color: #ffffcc;
+}
+
+.highlight .c {
+  color: #999988;
+  font-style: italic;
+}
+
+/* Comment */
+.highlight .err {
+  color: #a61717;
+  background-color: #e3d2d2;
+}
+
+/* Error */
+.highlight .k {
+  font-weight: bold;
+}
+
+/* Keyword */
+.highlight .o {
+  font-weight: bold;
+}
+
+/* Operator */
+.highlight .cm {
+  color: #999988;
+  font-style: italic;
+}
+
+/* Comment.Multiline */
+.highlight .cp {
+  color: #999999;
+  font-weight: bold;
+}
+
+/* Comment.Preproc */
+.highlight .c1 {
+  color: #999988;
+  font-style: italic;
+}
+
+/* Comment.Single */
+.highlight .cs {
+  color: #999999;
+  font-weight: bold;
+  font-style: italic;
+}
+
+/* Comment.Special */
+.highlight .gd {
+  color: #000000;
+  background-color: #ffdddd;
+}
+
+/* Generic.Deleted */
+.highlight .ge {
+  font-style: italic;
+}
+
+/* Generic.Emph */
+.highlight .gr {
+  color: #aa0000;
+}
+
+/* Generic.Error */
+.highlight .gh {
+  color: #999999;
+}
+
+/* Generic.Heading */
+.highlight .gi {
+  color: #000000;
+  background-color: #ddffdd;
+}
+
+/* Generic.Inserted */
+.highlight .go {
+  color: #888888;
+}
+
+/* Generic.Output */
+.highlight .gp {
+  color: #555555;
+}
+
+/* Generic.Prompt */
+.highlight .gs {
+  font-weight: bold;
+}
+
+/* Generic.Strong */
+.highlight .gu {
+  color: #aaaaaa;
+}
+
+/* Generic.Subheading */
+.highlight .gt {
+  color: #aa0000;
+}
+
+/* Generic.Traceback */
+.highlight .kc {
+  font-weight: bold;
+}
+
+/* Keyword.Constant */
+.highlight .kd {
+  font-weight: bold;
+}
+
+/* Keyword.Declaration */
+.highlight .kn {
+  font-weight: bold;
+}
+
+/* Keyword.Namespace */
+.highlight .kp {
+  font-weight: bold;
+}
+
+/* Keyword.Pseudo */
+.highlight .kr {
+  font-weight: bold;
+}
+
+/* Keyword.Reserved */
+.highlight .kt {
+  color: #445588;
+  font-weight: bold;
+}
+
+/* Keyword.Type */
+.highlight .m {
+  color: #009999;
+}
+
+/* Literal.Number */
+.highlight .s {
+  color: #bb8844;
+}
+
+/* Literal.String */
+.highlight .na {
+  color: teal;
+}
+
+/* Name.Attribute */
+.highlight .nb {
+  color: #999999;
+}
+
+/* Name.Builtin */
+.highlight .nc {
+  color: #445588;
+  font-weight: bold;
+}
+
+/* Name.Class */
+.highlight .no {
+  color: teal;
+}
+
+/* Name.Constant */
+.highlight .ni {
+  color: purple;
+}
+
+/* Name.Entity */
+.highlight .ne {
+  color: #990000;
+  font-weight: bold;
+}
+
+/* Name.Exception */
+.highlight .nf {
+  color: #990000;
+  font-weight: bold;
+}
+
+/* Name.Function */
+.highlight .nn {
+  color: #555555;
+}
+
+/* Name.Namespace */
+.highlight .nt {
+  color: navy;
+}
+
+/* Name.Tag */
+.highlight .nv {
+  color: teal;
+}
+
+/* Name.Variable */
+.highlight .ow {
+  font-weight: bold;
+}
+
+/* Operator.Word */
+.highlight .w {
+  color: #bbbbbb;
+}
+
+/* Text.Whitespace */
+.highlight .mf {
+  color: #009999;
+}
+
+/* Literal.Number.Float */
+.highlight .mh {
+  color: #009999;
+}
+
+/* Literal.Number.Hex */
+.highlight .mi {
+  color: #009999;
+}
+
+/* Literal.Number.Integer */
+.highlight .mo {
+  color: #009999;
+}
+
+/* Literal.Number.Oct */
+.highlight .sb {
+  color: #bb8844;
+}
+
+/* Literal.String.Backtick */
+.highlight .sc {
+  color: #bb8844;
+}
+
+/* Literal.String.Char */
+.highlight .sd {
+  color: #bb8844;
+}
+
+/* Literal.String.Doc */
+.highlight .s2 {
+  color: #bb8844;
+}
+
+/* Literal.String.Double */
+.highlight .se {
+  color: #bb8844;
+}
+
+/* Literal.String.Escape */
+.highlight .sh {
+  color: #bb8844;
+}
+
+/* Literal.String.Heredoc */
+.highlight .si {
+  color: #bb8844;
+}
+
+/* Literal.String.Interpol */
+.highlight .sx {
+  color: #bb8844;
+}
+
+/* Literal.String.Other */
+.highlight .sr {
+  color: olive;
+}
+
+/* Literal.String.Regex */
+.highlight .s1 {
+  color: #bb8844;
+}
+
+/* Literal.String.Single */
+.highlight .ss {
+  color: #bb8844;
+}
+
+/* Literal.String.Symbol */
+.highlight .bp {
+  color: #999999;
+}
+
+/* Name.Builtin.Pseudo */
+.highlight .vc {
+  color: teal;
+}
+
+/* Name.Variable.Class */
+.highlight .vg {
+  color: teal;
+}
+
+/* Name.Variable.Global */
+.highlight .vi {
+  color: teal;
+}
+
+/* Name.Variable.Instance */
+.highlight .il {
+  color: #009999;
+}
+
+/* Literal.Number.Integer.Long */
+/* General Style */
+body {
+  font-size: 16px;
+  font-family: Helvetica, Arial, sans-serif;
+  color: #52514c;
+  background: #ffffff;
+}
+
+a {
+  text-decoration: none;
+  color: #4298BA;
+}
+a:visited {
+  color: #4298BA;
+}
+a:hover {
+  color: #0F769F;
+}
+a:active {
+  color: #9E792E;
+}
+a:hover, a:active {
+  outline: 0;
+}
+
+/* Layout */
+.wrapper {
+  width: 960px;
+  margin: 0 auto;
+}
+.wrapper header {
+  padding: 40px 0 30px;
+}
+.wrapper header h1 {
+  font-size: 40px;
+  font-weight: bold;
+}
+.wrapper header h1 a {
+  color: #000000;
+}
+.wrapper header .desc {
+  font-size: 16px;
+  color: #999999;
+  margin: 10px 0 0 0;
+}
+.wrapper nav {
+  background: #f3f3f3;
+  height: 40px;
+}
+.wrapper nav a {
+  display: block;
+  float: left;
+  height: 40px;
+  padding: 0 20px;
+  font-size: 16px;
+  color: #666666;
+  line-height: 40px;
+}
+.wrapper nav a:hover {
+  background: #efefef;
+}
+.wrapper nav a.active {
+  background: #cfcfcf;
+  color: #000000;
+}
+.wrapper footer {
+  font-size: 14px;
+  margin: 40px 0;
+  color: #999999;
+}
+.wrapper footer a {
+  color: #999999;
+}
+.wrapper footer a:hover {
+  text-decoration: underline;
+}
+
+/* Demo Page */
+#page-demo {
+  margin: 30px 0;
+}
