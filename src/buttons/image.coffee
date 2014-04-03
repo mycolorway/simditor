@@ -60,9 +60,9 @@ class ImageButton extends Button
         @editor.body.blur()
         @editor.body.find('.simditor-image').removeClass('selected')
         $imgWrapper.addClass('selected').focus()
-        $img = $imgWrapper.find('img')
-        $imgWrapper.width $img.width()
-        $imgWrapper.height $img.height()
+        #$img = $imgWrapper.find('img')
+        #$imgWrapper.width $img.width()
+        #$imgWrapper.height $img.height()
         @popover.show $imgWrapper
 
       false

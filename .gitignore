@@ -13,11 +13,10 @@ results
 
 npm-debug.log
 node_modules
-externals/!express.js
 upload
 
 .DS_Store
 .sass-cache
 .bundle
 vendor
-/upload
+_site

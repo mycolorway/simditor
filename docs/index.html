@@ -4,8 +4,8 @@
 	<title>A Simple Online Editor</title>
 	<meta charset="utf-8" />
 
-	<link media="all" rel="stylesheet" type="text/css" href="externals/font-awesome/css/font-awesome.css" />
-	<link media="all" rel="stylesheet" type="text/css" href="styles/simditor.css" />
+	<link media="all" rel="stylesheet" type="text/css" href="assets/styles/font-awesome.css" />
+	<link media="all" rel="stylesheet" type="text/css" href="assets/styles/simditor.css" />
 	<style type="text/css" media="all">
 		body {
 			margin: 0;
@@ -17,13 +17,10 @@
 			margin: 0 auto 80px;
 		}
 
-
 	</style>
 
-	<script type="text/javascript" src="externals/jquery-2.0.3.js"></script>
-	<script type="text/javascript" src="lib/module.js"></script>
-	<script type="text/javascript" src="lib/uploader.js"></script>
-	<script type="text/javascript" src="lib/simditor.js"></script>
+	<script type="text/javascript" src="assets/scripts/jquery-2.1.0.min.js"></script>
+	<script type="text/javascript" src="assets/scripts/simditor-all.js"></script>
 	<script type="text/javascript">
 		$(function() {
 			var editor = new Simditor({
@@ -31,9 +28,8 @@
 				placeholder: '这里输入文字...',
 				pasteImage: true,
 				toolbar: ['title', 'bold', 'italic', 'underline', 'strikethrough', '|', 'ol', 'ul', 'blockquote', 'code', 'table', '|', 'link', 'image', 'hr', '|', 'indent', 'outdent'],
-				upload: {
-					url: '/upload'
-				}
+				defaultImage: 'assets/images/image.png',
+				upload: location.search === '?upload' ? {url: '/upload'} : false
 			});
 		});
 	</script>
@@ -45,5 +41,6 @@
 	</div>
 </body>
 </html>
+
 
 
