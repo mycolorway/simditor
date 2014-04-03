@@ -18,7 +18,7 @@ class UndoManager extends Plugin
   _init: ->
     if @editor.util.os.mac
       undoShortcut = 'cmd+90'
-      redoShortcut = 'shift+cmd+89'
+      redoShortcut = 'shift+cmd+90'
     else
       undoShortcut = 'ctrl+90'
       redoShortcut = 'ctrl+89'
@@ -74,6 +74,7 @@ class UndoManager extends Plugin
     state = @_stack[@_index]
     @editor.body.html state.html
     @caretPosition state.caret
+    @editor.find('.selected').removeClass('selected')
     @editor.sync()
 
     @editor.trigger 'valuechanged', ['undo']
@@ -89,6 +90,7 @@ class UndoManager extends Plugin
     state = @_stack[@_index]
     @editor.body.html state.html
     @caretPosition state.caret
+    @editor.find('.selected').removeClass('selected')
     @editor.sync()
 
     @editor.trigger 'valuechanged', ['undo']

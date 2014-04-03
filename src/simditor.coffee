@@ -884,7 +884,7 @@ class UndoManager extends Plugin
   _init: ->
     if @editor.util.os.mac
       undoShortcut = 'cmd+90'
-      redoShortcut = 'shift+cmd+89'
+      redoShortcut = 'shift+cmd+90'
     else
       undoShortcut = 'ctrl+90'
       redoShortcut = 'ctrl+89'
@@ -940,6 +940,7 @@ class UndoManager extends Plugin
     state = @_stack[@_index]
     @editor.body.html state.html
     @caretPosition state.caret
+    @editor.find('.selected').removeClass('selected')
     @editor.sync()
 
     @editor.trigger 'valuechanged', ['undo']
@@ -955,6 +956,7 @@ class UndoManager extends Plugin
     state = @_stack[@_index]
     @editor.body.html state.html
     @caretPosition state.caret
+    @editor.find('.selected').removeClass('selected')
     @editor.sync()
 
     @editor.trigger 'valuechanged', ['undo']
@@ -2376,16 +2378,15 @@ class LinkButton extends Button
 
       range.selectNodeContents $link[0]
 
+      @popover.one 'popovershow', =>
+        if linkText
+          @popover.urlEl.focus()
+          @popover.urlEl[0].select()
+        else
+          @popover.textEl.focus()
+          @popover.textEl[0].select()
+
     @editor.selection.selectRange range
-
-    @popover.one 'popovershow', =>
-      if linkText
-        @popover.urlEl.focus()
-        @popover.urlEl[0].select()
-      else
-        @popover.textEl.focus()
-        @popover.textEl[0].select()
-
     @editor.trigger 'valuechanged'
     @editor.trigger 'selectionchanged'
 
@@ -2430,6 +2431,7 @@ class LinkPopover extends Popover
           @editor.body.focus() if @editor.util.browser.firefox
           @hide()
           @editor.trigger 'valuechanged'
+          @editor.trigger 'selectionchanged'
         , 0
 
     @unlinkEl.on 'click', (e) =>
@@ -2440,6 +2442,8 @@ class LinkPopover extends Popover
       range = document.createRange()
       @editor.selection.setRangeAfter txtNode, range
       @editor.body.focus() if @editor.util.browser.firefox and !@editor.inputManager.focused
+      @editor.trigger 'valuechanged'
+      @editor.trigger 'selectionchanged'
 
   show: (args...) ->
     super args...
