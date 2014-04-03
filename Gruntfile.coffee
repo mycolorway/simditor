@@ -48,6 +48,12 @@ module.exports = (grunt) ->
           bundleExec: true
         files:
           'styles/simditor.css': 'styles/simditor.scss'
+      docs:
+        options:
+          style: 'expanded'
+          bundleExec: true
+        files:
+          'docs/assets/styles/app.css': 'docs/assets/_sass/app.scss'
 
     coffee:
       simditor:
@@ -55,6 +61,9 @@ module.exports = (grunt) ->
           'lib/module.js': 'externals/simple-module/src/module.coffee'
           'lib/uploader.js': 'externals/simple-uploader/src/uploader.coffee'
           'lib/simditor.js': 'src/simditor.coffee'
+      docs:
+        files:
+          'docs/assets/scripts/page-demo.js': 'docs/assets/_coffee/page-demo.coffee'
 
     copy:
       vendor:
@@ -83,9 +92,15 @@ module.exports = (grunt) ->
         tasks: ['sass:simditor', 'copy:styles', 'shell']
       scripts:
         files: ['src/*.coffee', 'src/buttons/*.coffee']
-        tasks: ['concat:simditor', 'coffee', 'concat:all', 'copy:scripts', 'shell']
+        tasks: ['concat:simditor', 'coffee:simditor', 'concat:all', 'copy:scripts', 'shell']
+      docStyles:
+        files: ['docs/assets/_sass/*.scss']
+        tasks: ['sass:docs', 'shell']
+      docScripts:
+        files: ['docs/assets/_coffee/*.coffee']
+        tasks: ['coffee:docs', 'shell']
       jekyll:
-        files: ['docs/*.html']
+        files: ['docs/**/*.html']
         tasks: ['shell']
 
     shell:
