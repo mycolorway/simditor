@@ -85,6 +85,40 @@ module.exports = (grunt) ->
       scripts: 
         src: 'lib/simditor-all.js',
         dest: 'docs/assets/scripts/simditor-all.js'
+      package:
+        files: [{
+          expand: true,
+          flatten: true
+          src: 'lib/*',
+          dest: 'package/scripts/js/'
+        }, {
+          src: 'src/simditor.coffee',
+          dest: 'package/scripts/coffee/simditor.coffee'
+        }, {
+          src: 'externals/simple-module/src/module.coffee',
+          dest: 'package/scripts/coffee/module.coffee'
+        }, {
+          src: 'externals/simple-uploader/src/uploader.coffee',
+          dest: 'package/scripts/coffee/uploader.coffee'
+        }, {
+          expand: true,
+          flatten: true
+          src: 'styles/*',
+          dest: 'package/styles/'
+        }, {
+          src: 'externals/font-awesome/font-awesome.css',
+          dest: 'package/styles/font-awesome.css'
+        }, {
+          expand: true,
+          flatten: true
+          src: 'externals/font-awesome/fonts/*',
+          dest: 'package/fonts/'
+        }, {
+          expand: true,
+          flatten: true
+          src: 'docs/assets/images/*',
+          dest: 'package/images/'
+        }]
 
     watch:
       styles:
@@ -113,15 +147,35 @@ module.exports = (grunt) ->
           server: 'externals/express.js'
           bases: '_site'
 
+    uglify:
+      package:
+        files:
+          'package/scripts/js/simditor-all.min.js': 'package/scripts/js/simditor-all.js'
+          'package/scripts/js/simditor.min.js': 'package/scripts/js/simditor.js'
+
+    compress:
+      package:
+        options:
+          archive: 'package/simditor-<%= pkg.version %>.zip'
+        files: [{
+          expand: true,
+          cwd: 'package/'
+          src: '**',
+          dest: './'
+        }]
+
 
   grunt.loadNpmTasks 'grunt-contrib-sass'
   grunt.loadNpmTasks 'grunt-contrib-coffee'
   grunt.loadNpmTasks 'grunt-contrib-concat'
   grunt.loadNpmTasks 'grunt-contrib-watch'
   grunt.loadNpmTasks 'grunt-contrib-copy'
+  grunt.loadNpmTasks 'grunt-contrib-uglify'
+  grunt.loadNpmTasks 'grunt-contrib-compress'
   grunt.loadNpmTasks 'grunt-express'
   grunt.loadNpmTasks 'grunt-shell'
 
   grunt.registerTask 'default', ['docs', 'express', 'watch']
-  grunt.registerTask 'docs', ['sass', 'concat:simditor', 'coffee', 'concat:all', 'copy', 'shell']
+  grunt.registerTask 'docs', ['sass', 'concat:simditor', 'coffee', 'concat:all', 'copy:vendor', 'copy:styles', 'copy:scripts', 'shell']
+  grunt.registerTask 'package', ['copy:package', 'uglify', 'compress']
 
