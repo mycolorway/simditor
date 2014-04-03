@@ -1451,9 +1451,9 @@ class Simditor extends Widget
     @id = ++ Simditor.count
     @_render()
 
-    if @opts.upload and Uploader
+    if @opts.upload and simple?.uploader
       uploadOpts = if typeof @opts.upload == 'object' then @opts.upload else {}
-      @uploader = new Uploader(uploadOpts)
+      @uploader = simple.uploader(uploadOpts)
 
     form = @textarea.closest 'form'
     if form.length
@@ -2596,8 +2596,8 @@ class ImageButton extends Button
         prepare = () =>
           @popover.srcEl.val('正在上传...')
           file.imgWrapper.append '<div class="mask"></div>'
-          $bar = $('<div class="simditor-image-progress-bar"><div><span></span></div></div>').appendTo file.imgWrapper
-          $bar.text('正在上传').addClass('hint') unless @editor.uploader.html5
+          $progress = $('<div class="simditor-image-progress"><span></span></div>').appendTo file.imgWrapper
+          $progress.addClass('loading') unless @editor.uploader.html5
 
         if img
           @loadImage $img, img.src, () =>
@@ -2610,20 +2610,22 @@ class ImageButton extends Button
       return unless file.inline
 
       percent = loaded / total
+      percent = (percent * 100).toFixed(0)
+      percent = 99 if percent > 99
 
-      if percent > 0.99
-        percent = "正在处理";
-        file.imgWrapper.find(".simditor-image-progress-bar").text(percent).addClass('hint')
-      else
-        percent = (percent * 100).toFixed(0) + "%"
-        file.imgWrapper.find(".simditor-image-progress-bar span").width(percent)
+      file.imgWrapper.find(".simditor-image-progress span").text(percent)
+
+      file.imgWrapper.find('.mask').css({
+        top: percent + '%',
+        height: (100 - percent) + '%'
+      })
 
     @editor.uploader.on 'uploadsuccess', (e, file, result) =>
       return unless file.inline
 
       $img = file.imgWrapper.find("img")
       @loadImage $img, result.file_path, () =>
-        file.imgWrapper.find(".mask, .simditor-image-progress-bar").remove()
+        file.imgWrapper.find(".mask, .simditor-image-progress").remove()
         @popover.srcEl.val result.file_path
         @editor.trigger 'valuechanged'
 
@@ -2646,7 +2648,7 @@ class ImageButton extends Button
       @loadImage $img, @defaultImage, =>
         @popover.refresh()
         @popover.srcEl.val $img.attr('src')
-        file.imgWrapper.find(".mask, .simditor-image-progress-bar").remove()
+        file.imgWrapper.find(".mask, .simditor-image-progress").remove()
         @editor.trigger 'valuechanged'
 
   status: ($node) ->

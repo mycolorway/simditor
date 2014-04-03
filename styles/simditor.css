@@ -64,37 +64,26 @@
   height: 100%;
   top: 0;
 }
-.simditor .simditor-body .simditor-image .simditor-image-progress-bar {
-  border: 1px solid #cccccc;
+.simditor .simditor-body .simditor-image .simditor-image-progress {
+  width: 30px;
+  height: 30px;
   background: #ffffff;
-  padding: 2px;
-  margin: 0 auto;
-  border-radius: 10px;
-  position: relative;
-  top: -50%;
-  width: 100px;
-  color: #ffffff;
-}
-.simditor .simditor-body .simditor-image .simditor-image-progress-bar.hint {
-  font-size: 12px;
-  background: transparent;
-  border: none;
+  border-radius: 30px;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  margin: -15px 0 0 -15px;
+  color: #333333;
+  font-size: 14px;
+  line-height: 30px;
   text-align: center;
+  box-shadow: 0 0 8px rgba(0, 0, 0, 0.4);
 }
-.simditor .simditor-body .simditor-image .simditor-image-progress-bar div {
-  width: 100px;
-  height: 5px;
-  margin: 0;
-  padding: 0;
+.simditor .simditor-body .simditor-image .simditor-image-progress.loading {
+  background: white url(../images/loading-upload.gif) no-repeat center center;
 }
-.simditor .simditor-body .simditor-image .simditor-image-progress-bar div span {
-  display: block;
-  margin: 0;
-  padding: 0;
-  width: 1%;
-  height: 100%;
-  background: #0f769f;
-  border-radius: 10px;
+.simditor .simditor-body .simditor-image .simditor-image-progress.loading span {
+  display: none;
 }
 .simditor .simditor-body .simditor-image .simditor-image-resize-handle {
   display: none;

@@ -33,9 +33,9 @@ class Simditor extends Widget
     @id = ++ Simditor.count
     @_render()
 
-    if @opts.upload and Uploader
+    if @opts.upload and simple?.uploader
       uploadOpts = if typeof @opts.upload == 'object' then @opts.upload else {}
-      @uploader = new Uploader(uploadOpts)
+      @uploader = simple.uploader(uploadOpts)
 
     form = @textarea.closest 'form'
     if form.length

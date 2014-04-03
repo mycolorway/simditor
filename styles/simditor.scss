@@ -78,38 +78,25 @@ $simditor-toolbar-height: 60px;
 				top: 0;
 			}
 
-			.simditor-image-progress-bar {
-				border: 1px solid #cccccc;
+			.simditor-image-progress {
+				width: 30px;
+				height: 30px;
 				background: #ffffff;
-				padding: 2px;
-				margin: 0 auto;
-				border-radius: 10px;
-				position: relative;
-				top: -50%;
-				width: 100px;
-				color: #ffffff;
+				border-radius: 30px;
+				position: absolute;
+				top: 50%;
+				left: 50%;
+				margin: -15px 0 0 -15px;
+				color: #333333;
+				font-size: 14px;
+				line-height: 30px;
+				text-align: center;
+				box-shadow: 0 0 8px rgba(0,0,0,0.4);
 
-				&.hint {
-					font-size: 12px;
-					background: transparent;
-					border: none;
-					text-align: center;
-				}
-
-				div {
-					width: 100px;
-					height: 5px;
-					margin: 0;
-					padding: 0;
-
+				&.loading {
+					background: #ffffff url(../images/loading-upload.gif) no-repeat center center;
 					span {
-						display: block;
-						margin: 0;
-						padding: 0;
-						width: 1%;
-						height: 100%;
-						background: #0f769f;
-						border-radius: 10px;
+						display: none;
 					}
 				}
 			}
