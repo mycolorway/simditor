@@ -155,6 +155,9 @@ module.exports = (grunt) ->
         files:
           'package/scripts/js/simditor-all.min.js': 'package/scripts/js/simditor-all.js'
           'package/scripts/js/simditor.min.js': 'package/scripts/js/simditor.js'
+      site:
+        files:
+          'site/assets/scripts/simditor-all.min.js': 'site/assets/scripts/simditor-all.js'
 
     compress:
       package:
@@ -184,6 +187,6 @@ module.exports = (grunt) ->
   grunt.loadNpmTasks 'grunt-shell'
 
   grunt.registerTask 'default', ['site', 'express', 'watch']
-  grunt.registerTask 'site', ['sass', 'concat:simditor', 'coffee', 'concat:all', 'copy:vendor', 'copy:styles', 'copy:scripts', 'shell']
+  grunt.registerTask 'site', ['sass', 'concat:simditor', 'coffee', 'concat:all', 'copy:vendor', 'copy:styles', 'copy:scripts', 'uglify:site', 'shell']
   grunt.registerTask 'package', ['clean:package', 'copy:package', 'uglify', 'compress']
 
