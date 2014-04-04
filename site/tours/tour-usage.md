@@ -7,7 +7,7 @@ root: ../
 
 ###第一步：下载并引用
 
-点击[这里](#)下载解压最新版的Simditor文件，然后在页面中引入这些文件：
+在[这里]({{ page.root }}download.html)下载并解压最新版的Simditor文件，然后在页面中引入这些文件：
 
 ```html
 <link rel="stylesheet" type="text/css" href="[style path]/font-awesome.css" />
@@ -65,7 +65,7 @@ var editor = new Simditor({
 * `upload`（默认值：false）false或者键值对，编辑器上传本地图片的配置，常用的属性有`url`和`params`
 * `pasteImage`（默认值：false）是否允许粘贴上传图片，依赖`upload`选项，仅支持Firefox和Chrome浏览器
 
-更详细的配置说明可以参考Simditor的[配置文档](#)。配置完成之后刷新页面，Simditor应该就可以正确加载了。
+更详细的配置说明可以参考Simditor的[配置文档]({{ page.root }}/docs/doc-config.html)。配置完成之后刷新页面，Simditor应该就可以正确加载了。
 
 ###最后，自定义样式和交互
 
