@@ -1,0 +1,11 @@
+
+<header>
+	<h1>Simditor</h1>
+	<p class="desc">简单快速的富文本编辑器</p>
+</header>
+<nav>
+	<a href="{{ page.root }}."{% if page.name == 'demo' %} class="active"{% endif %}>Demo</a>
+	<a href="{{ page.root }}tours/tour-usage.html"{% if page.name contains 'tour' %} class="active"{% endif %}>教程</a>
+	<a href="{{ page.root }}docs/doc-config.html"{% if page.name contains 'doc' %} class="active"{% endif %}>文档</a>
+	<a href="{{ page.root }}download.html"{% if page.name == 'download' %} class="active"{% endif %}>下载</a>
+</nav>

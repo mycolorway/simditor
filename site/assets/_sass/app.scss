@@ -1,0 +1,219 @@
+
+@charset "UTF-8";
+
+@import 'reset';
+@import 'highlight';
+
+
+/* General Style */
+
+body {
+	font-size: 16px;
+	font-family: Helvetica, Arial, sans-serif;
+	color: #52514c;
+	background: #ffffff;
+}
+
+a {
+	text-decoration: none;
+	color: #4298BA;
+
+	&:visited {
+		color: #4298BA;
+	}
+
+	&:hover {
+		color: #0F769F;
+	}
+
+	&:active {
+		color:#9E792E;
+	}
+
+	&:hover, &:active {
+		outline: 0;
+	}
+}
+
+
+/* Layout */
+
+.wrapper {
+	width: 960px;
+	margin: 0 auto;
+
+	header {
+		padding: 40px 0 30px;
+
+		h1 {
+			font-size: 40px;
+			font-weight: bold;
+
+			a {
+				color: #000000;
+			}
+		}
+
+		.desc {
+			font-size: 16px;
+			color: #999999;
+			margin: 10px 0 0 0;
+		}
+	}
+
+	nav {
+		background: #f3f3f3;
+		height: 40px;
+
+		a {
+			display: block;
+			float: left;
+			height: 40px;
+			padding: 0 20px;
+			font-size: 16px;
+			color: #666666;
+			line-height: 40px;
+
+			&:hover {
+				background: #efefef;
+			}
+
+			&.active {
+				background: #cfcfcf;
+				color: #000000;
+			}
+		}
+	}
+
+	section {
+		margin: 30px 0;
+	}
+
+	footer {
+		font-size: 14px;
+		margin: 40px 0;
+		color: #999999;
+		text-align: center;
+
+		a {
+			color: #999999;
+
+			&:hover {
+				text-decoration: underline;
+			}
+		}
+	}
+}
+
+
+/* Demo Page */
+
+section#page-demo {
+}
+
+
+/* Sidebar Page */
+
+section.page-sidebar {
+	position: relative;
+	margin: 40px 0 30px 0;
+
+	aside {
+		width: 180px;
+		padding: 15px 0 0 0;
+		position: absolute;
+		top: 0;
+		left: 0;
+
+		ul {
+			padding: 0 10px 0 30px;
+
+			li {
+				margin: 0 0 25px 0;
+
+				a {
+					font-size: 18px;
+				}
+
+				&.active a {
+					color: #333333;
+					font-weight: bold;
+				}
+			}
+		}
+	}
+
+	article {
+		padding: 0 0 10px 60px;
+		margin: 0 0 0 180px;
+		border-left: 1px solid #dfdfdf;
+		min-height: 500px;
+	}
+}
+
+
+/* Download Page */
+
+section#page-download {
+	min-height: 400px;
+
+	.version {
+		margin: 0 0 30px 0;
+
+		.title {
+			padding: 6px 15px;
+			border-bottom: 1px solid #dfdfdf;
+			cursor: pointer;
+
+			.icon {
+				display: inline-block;
+				width: 12px;
+				line-height: 30px;
+				font-size: 20px;
+			}
+
+			.name {
+				font-size: 20px;
+				line-height: 30px;
+				font-weight: bold;
+				margin: 0 20px;
+			}
+
+			.date {
+				font-size: 16px;
+				line-height: 30px;
+				color: #aaaaaa;
+			}
+
+			.btn-download {
+				display: inline-block;
+				float: right;
+				line-height: 30px;
+				padding: 0 15px;
+				font-size: 14px;
+				color: #ffffff;
+				background: #aaaaaa;
+				border-radius: 3px;
+
+				&:hover {
+					background: #bbbbbb;
+				}
+			}
+		}
+
+		.release-notes {
+			display: none;
+			margin: 20px 0 0 0;
+			padding: 0 50px;
+			list-style:disc outside none;
+
+			li {
+				margin: 0 0 10px 0;
+			}
+		}
+
+		&.expand .release-notes {
+			display: block;
+		}
+	}
+}

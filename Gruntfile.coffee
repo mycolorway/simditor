@@ -48,12 +48,12 @@ module.exports = (grunt) ->
           bundleExec: true
         files:
           'styles/simditor.css': 'styles/simditor.scss'
-      docs:
+      site:
         options:
           style: 'expanded'
           bundleExec: true
         files:
-          'docs/assets/styles/app.css': 'docs/assets/_sass/app.scss'
+          'site/assets/styles/app.css': 'site/assets/_sass/app.scss'
 
     coffee:
       simditor:
@@ -61,30 +61,33 @@ module.exports = (grunt) ->
           'lib/module.js': 'externals/simple-module/src/module.coffee'
           'lib/uploader.js': 'externals/simple-uploader/src/uploader.coffee'
           'lib/simditor.js': 'src/simditor.coffee'
-      docs:
-        files:
-          'docs/assets/scripts/page-demo.js': 'docs/assets/_coffee/page-demo.coffee'
+      site:
+        expand: true
+        flatten: true
+        src: 'site/assets/_coffee/*.coffee'
+        dest: 'site/assets/scripts/'
+        ext: '.js'
 
     copy:
       vendor:
         files: [{
           src: 'externals/jquery-2.1.0.min.js',
-          dest: 'docs/assets/scripts/jquery-2.1.0.min.js'
+          dest: 'site/assets/scripts/jquery-2.1.0.min.js'
         }, {
           src: 'externals/font-awesome/font-awesome.css',
-          dest: 'docs/assets/styles/font-awesome.css'
+          dest: 'site/assets/styles/font-awesome.css'
         }, {
           expand: true,
           flatten: true,
           src: 'externals/font-awesome/fonts/*',
-          dest: 'docs/assets/fonts/'
+          dest: 'site/assets/fonts/'
         }]
       styles:
         src: 'styles/simditor.css',
-        dest: 'docs/assets/styles/simditor.css'
+        dest: 'site/assets/styles/simditor.css'
       scripts: 
         src: 'lib/simditor-all.js',
-        dest: 'docs/assets/scripts/simditor-all.js'
+        dest: 'site/assets/scripts/simditor-all.js'
       package:
         files: [{
           expand: true,
@@ -116,7 +119,7 @@ module.exports = (grunt) ->
         }, {
           expand: true,
           flatten: true
-          src: 'docs/assets/images/*',
+          src: 'site/assets/images/*',
           dest: 'package/images/'
         }]
 
@@ -127,14 +130,14 @@ module.exports = (grunt) ->
       scripts:
         files: ['src/*.coffee', 'src/buttons/*.coffee']
         tasks: ['concat:simditor', 'coffee:simditor', 'concat:all', 'copy:scripts', 'shell']
-      docStyles:
-        files: ['docs/assets/_sass/*.scss']
-        tasks: ['sass:docs', 'shell']
-      docScripts:
-        files: ['docs/assets/_coffee/*.coffee']
-        tasks: ['coffee:docs', 'shell']
+      siteStyles:
+        files: ['site/assets/_sass/*.scss']
+        tasks: ['sass:site', 'shell']
+      siteScripts:
+        files: ['site/assets/_coffee/*.coffee']
+        tasks: ['coffee:site', 'shell']
       jekyll:
-        files: ['docs/**/*.html']
+        files: ['site/**/*.html', 'site/**/*.md']
         tasks: ['shell']
 
     shell:
@@ -175,7 +178,7 @@ module.exports = (grunt) ->
   grunt.loadNpmTasks 'grunt-express'
   grunt.loadNpmTasks 'grunt-shell'
 
-  grunt.registerTask 'default', ['docs', 'express', 'watch']
-  grunt.registerTask 'docs', ['sass', 'concat:simditor', 'coffee', 'concat:all', 'copy:vendor', 'copy:styles', 'copy:scripts', 'shell']
+  grunt.registerTask 'default', ['site', 'express', 'watch']
+  grunt.registerTask 'site', ['sass', 'concat:simditor', 'coffee', 'concat:all', 'copy:vendor', 'copy:styles', 'copy:scripts', 'shell']
   grunt.registerTask 'package', ['copy:package', 'uglify', 'compress']
 
