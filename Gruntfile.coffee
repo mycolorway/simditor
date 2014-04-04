@@ -167,6 +167,10 @@ module.exports = (grunt) ->
           dest: './'
         }]
 
+    clean:
+      package:
+        src: ['package/']
+
 
   grunt.loadNpmTasks 'grunt-contrib-sass'
   grunt.loadNpmTasks 'grunt-contrib-coffee'
@@ -175,10 +179,11 @@ module.exports = (grunt) ->
   grunt.loadNpmTasks 'grunt-contrib-copy'
   grunt.loadNpmTasks 'grunt-contrib-uglify'
   grunt.loadNpmTasks 'grunt-contrib-compress'
+  grunt.loadNpmTasks 'grunt-contrib-clean'
   grunt.loadNpmTasks 'grunt-express'
   grunt.loadNpmTasks 'grunt-shell'
 
   grunt.registerTask 'default', ['site', 'express', 'watch']
   grunt.registerTask 'site', ['sass', 'concat:simditor', 'coffee', 'concat:all', 'copy:vendor', 'copy:styles', 'copy:scripts', 'shell']
-  grunt.registerTask 'package', ['copy:package', 'uglify', 'compress']
+  grunt.registerTask 'package', ['clean:package', 'copy:package', 'uglify', 'compress']
 
