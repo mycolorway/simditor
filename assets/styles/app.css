@@ -424,10 +424,14 @@ a:hover, a:active {
   background: #cfcfcf;
   color: #000000;
 }
+.wrapper section {
+  margin: 30px 0;
+}
 .wrapper footer {
   font-size: 14px;
   margin: 40px 0;
   color: #999999;
+  text-align: center;
 }
 .wrapper footer a {
   color: #999999;
@@ -437,6 +441,89 @@ a:hover, a:active {
 }
 
 /* Demo Page */
-#page-demo {
-  margin: 30px 0;
+/* Sidebar Page */
+section.page-sidebar {
+  position: relative;
+  margin: 40px 0 30px 0;
+}
+section.page-sidebar aside {
+  width: 180px;
+  padding: 15px 0 0 0;
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+section.page-sidebar aside ul {
+  padding: 0 10px 0 30px;
+}
+section.page-sidebar aside ul li {
+  margin: 0 0 25px 0;
+}
+section.page-sidebar aside ul li a {
+  font-size: 18px;
+}
+section.page-sidebar aside ul li.active a {
+  color: #333333;
+  font-weight: bold;
+}
+section.page-sidebar article {
+  padding: 0 0 10px 60px;
+  margin: 0 0 0 180px;
+  border-left: 1px solid #dfdfdf;
+  min-height: 500px;
+}
+
+/* Download Page */
+section#page-download {
+  min-height: 400px;
+}
+section#page-download .version {
+  margin: 0 0 30px 0;
+}
+section#page-download .version .title {
+  padding: 6px 15px;
+  border-bottom: 1px solid #dfdfdf;
+  cursor: pointer;
+}
+section#page-download .version .title .icon {
+  display: inline-block;
+  width: 12px;
+  line-height: 30px;
+  font-size: 20px;
+}
+section#page-download .version .title .name {
+  font-size: 20px;
+  line-height: 30px;
+  font-weight: bold;
+  margin: 0 20px;
+}
+section#page-download .version .title .date {
+  font-size: 16px;
+  line-height: 30px;
+  color: #aaaaaa;
+}
+section#page-download .version .title .btn-download {
+  display: inline-block;
+  float: right;
+  line-height: 30px;
+  padding: 0 15px;
+  font-size: 14px;
+  color: #ffffff;
+  background: #aaaaaa;
+  border-radius: 3px;
+}
+section#page-download .version .title .btn-download:hover {
+  background: #bbbbbb;
+}
+section#page-download .version .release-notes {
+  display: none;
+  margin: 20px 0 0 0;
+  padding: 0 50px;
+  list-style: disc outside none;
+}
+section#page-download .version .release-notes li {
+  margin: 0 0 10px 0;
+}
+section#page-download .version.expand .release-notes {
+  display: block;
 }

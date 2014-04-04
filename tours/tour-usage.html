@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+	<title>使用方法 - Simditor</title>
+	<meta name="viewport" content="width=device-width">
+
+	<link media="all" rel="stylesheet" type="text/css" href="../assets/styles/app.css" />
+	<link media="all" rel="stylesheet" type="text/css" href="../assets/styles/font-awesome.css" />
+	<link media="all" rel="stylesheet" type="text/css" href="../assets/styles/simditor.css" />
+
+	<script type="text/javascript" src="../assets/scripts/jquery-2.1.0.min.js"></script>
+</head>
+<body>
+
+<div class="wrapper">
+	
+<header>
+	<h1>Simditor</h1>
+	<p class="desc">简单快速的富文本编辑器</p>
+</header>
+<nav>
+	<a href="../.">Demo</a>
+	<a href="../tours/tour-usage.html" class="active">教程</a>
+	<a href="../docs/doc-config.html">文档</a>
+	<a href="../download.html">下载</a>
+</nav>
+
+	<section class="page-tour page-sidebar" id="page-tour-usage">
+	<aside>
+	<ul>
+		<li class="active"><a href="../tours/tour-usage.html">使用方法</a></li>
+		<li><a href="../tours/tour-dev-env.html">搭建环境</a></li>
+		<li><a href="../tours/tour-plugin.html">编写扩展</a></li>
+	</ul>
+</aside>
+
+
+	<article class="editor-style">
+		<h3>第一步：下载并引用</h3>
+
+<p>点击<a href="#">这里</a>下载解压最新版的Simditor文件，然后在页面中引入这些文件：</p>
+<div class="highlight"><pre><code class="html language-html" data-lang="html"><span class="nt">&lt;link</span> <span class="na">rel=</span><span class="s">&quot;stylesheet&quot;</span> <span class="na">type=</span><span class="s">&quot;text/css&quot;</span> <span class="na">href=</span><span class="s">&quot;[style path]/font-awesome.css&quot;</span> <span class="nt">/&gt;</span>
+<span class="nt">&lt;link</span> <span class="na">rel=</span><span class="s">&quot;stylesheet&quot;</span> <span class="na">type=</span><span class="s">&quot;text/css&quot;</span> <span class="na">href=</span><span class="s">&quot;[style path]/simditor.css&quot;</span> <span class="nt">/&gt;</span>
+
+<span class="nt">&lt;script </span><span class="na">type=</span><span class="s">&quot;text/javascript&quot;</span> <span class="na">src=</span><span class="s">&quot;[script path]/jquery-2.1.0.js&quot;</span><span class="nt">&gt;&lt;/script&gt;</span>
+<span class="nt">&lt;script </span><span class="na">type=</span><span class="s">&quot;text/javascript&quot;</span> <span class="na">src=</span><span class="s">&quot;[script path]/module.js&quot;</span><span class="nt">&gt;&lt;/script&gt;</span>
+<span class="nt">&lt;script </span><span class="na">type=</span><span class="s">&quot;text/javascript&quot;</span> <span class="na">src=</span><span class="s">&quot;[script path]/uploader.js&quot;</span><span class="nt">&gt;&lt;/script&gt;</span>
+<span class="nt">&lt;script </span><span class="na">type=</span><span class="s">&quot;text/javascript&quot;</span> <span class="na">src=</span><span class="s">&quot;[script path]/simditor.js&quot;</span><span class="nt">&gt;&lt;/script&gt;</span>
+</code></pre></div>
+<p>其中，</p>
+
+<ul>
+<li>Simditor基于<a href="http://jquery.com">jQuery</a>开发，<code>jquery.js</code>是必需的；</li>
+<li><a href="http://fontawesome.io/">font-awesome.css</a>是一个图片字体icon库，Simditor基于它来定义工具栏的按钮样式。为了让icon能够正常显示，需要将font文件（fontawesome-webfont.xxx）放到正确的路径里：<code>../fonts/</code>（如果把font-awsome.css放在<code>styles</code>文件夹，那么就应该把font文件放在跟<code>styles</code>同级的<code>fonts</code>文件夹）。另外，如果想自定义工具栏按钮的样式就可以不必引用<code>font-awesome.css</code>；</li>
+<li><a href="http://https://github.com/mycolorway/simple-module">module.js</a>是彩程内部使用的CoffeeScript组件抽象类，Simditor基于这个类开发；</li>
+<li><a href="https://github.com/mycolorway/simple-uploader">uploader.js</a>是一个与UI无关的上传逻辑，如果你的项目不需要上传附件，那么可以不引用这个文件。</li>
+</ul>
+
+<p>如果觉得需要引用的脚本文件太多，可以用<code>simditor-all.js</code>（里面包含了<code>module.js</code><code>uploader.js</code>和<code>simditor.js</code>）替换：</p>
+<div class="highlight"><pre><code class="html language-html" data-lang="html"><span class="nt">&lt;link</span> <span class="na">rel=</span><span class="s">&quot;stylesheet&quot;</span> <span class="na">type=</span><span class="s">&quot;text/css&quot;</span> <span class="na">href=</span><span class="s">&quot;[style path]/font-awesome.css&quot;</span> <span class="nt">/&gt;</span>
+<span class="nt">&lt;link</span> <span class="na">rel=</span><span class="s">&quot;stylesheet&quot;</span> <span class="na">type=</span><span class="s">&quot;text/css&quot;</span> <span class="na">href=</span><span class="s">&quot;[style path]/simditor.css&quot;</span> <span class="nt">/&gt;</span>
+
+<span class="nt">&lt;script </span><span class="na">type=</span><span class="s">&quot;text/javascript&quot;</span> <span class="na">src=</span><span class="s">&quot;[script path]/jquery-2.1.0.js&quot;</span><span class="nt">&gt;&lt;/script&gt;</span>
+<span class="nt">&lt;script </span><span class="na">type=</span><span class="s">&quot;text/javascript&quot;</span> <span class="na">src=</span><span class="s">&quot;[script path]/simditor-all.js&quot;</span><span class="nt">&gt;&lt;/script&gt;</span>
+</code></pre></div>
+<h3>第二步，初始化配置</h3>
+
+<p>在使用Simditor的HTML页面里应该有一个对应的<code>textarea</code>文本框，例如：</p>
+<div class="highlight"><pre><code class="html language-html" data-lang="html"><span class="nt">&lt;textarea</span> <span class="na">id=</span><span class="s">&quot;editor&quot;</span> <span class="na">placeholder=</span><span class="s">&quot;这里输入内容&quot;</span> <span class="na">autofocus</span><span class="nt">&gt;&lt;/textarea&gt;</span>
+</code></pre></div>
+<p>我们需要在这个页面的脚本里初始化Simditor：</p>
+<div class="highlight"><pre><code class="js language-js" data-lang="js"><span class="kd">var</span> <span class="nx">editor</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Simditor</span><span class="p">({</span>
+    <span class="nx">textarea</span><span class="o">:</span> <span class="nx">$</span><span class="p">(</span><span class="s1">&#39;#editor&#39;</span><span class="p">)</span>
+<span class="p">});</span>
+</code></pre></div>
+<p><code>textarea</code>是初始化Simditor的必需的选项，可以接受jQuery Object、HTML Element或者Selector String。另外，Simditor还支持这些可选option：</p>
+
+<ul>
+<li><code>placeholder</code>（默认值：&#39;&#39;）编辑器的placeholder，如果为空Simditor会取textarea的placeholder属性</li>
+<li><code>toolbar</code> （默认值：true）是否显示工具栏按钮</li>
+<li><code>toolbarFloat</code> （默认值：true）是否让工具栏按钮在页面滚动的过程中始终可见</li>
+<li><code>defaultImage</code>（默认值：&#39;images/image.png&#39;）编辑器插入混排图片时使用的默认图片</li>
+<li><code>tabIndent</code>（默认值：true）是否在编辑器中使用<code>tab</code>键来缩进</li>
+<li><code>params</code>（默认值：{}）键值对，在编辑器中增加hidden字段（input:hidden），通常用于生成form表单的默认参数</li>
+<li><code>upload</code>（默认值：false）false或者键值对，编辑器上传本地图片的配置，常用的属性有<code>url</code>和<code>params</code></li>
+<li><code>pasteImage</code>（默认值：false）是否允许粘贴上传图片，依赖<code>upload</code>选项，仅支持Firefox和Chrome浏览器</li>
+</ul>
+
+<p>更详细的配置说明可以参考Simditor的<a href="#">配置文档</a>。配置完成之后刷新页面，Simditor应该就可以正确加载了。</p>
+
+<h3>最后，自定义样式和交互</h3>
+
+<p>每个项目都有不同的设计风格，大多数时候我们需要修改Simditor的样式，让它的样式跟项目的风格相符。</p>
+
+<p><code>simditor.css</code>是通过<a href="http://sass-lang.com/">Sass</a>自动生成的代码，所以推荐大家修改<code>simditor.scss</code>，然后再重新生成css代码。</p>
+
+<p><code>.editor-style</code>选择符下面的样式，是Simditor输出HTML的中文排版样式，大家可以根据自己项目的情况进行调整。另外，如果不想使用<a href="http://fontawesome.io/">font-awesome.css</a>来实现工具栏按钮的icon，可以将<code>font-awesome.css</code>去掉，然后增加<code>.toolbar-item-[button name]</code>选择符来自定义按钮样式。</p>
+
+<p>有的项目有一些特殊的交互需求，例如自动保存功能或者@人的功能，我们可以基于<a href="http://https://github.com/mycolorway/simple-module">Simple Module</a>来给Simditor编写扩展。关于编写扩展更详细的介绍请参考教程<a href="../tours/tour-plugin.html">《编写扩展》</a>。</p>
+
+<p>如果大家在使用的过程中遇到问题，或者有任何想吐槽的东西，欢迎与我们联系：tower+simditor[at]mycolorway.com。</p>
+
+<p>期待大家的反馈。</p>
+
+	</article>
+</section>
+
+
+
+
+
+
+	
+<footer>
+	&copy; <a href="http://tower.im">彩程设计</a>
+</footer>
+
+</div>
+
+</body>
+</html>
+
