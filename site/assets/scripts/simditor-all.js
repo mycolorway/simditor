@@ -838,8 +838,12 @@
       $node = $(node);
       if ($node[0].nodeType === 3) {
         text = $node.text().replace(/(\r\n|\n|\r)/gm, '');
-        textNode = document.createTextNode(text);
-        $node.replaceWith(textNode);
+        if (text) {
+          textNode = document.createTextNode(text);
+          $node.replaceWith(textNode);
+        } else {
+          $node.remove();
+        }
         return;
       }
       contents = $node.contents();
