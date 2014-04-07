@@ -441,6 +441,10 @@ a:hover, a:active {
 }
 
 /* Demo Page */
+section#page-demo #txt-content {
+  display: none;
+}
+
 /* Sidebar Page */
 section.page-sidebar {
   position: relative;
