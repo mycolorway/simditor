@@ -33,12 +33,91 @@
 		<li><a href="../tours/tour-usage.html">使用方法</a></li>
 		<li><a href="../tours/tour-dev-env.html">搭建环境</a></li>
 		<li class="active"><a href="../tours/tour-plugin.html">编写扩展</a></li>
+		<li><a href="../tours/tour-button.html">编写按钮</a></li>
 	</ul>
 </aside>
 
 
 	<article class="editor-style">
-		<p>Coming Soon...</p>
+		<p>这篇教程主要介绍如何为Simditor编写一个自动保存扩展，这个扩展需要实现这些功能：</p>
+
+<ul>
+<li>在编辑器的内容发生变化的时候，编辑器的内容会被自动保存到localStorage；</li>
+<li>编辑器初始化的时候，如果发现localStorage里保存了上一次编辑的内容，扩展会将编辑器的默认值设置为上一次编辑的内容；</li>
+<li>编辑器所在表单提交的时候，localStorage里保存的内容会被重置</li>
+</ul>
+
+<h3>扩展的基本结构</h3>
+
+<p>创建<code>simditor-autosave.coffee</code>，输入扩展的基本结构：</p>
+<div class="highlight"><pre><code class="coffee language-coffee" data-lang="coffee"><span class="k">class</span> <span class="nx">SimditorAutosave</span> <span class="k">extends</span> <span class="nx">Plugin</span>
+  <span class="nv">constructor: </span><span class="nf">(@widget) -&gt;</span>
+    <span class="k">super</span> <span class="nx">@widget</span>
+    <span class="vi">@editor = </span><span class="nx">@widget</span>
+
+  <span class="nv">_init: </span><span class="nf">-&gt;</span>
+
+<span class="nx">Simditor</span><span class="p">.</span><span class="nx">connect</span> <span class="nx">SimditorAutosave</span>
+</code></pre></div>
+<p>Simditor的扩展继承自<a href="https://github.com/mycolorway/simple-module">Simple Module</a>的Plugin类，并且Simditor提供一个类方法<code>connect</code>用来安装扩展。</p>
+
+<p>在初始化扩展的时候，Simditor会给Plugin的constructor方法传入自己的引用<code>@widget</code>。</p>
+
+<p><code>_init</code>方法和<code>constructor</code>的区别是，constructor在Simditor初始化扩展的时候（Simditor自身初始化之前）调用，而<code>_init</code>方法会在Simditor自身初始化完成之后调用。所以，在<code>_init</code>方法中，@widget的这些属性才是可用的：</p>
+
+<ul>
+<li><code>@widget.textarea</code>：与Simditor绑定的textarea元素</li>
+<li><code>@widtet.el</code>：Simditor的容器元素<code>div.simditor</code></li>
+<li><code>@widget.body</code>：Simditor的内容元素<code>div.simditor-body[contenteditable=true]</code></li>
+</ul>
+
+<h3>扩展的初始化选项</h3>
+
+<p>我们需要给Simditor增加一个autosave选项，用来开关autosave功能并且构造localStorage的key：</p>
+<div class="highlight"><pre><code class="coffee language-coffee" data-lang="coffee"><span class="k">class</span> <span class="nx">SimditorAutosave</span> <span class="k">extends</span> <span class="nx">Plugin</span>
+  <span class="nv">opts:</span>
+    <span class="nv">autosave: </span><span class="kc">false</span>
+
+  <span class="nv">constructor: </span><span class="nf">(@widget) -&gt;</span>
+    <span class="k">super</span> <span class="nx">@widget</span>
+    <span class="vi">@editor = </span><span class="nx">@widget</span>
+
+  <span class="nv">_init: </span><span class="nf">-&gt;</span>
+    <span class="vi">@opts.autosave = </span><span class="nx">@opts</span><span class="p">.</span><span class="nx">autosave</span> <span class="o">||</span> <span class="nx">@editor</span><span class="p">.</span><span class="nx">textarea</span><span class="p">.</span><span class="nx">data</span><span class="p">(</span><span class="s">&#39;autosave&#39;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="k">unless</span> <span class="nx">@opts</span><span class="p">.</span><span class="nx">autosave</span>
+    <span class="nv">key = </span><span class="s">&#39;simditor-autosave-&#39;</span> <span class="o">+</span> <span class="p">(</span><span class="nx">@opts</span><span class="p">.</span><span class="nx">autosave</span> <span class="o">||</span> <span class="nx">@editor</span><span class="p">.</span><span class="nx">id</span><span class="p">)</span>
+
+<span class="nx">Simditor</span><span class="p">.</span><span class="nx">connect</span> <span class="nx">SimditorAutosave</span>
+</code></pre></div>
+<p>Plugin的opts属性会被自动合并到Simditor的opts，所以我们可以在<code>_init</code>方法里通过<code>@opts.autosave</code>来获取Simditor初始化时传入的autosave选项。</p>
+
+<h3>添加核心逻辑</h3>
+
+<p>准备工作都做好之后，我们就可以添加扩展的核心逻辑了：</p>
+<div class="highlight"><pre><code class="coffee language-coffee" data-lang="coffee"><span class="k">class</span> <span class="nx">SimditorAutosave</span> <span class="k">extends</span> <span class="nx">Plugin</span>
+  <span class="nv">opts:</span>
+    <span class="nv">autosave: </span><span class="kc">false</span>
+
+  <span class="nv">constructor: </span><span class="nf">(@widget) -&gt;</span>
+    <span class="k">super</span> <span class="nx">@widget</span>
+    <span class="vi">@editor = </span><span class="nx">@widget</span>
+
+  <span class="nv">_init: </span><span class="nf">-&gt;</span>
+    <span class="vi">@opts.autosave = </span><span class="nx">@opts</span><span class="p">.</span><span class="nx">autosave</span> <span class="o">||</span> <span class="nx">@editor</span><span class="p">.</span><span class="nx">textarea</span><span class="p">.</span><span class="nx">data</span><span class="p">(</span><span class="s">&#39;autosave&#39;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="k">unless</span> <span class="nx">@opts</span><span class="p">.</span><span class="nx">autosave</span>
+    <span class="nv">key = </span><span class="s">&#39;simditor-autosave-&#39;</span> <span class="o">+</span> <span class="p">(</span><span class="nx">@opts</span><span class="p">.</span><span class="nx">autosave</span> <span class="o">||</span> <span class="nx">@editor</span><span class="p">.</span><span class="nx">id</span><span class="p">)</span>
+
+    <span class="nx">@editor</span><span class="p">.</span><span class="nx">on</span> <span class="s">&quot;valuechanged&quot;</span><span class="p">,</span> <span class="o">=&gt;</span>
+      <span class="nx">localStorage</span><span class="p">[</span><span class="nx">key</span><span class="p">]</span> <span class="o">=</span> <span class="nx">@editor</span><span class="p">.</span><span class="nx">getValue</span><span class="p">()</span>
+
+    <span class="nx">@editor</span><span class="p">.</span><span class="nx">el</span><span class="p">.</span><span class="nx">closest</span><span class="p">(</span><span class="s">&#39;form&#39;</span><span class="p">).</span><span class="nx">on</span> <span class="s">&#39;submit&#39;</span><span class="p">,</span> <span class="nf">(e) -&gt;</span>
+      <span class="nx">localStorage</span><span class="p">.</span><span class="nx">removeItem</span> <span class="nx">key</span>
+
+    <span class="nx">@editor</span><span class="p">.</span><span class="nx">setValue</span><span class="p">(</span><span class="nx">localStorage</span><span class="p">[</span><span class="nx">key</span><span class="p">])</span> <span class="k">if</span> <span class="nx">localStorage</span><span class="p">[</span><span class="nx">key</span><span class="p">]</span>
+
+<span class="nx">Simditor</span><span class="p">.</span><span class="nx">connect</span> <span class="nx">SimditorAutosave</span>
+</code></pre></div>
+<p>其中，<code>valuechanged</code>是Simditor的自定义事件，每当编辑器的内容发生变化时会被触发，更多关于该事件的信息请参考<a href="../docs/doc-event.html">事件文档</a>。</p>
 
 	</article>
 </section>
