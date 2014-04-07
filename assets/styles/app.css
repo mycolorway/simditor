@@ -467,7 +467,7 @@ section.page-sidebar aside ul li.active a {
   font-weight: bold;
 }
 section.page-sidebar article {
-  padding: 0 0 10px 60px;
+  padding: 0 20px 10px 60px;
   margin: 0 0 0 180px;
   border-left: 1px solid #dfdfdf;
   min-height: 500px;
