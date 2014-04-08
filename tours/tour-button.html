@@ -39,7 +39,66 @@
 
 
 	<article class="editor-style">
-		<p>Coming Soon...</p>
+		<p>这篇教程主要介绍如何给Simditor编写一个undo按钮，点击undo按钮编辑器的内容会回退到上一个状态。</p>
+
+<h3>基本结构</h3>
+
+<p>创建文件<code>simditor-undo.coffee</code>，输入Simditor按钮的基本结构：</p>
+<div class="highlight"><pre><code class="coffee language-coffee" data-lang="coffee"><span class="k">class</span> <span class="nx">UndoButton</span> <span class="k">extends</span> <span class="nx">SimditorButton</span>
+
+  <span class="nv">name: </span><span class="s">&#39;undo&#39;</span>
+
+  <span class="nv">icon: </span><span class="s">&#39;undo&#39;</span>
+
+  <span class="nv">title: </span><span class="s">&#39;回退&#39;</span>
+
+<span class="nx">Simditor</span><span class="p">.</span><span class="nx">Toolbar</span><span class="p">.</span><span class="nx">addButton</span> <span class="nx">UndoButton</span>
+</code></pre></div>
+<p>Simditor的按钮都继承自<a href="https://github.com/mycolorway/simditor/blob/master/src/buttons/button.coffee">Button类</a>，跟扩展类似Simditor也提供一个方法用来添加按钮：<code>Simditor.Toolbar.addButton()</code>。</p>
+
+<p>Button类有这些可以设置的属性：</p>
+
+<ul>
+<li><code>name</code> 按钮的名称，用于识别按钮，构造按钮的class <code>toolbar-item-[name]</code></li>
+<li><code>icon</code> 按钮icon的名称，对应FontAwesome的class名称 <code>fa-[icon]</code></li>
+<li><code>title</code> 按钮的title，鼠标悬停会显示的提示文本</li>
+<li><code>htmlTag</code> 按钮对应的html标签名称，用于识别按钮的激活状态（例如加粗按钮）</li>
+<li><code>disableTag</code> 在指定的html标签中禁用按钮（例如在代码标签中禁用链接按钮）</li>
+<li><code>needFocus</code> 按钮的功能是否依赖编辑器处于focus状态</li>
+</ul>
+
+<p>更多关于Button类的说明请参考文档<a href="../docs/doc-button.html">Button</a>。</p>
+
+<h3>按钮点击事件</h3>
+
+<p>按钮被点击之后，Simditor会调用Button的<code>command</code>方法，我们需要在这个方法里处理按钮的点击事件：</p>
+<div class="highlight"><pre><code class="coffee language-coffee" data-lang="coffee"><span class="k">class</span> <span class="nx">UndoButton</span> <span class="k">extends</span> <span class="nx">SimditorButton</span>
+
+  <span class="nv">name: </span><span class="s">&#39;undo&#39;</span>
+
+  <span class="nv">icon: </span><span class="s">&#39;undo&#39;</span>
+
+  <span class="nv">title: </span><span class="s">&#39;回退&#39;</span>
+
+  <span class="nv">command: </span><span class="nf">-&gt;</span>
+    <span class="nx">@editor</span><span class="p">.</span><span class="nx">undoManager</span><span class="p">.</span><span class="nx">undo</span><span class="p">()</span>
+
+<span class="nx">Simditor</span><span class="p">.</span><span class="nx">Toolbar</span><span class="p">.</span><span class="nx">addButton</span> <span class="nx">UndoButton</span>
+</code></pre></div>
+<h3>引用并配置按钮</h3>
+
+<p>为了在工具栏上显示undo按钮，我们需要编译并引用新编写的按钮文件：</p>
+<div class="highlight"><pre><code class="html language-html" data-lang="html"><span class="nt">&lt;script </span><span class="na">type=</span><span class="s">&quot;text/javascript&quot;</span> <span class="na">src=</span><span class="s">&quot;[script path]/jquery-2.1.0.js&quot;</span><span class="nt">&gt;&lt;/script&gt;</span>
+<span class="nt">&lt;script </span><span class="na">type=</span><span class="s">&quot;text/javascript&quot;</span> <span class="na">src=</span><span class="s">&quot;[script path]/simditor-all.js&quot;</span><span class="nt">&gt;&lt;/script&gt;</span>
+<span class="nt">&lt;script </span><span class="na">type=</span><span class="s">&quot;text/javascript&quot;</span> <span class="na">src=</span><span class="s">&quot;[script path]/simditor-undo.js&quot;</span><span class="nt">&gt;&lt;/script&gt;</span>
+</code></pre></div>
+<p>然后修改编辑器的<code>toolbar</code>配置：</p>
+<div class="highlight"><pre><code class="js language-js" data-lang="js"><span class="kd">var</span> <span class="nx">editor</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Simditor</span><span class="p">({</span>
+  <span class="nx">textarea</span><span class="o">:</span> <span class="nx">$</span><span class="p">(</span><span class="s1">&#39;#editor&#39;</span><span class="p">),</span>
+  <span class="nx">toolbar</span><span class="o">:</span> <span class="p">[</span><span class="s1">&#39;bold&#39;</span><span class="p">,</span> <span class="s1">&#39;italic&#39;</span><span class="p">,</span> <span class="s1">&#39;underline&#39;</span><span class="p">,</span> <span class="s1">&#39;strikethrough&#39;</span><span class="p">,</span> <span class="s1">&#39;undo&#39;</span><span class="p">]</span>
+<span class="p">});</span>
+</code></pre></div>
+<p>Simditor默认支持的按钮有：bold, italic, underline, strikethrough, ol, ul, blockquote, code, link, image, indent, outdent。</p>
 
 	</article>
 </section>
