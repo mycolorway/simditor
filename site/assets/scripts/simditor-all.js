@@ -3673,6 +3673,9 @@
       });
       return this.editor.uploader.on('uploaderror', function(e, file, xhr) {
         var $img, msg, result;
+        if (!file.inline) {
+          return;
+        }
         if (xhr.statusText === 'abort') {
           return;
         }

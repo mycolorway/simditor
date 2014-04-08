@@ -2637,6 +2637,7 @@ class ImageButton extends Button
         @editor.trigger 'valuechanged'
 
     @editor.uploader.on 'uploaderror', (e, file, xhr) =>
+      return unless file.inline
       return if xhr.statusText == 'abort'
 
       if xhr.responseText
