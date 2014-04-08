@@ -501,17 +501,8 @@ $simditor-toolbar-height: 40px;
 		font-size:13px;
 		font-family: 'monaco', 'Consolas', "Liberation Mono", Courier, monospace;
 		overflow-x: auto;
-		white-space: pre-wrap; /* CSS3 */
-		white-space: -moz-pre-wrap; /* Mozilla, post millennium */
-		white-space: -o-pre-wrap; /* Opera 7 */
-
-		/*code {*/
-			/*display: block;*/
-			/*padding: 0;*/
-			/*margin: 0;*/
-			/*border-radius: 0;*/
-			/*background: none;*/
-		/*}*/
+		white-space: pre;
+		word-wrap: normal;
 	}
 
 	code {
