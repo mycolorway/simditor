@@ -49,9 +49,8 @@ root: ../
 
 ```js
 var editor = new Simditor({
-	textarea: $('#editor')
+  textarea: $('#editor')
 });
-
 ```
 
 `textarea`是初始化Simditor的必需选项，可以接受jQuery Object、HTML Element或者Selector String。另外，Simditor还支持这些可选option：

@@ -27,7 +27,7 @@ class SimditorAutosave extends Plugin
 Simditor.connect SimditorAutosave
 ```
 
-Simditor的扩展继承自[Simple Module](https://github.com/mycolorway/simple-module)的Plugin类，并且Simditor提供一个类方法`connect`用来安装扩展。
+Simditor的扩展继承自[Simple Module](https://github.com/mycolorway/simple-module)的[Plugin类](https://github.com/mycolorway/simple-module/blob/master/src/module.coffee#L66)，并且Simditor提供一个类方法`connect`用来安装扩展。
 
 在初始化扩展的时候，Simditor会给Plugin的constructor方法传入自己的引用`@widget`。
 
@@ -59,7 +59,7 @@ class SimditorAutosave extends Plugin
 Simditor.connect SimditorAutosave
 ```
 
-Plugin的opts属性会被自动合并到Simditor的opts，所以我们可以在`_init`方法里通过`@opts.autosave`来获取Simditor初始化时传入的autosave选项。
+Plugin的opts属性会与Simditor的opts保持同步，所以我们可以在`_init`方法里通过`@opts.autosave`来获取Simditor初始化时传入的autosave选项。
 
 
 ###添加核心逻辑
