@@ -1,0 +1,10 @@
+- name: "setValue"
+  params:
+    - name: "arg0"
+      type: "String"
+    - name: "arg1"
+      type: "Function"
+  return:
+    type: "True"
+  description: |
+    这是描述

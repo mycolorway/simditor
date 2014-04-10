@@ -1,0 +1,8 @@
+- name: "valuechanged"
+  params:
+    - name: "arg0"
+      type: "String"
+    - name: "arg1"
+      type: "Function"
+  description: |
+    这里描述

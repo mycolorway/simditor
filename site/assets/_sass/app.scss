@@ -235,14 +235,20 @@ section.page-doc {
       padding-top: 0;
     }
 
-    .name {
-      font-size: 1.2em;
-      font-weight: bold;
+    & > span {
       margin-left: 10px;
     }
 
+    .icon {
+      margin: 0;
+    }
+
+    .name {
+      font-size: 1.2em;
+      font-weight: bold;
+    }
+
     .type {
-      margin-left: 10px;
       background-color: #efefef;
       border-radius: 3px;
       padding: 2px 6px;
@@ -253,7 +259,31 @@ section.page-doc {
     .default {
       color: #aaa;
       font-size: 0.8em;
-      margin-left: 10px;
+    }
+
+    .params {
+      &:before {
+        content: "(";
+      }
+
+      &:after {
+        content: ")";
+      }
+
+      .param:after {
+        content: ",";
+        margin: 0 6px 0 3px;
+      }
+
+      .param:last-child:after {
+        content: "";
+        margin: 0;
+      }
+    }
+
+    .return {
+      font-size: 0.8em;
+      color: green;
     }
   }
 

@@ -544,13 +544,17 @@ section.page-doc dt:first-child {
   margin-top: 0;
   padding-top: 0;
 }
+section.page-doc dt > span {
+  margin-left: 10px;
+}
+section.page-doc dt .icon {
+  margin: 0;
+}
 section.page-doc dt .name {
   font-size: 1.2em;
   font-weight: bold;
-  margin-left: 10px;
 }
 section.page-doc dt .type {
-  margin-left: 10px;
   background-color: #efefef;
   border-radius: 3px;
   padding: 2px 6px;
@@ -560,7 +564,24 @@ section.page-doc dt .type {
 section.page-doc dt .default {
   color: #aaa;
   font-size: 0.8em;
-  margin-left: 10px;
+}
+section.page-doc dt .params:before {
+  content: "(";
+}
+section.page-doc dt .params:after {
+  content: ")";
+}
+section.page-doc dt .params .param:after {
+  content: ",";
+  margin: 0 6px 0 3px;
+}
+section.page-doc dt .params .param:last-child:after {
+  content: "";
+  margin: 0;
+}
+section.page-doc dt .return {
+  font-size: 0.8em;
+  color: green;
 }
 section.page-doc dd {
   display: none;
