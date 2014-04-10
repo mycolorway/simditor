@@ -531,3 +531,40 @@ section#page-download .version .release-notes li {
 section#page-download .version.expand .release-notes {
   display: block;
 }
+
+section.page-doc dt {
+  cursor: pointer;
+  border-top: 1px solid #ddd;
+  margin-top: 30px;
+  margin-bottom: 10px;
+  padding-top: 20px;
+}
+section.page-doc dt:first-child {
+  border-top: none;
+  margin-top: 0;
+  padding-top: 0;
+}
+section.page-doc dt .name {
+  font-size: 1.2em;
+  font-weight: bold;
+  margin-left: 10px;
+}
+section.page-doc dt .type {
+  margin-left: 10px;
+  background-color: #efefef;
+  border-radius: 3px;
+  padding: 2px 6px;
+  font-size: 0.8em;
+  vertical-align: text-top;
+}
+section.page-doc dt .default {
+  color: #aaa;
+  font-size: 0.8em;
+  margin-left: 10px;
+}
+section.page-doc dd {
+  display: none;
+}
+section.page-doc dd.expand {
+  display: block;
+}

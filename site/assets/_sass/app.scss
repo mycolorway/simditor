@@ -220,3 +220,49 @@ section#page-download {
 		}
 	}
 }
+
+section.page-doc {
+  dt {
+    cursor: pointer;
+    border-top: 1px solid #ddd;
+    margin-top: 30px;
+    margin-bottom: 10px;
+    padding-top: 20px;
+
+    &:first-child {
+      border-top: none;
+      margin-top: 0;
+      padding-top: 0;
+    }
+
+    .name {
+      font-size: 1.2em;
+      font-weight: bold;
+      margin-left: 10px;
+    }
+
+    .type {
+      margin-left: 10px;
+      background-color: #efefef;
+      border-radius: 3px;
+      padding: 2px 6px;
+      font-size: 0.8em;
+      vertical-align: text-top;
+    }
+
+    .default {
+      color: #aaa;
+      font-size: 0.8em;
+      margin-left: 10px;
+    }
+  }
+
+  dd {
+    display: none;
+
+    &.expand {
+      display: block;
+    }
+  }
+
+}
