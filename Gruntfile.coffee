@@ -85,7 +85,7 @@ module.exports = (grunt) ->
       styles:
         src: 'styles/simditor.css',
         dest: 'site/assets/styles/simditor.css'
-      scripts: 
+      scripts:
         src: 'lib/simditor-all.js',
         dest: 'site/assets/scripts/simditor-all.js'
       package:
@@ -137,7 +137,7 @@ module.exports = (grunt) ->
         files: ['site/assets/_coffee/*.coffee']
         tasks: ['coffee:site', 'shell']
       jekyll:
-        files: ['site/**/*.html', 'site/**/*.md']
+        files: ['site/**/*.html', 'site/**/*.md', 'site/**/*.yml']
         tasks: ['shell']
 
     shell:

@@ -6,30 +6,15 @@ root: ../
 ---
 
 <dl class="doc-properties">
-
+  {% for item in site.data.properties %}
     <dt>
       <span class="icon fa fa-caret-down"></span>
-      <span class="name">textarea</span>
-      <span class="type">jQuery Object</span>
-      <span class="default">默认值: null</span>
+      <span class="name">{{ item.name }}</span>
+      <span class="type">{{ item.type }}</span>
+      <span class="default">默认值: {{ item.default }}</span>
     </dt>
     <dd class="expand">
-      <p>这里是描述</p>
+      {{ item.description | markdownify }}
     </dd>
-
-    <dt>
-      <span class="icon fa fa-caret-down"></span>
-      <span class="name">textarea</span>
-      <span class="type">String</span>
-      <span class="default">默认值: ""</span>
-    </dt>
-    <dd class="expand">
-      <p>这里是描述</p>
-{% highlight javascript %}
-function foo() {
-    alert("hello world");
-}
-{% endhighlight %}
-    </dd>
-
+  {% endfor %}
 </dl>
