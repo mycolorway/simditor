@@ -33,7 +33,7 @@
   return:
     type: "jQuery Object"
   description: |
-    用于隐藏编辑器界面中的 Popover 弹出窗，如编辑图片、链接的弹窗。
+    用于隐藏编辑器界面中的 popover 弹出窗，如编辑图片、链接的弹窗。
 
 - name: "destroy"
   description: |

@@ -8,7 +8,7 @@
   type: "String"
   default: "''"
   description: |
-    编辑器的 placeholder，如果为空 Simditor 会取 textarea 的placeholder 属性。
+    编辑器的 placeholder，如果为空 Simditor 会取 textarea 的 placeholder 属性。
 
 - name: "toolbar"
   type: "Boolean / Array"
@@ -52,7 +52,7 @@
   type: "Boolean"
   default: "true"
   description: |
-    是否在编辑器中使用 `tab` 键来缩进
+    是否在编辑器中使用 `tab` 键来缩进。
 
 - name: "params"
   type: "Object"
