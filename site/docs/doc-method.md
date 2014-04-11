@@ -5,7 +5,7 @@ name: doc-method
 root: ../
 ---
 
-这篇文档用来介绍 Simditor 的主要方法，调用方式如下：
+Simditor初始化之后，编辑器实例会暴露一些公共方法供调用：
 
 ```js
 // 初始化 Simditor
@@ -16,6 +16,8 @@ var editor = new Simditor({
 // 调用 setValue 方法设置内容
 editor.setValue('hello world');
 ```
+
+###公共方法
 
 <dl class="doc-methods">
   {% for item in site.data.methods %}
