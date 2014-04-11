@@ -3,19 +3,19 @@
     - name: "val"
       type: "String"
   description: |
-    用于设置编辑器的正文内容，并通过调用 `formatter.format()` 来格式化正文内容。
+    设置编辑器的正文内容，Simditor会自动格式化新设置的内容。
 
 - name: "getValue"
   return:
     type: "String"
   description: |
-    用于获取编辑器的正文内容，内部调用 `sync()` 方法，返回值为编辑器正文的 HTML 内容。
+    用于获取编辑器的正文内容，返回值为编辑器正文的 HTML 内容。
 
 - name: "sync"
   return:
     type: "String"
   description: |
-    用于格式化编辑器的正文内容，更新 textarea 元素的 val 属性，返回值为编辑器正文的 HTML 内容。
+    将编辑器的正文内容同步到 textarea 元素的 val 属性，返回值为编辑器正文的 HTML 内容。
 
 - name: "focus"
   return:
@@ -37,4 +37,4 @@
 
 - name: "destroy"
   description: |
-    删除编辑器。
+    恢复编辑器到初始化之前的状态。

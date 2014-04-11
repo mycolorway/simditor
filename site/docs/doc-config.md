@@ -5,25 +5,22 @@ name: doc-config
 root: ../
 ---
 
-这篇文档主要介绍，Simditor 的配置方法。
-
 ###默认配置
 
 Simditor 构造函数创建一个新的编辑器实例。通过传递的 options 参数定制实例。下面的示例使用所有选项及其默认值：
 
 ```js
-var options = {
+var editor = new Simditor({
   textarea: null,
-    placeholder: '',
-    defaultImage: 'images/image.png',
-    params: {},
-    upload: false,
-    tabIndent: true,
-    toolbar: true,
-    toolbarFloat: true,
-    pasteImage: false
-};
-var editor = new Simditor(options);
+  placeholder: '',
+  defaultImage: 'images/image.png',
+  params: {},
+  upload: false,
+  tabIndent: true,
+  toolbar: true,
+  toolbarFloat: true,
+  pasteImage: false
+});
 ```
 
 ###配置选项

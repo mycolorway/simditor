@@ -2,7 +2,7 @@
   type: "jQuery Object / HTML Element / Selector String"
   default: "null"
   description: |
-    初始化 Simditor 的必需选项，可以接受 jQuery Object、HTML Element 或者 Selector String 类型的参数。
+    指定用来初始化编辑器的`textarea`元素，可以接受 jQuery Object、HTML Element 或者 Selector String 类型的参数。
 
 - name: "placeholder"
   type: "String"
