@@ -5,6 +5,8 @@ name: doc-method
 root: ../
 ---
 
+这篇文档用来介绍 Simditor 的主要方法。
+
 <dl class="doc-methods">
   {% for item in site.data.methods %}
     <dt>
@@ -15,7 +17,9 @@ root: ../
           <span class="param">{{ param.name }}: {{ param.type }}</span>
         {% endfor %}
       </span>
+      {% if item.return.size > 0 %}
       <span class="return">返回值: {{ item.return.type }}</span>
+      {% endif %}
     </dt>
     <dd class="expand">
       {{ item.description | markdownify }}

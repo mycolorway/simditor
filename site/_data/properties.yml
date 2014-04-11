@@ -1,11 +1,77 @@
 - name: "textarea"
-  type: "jQuery Object"
+  type: "jQuery Object / HTML Element / Selector String"
   default: "null"
   description: |
-    这是一个DEMO
+    初始化 Simditor 的必需选项，可以接受 jQuery Object、HTML Element 或者 Selector String 类型的参数。
+
+- name: "placeholder"
+  type: "String"
+  default: "''"
+  description: |
+    编辑器的 placeholder，如果为空 Simditor 会取 textarea 的placeholder 属性。
+
+- name: "toolbar"
+  type: "Boolean / Array"
+  default: "true"
+  description: |
+    是否显示工具栏按钮，可通过数组的形式配置具体显示按钮，支持以下按钮：
+
+    ```js
+    ['title', 'bold', 'italic', 'underline', 'strikethrough', 'ol', 'ul', 'blockquote', 'code', 'table', 'link', 'image', 'hr', 'indent', 'outdent']
+    ```
+
+    * title: 标题文字
+    * bold: 加粗文字
+    * italic: 斜体文字
+    * underline: 下划线文字
+    * strikethrough: 删除线文字
+    * ol: 有序列表
+    * ul: 无序列表
+    * blockquote: 引用
+    * code: 代码
+    * table: 表格
+    * link: 插入链接
+    * image: 插入图片
+    * hr: 分割线
+    * indent: 向右缩进
+    * outdent: 向左缩进
+
+- name: "toolbarFloat"
+  type: "Boolean"
+  default: "true"
+  description: |
+    是否让工具栏按钮在页面滚动的过程中始终可见。
+
+- name: "defaultImage"
+  type: "String"
+  default: "images/image.png"
+  description: |
+    编辑器插入混排图片时使用的默认图片。
+
+- name: "tabIndent"
+  type: "Boolean"
+  default: "true"
+  description: |
+    是否在编辑器中使用 `tab` 键来缩进
+
+- name: "params"
+  type: "Object"
+  default: "{}"
+  description: |
+    键值对，在编辑器中增加 hidden 字段（input:hidden），通常用于生成 form 表单的默认参数。可生成如下标签：
 
     ```html
-    <script type="text/javascript" src="[script path]/module.js"></script>
-    <script type="text/javascript" src="[script path]/uploader.js"></script>
-    <script type="text/javascript" src="[script path]/simditor.js"></script>
+    <input type="hidden" name="key" value="val" />
     ```
+
+- name: "upload"
+  type: "Boolean / Object"
+  default: "false"
+  description: |
+    false 或者键值对，编辑器上传本地图片的配置，常用的属性有 `url` 和 `params`。
+
+- name: "pasteImage"
+  type: "false"
+  default: "Boolean"
+  description: |
+    是否允许粘贴上传图片，依赖 `upload` 选项，仅支持 Firefox 和 Chrome 浏览器。
