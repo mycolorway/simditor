@@ -3,7 +3,7 @@
     - name: "val"
       type: "String"
   description: |
-    设置编辑器的正文内容，Simditor会自动格式化新设置的内容。
+    设置编辑器的正文内容，Simditor 会自动格式化新设置的内容。
 
 - name: "getValue"
   return:

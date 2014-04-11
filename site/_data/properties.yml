@@ -2,7 +2,7 @@
   type: "jQuery Object / HTML Element / Selector String"
   default: "null"
   description: |
-    指定用来初始化编辑器的`textarea`元素，可以接受 jQuery Object、HTML Element 或者 Selector String 类型的参数。
+    指定用来初始化编辑器的 `textarea` 元素，可以接受 jQuery Object、HTML Element 或者 Selector String 类型的参数。
 
 - name: "placeholder"
   type: "String"
@@ -68,7 +68,22 @@
   type: "Boolean / Object"
   default: "false"
   description: |
-    false 或者键值对，编辑器上传本地图片的配置，常用的属性有 `url` 和 `params`。
+    false 或者键值对，编辑器上传本地图片的配置，常用的属性有 `url` 和 `params`：
+
+    * `url` 用于设置图片的上传接口地址；
+    * `params` 和编辑器的 `params` 用法一致，通常用于生成 form 表单的默认参数。
+
+    ```js
+    var editor = new Simditor({
+      textarea: $('#editor'),
+      upload: {
+        url: '/upload',
+        params: {
+          key: value
+        }
+      }
+    });
+    ```
 
 - name: "pasteImage"
   type: "false"
