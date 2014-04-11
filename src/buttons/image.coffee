@@ -235,6 +235,7 @@ class ImageButton extends Button
       $img.attr({
         src: src,
         width: width,
+        height: height,
         'data-origin-src': src,
         'data-origin-name': '图片',
         'data-origin-size': img.width + ',' + img.height
