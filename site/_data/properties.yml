@@ -68,19 +68,23 @@
   type: "Boolean / Object"
   default: "false"
   description: |
-    false 或者键值对，编辑器上传本地图片的配置，常用的属性有 `url` 和 `params`：
+    false 或者键值对，编辑器上传本地图片的配置，属性如下：
 
     * `url` 用于设置图片的上传接口地址；
-    * `params` 和编辑器的 `params` 用法一致，通常用于生成 form 表单的默认参数。
+    * `params` 键值对，用于指定图片上传接口的额外参数，并和图片一起提交；
+    * `connectionCount` 用于设置同时上传图片的数量；
+    * `leaveConfirm` 在图片上传过程中离开页面时提醒的文案。
+
+    `upload` 的使用方法及默认值如下：
 
     ```js
     var editor = new Simditor({
       textarea: $('#editor'),
       upload: {
-        url: '/upload',
-        params: {
-          key: value
-        }
+        url: '',
+        params: null,
+        connectionCount: 3,
+        leaveConfirm: '正在上传文件，如果离开上传会自动取消'
       }
     });
     ```
