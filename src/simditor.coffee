@@ -2664,19 +2664,25 @@ class ImageButton extends Button
     return true if @disabled
 
   decorate: ($img) ->
-    $wrapper = $img.parent('.simditor-image')
-    return if $wrapper.length > 0
+    $parent = $img.parent()
+    return if $parent.is('.simditor-image')
 
     $wrapper = $(@_wrapperTpl)
       .width($img.width())
-      .insertBefore($img)
-      .prepend($img)
+
+    if $parent.is('p')
+      $wrapper.prepend($img)
+        .replaceAll($parent)
+    else
+      $wrapper.insertBefore($img)
+        .prepend($img)
 
   undecorate: ($img) ->
     $wrapper = $img.parent('.simditor-image')
     return if $wrapper.length < 1
 
-    $img.insertAfter $wrapper unless $img.is('img[src^="data:image/png;base64"]')
+    unless $img.is('img[src^="data:image/png;base64"]')
+      $('<p/>').append($img).insertAfter($wrapper)
     $wrapper.remove()
 
   loadImage: ($img, src, callback) ->
