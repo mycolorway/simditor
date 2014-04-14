@@ -208,6 +208,7 @@ class ImageButton extends Button
     return if $wrapper.length > 0
 
     $wrapper = $(@_wrapperTpl)
+      .width($img.width())
       .insertBefore($img)
       .prepend($img)
 

@@ -3718,7 +3718,7 @@
       if ($wrapper.length > 0) {
         return;
       }
-      return $wrapper = $(this._wrapperTpl).insertBefore($img).prepend($img);
+      return $wrapper = $(this._wrapperTpl).width($img.width()).insertBefore($img).prepend($img);
     };
 
     ImageButton.prototype.undecorate = function($img) {
