@@ -5,7 +5,7 @@ name: doc-method
 root: ../
 ---
 
-Simditor初始化之后，编辑器实例会暴露一些公共方法供调用：
+Simditor 初始化之后，编辑器实例会暴露一些公共方法供调用：
 
 ```coffee
 # 初始化 Simditor

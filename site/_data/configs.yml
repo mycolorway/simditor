@@ -68,18 +68,23 @@
   type: "Boolean / Object"
   default: "false"
   description: |
-    false 或者键值对，编辑器上传本地图片的配置，常用的属性有 `url` 和 `params`：
+    false 或者键值对，编辑器上传本地文件的配置，键值对可以设置的参数有：
 
-    * `url` 用于设置图片的上传接口地址；
-    * `params` 和编辑器的 `params` 用法一致，通常用于生成 form 表单的默认参数。
+    * `url` 文件上传的接口地址；
+    * `params` 键值对，指定文件上传接口的额外参数，上传的时候随文件一起提交；
+    * `connectionCount` 同时上传文件的最大数量；
+    * `leaveConfirm` 在文件上传过程中离开页面时提醒的文案。
+
+    键值对参数的默认值：
 
     ```coffee
     editor = new Simditor({
       textarea: $('#editor')
       upload:
-        url: '/upload'
-        params:
-          key: value
+        url: ''
+        params: null
+        connectionCount: 3
+        leaveConfirm: '正在上传文件，如果离开上传会自动取消'
     })
     ```
 
