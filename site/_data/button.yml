@@ -17,7 +17,7 @@ properties:
     type: "String"
     default: "''"
     description: |
-      按钮显示的图标，Simditor使用[Font Awesome](http://fontawesome.io/)来渲染按钮图标，将会使用 `fa-[icon]` 作为按钮的图标，如果该属性为空则显示按钮的 **text** 属性。
+      按钮显示的图标，Simditor使用 [Font Awesome](http://fontawesome.io/) 来渲染按钮图标，将会使用 `fa-[icon]` 作为按钮的图标，如果该属性为空则显示按钮的 **text** 属性。
 
       ```coffee
       # 按钮图标为 .fa-bell
@@ -30,7 +30,7 @@ properties:
     type: "String"
     default: "''"
     description: |
-      按钮DOM元素的title属性，鼠标hover的时候显示。
+      按钮DOM元素的 title 属性，鼠标 hover 的时候显示。
 
   - name: "text"
     type: "String"
@@ -42,7 +42,7 @@ properties:
     type: "String"
     default: "''"
     description: |
-      单个或多个由逗号分隔的 HTML 标签名称，表示按钮会在编辑器中插入的 HTML 标签，可用于 [status](../docs/doc-button.html#anchor-status) 方法中识别按钮的激活状态
+      单个或多个由逗号分隔的 HTML 标签名称，表示按钮会在编辑器中插入的 HTML 标签，可用于 [status](#anchor-status) 方法中识别按钮的激活状态。
 
       ```coffee
       class TitleButton extends SimditorButton
@@ -91,7 +91,7 @@ properties:
         }]
       ```
 
-      **menu** 数组中可能是对象或者字符串 `'|'`，后者表示菜单中的分隔线，如果是对象，则有四个属性：`name``title``text``param`，name 用于增加对应的 class，text 和 title的作用和按钮的属性类似，param会作为参数传给方法 [command](#anchor-command)。
+      **menu** 数组中可能是对象或者字符串 `'|'`，后者表示菜单中的分隔线，如果是对象，则有四个属性：`name``title``text``param`，name 用于增加对应的 class，text 和 title 的作用和按钮的属性类似，param 会作为参数传给方法 [command](#anchor-command)。
 
   - name: "active"
     type: "Boolean"
@@ -191,7 +191,7 @@ methods:
     description: |
       点击按钮会执行的操作，通常是修改编辑的内容。在 Button 类中这是一个抽象方法，需要各按钮组件自己实现。
 
-      如果是菜单按钮，则参数param会是 [menu](../docs/doc-button.html#anchor-menu) 配置中的param
+      如果是菜单按钮，则参数param会是 [menu](#anchor-menu) 配置中的param
       
       ```coffee
       class BoldButton extends Button

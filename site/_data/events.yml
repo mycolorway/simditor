@@ -34,32 +34,31 @@
     在插入表格的时候，编辑器会调用表格的decorate方法(创建额外的HTML标签)，在获取编辑器内容的时候会通过undecorate事件调用表格的undecorate方法（去掉额外的HTML标签）。
 
     ```coffee
-    class ImageButton extends Button
+    class TableButton extends Button
       constructor: (@editor) ->
         ...
 
         @editor.on 'decorate', (e, $el) =>
-          $el.find('img').each (i, img) =>
-            @decorate $(img)
+          $el.find('table').each (i, table) =>
+            @decorate $(table)
 
         @editor.on 'undecorate', (e, $el) =>
-          $el.find('img').each (i, img) =>
-            @undecorate $(img)
+          $el.find('table').each (i, table) =>
+            @undecorate $(table)
 
-      decorate: ($img) ->
-        $wrapper = $img.parent('.simditor-image')
-        return if $wrapper.length > 0
+      ...
 
-        $wrapper = $(@_wrapperTpl)
-          .insertBefore($img)
-          .prepend($img)
+      decorate: ($table) ->
+        if $table.parent('.simditor-table').length > 0
+          @undecorate $table
 
-      undecorate: ($img) ->
-        $wrapper = $img.parent('.simditor-image')
-        return if $wrapper.length < 1
+        $table.wrap '<div class="simditor-table"></div>'
+        @initResize $table
+        $table.parent()
 
-        $img.insertAfter $wrapper unless $img.is('img[src^="data:image/png;base64"]')
-        $wrapper.remove()
+      undecorate: ($table) ->
+        return unless $table.parent('.simditor-table').length > 0
+        $table.parent().replaceWith($table)
     ```
 
 - name: "undecorate"
