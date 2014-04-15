@@ -5,10 +5,30 @@ name: doc-config
 root: ../
 ---
 
-<dl class="doc-properties">
-  {% for item in site.data.properties %}
-    <dt>
-      <span class="icon fa fa-caret-down"></span>
+###默认配置
+
+Simditor 构造函数创建一个新的编辑器实例。通过传递的 options 参数定制实例。下面的示例使用所有选项及其默认值：
+
+```coffee
+editor = new Simditor({
+  textarea: null
+  placeholder: ''
+  defaultImage: 'images/image.png'
+  params: {}
+  upload: false
+  tabIndent: true
+  toolbar: true
+  toolbarFloat: true
+  pasteImage: false
+})
+```
+
+###配置选项
+
+<dl class="doc-configs">
+  {% for item in site.data.configs %}
+    <dt id="anchor-{{ item.name }}">
+      <!--<span class="icon fa fa-caret-down"></span>-->
       <span class="name">{{ item.name }}</span>
       <span class="type">{{ item.type }}</span>
       <span class="default">默认值: {{ item.default }}</span>

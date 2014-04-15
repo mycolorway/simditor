@@ -533,7 +533,6 @@ section#page-download .version.expand .release-notes {
 }
 
 section.page-doc dt {
-  cursor: pointer;
   border-top: 1px solid #ddd;
   margin-top: 30px;
   margin-bottom: 10px;
@@ -547,13 +546,14 @@ section.page-doc dt:first-child {
 section.page-doc dt > span {
   margin-left: 10px;
 }
-section.page-doc dt .icon {
-  margin: 0;
+section.page-doc dt > span:first-child {
+  margin-left: 0;
 }
 section.page-doc dt .name {
   font-size: 1.2em;
   font-weight: bold;
 }
+section.page-doc dt .param-type,
 section.page-doc dt .type {
   background-color: #efefef;
   border-radius: 3px;

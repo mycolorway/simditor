@@ -1,10 +1,40 @@
 - name: "setValue"
   params:
-    - name: "arg0"
+    - name: "val"
       type: "String"
-    - name: "arg1"
-      type: "Function"
-  return:
-    type: "True"
   description: |
-    这是描述
+    设置编辑器的正文内容，Simditor 会自动格式化新设置的内容。
+
+- name: "getValue"
+  return:
+    type: "String"
+  description: |
+    用于获取编辑器的正文内容，返回值为编辑器正文的 HTML 内容。
+
+- name: "sync"
+  return:
+    type: "String"
+  description: |
+    将编辑器的正文内容同步到 textarea 元素的 val 属性，返回值为编辑器正文的 HTML 内容。
+
+- name: "focus"
+  return:
+    type: "jQuery Object"
+  description: |
+    用于把焦点移动到编辑器，触发 focus 事件。
+
+- name: "blur"
+  return:
+    type: "jQuery Object"
+  description: |
+    用于让编辑器失去焦点，触发 blur 事件。
+
+- name: "hidePopover"
+  return:
+    type: "jQuery Object"
+  description: |
+    用于隐藏编辑器界面中的 popover 弹出窗，如编辑图片、链接的弹窗。
+
+- name: "destroy"
+  description: |
+    恢复编辑器到初始化之前的状态。
