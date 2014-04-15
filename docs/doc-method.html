@@ -40,16 +40,131 @@
 
 
 	<article class="editor-style">
-		<p>Coming Soon...</p>
+		<p>Simditor 初始化之后，编辑器实例会暴露一些公共方法供调用：</p>
+<div class="highlight"><pre><code class="coffee language-coffee" data-lang="coffee"><span class="c1"># 初始化 Simditor</span>
+<span class="nv">editor = </span><span class="k">new</span> <span class="nx">Simditor</span><span class="p">({</span>
+  <span class="nv">textarea: </span><span class="nx">$</span><span class="p">(</span><span class="s">&#39;#editor&#39;</span><span class="p">)</span>
+<span class="p">})</span>
+
+<span class="c1"># 调用 setValue 方法设置内容</span>
+<span class="nx">editor</span><span class="p">.</span><span class="nx">setValue</span> <span class="s">&#39;hello world&#39;</span>
+</code></pre></div>
+<h3>公共方法</h3>
+
+<dl class="doc-methods">
+  
+    <dt id="anchor-setValue">
+      <!--<span class="icon fa fa-caret-down"></span>-->
+      <span class="name">setValue</span>
+      <span class="params">
+        
+          <span class="param">
+            <span class="param-name">val</span>
+            <span class="param-type">String</span>
+          </span>
+        
+      </span>
+      
+    </dt>
+    <dd class="expand">
+      <p>设置编辑器的正文内容，Simditor 会自动格式化新设置的内容。</p>
+
+    </dd>
+  
+    <dt id="anchor-getValue">
+      <!--<span class="icon fa fa-caret-down"></span>-->
+      <span class="name">getValue</span>
+      <span class="params">
+        
+      </span>
+      
+      <span class="return">返回值: String</span>
+      
+    </dt>
+    <dd class="expand">
+      <p>用于获取编辑器的正文内容，返回值为编辑器正文的 HTML 内容。</p>
+
+    </dd>
+  
+    <dt id="anchor-sync">
+      <!--<span class="icon fa fa-caret-down"></span>-->
+      <span class="name">sync</span>
+      <span class="params">
+        
+      </span>
+      
+      <span class="return">返回值: String</span>
+      
+    </dt>
+    <dd class="expand">
+      <p>将编辑器的正文内容同步到 textarea 元素的 val 属性，返回值为编辑器正文的 HTML 内容。</p>
+
+    </dd>
+  
+    <dt id="anchor-focus">
+      <!--<span class="icon fa fa-caret-down"></span>-->
+      <span class="name">focus</span>
+      <span class="params">
+        
+      </span>
+      
+      <span class="return">返回值: jQuery Object</span>
+      
+    </dt>
+    <dd class="expand">
+      <p>用于把焦点移动到编辑器，触发 focus 事件。</p>
+
+    </dd>
+  
+    <dt id="anchor-blur">
+      <!--<span class="icon fa fa-caret-down"></span>-->
+      <span class="name">blur</span>
+      <span class="params">
+        
+      </span>
+      
+      <span class="return">返回值: jQuery Object</span>
+      
+    </dt>
+    <dd class="expand">
+      <p>用于让编辑器失去焦点，触发 blur 事件。</p>
+
+    </dd>
+  
+    <dt id="anchor-hidePopover">
+      <!--<span class="icon fa fa-caret-down"></span>-->
+      <span class="name">hidePopover</span>
+      <span class="params">
+        
+      </span>
+      
+      <span class="return">返回值: jQuery Object</span>
+      
+    </dt>
+    <dd class="expand">
+      <p>用于隐藏编辑器界面中的 popover 弹出窗，如编辑图片、链接的弹窗。</p>
+
+    </dd>
+  
+    <dt id="anchor-destroy">
+      <!--<span class="icon fa fa-caret-down"></span>-->
+      <span class="name">destroy</span>
+      <span class="params">
+        
+      </span>
+      
+    </dt>
+    <dd class="expand">
+      <p>恢复编辑器到初始化之前的状态。</p>
+
+    </dd>
+  
+</dl>
 
 	</article>
 </section>
 
-
-
-
-
-
+<script type="text/javascript" src="../assets/scripts/page-doc.js"></script>
 
 	
 <footer>

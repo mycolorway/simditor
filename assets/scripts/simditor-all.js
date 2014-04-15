@@ -3713,12 +3713,17 @@
     };
 
     ImageButton.prototype.decorate = function($img) {
-      var $wrapper;
-      $wrapper = $img.parent('.simditor-image');
-      if ($wrapper.length > 0) {
+      var $parent, $wrapper;
+      $parent = $img.parent();
+      if ($parent.is('.simditor-image')) {
         return;
       }
-      return $wrapper = $(this._wrapperTpl).insertBefore($img).prepend($img);
+      $wrapper = $(this._wrapperTpl).width($img.width());
+      if ($parent.is('p')) {
+        return $wrapper.prepend($img).replaceAll($parent);
+      } else {
+        return $wrapper.insertBefore($img).prepend($img);
+      }
     };
 
     ImageButton.prototype.undecorate = function($img) {
@@ -3728,7 +3733,7 @@
         return;
       }
       if (!$img.is('img[src^="data:image/png;base64"]')) {
-        $img.insertAfter($wrapper);
+        $('<p/>').append($img).insertAfter($wrapper);
       }
       return $wrapper.remove();
     };
@@ -3753,6 +3758,7 @@
         $img.attr({
           src: src,
           width: width,
+          height: height,
           'data-origin-src': src,
           'data-origin-name': '图片',
           'data-origin-size': img.width + ',' + img.height

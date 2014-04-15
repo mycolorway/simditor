@@ -531,3 +531,61 @@ section#page-download .version .release-notes li {
 section#page-download .version.expand .release-notes {
   display: block;
 }
+
+section.page-doc dt {
+  border-top: 1px solid #ddd;
+  margin-top: 30px;
+  margin-bottom: 10px;
+  padding-top: 20px;
+}
+section.page-doc dt:first-child {
+  border-top: none;
+  margin-top: 0;
+  padding-top: 0;
+}
+section.page-doc dt > span {
+  margin-left: 10px;
+}
+section.page-doc dt > span:first-child {
+  margin-left: 0;
+}
+section.page-doc dt .name {
+  font-size: 1.2em;
+  font-weight: bold;
+}
+section.page-doc dt .param-type,
+section.page-doc dt .type {
+  background-color: #efefef;
+  border-radius: 3px;
+  padding: 2px 6px;
+  font-size: 0.8em;
+  vertical-align: text-top;
+}
+section.page-doc dt .default {
+  color: #aaa;
+  font-size: 0.8em;
+}
+section.page-doc dt .params:before {
+  content: "(";
+}
+section.page-doc dt .params:after {
+  content: ")";
+}
+section.page-doc dt .params .param:after {
+  content: ",";
+  margin: 0 6px 0 3px;
+}
+section.page-doc dt .params .param:last-child:after {
+  content: "";
+  margin: 0;
+}
+section.page-doc dt .return {
+  font-size: 0.8em;
+  color: green;
+}
+section.page-doc dd {
+  display: none;
+}
+section.page-doc dd.expand {
+  display: block;
+}
