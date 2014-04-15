@@ -1,8 +1,117 @@
 - name: "valuechanged"
   params:
-    - name: "arg0"
-      type: "String"
-    - name: "arg1"
-      type: "Function"
+    - name: "e"
+      type: "jQuery Event"
   description: |
-    这里描述
+    **触发条件：编辑器内容发生改变**  
+
+- name: "selectionchanged"
+  params:
+    - name: "e"
+      type: "jQuery Event"
+  description: |
+    **触发条件：当光标位置或者选择的文本区域发生变化**  
+
+- name: "decorate"
+  params:
+    - name: "e"
+      type: "jQuery Event"
+    - name: "$el"
+      type: "jQuery Object"
+  description: |
+    **触发条件：当调用** [**setValue**](../docs/doc-method.html#anchor-setValue) **方法或粘贴内容的时候**  
+
+    在扩展或者按钮中可能会在编辑的内容中插入一些特殊元素，在编辑过程中，为了给用户呈现更友好的编辑体验，需要对这些特殊元素做修饰，但是在这些修饰不应该成为内容的一部分，因此会在取值或同步到 textarea 的 value 的时候被去掉。  
+
+    比如，表格调整列宽，图片拖动缩放，都需要额外的 HTML 标签，那么在插入表格和图片的时候都需要进行相应的 decorate，取值的时候做 undecorate，所以这两个组件内部都有相应的 decorate 和 undecorate 方法。在点击按钮插入的时候会在按钮组件内部调用，在外部调用 [setValue](../docs/doc-method.html#anchor-setValue) 方法或粘贴插入的时候会通过触发 decorate 事件的方式通知组件去执行自己的 decorate 方法。  
+
+    ```coffee
+    class ImageButton extends Button
+      constructor: (@editor) ->
+        ...
+
+        @editor.on 'decorate', (e, $el) =>
+          $el.find('img').each (i, img) =>
+            @decorate $(img)
+
+        @editor.on 'undecorate', (e, $el) =>
+          $el.find('img').each (i, img) =>
+            @undecorate $(img)
+
+      decorate: ($img) ->
+        $wrapper = $img.parent('.simditor-image')
+        return if $wrapper.length > 0
+
+        $wrapper = $(@_wrapperTpl)
+          .insertBefore($img)
+          .prepend($img)
+
+      undecorate: ($img) ->
+        $wrapper = $img.parent('.simditor-image')
+        return if $wrapper.length < 1
+
+        $img.insertAfter $wrapper unless $img.is('img[src^="data:image/png;base64"]')
+        $wrapper.remove()
+    ```
+
+- name: "undecorate"
+  params:
+    - name: "e"
+      type: "jQuery Event"
+    - name: "$el"
+      type: "jQuery Object"
+  description: |
+    **触发条件：当调用** [**getValue**](../docs/doc-method.html#anchor-decorate) 和 [**sync**](../docs/doc-method.html#anchor-sync) **方法的时候**  
+
+    同 [decorate](../docs/doc-event.html#anchor-decorate) 事件
+
+- name: "pasting"
+  params:
+    - name: "e"
+      type: "jQuery Event"
+    - name: "$pasteContent"
+      type: "jQuery Object"
+  description: |
+    **触发条件：粘贴内容到编辑器的时候**  
+
+    参数`$pasteContent`是粘贴的内容，可以根据它来决定是否要中断粘贴，如果返回false，粘贴将不会生效  
+
+    ######示例
+
+    ```js
+    // 如果粘贴的内容含有图片则中断粘贴
+    editor.on('pasting', function(e, $pasteContent) {
+      if ($pasteContent.find("img").length > 0) {
+        return false
+      }
+    })
+    ```
+
+    注意：该事件是通过[`triggerHandler`](http://api.jquery.com/triggerHandler/)触发的  
+
+- name: "focus"
+  params:
+    - name: "e"
+      type: "jQuery Event"
+  description: |
+    **触发条件：内容区域获得焦点的时候**  
+
+    注意：该事件是通过[`triggerHandler`](http://api.jquery.com/triggerHandler/)触发的  
+
+- name: "blur"
+  params:
+    - name: "e"
+      type: "jQuery Event"
+  description: |
+    **触发条件：内容区域失去焦点的时候**  
+
+    注意：该事件是通过[`triggerHandler`](http://api.jquery.com/triggerHandler/)触发的  
+
+- name: "destroy"
+  params:
+    - name: "e"
+      type: "jQuery Event"
+  description: |
+    **触发条件：调用实例的destroy方法的时候**  
+
+    注意：该事件是通过[`triggerHandler`](http://api.jquery.com/triggerHandler/)触发的  

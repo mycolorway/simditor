@@ -223,7 +223,6 @@ section#page-download {
 
 section.page-doc {
   dt {
-    cursor: pointer;
     border-top: 1px solid #ddd;
     margin-top: 30px;
     margin-bottom: 10px;
@@ -237,10 +236,10 @@ section.page-doc {
 
     & > span {
       margin-left: 10px;
-    }
 
-    .icon {
-      margin: 0;
+      &:first-child {
+        margin-left: 0;
+      }
     }
 
     .name {
@@ -248,6 +247,7 @@ section.page-doc {
       font-weight: bold;
     }
 
+    .param-type,
     .type {
       background-color: #efefef;
       border-radius: 3px;

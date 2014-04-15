@@ -16,25 +16,25 @@
   description: |
     是否显示工具栏按钮，可通过数组的形式配置具体显示按钮，支持以下按钮：
 
-    ```js
-    ['title', 'bold', 'italic', 'underline', 'strikethrough', 'ol', 'ul', 'blockquote', 'code', 'table', 'link', 'image', 'hr', 'indent', 'outdent']
+    ```coffee
+    [
+      'title'          # 标题文字
+      'bold'           # 加粗文字
+      'italic'         # 斜体文字
+      'underline'      # 下划线文字
+      'strikethrough'  # 删除线文字
+      'ol'             # 有序列表
+      'ul'             # 无序列表
+      'blockquote'     # 引用
+      'code'           # 代码
+      'table'          # 表格
+      'link'           # 插入链接
+      'image'          # 插入图片
+      'hr'             # 分割线
+      'indent'         # 向右缩进
+      'outdent'        # 向左缩进
+    ]
     ```
-
-    * title: 标题文字
-    * bold: 加粗文字
-    * italic: 斜体文字
-    * underline: 下划线文字
-    * strikethrough: 删除线文字
-    * ol: 有序列表
-    * ul: 无序列表
-    * blockquote: 引用
-    * code: 代码
-    * table: 表格
-    * link: 插入链接
-    * image: 插入图片
-    * hr: 分割线
-    * indent: 向右缩进
-    * outdent: 向左缩进
 
 - name: "toolbarFloat"
   type: "Boolean"
@@ -56,7 +56,7 @@
 
 - name: "params"
   type: "Object"
-  default: "{}"
+  default: "{ }"
   description: |
     键值对，在编辑器中增加 hidden 字段（input:hidden），通常用于生成 form 表单的默认参数。可生成如下标签：
 
@@ -73,16 +73,14 @@
     * `url` 用于设置图片的上传接口地址；
     * `params` 和编辑器的 `params` 用法一致，通常用于生成 form 表单的默认参数。
 
-    ```js
-    var editor = new Simditor({
-      textarea: $('#editor'),
-      upload: {
-        url: '/upload',
-        params: {
+    ```coffee
+    editor = new Simditor({
+      textarea: $('#editor')
+      upload:
+        url: '/upload'
+        params:
           key: value
-        }
-      }
-    });
+    })
     ```
 
 - name: "pasteImage"
