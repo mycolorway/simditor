@@ -18,12 +18,12 @@ class TitleButton extends SimditorButton
 
   setDisabled: (disabled) ->
     ...
-    
+
   status: ($node) ->
     ...
 
   command: (param) ->
-    # 在Button类中这是一个抽象方法，需要各个按钮单独实现
+    # 在 Button 类中这是一个抽象方法，需要各个按钮单独实现
   	# 执行格式化的操作
 
 Simditor.Toolbar.addButton(TitleButton)

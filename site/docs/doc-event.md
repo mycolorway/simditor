@@ -5,7 +5,7 @@ name: doc-event
 root: ../
 ---
 
-Simditor会在特定情况下触发下列事件，你可以为编辑器实例绑定这些事件来做相应的操作：
+Simditor 会在特定情况下触发下列事件，你可以为编辑器实例绑定这些事件来做相应的操作：
 
 ```coffee
 # 初始化 Simditor

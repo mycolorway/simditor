@@ -17,7 +17,7 @@ properties:
     type: "String"
     default: "''"
     description: |
-      按钮显示的图标，Simditor使用 [Font Awesome](http://fontawesome.io/) 来渲染按钮图标，将会使用 `fa-[icon]` 作为按钮的图标，如果该属性为空则显示按钮的 **text** 属性。
+      按钮显示的图标，Simditor 使用 [Font Awesome](http://fontawesome.io/) 来渲染按钮图标，将会使用 `fa-[icon]` 作为按钮的图标，如果该属性为空则显示按钮的 **text** 属性。
 
       ```coffee
       # 按钮图标为 .fa-bell
@@ -30,7 +30,7 @@ properties:
     type: "String"
     default: "''"
     description: |
-      按钮DOM元素的 title 属性，鼠标 hover 的时候显示。
+      按钮 DOM 元素的 title 属性，鼠标 hover 的时候显示。
 
   - name: "text"
     type: "String"
@@ -115,7 +115,7 @@ properties:
     type: "null / String"
     default: "null"
     description: |
-      为按钮设置快捷键，结构为功能键和按键的编码用加号连接，比如 `'cmd+99'`，支持的功能键为 `cmd``shift``alt``ctrl`  
+      为按钮设置快捷键，结构为功能键和按键的编码用加号连接，比如 `'cmd+99'`，支持的功能键为 `cmd``shift``alt``ctrl`
 
       ```coffee
       class BoldButton extends Button
@@ -135,9 +135,9 @@ methods:
       - name: "active"
         type: "Boolean"
     description: |
-      根据参数设置按钮的激活状态，Button 类做了基本的实现，包括设置 active 属性和按钮样式。  
+      根据参数设置按钮的激活状态，Button 类做了基本的实现，包括设置 active 属性和按钮样式。
       当编辑器 blur 的时候该方法会被触发
-      
+
       ```coffee
       setActive: (active) ->
         @active = active
@@ -152,7 +152,7 @@ methods:
     description: |
       根据参数设置按钮的是否禁用，Button 类做了基本的实现，包括设置 disabled 属性和按钮样式
       当编辑器 blur 的时候该方法会被触发
-      
+
       ```coffee
       setDisabled: (disabled) ->
         @disabled = disabled
@@ -165,15 +165,15 @@ methods:
       - name: "$node"
         type: "jQuery Object"
     description: |
-      该方法在编辑器 [selectionchanged](../docs/doc-event.html#anchor-selectionchanged) 和 [focus](../docs/doc-event.html#anchor-focus) 发生时，在 Toolbar 类中被多次调用，去更新按钮的状态。  
+      该方法在编辑器 [selectionchanged](../docs/doc-event.html#anchor-selectionchanged) 和 [focus](../docs/doc-event.html#anchor-focus) 发生时，在 Toolbar 类中被多次调用，去更新按钮的状态。
 
-      参数 $node 是光标所在位置冒泡遍历所有的父元素直到编辑区域的最外层 DOM，也就是 editor.body，但不包括它。  
+      参数 $node 是光标所在位置冒泡遍历所有的父元素直到编辑区域的最外层 DOM，也就是 editor.body，但不包括它。
 
-      所以可以根据参数 $node 和属性 htmlTag disableTag 来更新按钮状态。  
+      所以可以根据参数 $node 和属性 htmlTag disableTag 来更新按钮状态。
 
       下面是 Button 类的基本实现
 
-      
+
       ```coffee
       status: ($node) ->
         @setDisabled $node.is(@disableTag) if $node?
@@ -191,8 +191,8 @@ methods:
     description: |
       点击按钮会执行的操作，通常是修改编辑的内容。在 Button 类中这是一个抽象方法，需要各按钮组件自己实现。
 
-      如果是菜单按钮，则参数param会是 [menu](#anchor-menu) 配置中的param
-      
+      如果是菜单按钮，则参数 param 会是 [menu](#anchor-menu) 配置中的 param
+
       ```coffee
       class BoldButton extends Button
         ...
