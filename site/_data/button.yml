@@ -17,7 +17,7 @@ properties:
     type: "String"
     default: "''"
     description: |
-      按钮显示的图标，Simditor使用的 [Font Awesome](http://fontawesome.io/) ，所以将会用 `fa-[icon]` 作图标，如果该属性为空字符串则显示按钮的 **text** 属性。
+      按钮显示的图标，Simditor使用[Font Awesome](http://fontawesome.io/)来渲染按钮图标，将会使用 `fa-[icon]` 作为按钮的图标，如果该属性为空则显示按钮的 **text** 属性。
 
       ```coffee
       # 按钮图标为 .fa-bell
@@ -42,7 +42,7 @@ properties:
     type: "String"
     default: "''"
     description: |
-      单个或多个由逗号分隔的 HTML 标签名称，表示按钮会在编辑器中增加的最外层标签，可用于 [status](../docs/doc-button.html#anchor-status) 方法中识别按钮的激活状态
+      单个或多个由逗号分隔的 HTML 标签名称，表示按钮会在编辑器中插入的 HTML 标签，可用于 [status](../docs/doc-button.html#anchor-status) 方法中识别按钮的激活状态
 
       ```coffee
       class TitleButton extends SimditorButton
@@ -91,19 +91,19 @@ properties:
         }]
       ```
 
-      **menu** 数组中可能是对象或者字符串 `'|'`，后者表示菜单中的分隔线，如果是对象，则有四个属性：`name``title``text``param`，name 用于增加对应的 class，text 和 title跟按钮的类似，param会作为参数传给方法 [command](#anchor-command)。
+      **menu** 数组中可能是对象或者字符串 `'|'`，后者表示菜单中的分隔线，如果是对象，则有四个属性：`name``title``text``param`，name 用于增加对应的 class，text 和 title的作用和按钮的属性类似，param会作为参数传给方法 [command](#anchor-command)。
 
   - name: "active"
     type: "Boolean"
     default: "false"
     description: |
-      按钮是否处于激活状态。
+      按钮是否处于激活状态。只读，请使用 [setActive](#anchor-setActive) 方法来设置按钮的激活状态。
 
   - name: "disabled"
     type: "Boolean"
     default: "false"
     description: |
-      按钮是否处于禁用状态。
+      按钮是否处于禁用状态。只读，请使用 [setDisabled](#anchor-setActive) 方法来设置按钮的激活状态。
 
   - name: "needFocus"
     type: "Boolean"
