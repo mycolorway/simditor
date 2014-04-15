@@ -40,7 +40,7 @@
 
 
 	<article class="editor-style">
-		<p>Simditor会在特定情况下触发下列事件，你可以为编辑器实例绑定这些事件来做相应的操作：</p>
+		<p>Simditor 会在特定情况下触发下列事件，你可以为编辑器实例绑定这些事件来做相应的操作：</p>
 <div class="highlight"><pre><code class="coffee language-coffee" data-lang="coffee"><span class="c1"># 初始化 Simditor</span>
 <span class="nv">editor = </span><span class="k">new</span> <span class="nx">Simditor</span><span class="p">({</span>
   <span class="nv">textarea: </span><span class="nx">$</span><span class="p">(</span><span class="s">&#39;#editor&#39;</span><span class="p">)</span>
@@ -68,7 +68,7 @@
       </span>
     </dt>
     <dd class="expand">
-      <p><strong>触发条件：编辑器内容发生改变</strong>  </p>
+      <p><strong>触发条件：编辑器内容发生改变</strong></p>
 
     </dd>
   
@@ -85,7 +85,7 @@
       </span>
     </dt>
     <dd class="expand">
-      <p><strong>触发条件：当光标位置或者选择的文本区域发生变化</strong>  </p>
+      <p><strong>触发条件：当光标位置或者选择的文本区域发生变化</strong></p>
 
     </dd>
   
@@ -107,9 +107,9 @@
       </span>
     </dt>
     <dd class="expand">
-      <p><strong>触发条件：当调用</strong> <a href="../docs/doc-method.html#anchor-setValue"><strong>setValue</strong></a> <strong>方法或粘贴内容的时候</strong>  </p>
+      <p><strong>触发条件：当调用</strong> <a href="../docs/doc-method.html#anchor-setValue"><strong>setValue</strong></a> <strong>方法或粘贴内容的时候</strong></p>
 
-<p>在扩展或者按钮中可能会在编辑的内容中插入一些比较复杂元素（例如：img、table），在编辑过程中，为了给用户呈现更友好的编辑体验，我们需要加入一些与内容无关的交互元素（我们称这个过程为“修饰”），这些起修饰作用的元素不应该成为内容的一部分，因此会在获取编辑器内容的时候被去掉。</p>
+<p>在扩展或者按钮中可能会在编辑的内容中插入一些比较复杂元素（例如：img、table），在编辑过程中，为了给用户呈现更友好的编辑体验，我们需要加入一些与内容无关的交互元素（我们称这个过程为「修饰」），这些起修饰作用的元素不应该成为内容的一部分，因此会在获取编辑器内容的时候被去掉。</p>
 
 <p>例如，为了实现表格拖动调整列宽的功能，我们需要一些额外的 HTML 标签：</p>
 <div class="highlight"><pre><code class="html language-html" data-lang="html"><span class="nt">&lt;div</span> <span class="na">class=</span><span class="s">&quot;simditor-table&quot;</span><span class="nt">&gt;</span> <span class="c">&lt;!-- 额外的标签 --&gt;</span>
@@ -117,33 +117,32 @@
   <span class="nt">&lt;div</span> <span class="na">class=</span><span class="s">&quot;simditor-resize-handle&quot;</span> <span class="na">contenteditable=</span><span class="s">&quot;false&quot;</span><span class="nt">&gt;&lt;/div&gt;</span> <span class="c">&lt;!-- 额外的标签 --&gt;</span>
 <span class="nt">&lt;/div&gt;</span>
 </code></pre></div>
-<p>在插入表格的时候，编辑器会调用表格的decorate方法(创建额外的HTML标签)，在获取编辑器内容的时候会通过undecorate事件调用表格的undecorate方法（去掉额外的HTML标签）。</p>
-<div class="highlight"><pre><code class="coffee language-coffee" data-lang="coffee"><span class="k">class</span> <span class="nx">ImageButton</span> <span class="k">extends</span> <span class="nx">Button</span>
+<p>在插入表格的时候，编辑器会调用表格的 decorate 方法（创建额外的 HTML 标签），在获取编辑器内容的时候会通过 undecorate 事件调用表格的 undecorate 方法（去掉额外的 HTML 标签）。</p>
+<div class="highlight"><pre><code class="coffee language-coffee" data-lang="coffee"><span class="k">class</span> <span class="nx">TableButton</span> <span class="k">extends</span> <span class="nx">Button</span>
   <span class="nv">constructor: </span><span class="nf">(@editor) -&gt;</span>
     <span class="p">...</span>
 
     <span class="nx">@editor</span><span class="p">.</span><span class="nx">on</span> <span class="s">&#39;decorate&#39;</span><span class="p">,</span> <span class="nf">(e, $el) =&gt;</span>
-      <span class="nx">$el</span><span class="p">.</span><span class="nx">find</span><span class="p">(</span><span class="s">&#39;img&#39;</span><span class="p">).</span><span class="nx">each</span> <span class="nf">(i, img) =&gt;</span>
-        <span class="nx">@decorate</span> <span class="nx">$</span><span class="p">(</span><span class="nx">img</span><span class="p">)</span>
+      <span class="nx">$el</span><span class="p">.</span><span class="nx">find</span><span class="p">(</span><span class="s">&#39;table&#39;</span><span class="p">).</span><span class="nx">each</span> <span class="nf">(i, table) =&gt;</span>
+        <span class="nx">@decorate</span> <span class="nx">$</span><span class="p">(</span><span class="nx">table</span><span class="p">)</span>
 
     <span class="nx">@editor</span><span class="p">.</span><span class="nx">on</span> <span class="s">&#39;undecorate&#39;</span><span class="p">,</span> <span class="nf">(e, $el) =&gt;</span>
-      <span class="nx">$el</span><span class="p">.</span><span class="nx">find</span><span class="p">(</span><span class="s">&#39;img&#39;</span><span class="p">).</span><span class="nx">each</span> <span class="nf">(i, img) =&gt;</span>
-        <span class="nx">@undecorate</span> <span class="nx">$</span><span class="p">(</span><span class="nx">img</span><span class="p">)</span>
+      <span class="nx">$el</span><span class="p">.</span><span class="nx">find</span><span class="p">(</span><span class="s">&#39;table&#39;</span><span class="p">).</span><span class="nx">each</span> <span class="nf">(i, table) =&gt;</span>
+        <span class="nx">@undecorate</span> <span class="nx">$</span><span class="p">(</span><span class="nx">table</span><span class="p">)</span>
 
-  <span class="nv">decorate: </span><span class="nf">($img) -&gt;</span>
-    <span class="nv">$wrapper = </span><span class="nx">$img</span><span class="p">.</span><span class="nx">parent</span><span class="p">(</span><span class="s">&#39;.simditor-image&#39;</span><span class="p">)</span>
-    <span class="k">return</span> <span class="k">if</span> <span class="nx">$wrapper</span><span class="p">.</span><span class="nx">length</span> <span class="o">&gt;</span> <span class="mi">0</span>
+  <span class="p">...</span>
 
-    <span class="nv">$wrapper = </span><span class="nx">$</span><span class="p">(</span><span class="nx">@_wrapperTpl</span><span class="p">)</span>
-      <span class="p">.</span><span class="nx">insertBefore</span><span class="p">(</span><span class="nx">$img</span><span class="p">)</span>
-      <span class="p">.</span><span class="nx">prepend</span><span class="p">(</span><span class="nx">$img</span><span class="p">)</span>
+  <span class="nv">decorate: </span><span class="nf">($table) -&gt;</span>
+    <span class="k">if</span> <span class="nx">$table</span><span class="p">.</span><span class="nx">parent</span><span class="p">(</span><span class="s">&#39;.simditor-table&#39;</span><span class="p">).</span><span class="nx">length</span> <span class="o">&gt;</span> <span class="mi">0</span>
+      <span class="nx">@undecorate</span> <span class="nx">$table</span>
 
-  <span class="nv">undecorate: </span><span class="nf">($img) -&gt;</span>
-    <span class="nv">$wrapper = </span><span class="nx">$img</span><span class="p">.</span><span class="nx">parent</span><span class="p">(</span><span class="s">&#39;.simditor-image&#39;</span><span class="p">)</span>
-    <span class="k">return</span> <span class="k">if</span> <span class="nx">$wrapper</span><span class="p">.</span><span class="nx">length</span> <span class="o">&lt;</span> <span class="mi">1</span>
+    <span class="nx">$table</span><span class="p">.</span><span class="nx">wrap</span> <span class="s">&#39;&lt;div class=&quot;simditor-table&quot;&gt;&lt;/div&gt;&#39;</span>
+    <span class="nx">@initResize</span> <span class="nx">$table</span>
+    <span class="nx">$table</span><span class="p">.</span><span class="nx">parent</span><span class="p">()</span>
 
-    <span class="nx">$img</span><span class="p">.</span><span class="nx">insertAfter</span> <span class="nx">$wrapper</span> <span class="k">unless</span> <span class="nx">$img</span><span class="p">.</span><span class="o">is</span><span class="p">(</span><span class="s">&#39;img[src^=&quot;data:image/png;base64&quot;]&#39;</span><span class="p">)</span>
-    <span class="nx">$wrapper</span><span class="p">.</span><span class="nx">remove</span><span class="p">()</span>
+  <span class="nv">undecorate: </span><span class="nf">($table) -&gt;</span>
+    <span class="k">return</span> <span class="k">unless</span> <span class="nx">$table</span><span class="p">.</span><span class="nx">parent</span><span class="p">(</span><span class="s">&#39;.simditor-table&#39;</span><span class="p">).</span><span class="nx">length</span> <span class="o">&gt;</span> <span class="mi">0</span>
+    <span class="nx">$table</span><span class="p">.</span><span class="nx">parent</span><span class="p">().</span><span class="nx">replaceWith</span><span class="p">(</span><span class="nx">$table</span><span class="p">)</span>
 </code></pre></div>
     </dd>
   
@@ -165,7 +164,7 @@
       </span>
     </dt>
     <dd class="expand">
-      <p><strong>触发条件：当调用</strong> <a href="../docs/doc-method.html#anchor-decorate"><strong>getValue</strong></a> 和 <a href="../docs/doc-method.html#anchor-sync"><strong>sync</strong></a> <strong>方法的时候</strong>  </p>
+      <p><strong>触发条件：当调用</strong> <a href="../docs/doc-method.html#anchor-decorate"><strong>getValue</strong></a> 和 <a href="../docs/doc-method.html#anchor-sync"><strong>sync</strong></a> <strong>方法的时候</strong></p>
 
 <p>参考 <a href="../docs/doc-event.html#anchor-decorate">decorate</a> 事件</p>
 
@@ -189,9 +188,9 @@
       </span>
     </dt>
     <dd class="expand">
-      <p><strong>触发条件：粘贴内容到编辑器的时候</strong>  </p>
+      <p><strong>触发条件：粘贴内容到编辑器的时候</strong></p>
 
-<p>参数<code>$pasteContent</code>是粘贴的内容，可以根据它来决定是否要中断粘贴，如果返回false，粘贴将不会生效  </p>
+<p>参数<code>$pasteContent</code>是粘贴的内容，可以根据它来决定是否要中断粘贴，如果返回false，粘贴将不会生效</p>
 
 <h6>示例</h6>
 <div class="highlight"><pre><code class="js language-js" data-lang="js"><span class="c1">// 如果粘贴的内容含有图片则中断粘贴</span>
@@ -216,7 +215,7 @@
       </span>
     </dt>
     <dd class="expand">
-      <p><strong>触发条件：内容区域获得焦点的时候</strong>  </p>
+      <p><strong>触发条件：内容区域获得焦点的时候</strong></p>
 
     </dd>
   
@@ -233,7 +232,7 @@
       </span>
     </dt>
     <dd class="expand">
-      <p><strong>触发条件：内容区域失去焦点的时候</strong>  </p>
+      <p><strong>触发条件：内容区域失去焦点的时候</strong></p>
 
     </dd>
   
@@ -250,7 +249,7 @@
       </span>
     </dt>
     <dd class="expand">
-      <p><strong>触发条件：调用实例的destroy方法的时候</strong>  </p>
+      <p><strong>触发条件：调用实例的 destroy 方法的时候</strong></p>
 
     </dd>
   

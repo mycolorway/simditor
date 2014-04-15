@@ -56,7 +56,7 @@
     <span class="p">...</span>
 
   <span class="nv">command: </span><span class="nf">(param) -&gt;</span>
-    <span class="c1"># 在Button类中这是一个抽象方法，需要各个按钮单独实现</span>
+    <span class="c1"># 在 Button 类中这是一个抽象方法，需要各个按钮单独实现</span>
     <span class="c1"># 执行格式化的操作</span>
 
 <span class="nx">Simditor</span><span class="p">.</span><span class="nx">Toolbar</span><span class="p">.</span><span class="nx">addButton</span><span class="p">(</span><span class="nx">TitleButton</span><span class="p">)</span>
@@ -88,7 +88,7 @@
       <span class="default">默认值: ''</span>
     </dt>
     <dd class="expand">
-      <p>按钮显示的图标，Simditor使用<a href="http://fontawesome.io/">Font Awesome</a>来渲染按钮图标，将会使用 <code>fa-[icon]</code> 作为按钮的图标，如果该属性为空则显示按钮的 <strong>text</strong> 属性。</p>
+      <p>按钮显示的图标，Simditor 使用 <a href="http://fontawesome.io/">Font Awesome</a> 来渲染按钮图标，将会使用 <code>fa-[icon]</code> 作为按钮的图标，如果该属性为空则显示按钮的 <strong>text</strong> 属性。</p>
 <div class="highlight"><pre><code class="coffee language-coffee" data-lang="coffee"><span class="c1"># 按钮图标为 .fa-bell</span>
 <span class="k">class</span> <span class="nx">HelloButton</span> <span class="k">extends</span> <span class="nx">SimditorButton</span>
   <span class="nv">name: </span><span class="s">&#39;hello&#39;</span>
@@ -103,7 +103,7 @@
       <span class="default">默认值: ''</span>
     </dt>
     <dd class="expand">
-      <p>按钮DOM元素的title属性，鼠标hover的时候显示。</p>
+      <p>按钮 DOM 元素的 title 属性，鼠标 hover 的时候显示。</p>
 
     </dd>
   
@@ -125,7 +125,7 @@
       <span class="default">默认值: ''</span>
     </dt>
     <dd class="expand">
-      <p>单个或多个由逗号分隔的 HTML 标签名称，表示按钮会在编辑器中插入的 HTML 标签，可用于 <a href="../docs/doc-button.html#anchor-status">status</a> 方法中识别按钮的激活状态</p>
+      <p>单个或多个由逗号分隔的 HTML 标签名称，表示按钮会在编辑器中插入的 HTML 标签，可用于 <a href="#anchor-status">status</a> 方法中识别按钮的激活状态。</p>
 <div class="highlight"><pre><code class="coffee language-coffee" data-lang="coffee"><span class="k">class</span> <span class="nx">TitleButton</span> <span class="k">extends</span> <span class="nx">SimditorButton</span>
   <span class="nv">name: </span><span class="s">&#39;title&#39;</span>
   <span class="nv">title: </span><span class="s">&#39;标题文字&#39;</span>
@@ -174,7 +174,7 @@
     <span class="nv">param: </span><span class="s">&#39;h1&#39;</span>
   <span class="p">}]</span>
 </code></pre></div>
-<p><strong>menu</strong> 数组中可能是对象或者字符串 <code>&#39;|&#39;</code>，后者表示菜单中的分隔线，如果是对象，则有四个属性：<code>name</code><code>title</code><code>text</code><code>param</code>，name 用于增加对应的 class，text 和 title的作用和按钮的属性类似，param会作为参数传给方法 <a href="#anchor-command">command</a>。</p>
+<p><strong>menu</strong> 数组中可能是对象或者字符串 <code>&#39;|&#39;</code>，后者表示菜单中的分隔线，如果是对象，则有四个属性：<code>name</code><code>title</code><code>text</code><code>param</code>，name 用于增加对应的 class，text 和 title 的作用和按钮的属性类似，param 会作为参数传给方法 <a href="#anchor-command">command</a>。</p>
 
     </dd>
   
@@ -218,7 +218,7 @@
       <span class="default">默认值: null</span>
     </dt>
     <dd class="expand">
-      <p>为按钮设置快捷键，结构为功能键和按键的编码用加号连接，比如 <code>&#39;cmd+99&#39;</code>，支持的功能键为 <code>cmd</code><code>shift</code><code>alt</code><code>ctrl</code>  </p>
+      <p>为按钮设置快捷键，结构为功能键和按键的编码用加号连接，比如 <code>&#39;cmd+99&#39;</code>，支持的功能键为 <code>cmd</code><code>shift</code><code>alt</code><code>ctrl</code></p>
 <div class="highlight"><pre><code class="coffee language-coffee" data-lang="coffee"><span class="k">class</span> <span class="nx">BoldButton</span> <span class="k">extends</span> <span class="nx">Button</span>
   <span class="nv">name: </span><span class="s">&#39;bold&#39;</span>
   <span class="nv">title: </span><span class="s">&#39;加粗文字&#39;</span>
@@ -249,7 +249,7 @@
       </span>
     </dt>
     <dd class="expand">
-      <p>根据参数设置按钮的激活状态，Button 类做了基本的实现，包括设置 active 属性和按钮样式。<br>
+      <p>根据参数设置按钮的激活状态，Button 类做了基本的实现，包括设置 active 属性和按钮样式。
 当编辑器 blur 的时候该方法会被触发</p>
 <div class="highlight"><pre><code class="coffee language-coffee" data-lang="coffee"><span class="nv">setActive: </span><span class="nf">(active) -&gt;</span>
   <span class="vi">@active = </span><span class="nx">active</span>
@@ -291,11 +291,11 @@
       </span>
     </dt>
     <dd class="expand">
-      <p>该方法在编辑器 <a href="../docs/doc-event.html#anchor-selectionchanged">selectionchanged</a> 和 <a href="../docs/doc-event.html#anchor-focus">focus</a> 发生时，在 Toolbar 类中被多次调用，去更新按钮的状态。  </p>
+      <p>该方法在编辑器 <a href="../docs/doc-event.html#anchor-selectionchanged">selectionchanged</a> 和 <a href="../docs/doc-event.html#anchor-focus">focus</a> 发生时，在 Toolbar 类中被多次调用，去更新按钮的状态。</p>
 
-<p>参数 $node 是光标所在位置冒泡遍历所有的父元素直到编辑区域的最外层 DOM，也就是 editor.body，但不包括它。  </p>
+<p>参数 $node 是光标所在位置冒泡遍历所有的父元素直到编辑区域的最外层 DOM，也就是 editor.body，但不包括它。</p>
 
-<p>所以可以根据参数 $node 和属性 htmlTag disableTag 来更新按钮状态。  </p>
+<p>所以可以根据参数 $node 和属性 htmlTag disableTag 来更新按钮状态。</p>
 
 <p>下面是 Button 类的基本实现</p>
 <div class="highlight"><pre><code class="coffee language-coffee" data-lang="coffee"><span class="nv">status: </span><span class="nf">($node) -&gt;</span>
@@ -322,7 +322,7 @@
     <dd class="expand">
       <p>点击按钮会执行的操作，通常是修改编辑的内容。在 Button 类中这是一个抽象方法，需要各按钮组件自己实现。</p>
 
-<p>如果是菜单按钮，则参数param会是 <a href="../docs/doc-button.html#anchor-menu">menu</a> 配置中的param</p>
+<p>如果是菜单按钮，则参数 param 会是 <a href="#anchor-menu">menu</a> 配置中的 param</p>
 <div class="highlight"><pre><code class="coffee language-coffee" data-lang="coffee"><span class="k">class</span> <span class="nx">BoldButton</span> <span class="k">extends</span> <span class="nx">Button</span>
   <span class="p">...</span>
 
