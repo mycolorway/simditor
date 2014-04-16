@@ -122,11 +122,17 @@ class Simditor extends Widget
     # generate `a` tag automatically
     @formatter.autolink cloneBody
 
-    # remove empty `p` tag at the end of content
-    lastP = cloneBody.children().last 'p'
+    # remove empty `p` tag at the start/end of content
+    children = cloneBody.children()
+    lastP = children.last 'p'
+    firstP = children.first 'p'
     while lastP.is('p') and !lastP.text() and !lastP.find('img').length
       emptyP = lastP
       lastP = lastP.prev 'p'
+      emptyP.remove()
+    while firstP.is('p') and !firstP.text() and !firstP.find('img').length
+      emptyP = firstP
+      firstP = lastP.next 'p'
       emptyP.remove()
 
     val = $.trim(cloneBody.html())

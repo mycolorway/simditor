@@ -318,6 +318,7 @@
 .simditor .simditor-popover.image-popover .btn-upload {
   position: relative;
   display: inline-block;
+  overflow: hidden;
 }
 .simditor .simditor-popover.image-popover .btn-upload input[type=file] {
   position: absolute;
