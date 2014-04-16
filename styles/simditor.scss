@@ -395,6 +395,7 @@ $simditor-toolbar-height: 40px;
 		&.image-popover .btn-upload {
 			position: relative;
 			display: inline-block;
+			overflow: hidden;
 
 			input[type=file] {
 				position: absolute;

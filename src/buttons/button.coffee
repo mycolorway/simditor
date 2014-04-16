@@ -68,6 +68,7 @@ class Button extends Module
     if @shortcut?
       @editor.inputManager.addShortcut @shortcut, (e) =>
         @el.mousedown()
+        false
 
     for tag in @htmlTag.split ','
       tag = $.trim tag

@@ -33,12 +33,17 @@ class InputManager extends Plugin
       .appendTo(@editor.el)
 
     @editor.on 'valuechanged', =>
-      # make sure each code block, img and table has a p following it
+      # make sure each code block, img and table has siblings
       @editor.body.find('hr, pre, .simditor-image, .simditor-table').each (i, el) =>
         $el = $(el)
-        if ($el.parent().is('blockquote') or $el.parent()[0] == @editor.body[0]) and $el.next().length == 0
-          $('<p/>').append(@editor.util.phBr)
-            .insertAfter($el)
+        if ($el.parent().is('blockquote') or $el.parent()[0] == @editor.body[0])
+          if $el.next().length == 0
+            $('<p/>').append(@editor.util.phBr)
+              .insertAfter($el)
+          if $el.prev().length == 0
+            $('<p/>').append(@editor.util.phBr)
+              .insertBefore($el)
+
 
     @editor.body.on('keydown', $.proxy(@_onKeyDown, @))
       .on('keypress', $.proxy(@_onKeyPress, @))
@@ -53,14 +58,18 @@ class InputManager extends Plugin
       @addShortcut 'cmd+37', (e) =>
         e.preventDefault()
         @editor.selection.sel.modify('move', 'backward', 'lineboundary')
+        false
       @addShortcut 'cmd+39', (e) =>
         e.preventDefault()
         @editor.selection.sel.modify('move', 'forward', 'lineboundary')
+        false
+
 
     if @editor.textarea.attr 'autofocus'
       setTimeout =>
         @editor.focus()
       , 0
+
 
   _onFocus: (e) ->
     @editor.el.addClass('focus')
@@ -95,8 +104,7 @@ class InputManager extends Plugin
     # handle predefined shortcuts
     shortcutKey = @editor.util.getShortcutKey e
     if @_shortcuts[shortcutKey]
-      @_shortcuts[shortcutKey].call(this, e)
-      return false
+      return @_shortcuts[shortcutKey].call(this, e)
 
     # Check the condictional handlers
     if e.which of @_keystrokeHandlers
@@ -308,6 +316,7 @@ class InputManager extends Plugin
       @editor.el.closest('form')
         .find('button:submit')
         .click()
+      false
 
   addShortcut: (keys, handler) ->
     @_shortcuts[keys] = $.proxy(handler, this)

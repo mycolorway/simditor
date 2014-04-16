@@ -26,10 +26,12 @@ class UndoManager extends Plugin
     @editor.inputManager.addShortcut undoShortcut, (e) =>
       e.preventDefault()
       @undo()
+      false
 
     @editor.inputManager.addShortcut redoShortcut, (e) =>
       e.preventDefault()
       @redo()
+      false
 
     @editor.on 'valuechanged', (e, src) =>
       return if src == 'undo'
