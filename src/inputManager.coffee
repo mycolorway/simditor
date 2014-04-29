@@ -198,7 +198,7 @@ class InputManager extends Plugin
         return unless imageFile? and @opts.pasteImage
 
         unless imageFile.name
-          imageFile.name = "来自剪贴板的图片.png";
+          imageFile.name = "来自剪贴板的图片.png"
 
         uploadOpt = {}
         uploadOpt[@opts.pasteImage] = true

@@ -171,7 +171,7 @@ class Selection extends Plugin
       endOffset = endContainer.contents().index(endCaret)
 
       if startContainer[0] == endContainer[0]
-        endOffset -= 1;
+        endOffset -= 1
 
       range = document.createRange()
       range.setStart(startContainer.get(0), startOffset)

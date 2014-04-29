@@ -171,7 +171,7 @@ class Selection extends Plugin
       endOffset = endContainer.contents().index(endCaret)
 
       if startContainer[0] == endContainer[0]
-        endOffset -= 1;
+        endOffset -= 1
 
       range = document.createRange()
       range.setStart(startContainer.get(0), startOffset)
@@ -242,10 +242,10 @@ class Formatter extends Plugin
 
     re = /(https?:\/\/|www\.)[\w\-\.\?&=\/#%:]+/ig
     for $node in linkNodes
-      text = $node.text();
-      replaceEls = [];
-      match = null;
-      lastIndex = 0;
+      text = $node.text()
+      replaceEls = []
+      match = null
+      lastIndex = 0
 
       while (match = re.exec(text)) != null
         replaceEls.push document.createTextNode(text.substring(lastIndex, match.index))
@@ -566,7 +566,7 @@ class InputManager extends Plugin
         return unless imageFile? and @opts.pasteImage
 
         unless imageFile.name
-          imageFile.name = "来自剪贴板的图片.png";
+          imageFile.name = "来自剪贴板的图片.png"
 
         uploadOpt = {}
         uploadOpt[@opts.pasteImage] = true
@@ -1453,7 +1453,7 @@ class Simditor extends Widget
     tabIndent: true
 
   _init: ->
-    @textarea = $(@opts.textarea);
+    @textarea = $(@opts.textarea)
     @opts.placeholder = @opts.placeholder ? @textarea.attr('placeholder')
 
     unless @textarea.length
@@ -2573,7 +2573,7 @@ class ImageButton extends Button
     super()
 
     $uploadItem = @menuEl.find('.menu-item-upload-image')
-    $input = null;
+    $input = null
 
     createInput = =>
       $input.remove() if $input
@@ -2871,8 +2871,6 @@ class ImagePopover extends Popover
 Simditor.Toolbar.addButton(ImageButton)
 
 
-
-
 class IndentButton extends Button
 
   name: 'indent'
@@ -3047,7 +3045,7 @@ class TableButton extends Button
     $wrapper.on 'mousemove', 'td', (e) =>
       return if $wrapper.hasClass('resizing')
       $td = $(e.currentTarget)
-      x = e.pageX - $(e.currentTarget).offset().left;
+      x = e.pageX - $(e.currentTarget).offset().left
       $td = $td.prev() if x < 5 and $td.prev().length > 0
 
       if $td.next('td').length < 1
