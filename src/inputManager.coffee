@@ -244,11 +244,11 @@ class InputManager extends Plugin
           children = pasteContent.contents()
           @editor.selection.insertNode node, range for node in children
 
-        # paste image in firefox
+        # paste image in firefox and IE 11
         else if pasteContent.is('.simditor-image')
           $img = pasteContent.find('img')
 
-          # firefox
+          # firefox and IE 11
           if dataURLtoBlob && $img.is('img[src^="data:image/png;base64"]')
             return unless @opts.pasteImage
             blob = dataURLtoBlob $img.attr( "src" )

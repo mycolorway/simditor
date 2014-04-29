@@ -260,6 +260,12 @@ class ImageButton extends Button
 
   createImage: () ->
     range = @editor.selection.getRange()
+
+    unless range
+      caret = @editor.inputManager.lastCaretPosition
+      @editor.undoManager.caretPosition caret
+      range = @editor.selection.getRange()
+
     startNode = range.startContainer
     endNode = range.endContainer
     $startBlock = @editor.util.closestBlockEl(startNode)
