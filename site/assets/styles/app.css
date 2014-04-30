@@ -399,12 +399,12 @@ a:hover, a:active {
   background-position: 4px 0;
   background-image: url("../images/logo.png");
   background-repeat: no-repeat;
-  background-size: 265px 110px;
+  background-size: 264px 107px;
 }
 @media all and (-webkit-min-device-pixel-ratio: 1.5), all and (-o-min-device-pixel-ratio: 3 / 2), all and (min--moz-device-pixel-ratio: 1.5), all and (min-device-pixel-ratio: 1.5) {
   .wrapper header h1 {
     background-image: url("../images/logo@2x.png");
-    background-size: 265px 110px;
+    background-size: 264px 107px;
   }
 }
 .wrapper header h1 a {
