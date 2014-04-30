@@ -4,7 +4,7 @@ $simditor-toolbar-height: 40px;
 
 .simditor {
 	position: relative;
-	border: 1px solid #cccccc;
+	border: 1px solid #c9d8db;
 
 	.simditor-wrapper {
 		position: relative;
@@ -45,10 +45,6 @@ $simditor-toolbar-height: 40px;
 		position: relative;
 		z-index: 1;
 		background: transparent;
-
-		& > :first-child {
-			margin-top: 0!important;
-		}
 
 		a.selected {
 			background: #b3d4fd;
@@ -416,6 +412,10 @@ $simditor-toolbar-height: 40px;
 	color: #333;
 	outline: none;
 	word-wrap: break-word;
+
+	& > :first-child {
+		margin-top: 0!important;
+	}
 
 	a{ color: #4298BA; text-decoration: none; word-break: break-all;}
 	a:visited{ color: #4298BA; }
