@@ -221,7 +221,7 @@ class ImageButton extends Button
     $wrapper = $img.parent('.simditor-image')
     return if $wrapper.length < 1
 
-    unless $img.is('img[src^="data:image/png;base64"]')
+    unless /^data:image\/png;base64/.test($img.attr('src'))
       $('<p/>').append($img).insertAfter($wrapper)
     $wrapper.remove()
 

@@ -617,7 +617,7 @@ class InputManager extends Plugin
           $img = pasteContent.find('img')
 
           # firefox and IE 11
-          if dataURLtoBlob && $img.is('img[src^="data:image/png;base64"]')
+          if dataURLtoBlob && /^data:image\/png;base64/.test($img.attr('src'))
             return unless @opts.pasteImage
             blob = dataURLtoBlob $img.attr( "src" )
             blob.name = "来自剪贴板的图片.png"
@@ -2699,7 +2699,7 @@ class ImageButton extends Button
     $wrapper = $img.parent('.simditor-image')
     return if $wrapper.length < 1
 
-    unless $img.is('img[src^="data:image/png;base64"]')
+    unless /^data:image\/png;base64/.test($img.attr('src'))
       $('<p/>').append($img).insertAfter($wrapper)
     $wrapper.remove()
 
