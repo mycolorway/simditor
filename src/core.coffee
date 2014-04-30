@@ -19,7 +19,7 @@ class Simditor extends Widget
     tabIndent: true
 
   _init: ->
-    @textarea = $(@opts.textarea);
+    @textarea = $(@opts.textarea)
     @opts.placeholder = @opts.placeholder ? @textarea.attr('placeholder')
 
     unless @textarea.length

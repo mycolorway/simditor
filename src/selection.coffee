@@ -171,7 +171,7 @@ class Selection extends Plugin
       endOffset = endContainer.contents().index(endCaret)
 
       if startContainer[0] == endContainer[0]
-        endOffset -= 1;
+        endOffset -= 1
 
       range = document.createRange()
       range.setStart(startContainer.get(0), startOffset)
@@ -182,7 +182,7 @@ class Selection extends Plugin
       @selectRange range
 
       # firefox won't auto focus while applying new range
-      @editor.body.focus() if @editor.util.browser.firefox
+      @editor.body.focus() if @editor.util.browser.firefox or @editor.util.browser.msie
     else
       startCaret.remove()
       endCaret.remove()

@@ -96,7 +96,7 @@ class TableButton extends Button
     $wrapper.on 'mousemove', 'td', (e) =>
       return if $wrapper.hasClass('resizing')
       $td = $(e.currentTarget)
-      x = e.pageX - $(e.currentTarget).offset().left;
+      x = e.pageX - $(e.currentTarget).offset().left
       $td = $td.prev() if x < 5 and $td.prev().length > 0
 
       if $td.next('td').length < 1

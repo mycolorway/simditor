@@ -686,7 +686,7 @@
         startCaret.remove();
         endCaret.remove();
         this.selectRange(range);
-        if (this.editor.util.browser.firefox) {
+        if (this.editor.util.browser.firefox || this.editor.util.browser.msie) {
           this.editor.body.focus();
         }
       } else {

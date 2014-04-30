@@ -48,10 +48,10 @@ class Formatter extends Plugin
 
     re = /(https?:\/\/|www\.)[\w\-\.\?&=\/#%:]+/ig
     for $node in linkNodes
-      text = $node.text();
-      replaceEls = [];
-      match = null;
-      lastIndex = 0;
+      text = $node.text()
+      replaceEls = []
+      match = null
+      lastIndex = 0
 
       while (match = re.exec(text)) != null
         replaceEls.push document.createTextNode(text.substring(lastIndex, match.index))

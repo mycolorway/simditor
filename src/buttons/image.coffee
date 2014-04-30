@@ -95,7 +95,7 @@ class ImageButton extends Button
     super()
 
     $uploadItem = @menuEl.find('.menu-item-upload-image')
-    $input = null;
+    $input = null
 
     createInput = =>
       $input.remove() if $input
@@ -385,5 +385,3 @@ class ImagePopover extends Popover
 
 
 Simditor.Toolbar.addButton(ImageButton)
-
-
