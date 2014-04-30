@@ -260,7 +260,7 @@ class InputManager extends Plugin
             return
 
           # cannot paste image in safari
-          else if imgEl.is('img[src^="webkit-fake-url://"]')
+          else if $img.is('img[src^="webkit-fake-url://"]')
             return
         else if $blockEl.is('p') and @editor.util.isEmptyNode $blockEl
           $blockEl.replaceWith pasteContent
