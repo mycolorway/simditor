@@ -1,6 +1,6 @@
 .simditor {
   position: relative;
-  border: 1px solid #cccccc;
+  border: 1px solid #c9d8db;
 }
 .simditor .simditor-wrapper {
   position: relative;
@@ -37,9 +37,6 @@
   position: relative;
   z-index: 1;
   background: transparent;
-}
-.simditor .simditor-body > :first-child {
-  margin-top: 0 !important;
 }
 .simditor .simditor-body a.selected {
   background: #b3d4fd;
@@ -318,6 +315,7 @@
 .simditor .simditor-popover.image-popover .btn-upload {
   position: relative;
   display: inline-block;
+  overflow: hidden;
 }
 .simditor .simditor-popover.image-popover .btn-upload input[type=file] {
   position: absolute;
@@ -335,6 +333,9 @@
   color: #333;
   outline: none;
   word-wrap: break-word;
+}
+.simditor .simditor-body > :first-child, .editor-style > :first-child {
+  margin-top: 0 !important;
 }
 .simditor .simditor-body a, .editor-style a {
   color: #4298BA;

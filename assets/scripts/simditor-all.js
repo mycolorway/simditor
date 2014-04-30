@@ -686,7 +686,7 @@
         startCaret.remove();
         endCaret.remove();
         this.selectRange(range);
-        if (this.editor.util.browser.firefox) {
+        if (this.editor.util.browser.firefox || this.editor.util.browser.msie) {
           this.editor.body.focus();
         }
       } else {
@@ -984,8 +984,13 @@
         return _this.editor.body.find('hr, pre, .simditor-image, .simditor-table').each(function(i, el) {
           var $el;
           $el = $(el);
-          if (($el.parent().is('blockquote') || $el.parent()[0] === _this.editor.body[0]) && $el.next().length === 0) {
-            return $('<p/>').append(_this.editor.util.phBr).insertAfter($el);
+          if ($el.parent().is('blockquote') || $el.parent()[0] === _this.editor.body[0]) {
+            if ($el.next().length === 0) {
+              $('<p/>').append(_this.editor.util.phBr).insertAfter($el);
+            }
+            if ($el.prev().length === 0) {
+              return $('<p/>').append(_this.editor.util.phBr).insertBefore($el);
+            }
           }
         });
       });
@@ -993,11 +998,13 @@
       if (this.editor.util.browser.firefox) {
         this.addShortcut('cmd+37', function(e) {
           e.preventDefault();
-          return _this.editor.selection.sel.modify('move', 'backward', 'lineboundary');
+          _this.editor.selection.sel.modify('move', 'backward', 'lineboundary');
+          return false;
         });
         this.addShortcut('cmd+39', function(e) {
           e.preventDefault();
-          return _this.editor.selection.sel.modify('move', 'forward', 'lineboundary');
+          _this.editor.selection.sel.modify('move', 'forward', 'lineboundary');
+          return false;
         });
       }
       if (this.editor.textarea.attr('autofocus')) {
@@ -1043,8 +1050,7 @@
       }
       shortcutKey = this.editor.util.getShortcutKey(e);
       if (this._shortcuts[shortcutKey]) {
-        this._shortcuts[shortcutKey].call(this, e);
-        return false;
+        return this._shortcuts[shortcutKey].call(this, e);
       }
       if (e.which in this._keystrokeHandlers) {
         result = typeof (_base = this._keystrokeHandlers[e.which])['*'] === "function" ? _base['*'](e) : void 0;
@@ -1280,7 +1286,8 @@
 
     InputManager.prototype._shortcuts = {
       'cmd+13': function(e) {
-        return this.editor.el.closest('form').find('button:submit').click();
+        this.editor.el.closest('form').find('button:submit').click();
+        return false;
       }
     };
 
@@ -1514,11 +1521,13 @@
       }
       this.editor.inputManager.addShortcut(undoShortcut, function(e) {
         e.preventDefault();
-        return _this.undo();
+        _this.undo();
+        return false;
       });
       this.editor.inputManager.addShortcut(redoShortcut, function(e) {
         e.preventDefault();
-        return _this.redo();
+        _this.redo();
+        return false;
       });
       return this.editor.on('valuechanged', function(e, src) {
         if (src === 'undo') {
@@ -2303,15 +2312,22 @@
     };
 
     Simditor.prototype.sync = function() {
-      var cloneBody, emptyP, lastP, val;
+      var children, cloneBody, emptyP, firstP, lastP, val;
       cloneBody = this.body.clone();
       this.formatter.undecorate(cloneBody);
       this.formatter.format(cloneBody);
       this.formatter.autolink(cloneBody);
-      lastP = cloneBody.children().last('p');
+      children = cloneBody.children();
+      lastP = children.last('p');
+      firstP = children.first('p');
       while (lastP.is('p') && !lastP.text() && !lastP.find('img').length) {
         emptyP = lastP;
         lastP = lastP.prev('p');
+        emptyP.remove();
+      }
+      while (firstP.is('p') && !firstP.text() && !firstP.find('img').length) {
+        emptyP = firstP;
+        firstP = lastP.next('p');
         emptyP.remove();
       }
       val = $.trim(cloneBody.html());
@@ -2460,7 +2476,8 @@
       });
       if (this.shortcut != null) {
         this.editor.inputManager.addShortcut(this.shortcut, function(e) {
-          return _this.el.mousedown();
+          _this.el.mousedown();
+          return false;
         });
       }
       _ref3 = this.htmlTag.split(',');
