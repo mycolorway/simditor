@@ -182,7 +182,7 @@ class Selection extends Plugin
       @selectRange range
 
       # firefox won't auto focus while applying new range
-      @editor.body.focus() if @editor.util.browser.firefox
+      @editor.body.focus() if @editor.util.browser.firefox or @editor.util.browser.msie
     else
       startCaret.remove()
       endCaret.remove()
@@ -2738,12 +2738,6 @@ class ImageButton extends Button
 
   createImage: () ->
     range = @editor.selection.getRange()
-
-    unless range
-      caret = @editor.inputManager.lastCaretPosition
-      @editor.undoManager.caretPosition caret
-      range = @editor.selection.getRange()
-
     startNode = range.startContainer
     endNode = range.endContainer
     $startBlock = @editor.util.closestBlockEl(startNode)

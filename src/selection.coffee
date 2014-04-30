@@ -182,7 +182,7 @@ class Selection extends Plugin
       @selectRange range
 
       # firefox won't auto focus while applying new range
-      @editor.body.focus() if @editor.util.browser.firefox
+      @editor.body.focus() if @editor.util.browser.firefox or @editor.util.browser.msie
     else
       startCaret.remove()
       endCaret.remove()
