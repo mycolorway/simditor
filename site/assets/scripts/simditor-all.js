@@ -1219,7 +1219,7 @@
             }
           } else if (pasteContent.is('.simditor-image')) {
             $img = pasteContent.find('img');
-            if (dataURLtoBlob && $img.is('img[src^="data:image/png;base64"]')) {
+            if (dataURLtoBlob && /^data:image\/png;base64/.test($img.attr('src'))) {
               if (!_this.opts.pasteImage) {
                 return;
               }
@@ -3749,7 +3749,7 @@
       if ($wrapper.length < 1) {
         return;
       }
-      if (!$img.is('img[src^="data:image/png;base64"]')) {
+      if (!/^data:image\/png;base64/.test($img.attr('src'))) {
         $('<p/>').append($img).insertAfter($wrapper);
       }
       return $wrapper.remove();
