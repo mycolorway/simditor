@@ -390,42 +390,68 @@ a:hover, a:active {
   margin: 0 auto;
 }
 .wrapper header {
-  padding: 40px 0 30px;
+  padding: 50px 0 15px;
 }
 .wrapper header h1 {
-  font-size: 40px;
-  font-weight: bold;
+  width: 300px;
+  margin: 0 auto;
+  padding: 130px 0 0 0;
+  background-position: 4px 0;
+  background-image: url("../images/logo.png");
+  background-repeat: no-repeat;
+  background-size: 265px 110px;
+}
+@media all and (-webkit-min-device-pixel-ratio: 1.5), all and (-o-min-device-pixel-ratio: 3 / 2), all and (min--moz-device-pixel-ratio: 1.5), all and (min-device-pixel-ratio: 1.5) {
+  .wrapper header h1 {
+    background-image: url("../images/logo@2x.png");
+    background-size: 265px 110px;
+  }
 }
 .wrapper header h1 a {
-  color: #000000;
+  display: block;
+  width: 180px;
+  height: 50px;
+  margin: 0 auto;
+  font-size: 50px;
+  font-family: 'Myriad', 'Helvetica Neue', Helvetica;
+  color: #3b5f6d;
+  text-align: center;
+  text-indent: -9999px;
+  overflow: hidden;
+  background-position: center 0;
+  background-image: url("../images/title.png");
+  background-repeat: no-repeat;
+  background-size: 171px 39px;
+}
+@media all and (-webkit-min-device-pixel-ratio: 1.5), all and (-o-min-device-pixel-ratio: 3 / 2), all and (min--moz-device-pixel-ratio: 1.5), all and (min-device-pixel-ratio: 1.5) {
+  .wrapper header h1 a {
+    background-image: url("../images/title@2x.png");
+    background-size: 171px 39px;
+  }
 }
 .wrapper header .desc {
-  font-size: 16px;
-  color: #999999;
-  margin: 10px 0 0 0;
+  font-size: 19px;
+  color: #9ba5a9;
+  text-align: center;
 }
 .wrapper nav {
-  background: #f3f3f3;
-  height: 40px;
+  text-align: center;
+  padding: 26px 0;
 }
 .wrapper nav a {
-  display: block;
-  float: left;
-  height: 40px;
-  padding: 0 20px;
+  padding: 0 25px;
   font-size: 16px;
-  color: #666666;
-  line-height: 40px;
+  color: #4f838f;
+  line-height: 20px;
 }
 .wrapper nav a:hover {
-  background: #efefef;
+  color: #666666;
 }
 .wrapper nav a.active {
-  background: #cfcfcf;
   color: #000000;
 }
 .wrapper section {
-  margin: 30px 0;
+  border-top: 2px solid #dee7ec;
 }
 .wrapper footer {
   font-size: 14px;
@@ -441,39 +467,62 @@ a:hover, a:active {
 }
 
 /* Demo Page */
+section#page-demo {
+  border-top: none;
+}
 section#page-demo #txt-content {
   display: none;
+}
+section#page-demo .simditor {
+  box-shadow: 0 8px 40px rgba(0, 0, 0, 0.15);
 }
 
 /* Sidebar Page */
 section.page-sidebar {
   position: relative;
-  margin: 40px 0 30px 0;
+  margin: 0 0 30px 0;
 }
 section.page-sidebar aside {
   width: 180px;
-  padding: 15px 0 0 0;
+  padding: 50px 0 0 0;
   position: absolute;
   top: 0;
   left: 0;
 }
 section.page-sidebar aside ul {
-  padding: 0 10px 0 30px;
+  padding: 0 10px 0 60px;
 }
 section.page-sidebar aside ul li {
-  margin: 0 0 25px 0;
+  margin: 0 0 30px 0;
+  position: relative;
+}
+section.page-sidebar aside ul li .icon {
+  display: none;
+  width: 10px;
+  line-height: 20px;
+  font-size: 14px;
+  color: #000000;
+  position: absolute;
+  top: 0;
+  left: -18px;
 }
 section.page-sidebar aside ul li a {
+  line-height: 20px;
   font-size: 18px;
+  color: #a3afb2;
+}
+section.page-sidebar aside ul li a:hover {
+  color: #666666;
+}
+section.page-sidebar aside ul li.active .icon {
+  display: block;
 }
 section.page-sidebar aside ul li.active a {
-  color: #333333;
-  font-weight: bold;
+  color: #000000;
 }
 section.page-sidebar article {
-  padding: 0 20px 10px 60px;
+  padding: 40px 20px 10px 60px;
   margin: 0 0 0 180px;
-  border-left: 1px solid #dfdfdf;
   min-height: 500px;
 }
 
@@ -482,11 +531,10 @@ section#page-download {
   min-height: 400px;
 }
 section#page-download .version {
-  margin: 0 0 30px 0;
+  border-bottom: 1px solid #dfdfdf;
 }
 section#page-download .version .title {
-  padding: 6px 15px;
-  border-bottom: 1px solid #dfdfdf;
+  padding: 15px 15px;
   cursor: pointer;
 }
 section#page-download .version .title .icon {
@@ -521,7 +569,7 @@ section#page-download .version .title .btn-download:hover {
 }
 section#page-download .version .release-notes {
   display: none;
-  margin: 20px 0 0 0;
+  margin: 10px 0 25px 0;
   padding: 0 50px;
   list-style: disc outside none;
 }

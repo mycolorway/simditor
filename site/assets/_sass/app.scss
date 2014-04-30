@@ -1,6 +1,7 @@
 
 @charset "UTF-8";
 
+@import 'function';
 @import 'reset';
 @import 'highlight';
 
@@ -43,50 +44,60 @@ a {
 	margin: 0 auto;
 
 	header {
-		padding: 40px 0 30px;
+		padding: 50px 0 15px;
 
 		h1 {
-			font-size: 40px;
-			font-weight: bold;
+			width: 300px;
+			margin: 0 auto;
+			padding: 130px 0 0 0;
+			background-position: 4px 0;
+			@include at2x('logo', 'png', 265px, 110px);
 
 			a {
-				color: #000000;
+				display: block;
+				width: 180px;
+				height: 50px;
+				margin: 0 auto;
+				font-size: 50px;
+				font-family: 'Myriad', 'Helvetica Neue', Helvetica;
+				color: #3b5f6d;
+				text-align: center;
+				text-indent: -9999px;
+				overflow: hidden;
+				background-position: center 0;
+				@include at2x('title', 'png', 171px, 39px);
 			}
 		}
 
 		.desc {
-			font-size: 16px;
-			color: #999999;
-			margin: 10px 0 0 0;
+			font-size: 19px;
+			color: #9ba5a9;
+			text-align: center;
 		}
 	}
 
 	nav {
-		background: #f3f3f3;
-		height: 40px;
+		text-align: center;
+		padding: 26px 0;
 
 		a {
-			display: block;
-			float: left;
-			height: 40px;
-			padding: 0 20px;
+			padding: 0 25px;
 			font-size: 16px;
-			color: #666666;
-			line-height: 40px;
+			color: #4f838f;
+			line-height: 20px;
 
 			&:hover {
-				background: #efefef;
+				color: #666666;
 			}
 
 			&.active {
-				background: #cfcfcf;
 				color: #000000;
 			}
 		}
 	}
 
 	section {
-		margin: 30px 0;
+		border-top: 2px solid #dee7ec;
 	}
 
 	footer {
@@ -109,8 +120,14 @@ a {
 /* Demo Page */
 
 section#page-demo {
+	border-top: none;
+
 	#txt-content {
 		display: none;
+	}
+
+	.simditor {
+		box-shadow: 0 8px 40px rgba(0,0,0,0.15);
 	}
 }
 
@@ -119,37 +136,59 @@ section#page-demo {
 
 section.page-sidebar {
 	position: relative;
-	margin: 40px 0 30px 0;
+	margin: 0 0 30px 0;
 
 	aside {
 		width: 180px;
-		padding: 15px 0 0 0;
+		padding: 50px 0 0 0;
 		position: absolute;
 		top: 0;
 		left: 0;
 
 		ul {
-			padding: 0 10px 0 30px;
+			padding: 0 10px 0 60px;
 
 			li {
-				margin: 0 0 25px 0;
+				margin: 0 0 30px 0;
+				position: relative;
 
-				a {
-					font-size: 18px;
+				.icon {
+					display: none;
+					width: 10px;
+					line-height: 20px;
+					font-size: 14px;
+					color: #000000;
+					position: absolute;
+					top: 0;
+					left: -18px;
 				}
 
-				&.active a {
-					color: #333333;
-					font-weight: bold;
+				a {
+					line-height: 20px;
+					font-size: 18px;
+					color: #a3afb2;
+
+					&:hover {
+						color: #666666;
+					}
+				}
+
+				&.active {
+					.icon {
+						display: block;
+					}
+
+					a {
+						color: #000000;
+					}
 				}
 			}
 		}
 	}
 
 	article {
-		padding: 0 20px 10px 60px;
+		padding: 40px 20px 10px 60px;
 		margin: 0 0 0 180px;
-		border-left: 1px solid #dfdfdf;
 		min-height: 500px;
 	}
 }
@@ -161,11 +200,10 @@ section#page-download {
 	min-height: 400px;
 
 	.version {
-		margin: 0 0 30px 0;
+		border-bottom: 1px solid #dfdfdf;
 
 		.title {
-			padding: 6px 15px;
-			border-bottom: 1px solid #dfdfdf;
+			padding: 15px 15px;
 			cursor: pointer;
 
 			.icon {
@@ -206,7 +244,7 @@ section#page-download {
 
 		.release-notes {
 			display: none;
-			margin: 20px 0 0 0;
+			margin: 10px 0 25px 0;
 			padding: 0 50px;
 			list-style:disc outside none;
 

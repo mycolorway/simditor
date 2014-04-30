@@ -1,0 +1,29 @@
+
+
+@mixin clearfix {
+	*zoom: 1;
+	&:before, &:after {
+		display:table;
+		content:"";
+	}
+	&:after {
+		clear: both;
+		height: 0;
+		visibility: hidden;
+	}
+}
+
+@mixin at2x($path, $ext: "png", $w: auto, $h: auto) {
+	background-image: url("../images/#{$path}.#{$ext}");
+	background-repeat: no-repeat;
+	background-size: $w $h;
+
+	@media all and (-webkit-min-device-pixel-ratio : 1.5),
+				 all and (-o-min-device-pixel-ratio: 3/2),
+				 all and (min--moz-device-pixel-ratio: 1.5),
+				 all and (min-device-pixel-ratio: 1.5) {
+					 background-image: url("../images/#{$path}@2x.#{$ext}");
+					 background-size: $w $h;
+	}
+}
+
