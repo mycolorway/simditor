@@ -1,6 +1,6 @@
 {
   "name": "simditor",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "homepage": "http://simditor.tower.im/",
   "authors": [
     "farthinker <farthinker@gmail.com>"
@@ -20,6 +20,7 @@
 		"Gemfile",
 		"Gruntfile.coffee",
 		"package.json",
+		"server.js",
 		"README"
   ],
 	"dependencies": {
