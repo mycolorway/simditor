@@ -35,8 +35,8 @@ module.exports = (grunt) ->
         dest: 'src/simditor.coffee'
       all:
         src: [
-          'lib/module.js',
-          'lib/uploader.js',
+          'vendor/bower/simple-module/lib/module.js',
+          'vendor/bower/simple-uploader/lib/uploader.js',
           'lib/simditor.js'
         ]
         dest: 'lib/simditor-all.js'
@@ -58,8 +58,6 @@ module.exports = (grunt) ->
     coffee:
       simditor:
         files:
-          'lib/module.js': 'externals/simple-module/src/module.coffee'
-          'lib/uploader.js': 'externals/simple-uploader/src/uploader.coffee'
           'lib/simditor.js': 'src/simditor.coffee'
       site:
         expand: true
@@ -69,25 +67,25 @@ module.exports = (grunt) ->
         ext: '.js'
 
     copy:
-      vendor:
+      site:
         files: [{
-          src: 'externals/jquery-2.1.0.min.js',
-          dest: 'site/assets/scripts/jquery-2.1.0.min.js'
+          src: 'vendor/bower/jquery/dist/jquery.min.js',
+          dest: 'site/assets/scripts/jquery.min.js'
         }, {
-          src: 'externals/font-awesome/font-awesome.css',
+          src: 'vendor/bower/fontawesome/css/font-awesome.css',
           dest: 'site/assets/styles/font-awesome.css'
-        }, {
+        },{
           expand: true,
           flatten: true,
-          src: 'externals/font-awesome/fonts/*',
+          src: 'vendor/bower/fontawesome/fonts/*',
           dest: 'site/assets/fonts/'
+        }, {
+          src: 'styles/simditor.css',
+          dest: 'site/assets/styles/simditor.css'
+        }, {
+          src: 'lib/simditor-all.js',
+          dest: 'site/assets/scripts/simditor-all.js'
         }]
-      styles:
-        src: 'styles/simditor.css',
-        dest: 'site/assets/styles/simditor.css'
-      scripts:
-        src: 'lib/simditor-all.js',
-        dest: 'site/assets/scripts/simditor-all.js'
       package:
         files: [{
           expand: true,
@@ -95,13 +93,19 @@ module.exports = (grunt) ->
           src: 'lib/*',
           dest: 'package/scripts/js/'
         }, {
+          src: 'vendor/bower/simple-module/lib/module.js',
+          dest: 'package/scripts/js/module.js'
+        }, {
+          src: 'vendor/bower/simple-uploader/lib/uploader.js',
+          dest: 'package/scripts/js/uploader.js'
+        }, {
           src: 'src/simditor.coffee',
           dest: 'package/scripts/coffee/simditor.coffee'
         }, {
-          src: 'externals/simple-module/src/module.coffee',
+          src: 'vendor/bower/simple-module/src/module.coffee',
           dest: 'package/scripts/coffee/module.coffee'
         }, {
-          src: 'externals/simple-uploader/src/uploader.coffee',
+          src: 'vendor/bower/simple-uploader/src/uploader.coffee',
           dest: 'package/scripts/coffee/uploader.coffee'
         }, {
           expand: true,
@@ -109,18 +113,19 @@ module.exports = (grunt) ->
           src: 'styles/*',
           dest: 'package/styles/'
         }, {
-          src: 'externals/font-awesome/font-awesome.css',
+          src: 'vendor/bower/fontawesome/css/font-awesome.css',
           dest: 'package/styles/font-awesome.css'
         }, {
           expand: true,
           flatten: true
-          src: 'externals/font-awesome/fonts/*',
+          src: 'vendor/bower/fontawesome/fonts/*',
           dest: 'package/fonts/'
         }, {
-          expand: true,
-          flatten: true
-          src: 'site/assets/images/*',
-          dest: 'package/images/'
+          src: 'site/assets/images/image.png',
+          dest: 'package/images/image.png'
+        }, {
+          src: 'site/assets/images/loading-upload.gif',
+          dest: 'package/images/loading-upload.gif'
         }]
 
     watch:
@@ -147,17 +152,14 @@ module.exports = (grunt) ->
     express:
       server:
         options:
-          server: 'externals/express.js'
+          server: 'server.js'
           bases: '_site'
 
     uglify:
-      package:
+      simditor:
         files:
-          'package/scripts/js/simditor-all.min.js': 'package/scripts/js/simditor-all.js'
-          'package/scripts/js/simditor.min.js': 'package/scripts/js/simditor.js'
-      site:
-        files:
-          'site/assets/scripts/simditor-all.min.js': 'site/assets/scripts/simditor-all.js'
+          'lib/simditor-all.min.js': 'lib/simditor-all.js'
+          'lib/simditor.min.js': 'lib/simditor.js'
 
     compress:
       package:
@@ -187,6 +189,6 @@ module.exports = (grunt) ->
   grunt.loadNpmTasks 'grunt-shell'
 
   grunt.registerTask 'default', ['site', 'express', 'watch']
-  grunt.registerTask 'site', ['sass', 'concat:simditor', 'coffee', 'concat:all', 'copy:vendor', 'copy:styles', 'copy:scripts', 'uglify:site', 'shell']
-  grunt.registerTask 'package', ['clean:package', 'copy:package', 'uglify', 'compress']
+  grunt.registerTask 'site', ['sass', 'concat:simditor', 'coffee', 'concat:all', 'uglify:simditor', 'copy:site', 'shell']
+  grunt.registerTask 'package', ['clean:package', 'copy:package', 'compress']
 

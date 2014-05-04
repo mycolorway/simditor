@@ -1,6 +1,0 @@
-[submodule "externals/simple-module"]
-	path = externals/simple-module
-	url = git@github.com:mycolorway/simple-module.git
-[submodule "externals/simple-uploader"]
-	path = externals/simple-uploader
-	url = git@github.com:mycolorway/simple-uploader.git
