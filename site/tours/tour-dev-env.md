@@ -80,26 +80,6 @@ $ npm install
 ```
 
 
-###用Bower管理依赖项目
-
-[Bower](http://bower.io/)是一个前端项目的包管理工具，Simditor用它来管理依赖的第三方库：
-
-* [font-awesome](http://fontawesome.io/)：一个图片字体 icon 库，用来定义工具栏的按钮样式
-* [simple-module](http://https://github.com/mycolorway/simple-module)：是彩程内部使用的 CoffeeScript 组件抽象类
-* [simple-uploader](https://github.com/mycolorway/simple-uploader)：一个与 UI 无关的上传逻辑
-
-先通过`npm`安装bower：
-
-```bash
-npm install -g bower
-```
-
-然后安装 `bower.json` 里面配置的依赖项目：
-
-```bash
-bower install
-```
-
 
 ###开始开发
 
