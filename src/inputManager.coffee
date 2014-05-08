@@ -235,7 +235,7 @@ class InputManager extends Plugin
       if !pasteContent
         return
       else if cleanPaste
-        pasteContent = $('<div/>').append(pasteContent)
+        pasteContent = $('<div/>').text(pasteContent)
         @editor.selection.insertNode($(node)[0], range) for node in pasteContent.contents()
       else if pasteContent.length < 1
         return
