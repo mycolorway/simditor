@@ -954,7 +954,7 @@ class UndoManager extends Plugin
     state = @_stack[@_index]
     @editor.body.html state.html
     @caretPosition state.caret
-    @editor.find('.selected').removeClass('selected')
+    @editor.body.find('.selected').removeClass('selected')
     @editor.sync()
 
     @editor.trigger 'valuechanged', ['undo']
@@ -970,7 +970,7 @@ class UndoManager extends Plugin
     state = @_stack[@_index]
     @editor.body.html state.html
     @caretPosition state.caret
-    @editor.find('.selected').removeClass('selected')
+    @editor.body.find('.selected').removeClass('selected')
     @editor.sync()
 
     @editor.trigger 'valuechanged', ['undo']

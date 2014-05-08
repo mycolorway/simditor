@@ -1580,7 +1580,7 @@
       state = this._stack[this._index];
       this.editor.body.html(state.html);
       this.caretPosition(state.caret);
-      this.editor.find('.selected').removeClass('selected');
+      this.editor.body.find('.selected').removeClass('selected');
       this.editor.sync();
       this.editor.trigger('valuechanged', ['undo']);
       return this.editor.trigger('selectionchanged', ['undo']);
@@ -1596,7 +1596,7 @@
       state = this._stack[this._index];
       this.editor.body.html(state.html);
       this.caretPosition(state.caret);
-      this.editor.find('.selected').removeClass('selected');
+      this.editor.body.find('.selected').removeClass('selected');
       this.editor.sync();
       this.editor.trigger('valuechanged', ['undo']);
       return this.editor.trigger('selectionchanged', ['undo']);
