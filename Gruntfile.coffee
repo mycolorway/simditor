@@ -85,9 +85,6 @@ module.exports = (grunt) ->
         }, {
           src: 'lib/simditor-all.js',
           dest: 'site/assets/scripts/simditor-all.js'
-        }, {
-          src: 'lib/simditor-all.min.js',
-          dest: 'site/assets/scripts/simditor-all.min.js'
         }]
 
       styles:
@@ -99,9 +96,6 @@ module.exports = (grunt) ->
         files: [{
           src: 'lib/simditor-all.js',
           dest: 'site/assets/scripts/simditor-all.js'
-        }, {
-          src: 'lib/simditor-all.min.js',
-          dest: 'site/assets/scripts/simditor-all.min.js'
         }]
 
       package:
@@ -179,8 +173,8 @@ module.exports = (grunt) ->
     uglify:
       simditor:
         files:
-          'lib/simditor-all.min.js': 'lib/simditor-all.js'
-          'lib/simditor.min.js': 'lib/simditor.js'
+          'package/scripts/js/simditor-all.min.js': 'package/scripts/js/simditor-all.js'
+          'package/scripts/js/simditor.min.js': 'package/scripts/js/simditor.js'
 
     compress:
       package:
@@ -211,5 +205,5 @@ module.exports = (grunt) ->
 
   grunt.registerTask 'default', ['site', 'express', 'watch']
   grunt.registerTask 'site', ['sass', 'concat:simditor', 'coffee', 'concat:all', 'copy:site', 'shell']
-  grunt.registerTask 'package', ['uglify:simditor', 'clean:package', 'copy:package', 'compress']
+  grunt.registerTask 'package', ['clean:package', 'copy:package', 'uglify:simditor', 'compress']
 
