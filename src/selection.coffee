@@ -161,10 +161,9 @@ class Selection extends Plugin
     return $el if range.collapsed
     $el.before range.extractContents()
 
-  save: () ->
+  save: (range = @getRange()) ->
     return if @_selectionSaved
 
-    range = @getRange()
     startCaret = $('<span/>').addClass('simditor-caret-start')
     endCaret = $('<span/>').addClass('simditor-caret-end')
 
