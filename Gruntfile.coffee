@@ -85,6 +85,9 @@ module.exports = (grunt) ->
         }, {
           src: 'lib/simditor-all.js',
           dest: 'site/assets/scripts/simditor-all.js'
+        }, {
+          src: 'lib/simditor-all.js',
+          dest: 'site/assets/scripts/simditor-all.min.js'
         }]
       package:
         files: [{
@@ -134,7 +137,7 @@ module.exports = (grunt) ->
         tasks: ['sass:simditor', 'copy:styles', 'shell']
       scripts:
         files: ['src/*.coffee', 'src/buttons/*.coffee']
-        tasks: ['concat:simditor', 'coffee:simditor', 'concat:all', 'copy:scripts', 'shell']
+        tasks: ['concat:simditor', 'coffee:simditor', 'concat:all', 'copy:site', 'shell']
       siteStyles:
         files: ['site/assets/_sass/*.scss']
         tasks: ['sass:site', 'shell']

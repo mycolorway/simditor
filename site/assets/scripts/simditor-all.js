@@ -1288,6 +1288,16 @@
       'cmd+13': function(e) {
         this.editor.el.closest('form').find('button:submit').click();
         return false;
+      },
+      'cmd+65': function(e) {
+        var node, range;
+        range = document.createRange();
+        node = this.editor.body[0];
+        range.setStart(node, 0);
+        range.setEnd(node, this.editor.util.getNodeLength(node));
+        this.editor.selection.selectRange(range);
+        console.log(range);
+        return false;
       }
     };
 

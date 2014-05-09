@@ -573,7 +573,6 @@ class InputManager extends Plugin
         @editor.uploader?.upload(imageFile, uploadOpt)
         return false
 
-
     $blockEl = @editor.util.closestBlockEl()
     cleanPaste = $blockEl.is 'pre, table'
     @editor.selection.deleteRangeContents()
@@ -684,6 +683,21 @@ class InputManager extends Plugin
       @editor.el.closest('form')
         .find('button:submit')
         .click()
+      false
+
+    'cmd+65': (e) ->
+      range = document.createRange()
+      node = @editor.body[0]
+      # startNode = @editor.body.children().first()
+      # endNode = @editor.body.children().last()
+
+      range.setStart(node, 0)
+      range.setEnd(node, @editor.util.getNodeLength(node))
+
+      # @editor.selection.setRangeAtStartOf(@editor.body.children().get(0), range)
+      # @editor.selection.setRangeAtEndOf(@editor.body.children().last()[0], range)
+      @editor.selection.selectRange(range)
+      console.log(range)
       false
 
   addShortcut: (keys, handler) ->
