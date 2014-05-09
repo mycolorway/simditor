@@ -135,7 +135,21 @@ class Selection extends Plugin
     @selectRange range
 
   deleteRangeContents: (range = @getRange()) ->
-    range.deleteContents()
+    startRange = range.cloneRange()
+    endRange = range.cloneRange()
+    startRange.collapse(true)
+    endRange.collapse()
+
+    # the default behavior of cmd+a is buggy
+    if @rangeAtStartOf(@editor.body, startRange) and @rangeAtEndOf(@editor.body, endRange)
+      @editor.body.empty()
+      range.setStart @editor.body[0], 0
+      range.collapse true
+      @selectRange range
+    else
+      range.deleteContents()
+
+    range
 
   breakBlockEl: (el, range = @getRange()) ->
     $el = $(el)

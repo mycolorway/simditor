@@ -135,7 +135,21 @@ class Selection extends Plugin
     @selectRange range
 
   deleteRangeContents: (range = @getRange()) ->
-    range.deleteContents()
+    startRange = range.cloneRange()
+    endRange = range.cloneRange()
+    startRange.collapse(true)
+    endRange.collapse()
+
+    # the default behavior of cmd+a is buggy
+    if @rangeAtStartOf(@editor.body, startRange) and @rangeAtEndOf(@editor.body, endRange)
+      @editor.body.empty()
+      range.setStart @editor.body[0], 0
+      range.collapse true
+      @selectRange range
+    else
+      range.deleteContents()
+
+    range
 
   breakBlockEl: (el, range = @getRange()) ->
     $el = $(el)
@@ -573,9 +587,11 @@ class InputManager extends Plugin
         @editor.uploader?.upload(imageFile, uploadOpt)
         return false
 
+    range = @editor.selection.deleteRangeContents()
+    range.collapse(true) unless range.collapsed
+
     $blockEl = @editor.util.closestBlockEl()
     cleanPaste = $blockEl.is 'pre, table'
-    @editor.selection.deleteRangeContents()
     @editor.selection.save()
 
     @_pasteArea.focus()
@@ -604,12 +620,14 @@ class InputManager extends Plugin
       else if cleanPaste
         pasteContent = $('<div/>').append(pasteContent)
         @editor.selection.insertNode($(node)[0], range) for node in pasteContent.contents()
+      else if $blockEl.is @editor.body
+        @editor.selection.insertNode(node, range) for node in pasteContent
       else if pasteContent.length < 1
         return
       else if pasteContent.length == 1
         if pasteContent.is('p')
           children = pasteContent.contents()
-          @editor.selection.insertNode node, range for node in children
+          @editor.selection.insertNode(node, range) for node in children
 
         # paste image in firefox and IE 11
         else if pasteContent.is('.simditor-image')
@@ -685,20 +703,20 @@ class InputManager extends Plugin
         .click()
       false
 
-    'cmd+65': (e) ->
-      range = document.createRange()
-      node = @editor.body[0]
-      # startNode = @editor.body.children().first()
-      # endNode = @editor.body.children().last()
+    #'cmd+65': (e) ->
+      #range = document.createRange()
+      #node = @editor.body[0]
+      ## startNode = @editor.body.children().first()
+      ## endNode = @editor.body.children().last()
 
-      range.setStart(node, 0)
-      range.setEnd(node, @editor.util.getNodeLength(node))
+      #range.setStart(node, 0)
+      #range.setEnd(node, @editor.util.getNodeLength(node))
 
-      # @editor.selection.setRangeAtStartOf(@editor.body.children().get(0), range)
-      # @editor.selection.setRangeAtEndOf(@editor.body.children().last()[0], range)
-      @editor.selection.selectRange(range)
-      console.log(range)
-      false
+      ## @editor.selection.setRangeAtStartOf(@editor.body.children().get(0), range)
+      ## @editor.selection.setRangeAtEndOf(@editor.body.children().last()[0], range)
+      #@editor.selection.selectRange(range)
+      #console.log(range)
+      #false
 
   addShortcut: (keys, handler) ->
     @_shortcuts[keys] = $.proxy(handler, this)
