@@ -218,7 +218,7 @@ class InputManager extends Plugin
         pasteContent = null
       else if cleanPaste
         pasteContent = @editor.formatter.clearHtml @_pasteArea.html()
-        pasteContent = pasteContent.replace /\n/g, '<br/>' if $blockEl.is('table')
+        # pasteContent = pasteContent.replace /\n/g, '<br/>' if $blockEl.is('table')
       else
         pasteContent = $('<div/>').append(@_pasteArea.contents())
         @editor.formatter.format pasteContent
@@ -235,8 +235,16 @@ class InputManager extends Plugin
       if !pasteContent
         return
       else if cleanPaste
-        pasteContent = $('<div/>').append(pasteContent)
-        @editor.selection.insertNode($(node)[0], range) for node in pasteContent.contents()
+        if $blockEl.is('table')
+          lines = pasteContent.split('\n')
+          lastLine = lines.pop()
+          for line in lines
+            @editor.selection.insertNode document.createTextNode(line)
+            @editor.selection.insertNode $('<br/>')
+          @editor.selection.insertNode document.createTextNode(lastLine)
+        else
+          pasteContent = $('<div/>').text(pasteContent)
+          @editor.selection.insertNode($(node)[0], range) for node in pasteContent.contents()
       else if pasteContent.length < 1
         return
       else if pasteContent.length == 1
