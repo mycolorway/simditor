@@ -54,15 +54,11 @@ class ImageButton extends Button
 
       if $imgWrapper.hasClass 'selected'
         @popover.srcEl.blur()
-        @popover.hide()
-        $imgWrapper.removeClass('selected')
+        $imgWrapper.focus()
       else
         @editor.body.blur()
         @editor.body.find('.simditor-image').removeClass('selected')
         $imgWrapper.addClass('selected').focus()
-        #$img = $imgWrapper.find('img')
-        #$imgWrapper.width $img.width()
-        #$imgWrapper.height $img.height()
         @popover.show $imgWrapper
 
       false
@@ -83,8 +79,14 @@ class ImageButton extends Button
     @editor.body.on 'keydown', '.simditor-image', (e) =>
       return unless e.which == 8
       @popover.hide()
-      $(e.currentTarget).remove()
+
+      newBlockEl = $('<p/>').append(@editor.util.phBr)
+      $(e.currentTarget).replaceWith newBlockEl
+
+      range = document.createRange()
+      @editor.selection.setRangeAtStartOf newBlockEl, range
       @editor.trigger 'valuechanged'
+      @editor.trigger 'selectionchanged'
       return false
 
   render: (args...) ->

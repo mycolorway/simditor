@@ -33,6 +33,9 @@ class Selection extends Plugin
     @clear()
     @sel.addRange(range)
 
+    # firefox won't auto focus while applying new range
+    @editor.body.focus() if !@editor.inputManager.focused and (@editor.util.browser.firefox or @editor.util.browser.msie)
+
   rangeAtEndOf: (node, range = @getRange()) ->
     return unless range? and range.collapsed
 
@@ -180,9 +183,6 @@ class Selection extends Plugin
       startCaret.remove()
       endCaret.remove()
       @selectRange range
-
-      # firefox won't auto focus while applying new range
-      @editor.body.focus() if @editor.util.browser.firefox or @editor.util.browser.msie
     else
       startCaret.remove()
       endCaret.remove()
@@ -2449,7 +2449,6 @@ class LinkPopover extends Popover
         setTimeout =>
           range = document.createRange()
           @editor.selection.setRangeAfter @target, range
-          @editor.body.focus() if @editor.util.browser.firefox
           @hide()
           @editor.trigger 'valuechanged'
           @editor.trigger 'selectionchanged'
@@ -2462,7 +2461,6 @@ class LinkPopover extends Popover
 
       range = document.createRange()
       @editor.selection.setRangeAfter txtNode, range
-      @editor.body.focus() if @editor.util.browser.firefox and !@editor.inputManager.focused
       @editor.trigger 'valuechanged'
       @editor.trigger 'selectionchanged'
 
@@ -2532,15 +2530,11 @@ class ImageButton extends Button
 
       if $imgWrapper.hasClass 'selected'
         @popover.srcEl.blur()
-        @popover.hide()
-        $imgWrapper.removeClass('selected')
+        $imgWrapper.focus()
       else
         @editor.body.blur()
         @editor.body.find('.simditor-image').removeClass('selected')
         $imgWrapper.addClass('selected').focus()
-        #$img = $imgWrapper.find('img')
-        #$imgWrapper.width $img.width()
-        #$imgWrapper.height $img.height()
         @popover.show $imgWrapper
 
       false
@@ -2561,8 +2555,14 @@ class ImageButton extends Button
     @editor.body.on 'keydown', '.simditor-image', (e) =>
       return unless e.which == 8
       @popover.hide()
-      $(e.currentTarget).remove()
+
+      newBlockEl = $('<p/>').append(@editor.util.phBr)
+      $(e.currentTarget).replaceWith newBlockEl
+
+      range = document.createRange()
+      @editor.selection.setRangeAtStartOf newBlockEl, range
       @editor.trigger 'valuechanged'
+      @editor.trigger 'selectionchanged'
       return false
 
   render: (args...) ->

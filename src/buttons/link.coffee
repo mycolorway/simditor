@@ -118,7 +118,6 @@ class LinkPopover extends Popover
         setTimeout =>
           range = document.createRange()
           @editor.selection.setRangeAfter @target, range
-          @editor.body.focus() if @editor.util.browser.firefox
           @hide()
           @editor.trigger 'valuechanged'
           @editor.trigger 'selectionchanged'
@@ -131,7 +130,6 @@ class LinkPopover extends Popover
 
       range = document.createRange()
       @editor.selection.setRangeAfter txtNode, range
-      @editor.body.focus() if @editor.util.browser.firefox and !@editor.inputManager.focused
       @editor.trigger 'valuechanged'
       @editor.trigger 'selectionchanged'
 
