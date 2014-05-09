@@ -44,6 +44,10 @@ class InputManager extends Plugin
             $('<p/>').append(@editor.util.phBr)
               .insertBefore($el)
 
+          setTimeout =>
+            @editor.trigger 'valuechanged'
+          , 10
+
 
     @editor.body.on('keydown', $.proxy(@_onKeyDown, @))
       .on('keypress', $.proxy(@_onKeyPress, @))
@@ -218,7 +222,6 @@ class InputManager extends Plugin
         pasteContent = null
       else if cleanPaste
         pasteContent = @editor.formatter.clearHtml @_pasteArea.html()
-        # pasteContent = pasteContent.replace /\n/g, '<br/>' if $blockEl.is('table')
       else
         pasteContent = $('<div/>').append(@_pasteArea.contents())
         @editor.formatter.format pasteContent
@@ -257,7 +260,7 @@ class InputManager extends Plugin
           $img = pasteContent.find('img')
 
           # firefox and IE 11
-          if dataURLtoBlob && /^data:image\/png;base64/.test($img.attr('src'))
+          if dataURLtoBlob && /^data:image/.test($img.attr('src'))
             return unless @opts.pasteImage
             blob = dataURLtoBlob $img.attr( "src" )
             blob.name = "来自剪贴板的图片.png"

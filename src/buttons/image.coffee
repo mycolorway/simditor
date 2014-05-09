@@ -74,7 +74,7 @@ class ImageButton extends Button
       if range.collapsed and $container.is('.simditor-image')
         $container.mousedown()
       else if @popover.active
-        @popover.hide() if @popover.active
+        @popover.hide()
 
     @editor.body.on 'keydown', '.simditor-image', (e) =>
       return unless e.which == 8
@@ -223,7 +223,7 @@ class ImageButton extends Button
     $wrapper = $img.parent('.simditor-image')
     return if $wrapper.length < 1
 
-    unless /^data:image\/png;base64/.test($img.attr('src'))
+    unless /^data:image/.test($img.attr('src'))
       $('<p/>').append($img).insertAfter($wrapper)
     $wrapper.remove()
 
@@ -354,6 +354,9 @@ class ImagePopover extends Popover
         @srcEl.blur()
         @target.removeClass('selected')
         @hide()
+
+    @editor.on 'valuechanged', (e) =>
+      @refresh() if @active
 
     @_initUploader()
 
