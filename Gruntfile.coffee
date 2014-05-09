@@ -111,6 +111,9 @@ module.exports = (grunt) ->
           src: 'lib/*',
           dest: 'package/scripts/js/'
         }, {
+          src: 'vendor/bower/jquery/dist/jquery.min.js',
+          dest: 'package/scripts/js/jquery.min.js'
+        }, {
           src: 'vendor/bower/simple-module/lib/module.js',
           dest: 'package/scripts/js/module.js'
         }, {
