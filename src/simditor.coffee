@@ -33,6 +33,9 @@ class Selection extends Plugin
     @clear()
     @sel.addRange(range)
 
+    # firefox won't auto focus while applying new range
+    @editor.body.focus() if !@editor.inputManager.focused and (@editor.util.browser.firefox or @editor.util.browser.msie)
+
   rangeAtEndOf: (node, range = @getRange()) ->
     return unless range? and range.collapsed
 
@@ -194,9 +197,6 @@ class Selection extends Plugin
       startCaret.remove()
       endCaret.remove()
       @selectRange range
-
-      # firefox won't auto focus while applying new range
-      @editor.body.focus() if @editor.util.browser.firefox or @editor.util.browser.msie
     else
       startCaret.remove()
       endCaret.remove()
@@ -426,6 +426,10 @@ class InputManager extends Plugin
             $('<p/>').append(@editor.util.phBr)
               .insertBefore($el)
 
+          setTimeout =>
+            @editor.trigger 'valuechanged'
+          , 10
+
 
     @editor.body.on('keydown', $.proxy(@_onKeyDown, @))
       .on('keypress', $.proxy(@_onKeyPress, @))
@@ -601,7 +605,6 @@ class InputManager extends Plugin
         pasteContent = null
       else if cleanPaste
         pasteContent = @editor.formatter.clearHtml @_pasteArea.html()
-        pasteContent = pasteContent.replace /\n/g, '<br/>' if $blockEl.is('table')
       else
         pasteContent = $('<div/>').append(@_pasteArea.contents())
         @editor.formatter.format pasteContent
@@ -618,8 +621,16 @@ class InputManager extends Plugin
       if !pasteContent
         return
       else if cleanPaste
-        pasteContent = $('<div/>').append(pasteContent)
-        @editor.selection.insertNode($(node)[0], range) for node in pasteContent.contents()
+        if $blockEl.is('table')
+          lines = pasteContent.split('\n')
+          lastLine = lines.pop()
+          for line in lines
+            @editor.selection.insertNode document.createTextNode(line)
+            @editor.selection.insertNode $('<br/>')
+          @editor.selection.insertNode document.createTextNode(lastLine)
+        else
+          pasteContent = $('<div/>').text(pasteContent)
+          @editor.selection.insertNode($(node)[0], range) for node in pasteContent.contents()
       else if $blockEl.is @editor.body
         @editor.selection.insertNode(node, range) for node in pasteContent
       else if pasteContent.length < 1
@@ -634,7 +645,7 @@ class InputManager extends Plugin
           $img = pasteContent.find('img')
 
           # firefox and IE 11
-          if dataURLtoBlob && /^data:image\/png;base64/.test($img.attr('src'))
+          if dataURLtoBlob && /^data:image/.test($img.attr('src'))
             return unless @opts.pasteImage
             blob = dataURLtoBlob $img.attr( "src" )
             blob.name = "来自剪贴板的图片.png"
@@ -702,21 +713,6 @@ class InputManager extends Plugin
         .find('button:submit')
         .click()
       false
-
-    #'cmd+65': (e) ->
-      #range = document.createRange()
-      #node = @editor.body[0]
-      ## startNode = @editor.body.children().first()
-      ## endNode = @editor.body.children().last()
-
-      #range.setStart(node, 0)
-      #range.setEnd(node, @editor.util.getNodeLength(node))
-
-      ## @editor.selection.setRangeAtStartOf(@editor.body.children().get(0), range)
-      ## @editor.selection.setRangeAtEndOf(@editor.body.children().last()[0], range)
-      #@editor.selection.selectRange(range)
-      #console.log(range)
-      #false
 
   addShortcut: (keys, handler) ->
     @_shortcuts[keys] = $.proxy(handler, this)
@@ -986,7 +982,7 @@ class UndoManager extends Plugin
     state = @_stack[@_index]
     @editor.body.html state.html
     @caretPosition state.caret
-    @editor.find('.selected').removeClass('selected')
+    @editor.body.find('.selected').removeClass('selected')
     @editor.sync()
 
     @editor.trigger 'valuechanged', ['undo']
@@ -1002,7 +998,7 @@ class UndoManager extends Plugin
     state = @_stack[@_index]
     @editor.body.html state.html
     @caretPosition state.caret
-    @editor.find('.selected').removeClass('selected')
+    @editor.body.find('.selected').removeClass('selected')
     @editor.sync()
 
     @editor.trigger 'valuechanged', ['undo']
@@ -2481,7 +2477,6 @@ class LinkPopover extends Popover
         setTimeout =>
           range = document.createRange()
           @editor.selection.setRangeAfter @target, range
-          @editor.body.focus() if @editor.util.browser.firefox
           @hide()
           @editor.trigger 'valuechanged'
           @editor.trigger 'selectionchanged'
@@ -2494,7 +2489,6 @@ class LinkPopover extends Popover
 
       range = document.createRange()
       @editor.selection.setRangeAfter txtNode, range
-      @editor.body.focus() if @editor.util.browser.firefox and !@editor.inputManager.focused
       @editor.trigger 'valuechanged'
       @editor.trigger 'selectionchanged'
 
@@ -2564,15 +2558,11 @@ class ImageButton extends Button
 
       if $imgWrapper.hasClass 'selected'
         @popover.srcEl.blur()
-        @popover.hide()
-        $imgWrapper.removeClass('selected')
+        $imgWrapper.focus()
       else
         @editor.body.blur()
         @editor.body.find('.simditor-image').removeClass('selected')
         $imgWrapper.addClass('selected').focus()
-        #$img = $imgWrapper.find('img')
-        #$imgWrapper.width $img.width()
-        #$imgWrapper.height $img.height()
         @popover.show $imgWrapper
 
       false
@@ -2588,13 +2578,19 @@ class ImageButton extends Button
       if range.collapsed and $container.is('.simditor-image')
         $container.mousedown()
       else if @popover.active
-        @popover.hide() if @popover.active
+        @popover.hide()
 
     @editor.body.on 'keydown', '.simditor-image', (e) =>
       return unless e.which == 8
       @popover.hide()
-      $(e.currentTarget).remove()
+
+      newBlockEl = $('<p/>').append(@editor.util.phBr)
+      $(e.currentTarget).replaceWith newBlockEl
+
+      range = document.createRange()
+      @editor.selection.setRangeAtStartOf newBlockEl, range
       @editor.trigger 'valuechanged'
+      @editor.trigger 'selectionchanged'
       return false
 
   render: (args...) ->
@@ -2731,7 +2727,7 @@ class ImageButton extends Button
     $wrapper = $img.parent('.simditor-image')
     return if $wrapper.length < 1
 
-    unless /^data:image\/png;base64/.test($img.attr('src'))
+    unless /^data:image/.test($img.attr('src'))
       $('<p/>').append($img).insertAfter($wrapper)
     $wrapper.remove()
 
@@ -2862,6 +2858,9 @@ class ImagePopover extends Popover
         @srcEl.blur()
         @target.removeClass('selected')
         @hide()
+
+    @editor.on 'valuechanged', (e) =>
+      @refresh() if @active
 
     @_initUploader()
 

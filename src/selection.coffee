@@ -33,6 +33,9 @@ class Selection extends Plugin
     @clear()
     @sel.addRange(range)
 
+    # firefox won't auto focus while applying new range
+    @editor.body.focus() if !@editor.inputManager.focused and (@editor.util.browser.firefox or @editor.util.browser.msie)
+
   rangeAtEndOf: (node, range = @getRange()) ->
     return unless range? and range.collapsed
 
@@ -194,9 +197,6 @@ class Selection extends Plugin
       startCaret.remove()
       endCaret.remove()
       @selectRange range
-
-      # firefox won't auto focus while applying new range
-      @editor.body.focus() if @editor.util.browser.firefox or @editor.util.browser.msie
     else
       startCaret.remove()
       endCaret.remove()

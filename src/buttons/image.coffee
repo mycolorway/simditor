@@ -54,15 +54,11 @@ class ImageButton extends Button
 
       if $imgWrapper.hasClass 'selected'
         @popover.srcEl.blur()
-        @popover.hide()
-        $imgWrapper.removeClass('selected')
+        $imgWrapper.focus()
       else
         @editor.body.blur()
         @editor.body.find('.simditor-image').removeClass('selected')
         $imgWrapper.addClass('selected').focus()
-        #$img = $imgWrapper.find('img')
-        #$imgWrapper.width $img.width()
-        #$imgWrapper.height $img.height()
         @popover.show $imgWrapper
 
       false
@@ -78,13 +74,19 @@ class ImageButton extends Button
       if range.collapsed and $container.is('.simditor-image')
         $container.mousedown()
       else if @popover.active
-        @popover.hide() if @popover.active
+        @popover.hide()
 
     @editor.body.on 'keydown', '.simditor-image', (e) =>
       return unless e.which == 8
       @popover.hide()
-      $(e.currentTarget).remove()
+
+      newBlockEl = $('<p/>').append(@editor.util.phBr)
+      $(e.currentTarget).replaceWith newBlockEl
+
+      range = document.createRange()
+      @editor.selection.setRangeAtStartOf newBlockEl, range
       @editor.trigger 'valuechanged'
+      @editor.trigger 'selectionchanged'
       return false
 
   render: (args...) ->
@@ -221,7 +223,7 @@ class ImageButton extends Button
     $wrapper = $img.parent('.simditor-image')
     return if $wrapper.length < 1
 
-    unless /^data:image\/png;base64/.test($img.attr('src'))
+    unless /^data:image/.test($img.attr('src'))
       $('<p/>').append($img).insertAfter($wrapper)
     $wrapper.remove()
 
@@ -352,6 +354,9 @@ class ImagePopover extends Popover
         @srcEl.blur()
         @target.removeClass('selected')
         @hide()
+
+    @editor.on 'valuechanged', (e) =>
+      @refresh() if @active
 
     @_initUploader()
 

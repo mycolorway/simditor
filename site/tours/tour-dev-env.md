@@ -5,7 +5,7 @@ name: tour-dev-env
 root: ../
 ---
 
-这篇教程主要介绍，如何在本地搭建Simditor的开发环境。
+这篇教程主要介绍，如何在本地搭建 Simditor 的开发环境。
 
 ###获取源代码
 
@@ -20,13 +20,13 @@ $ git clone git@github.com:[your username]/simditor.git
 ```
 
 
-###用Bundler管理Gem包
+###用 Bundler 管理 Gem 包
 
 Simditor 使用 [Bundler](http://bundler.io/) 来管理依赖的 Ruby Gem：
 
 * [sass](https://github.com/nex3/sass)：用来将 scss 文件编译为 css 文件
 * [coffee-script](https://github.com/josh/ruby-coffee-script): 用来将 coffee 文件编译为 js 文件
-* [github-pages](https://github.com/github/pages-gem): 在本地安装[Github Pages](https://pages.github.com/) 使用的 [Jekyll](http://jekyllrb.com/) 环境，用来生成 Simditor 的网站
+* [github-pages](https://github.com/github/pages-gem): 在本地安装 [Github Pages](https://pages.github.com/) 使用的 [Jekyll](http://jekyllrb.com/) 环境，用来生成 Simditor 的网站
 
 首先，确保你的系统中已经安装了 [Ruby](https://www.ruby-lang.org/en/installation/)，然后在命令行中安装 Bundler：
 
@@ -42,28 +42,7 @@ $ bundle install
 ```
 
 
-###用Bower管理依赖项目
-
-[Bower](http://bower.io/)是一个前端项目的包管理工具，Simditor用它来管理依赖的第三方库：
-
-* [font-awesome](http://fontawesome.io/)：一个图片字体 icon 库，用来定义工具栏的按钮样式
-* [simple-module](http://https://github.com/mycolorway/simple-module)：是彩程内部使用的 CoffeeScript 组件抽象类
-* [simple-uploader](https://github.com/mycolorway/simple-uploader)：一个与 UI 无关的上传逻辑
-
-先通过`npm`安装bower：
-
-```bash
-npm install -g bower
-```
-
-然后安装 `bower.json` 里面配置的依赖项目：
-
-```bash
-bower install
-```
-
-
-###用Grunt管理自动化任务
+###用 Grunt 管理自动化任务
 
 Simditor 使用 [Grunt](http://gruntjs.com/) 来实现本地的自动化任务，例如运行本地开发服务器、监视源代码文件并自动编译等等。
 
@@ -80,9 +59,9 @@ $ npm install
 ```
 
 
-###用Bower管理依赖项目
+###用 Bower 管理依赖项目
 
-[Bower](http://bower.io/)是一个前端项目的包管理工具，Simditor用它来管理依赖的第三方库：
+[Bower](http://bower.io/) 是一个前端项目的包管理工具，Simditor 用它来管理依赖的第三方库：
 
 * [font-awesome](http://fontawesome.io/)：一个图片字体 icon 库，用来定义工具栏的按钮样式
 * [simple-module](http://https://github.com/mycolorway/simple-module)：是彩程内部使用的 CoffeeScript 组件抽象类
