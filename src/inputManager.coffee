@@ -263,9 +263,9 @@ class InputManager extends Plugin
           $img = pasteContent.find('img')
 
           # firefox and IE 11
-          if dataURLtoBlob && /^data:image/.test($img.attr('src'))
+          if /^data:image/.test($img.attr('src'))
             return unless @opts.pasteImage
-            blob = dataURLtoBlob $img.attr( "src" )
+            blob = @editor.util.dataURLtoBlob $img.attr( "src" )
             blob.name = "来自剪贴板的图片.png"
 
             uploadOpt = {}

@@ -644,9 +644,9 @@ class InputManager extends Plugin
           $img = pasteContent.find('img')
 
           # firefox and IE 11
-          if dataURLtoBlob && /^data:image/.test($img.attr('src'))
+          if /^data:image/.test($img.attr('src'))
             return unless @opts.pasteImage
-            blob = dataURLtoBlob $img.attr( "src" )
+            blob = @editor.util.dataURLtoBlob $img.attr( "src" )
             blob.name = "来自剪贴板的图片.png"
 
             uploadOpt = {}
@@ -1358,6 +1358,49 @@ class Util extends Plugin
     @editor.trigger 'valuechanged'
     @editor.trigger 'selectionchanged'
     true
+
+  # convert base64 data url to blob object for pasting images in firefox and IE11
+  dataURLtoBlob: (dataURL) ->
+    hasBlobConstructor = window.Blob && (->
+      try
+        return Boolean(new Blob())
+      catch e
+        return false
+    )()
+
+    hasArrayBufferViewSupport = hasBlobConstructor && window.Uint8Array && (->
+      try
+        return new Blob([new Uint8Array(100)]).size == 100
+      catch e
+        return false
+    )()
+
+    BlobBuilder = window.BlobBuilder || window.WebKitBlobBuilder ||
+      window.MozBlobBuilder || window.MSBlobBuilder;
+
+    return false unless (hasBlobConstructor || BlobBuilder) && window.atob && window.ArrayBuffer && window.Uint8Array
+
+    if dataURL.split(',')[0].indexOf('base64') >= 0
+      # Convert base64 to raw binary data held in a string:
+      byteString = atob(dataURL.split(',')[1])
+    else
+      # Convert base64/URLEncoded data component to raw binary data:
+      byteString = decodeURIComponent(dataURL.split(',')[1])
+
+    # Write the bytes of the string to an ArrayBuffer:
+    arrayBuffer = new ArrayBuffer(byteString.length)
+    intArray = new Uint8Array(arrayBuffer)
+    for i in [0..byteString.length]
+      intArray[i] = byteString.charCodeAt(i)
+
+    # Separate out the mime component:
+    mimeString = dataURL.split(',')[0].split(':')[1].split(';')[0]
+    # Write the ArrayBuffer (or ArrayBufferView) to a blob:
+    if hasBlobConstructor
+      return new Blob([if hasArrayBufferViewSupport then intArray else arrayBuffer], {type: mimeString})
+    bb = new BlobBuilder()
+    bb.append(arrayBuffer)
+    bb.getBlob(mimeString)
 
 
 class Toolbar extends Plugin
