@@ -478,7 +478,10 @@
 
     Selection.prototype.selectRange = function(range) {
       this.clear();
-      return this.sel.addRange(range);
+      this.sel.addRange(range);
+      if (!this.editor.inputManager.focused && (this.editor.util.browser.firefox || this.editor.util.browser.msie)) {
+        return this.editor.body.focus();
+      }
     };
 
     Selection.prototype.rangeAtEndOf = function(node, range) {
@@ -628,10 +631,23 @@
     };
 
     Selection.prototype.deleteRangeContents = function(range) {
+      var endRange, startRange;
       if (range == null) {
         range = this.getRange();
       }
-      return range.deleteContents();
+      startRange = range.cloneRange();
+      endRange = range.cloneRange();
+      startRange.collapse(true);
+      endRange.collapse();
+      if (!range.collapsed && this.rangeAtStartOf(this.editor.body, startRange) && this.rangeAtEndOf(this.editor.body, endRange)) {
+        this.editor.body.empty();
+        range.setStart(this.editor.body[0], 0);
+        range.collapse(true);
+        this.selectRange(range);
+      } else {
+        range.deleteContents();
+      }
+      return range;
     };
 
     Selection.prototype.breakBlockEl = function(el, range) {
@@ -650,12 +666,14 @@
       return $el.before(range.extractContents());
     };
 
-    Selection.prototype.save = function() {
-      var endCaret, range, startCaret;
+    Selection.prototype.save = function(range) {
+      var endCaret, startCaret;
+      if (range == null) {
+        range = this.getRange();
+      }
       if (this._selectionSaved) {
         return;
       }
-      range = this.getRange();
       startCaret = $('<span/>').addClass('simditor-caret-start');
       endCaret = $('<span/>').addClass('simditor-caret-end');
       range.insertNode(startCaret[0]);
@@ -686,9 +704,6 @@
         startCaret.remove();
         endCaret.remove();
         this.selectRange(range);
-        if (this.editor.util.browser.firefox || this.editor.util.browser.msie) {
-          this.editor.body.focus();
-        }
       } else {
         startCaret.remove();
         endCaret.remove();
@@ -982,14 +997,22 @@
       }).addClass('simditor-paste-area').appendTo(this.editor.el);
       this.editor.on('valuechanged', function() {
         return _this.editor.body.find('hr, pre, .simditor-image, .simditor-table').each(function(i, el) {
-          var $el;
+          var $el, formatted;
           $el = $(el);
           if ($el.parent().is('blockquote') || $el.parent()[0] === _this.editor.body[0]) {
+            formatted = false;
             if ($el.next().length === 0) {
               $('<p/>').append(_this.editor.util.phBr).insertAfter($el);
+              formatted = true;
             }
             if ($el.prev().length === 0) {
-              return $('<p/>').append(_this.editor.util.phBr).insertBefore($el);
+              $('<p/>').append(_this.editor.util.phBr).insertBefore($el);
+              formatted = true;
+            }
+            if (formatted) {
+              return setTimeout(function() {
+                return _this.editor.trigger('valuechanged');
+              }, 10);
             }
           }
         });
@@ -1150,7 +1173,7 @@
     };
 
     InputManager.prototype._onPaste = function(e) {
-      var $blockEl, cleanPaste, imageFile, pasteItem, uploadOpt, _ref,
+      var $blockEl, cleanPaste, imageFile, pasteItem, range, uploadOpt, _ref,
         _this = this;
       if (this.editor.triggerHandler(e) === false) {
         return false;
@@ -1173,20 +1196,20 @@
           return false;
         }
       }
+      range = this.editor.selection.deleteRangeContents();
+      if (!range.collapsed) {
+        range.collapse(true);
+      }
       $blockEl = this.editor.util.closestBlockEl();
       cleanPaste = $blockEl.is('pre, table');
-      this.editor.selection.deleteRangeContents();
-      this.editor.selection.save();
+      this.editor.selection.save(range);
       this._pasteArea.focus();
       return setTimeout(function() {
-        var $img, blob, children, insertPosition, node, pasteContent, range, _i, _j, _len, _len1, _ref1, _ref2;
+        var $img, blob, children, insertPosition, lastLine, line, lines, node, pasteContent, _i, _j, _k, _l, _len, _len1, _len2, _len3, _ref1, _ref2;
         if (_this._pasteArea.is(':empty')) {
           pasteContent = null;
         } else if (cleanPaste) {
           pasteContent = _this.editor.formatter.clearHtml(_this._pasteArea.html());
-          if ($blockEl.is('table')) {
-            pasteContent = pasteContent.replace(/\n/g, '<br/>');
-          }
         } else {
           pasteContent = $('<div/>').append(_this._pasteArea.contents());
           _this.editor.formatter.format(pasteContent);
@@ -1202,28 +1225,44 @@
         if (!pasteContent) {
           return;
         } else if (cleanPaste) {
-          pasteContent = $('<div/>').append(pasteContent);
-          _ref1 = pasteContent.contents();
-          for (_i = 0, _len = _ref1.length; _i < _len; _i++) {
-            node = _ref1[_i];
-            _this.editor.selection.insertNode($(node)[0], range);
+          if ($blockEl.is('table')) {
+            lines = pasteContent.split('\n');
+            lastLine = lines.pop();
+            for (_i = 0, _len = lines.length; _i < _len; _i++) {
+              line = lines[_i];
+              _this.editor.selection.insertNode(document.createTextNode(line));
+              _this.editor.selection.insertNode($('<br/>'));
+            }
+            _this.editor.selection.insertNode(document.createTextNode(lastLine));
+          } else {
+            pasteContent = $('<div/>').text(pasteContent);
+            _ref1 = pasteContent.contents();
+            for (_j = 0, _len1 = _ref1.length; _j < _len1; _j++) {
+              node = _ref1[_j];
+              _this.editor.selection.insertNode($(node)[0], range);
+            }
+          }
+        } else if ($blockEl.is(_this.editor.body)) {
+          for (_k = 0, _len2 = pasteContent.length; _k < _len2; _k++) {
+            node = pasteContent[_k];
+            _this.editor.selection.insertNode(node, range);
           }
         } else if (pasteContent.length < 1) {
           return;
         } else if (pasteContent.length === 1) {
           if (pasteContent.is('p')) {
             children = pasteContent.contents();
-            for (_j = 0, _len1 = children.length; _j < _len1; _j++) {
-              node = children[_j];
+            for (_l = 0, _len3 = children.length; _l < _len3; _l++) {
+              node = children[_l];
               _this.editor.selection.insertNode(node, range);
             }
           } else if (pasteContent.is('.simditor-image')) {
             $img = pasteContent.find('img');
-            if (dataURLtoBlob && /^data:image\/png;base64/.test($img.attr('src'))) {
+            if (/^data:image/.test($img.attr('src'))) {
               if (!_this.opts.pasteImage) {
                 return;
               }
-              blob = dataURLtoBlob($img.attr("src"));
+              blob = _this.editor.util.dataURLtoBlob($img.attr("src"));
               blob.name = "来自剪贴板的图片.png";
               uploadOpt = {};
               uploadOpt[_this.opts.pasteImage] = true;
@@ -2045,6 +2084,51 @@
       this.editor.trigger('valuechanged');
       this.editor.trigger('selectionchanged');
       return true;
+    };
+
+    Util.prototype.dataURLtoBlob = function(dataURL) {
+      var BlobBuilder, arrayBuffer, bb, byteString, hasArrayBufferViewSupport, hasBlobConstructor, i, intArray, mimeString, _i, _ref;
+      hasBlobConstructor = window.Blob && (function() {
+        var e;
+        try {
+          return Boolean(new Blob());
+        } catch (_error) {
+          e = _error;
+          return false;
+        }
+      })();
+      hasArrayBufferViewSupport = hasBlobConstructor && window.Uint8Array && (function() {
+        var e;
+        try {
+          return new Blob([new Uint8Array(100)]).size === 100;
+        } catch (_error) {
+          e = _error;
+          return false;
+        }
+      })();
+      BlobBuilder = window.BlobBuilder || window.WebKitBlobBuilder || window.MozBlobBuilder || window.MSBlobBuilder;
+      if (!((hasBlobConstructor || BlobBuilder) && window.atob && window.ArrayBuffer && window.Uint8Array)) {
+        return false;
+      }
+      if (dataURL.split(',')[0].indexOf('base64') >= 0) {
+        byteString = atob(dataURL.split(',')[1]);
+      } else {
+        byteString = decodeURIComponent(dataURL.split(',')[1]);
+      }
+      arrayBuffer = new ArrayBuffer(byteString.length);
+      intArray = new Uint8Array(arrayBuffer);
+      for (i = _i = 0, _ref = byteString.length; 0 <= _ref ? _i <= _ref : _i >= _ref; i = 0 <= _ref ? ++_i : --_i) {
+        intArray[i] = byteString.charCodeAt(i);
+      }
+      mimeString = dataURL.split(',')[0].split(':')[1].split(';')[0];
+      if (hasBlobConstructor) {
+        return new Blob([hasArrayBufferViewSupport ? intArray : arrayBuffer], {
+          type: mimeString
+        });
+      }
+      bb = new BlobBuilder();
+      bb.append(arrayBuffer);
+      return bb.getBlob(mimeString);
     };
 
     return Util;
@@ -3445,9 +3529,6 @@
             var range;
             range = document.createRange();
             _this.editor.selection.setRangeAfter(_this.target, range);
-            if (_this.editor.util.browser.firefox) {
-              _this.editor.body.focus();
-            }
             _this.hide();
             _this.editor.trigger('valuechanged');
             return _this.editor.trigger('selectionchanged');
@@ -3461,9 +3542,6 @@
         _this.hide();
         range = document.createRange();
         _this.editor.selection.setRangeAfter(txtNode, range);
-        if (_this.editor.util.browser.firefox && !_this.editor.inputManager.focused) {
-          _this.editor.body.focus();
-        }
         _this.editor.trigger('valuechanged');
         return _this.editor.trigger('selectionchanged');
       });
@@ -3539,8 +3617,7 @@
         $imgWrapper = $(e.currentTarget);
         if ($imgWrapper.hasClass('selected')) {
           _this.popover.srcEl.blur();
-          _this.popover.hide();
-          $imgWrapper.removeClass('selected');
+          $imgWrapper.focus();
         } else {
           _this.editor.body.blur();
           _this.editor.body.find('.simditor-image').removeClass('selected');
@@ -3562,18 +3639,21 @@
         if (range.collapsed && $container.is('.simditor-image')) {
           return $container.mousedown();
         } else if (_this.popover.active) {
-          if (_this.popover.active) {
-            return _this.popover.hide();
-          }
+          return _this.popover.hide();
         }
       });
       this.editor.body.on('keydown', '.simditor-image', function(e) {
+        var newBlockEl, range;
         if (e.which !== 8) {
           return;
         }
         _this.popover.hide();
-        $(e.currentTarget).remove();
+        newBlockEl = $('<p/>').append(_this.editor.util.phBr);
+        $(e.currentTarget).replaceWith(newBlockEl);
+        range = document.createRange();
+        _this.editor.selection.setRangeAtStartOf(newBlockEl, range);
         _this.editor.trigger('valuechanged');
+        _this.editor.trigger('selectionchanged');
         return false;
       });
     }
@@ -3749,7 +3829,7 @@
       if ($wrapper.length < 1) {
         return;
       }
-      if (!/^data:image\/png;base64/.test($img.attr('src'))) {
+      if (!/^data:image/.test($img.attr('src'))) {
         $('<p/>').append($img).insertAfter($wrapper);
       }
       return $wrapper.remove();
@@ -3890,6 +3970,11 @@
           _this.srcEl.blur();
           _this.target.removeClass('selected');
           return _this.hide();
+        }
+      });
+      this.editor.on('valuechanged', function(e) {
+        if (_this.active) {
+          return _this.refresh();
         }
       });
       return this._initUploader();
