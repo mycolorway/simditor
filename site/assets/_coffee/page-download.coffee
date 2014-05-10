@@ -10,3 +10,6 @@ $ ->
       .toggleClass('fa-caret-down', !expanded)
       .toggleClass('fa-caret-right', expanded)
 
+  $page.on 'mousedown', '.btn-download', (e) ->
+    e.stopPropagation()
+
