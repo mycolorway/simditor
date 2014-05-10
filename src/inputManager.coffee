@@ -37,16 +37,22 @@ class InputManager extends Plugin
       @editor.body.find('hr, pre, .simditor-image, .simditor-table').each (i, el) =>
         $el = $(el)
         if ($el.parent().is('blockquote') or $el.parent()[0] == @editor.body[0])
+          formatted = false
+
           if $el.next().length == 0
             $('<p/>').append(@editor.util.phBr)
               .insertAfter($el)
+            formatted = true
+
           if $el.prev().length == 0
             $('<p/>').append(@editor.util.phBr)
               .insertBefore($el)
+            formatted = true
 
-          setTimeout =>
-            @editor.trigger 'valuechanged'
-          , 10
+          if formatted
+            setTimeout =>
+              @editor.trigger 'valuechanged'
+            , 10
 
 
     @editor.body.on('keydown', $.proxy(@_onKeyDown, @))
