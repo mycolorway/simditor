@@ -144,7 +144,7 @@ class Selection extends Plugin
     endRange.collapse()
 
     # the default behavior of cmd+a is buggy
-    if @rangeAtStartOf(@editor.body, startRange) and @rangeAtEndOf(@editor.body, endRange)
+    if !range.collapsed and @rangeAtStartOf(@editor.body, startRange) and @rangeAtEndOf(@editor.body, endRange)
       @editor.body.empty()
       range.setStart @editor.body[0], 0
       range.collapse true
