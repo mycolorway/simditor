@@ -74,6 +74,6 @@ var editor = new Simditor({
 
 `.editor-style` 选择符下面的样式，是 Simditor 输出 HTML 的中文排版样式，大家可以根据自己项目的情况进行调整。另外，如果不想使用 [font-awesome.css](http://fontawesome.io/) 来实现工具栏按钮的 icon，可以将 `font-awesome.css` 去掉，然后增加 `.toolbar-item-[button name]` 选择符来自定义按钮样式。
 
-有的项目有一些特殊的交互需求，例如自动保存功能或者 @ 人的功能，我们可以基于 [Simple Module](http://https://github.com/mycolorway/simple-module) 来给 Simditor 编写扩展。关于编写扩展更详细的介绍请参考教程[《编写扩展》]({{ page.root }}tours/tour-plugin.html)。
+有的项目有一些特殊的交互需求，例如自动保存功能或者 @ 人的功能，我们可以基于 [Simple Module](https://github.com/mycolorway/simple-module) 来给 Simditor 编写扩展。关于编写扩展更详细的介绍请参考教程[《编写扩展》]({{ page.root }}tours/tour-plugin.html)。
 
 
