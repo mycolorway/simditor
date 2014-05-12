@@ -1017,7 +1017,7 @@
           }
         });
       });
-      this.editor.body.on('keydown', $.proxy(this._onKeyDown, this)).on('keyup', $.proxy(this._onKeyUp, this)).on('mouseup', $.proxy(this._onMouseUp, this)).on('focus', $.proxy(this._onFocus, this)).on('blur', $.proxy(this._onBlur, this)).on('paste', $.proxy(this._onPaste, this));
+      this.editor.body.on('keydown', $.proxy(this._onKeyDown, this)).on('keypress', $.proxy(this._onKeyPress, this)).on('keyup', $.proxy(this._onKeyUp, this)).on('mouseup', $.proxy(this._onMouseUp, this)).on('focus', $.proxy(this._onFocus, this)).on('blur', $.proxy(this._onBlur, this)).on('paste', $.proxy(this._onPaste, this));
       if (this.editor.util.browser.firefox) {
         this.addShortcut('cmd+37', function(e) {
           e.preventDefault();
@@ -1122,6 +1122,12 @@
         this._typing = true;
       }
       return null;
+    };
+
+    InputManager.prototype._onKeyPress = function(e) {
+      if (this.editor.triggerHandler(e) === false) {
+        return false;
+      }
     };
 
     InputManager.prototype._onKeyUp = function(e) {

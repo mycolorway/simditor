@@ -437,6 +437,7 @@ class InputManager extends Plugin
 
 
     @editor.body.on('keydown', $.proxy(@_onKeyDown, @))
+      .on('keypress', $.proxy(@_onKeyPress, @))
       .on('keyup', $.proxy(@_onKeyUp, @))
       .on('mouseup', $.proxy(@_onMouseUp, @))
       .on('focus', $.proxy(@_onFocus, @))
@@ -539,6 +540,9 @@ class InputManager extends Plugin
 
     null
 
+  _onKeyPress: (e) ->
+    if @editor.triggerHandler(e) == false
+      return false
 
   _onKeyUp: (e) ->
     if @editor.triggerHandler(e) == false
@@ -689,12 +693,6 @@ class InputManager extends Plugin
 
   addShortcut: (keys, handler) ->
     @_shortcuts[keys] = $.proxy(handler, this)
-
-
-
-
-
-
 
 
 # Standardize keystroke actions across browsers
