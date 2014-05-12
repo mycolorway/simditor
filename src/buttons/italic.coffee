@@ -18,6 +18,7 @@ class ItalicButton extends Button
       @title = @title + ' ( Cmd + i )'
     else
       @title = @title + ' ( Ctrl + i )'
+      @shortcut = 'ctrl+73'
 
     super()
 

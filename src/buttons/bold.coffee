@@ -18,6 +18,7 @@ class BoldButton extends Button
       @title = @title + ' ( Cmd + b )'
     else
       @title = @title + ' ( Ctrl + b )'
+      @shortcut = 'ctrl+66'
     super()
 
   status: ($node) ->

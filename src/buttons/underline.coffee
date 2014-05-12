@@ -18,6 +18,7 @@ class UnderlineButton extends Button
       @title = @title + ' ( Cmd + u )'
     else
       @title = @title + ' ( Ctrl + u )'
+      @shortcut = 'ctrl+85'
     super()
 
   status: ($node) ->

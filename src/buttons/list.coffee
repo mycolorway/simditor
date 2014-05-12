@@ -112,6 +112,7 @@ class OrderListButton extends ListButton
       @title = @title + ' ( Cmd + / )'
     else
       @title = @title + ' ( ctrl + / )'
+      @shortcut = 'ctrl+191'
     super()
 
 class UnorderListButton extends ListButton
@@ -126,6 +127,7 @@ class UnorderListButton extends ListButton
       @title = @title + ' ( Cmd + . )'
     else
       @title = @title + ' ( Ctrl + . )'
+      @shortcut = 'ctrl+190'
     super()
 
 Simditor.Toolbar.addButton(OrderListButton)

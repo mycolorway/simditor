@@ -2016,6 +2016,7 @@ class BoldButton extends Button
       @title = @title + ' ( Cmd + b )'
     else
       @title = @title + ' ( Ctrl + b )'
+      @shortcut = 'ctrl+66'
     super()
 
   status: ($node) ->
@@ -2054,6 +2055,7 @@ class ItalicButton extends Button
       @title = @title + ' ( Cmd + i )'
     else
       @title = @title + ' ( Ctrl + i )'
+      @shortcut = 'ctrl+73'
 
     super()
 
@@ -2094,6 +2096,7 @@ class UnderlineButton extends Button
       @title = @title + ' ( Cmd + u )'
     else
       @title = @title + ' ( Ctrl + u )'
+      @shortcut = 'ctrl+85'
     super()
 
   status: ($node) ->
@@ -2228,6 +2231,7 @@ class OrderListButton extends ListButton
       @title = @title + ' ( Cmd + / )'
     else
       @title = @title + ' ( ctrl + / )'
+      @shortcut = 'ctrl+191'
     super()
 
 class UnorderListButton extends ListButton
@@ -2242,6 +2246,7 @@ class UnorderListButton extends ListButton
       @title = @title + ' ( Cmd + . )'
     else
       @title = @title + ' ( Ctrl + . )'
+      @shortcut = 'ctrl+190'
     super()
 
 Simditor.Toolbar.addButton(OrderListButton)
