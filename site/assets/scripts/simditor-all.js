@@ -1017,7 +1017,7 @@
           }
         });
       });
-      this.editor.body.on('keydown', $.proxy(this._onKeyDown, this)).on('keypress', $.proxy(this._onKeyPress, this)).on('keyup', $.proxy(this._onKeyUp, this)).on('mouseup', $.proxy(this._onMouseUp, this)).on('focus', $.proxy(this._onFocus, this)).on('blur', $.proxy(this._onBlur, this)).on('paste', $.proxy(this._onPaste, this));
+      this.editor.body.on('keydown', $.proxy(this._onKeyDown, this)).on('keyup', $.proxy(this._onKeyUp, this)).on('mouseup', $.proxy(this._onMouseUp, this)).on('focus', $.proxy(this._onFocus, this)).on('blur', $.proxy(this._onBlur, this)).on('paste', $.proxy(this._onPaste, this));
       if (this.editor.util.browser.firefox) {
         this.addShortcut('cmd+37', function(e) {
           e.preventDefault();
@@ -1122,37 +1122,6 @@
         this._typing = true;
       }
       return null;
-    };
-
-    InputManager.prototype._onKeyPress = function(e) {
-      var cmd, hook, _i, _len, _ref, _results;
-      if (this.editor.triggerHandler(e) === false) {
-        return false;
-      }
-      if (e.which === 13) {
-        this._hookStack.length = 0;
-      }
-      if (e.which === 32) {
-        cmd = this._hookStack.join('');
-        this._hookStack.length = 0;
-        _ref = this._inputHooks;
-        _results = [];
-        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-          hook = _ref[_i];
-          if ((hook.cmd instanceof RegExp && hook.cmd.test(cmd)) || hook.cmd === cmd) {
-            hook.callback(e, hook, cmd);
-            break;
-          } else {
-            _results.push(void 0);
-          }
-        }
-        return _results;
-      } else if (this._hookKeyMap[e.which]) {
-        this._hookStack.push(this._hookKeyMap[e.which]);
-        if (this._hookStack.length > 10) {
-          return this._hookStack.shift();
-        }
-      }
     };
 
     InputManager.prototype._onKeyUp = function(e) {
@@ -1310,17 +1279,6 @@
         this._keystrokeHandlers[key] = {};
       }
       return this._keystrokeHandlers[key][node] = handler;
-    };
-
-    InputManager.prototype._inputHooks = [];
-
-    InputManager.prototype._hookKeyMap = {};
-
-    InputManager.prototype._hookStack = [];
-
-    InputManager.prototype.addInputHook = function(hookOpt) {
-      $.extend(this._hookKeyMap, hookOpt.key);
-      return this._inputHooks.push(hookOpt);
     };
 
     InputManager.prototype._shortcuts = {

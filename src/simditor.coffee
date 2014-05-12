@@ -437,7 +437,6 @@ class InputManager extends Plugin
 
 
     @editor.body.on('keydown', $.proxy(@_onKeyDown, @))
-      .on('keypress', $.proxy(@_onKeyPress, @))
       .on('keyup', $.proxy(@_onKeyUp, @))
       .on('mouseup', $.proxy(@_onMouseUp, @))
       .on('focus', $.proxy(@_onFocus, @))
@@ -540,25 +539,6 @@ class InputManager extends Plugin
 
     null
 
-  _onKeyPress: (e) ->
-    if @editor.triggerHandler(e) == false
-      return false
-
-    # input hooks are limited in a single line
-    @_hookStack.length = 0 if e.which == 13
-
-    # check the input hooks
-    if e.which == 32
-      cmd = @_hookStack.join ''
-      @_hookStack.length = 0
-
-      for hook in @_inputHooks
-        if (hook.cmd instanceof RegExp and hook.cmd.test(cmd)) or hook.cmd == cmd
-          hook.callback(e, hook, cmd)
-          break
-    else if @_hookKeyMap[e.which]
-      @_hookStack.push @_hookKeyMap[e.which]
-      @_hookStack.shift() if @_hookStack.length > 10
 
   _onKeyUp: (e) ->
     if @editor.triggerHandler(e) == false
@@ -697,18 +677,6 @@ class InputManager extends Plugin
   addKeystrokeHandler: (key, node, handler) ->
     @_keystrokeHandlers[key] = {} unless @_keystrokeHandlers[key]
     @_keystrokeHandlers[key][node] = handler
-
-
-  # a hook will be triggered when specific string typed
-  _inputHooks: []
-
-  _hookKeyMap: {}
-
-  _hookStack: []
-
-  addInputHook: (hookOpt) ->
-    $.extend(@_hookKeyMap, hookOpt.key)
-    @_inputHooks.push hookOpt
 
 
   _shortcuts:
