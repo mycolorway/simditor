@@ -57,20 +57,6 @@ class ListButton extends Button
 
     $contents = $(range.extractContents())
 
-    #if $breakedEl?
-      #$contents.wrapInner('<' + $breakedEl[0].tagName + '/>')
-      #if @editor.selection.rangeAtStartOf $breakedEl, range
-        #range.setEndBefore($breakedEl[0])
-        #range.collapse(false)
-        #$breakedEl.remove() if $breakedEl.children().length < 1
-      #else if @editor.selection.rangeAtEndOf $breakedEl, range
-        #range.setEndAfter($breakedEl[0])
-        #range.collapse(false)
-      #else
-        #$breakedEl = @editor.selection.breakBlockEl($breakedEl, range)
-        #range.setEndBefore($breakedEl[0])
-        #range.collapse(false)
-
     results = []
     $contents.children().each (i, el) =>
       converted = @_convertEl el
@@ -120,6 +106,13 @@ class OrderListButton extends ListButton
   title: '有序列表'
   icon: 'list-ol'
   htmlTag: 'ol'
+  shortcut: 'cmd+191'
+  render: ->
+    if @editor.util.os.mac
+      @title = @title + ' ( Cmd + / )'
+    else
+      @title = @title + ' ( ctrl + / )'
+    super()
 
 class UnorderListButton extends ListButton
   type: 'ul'
@@ -127,6 +120,13 @@ class UnorderListButton extends ListButton
   title: '无序列表'
   icon: 'list-ul'
   htmlTag: 'ul'
+  shortcut: 'cmd+190'
+  render: ->
+    if @editor.util.os.mac
+      @title = @title + ' ( Cmd + . )'
+    else
+      @title = @title + ' ( Ctrl + . )'
+    super()
 
 Simditor.Toolbar.addButton(OrderListButton)
 Simditor.Toolbar.addButton(UnorderListButton)

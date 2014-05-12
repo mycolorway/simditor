@@ -13,6 +13,13 @@ class UnderlineButton extends Button
 
   shortcut: 'cmd+85'
 
+  render: ->
+    if @editor.util.os.mac
+      @title = @title + ' ( Cmd + u )'
+    else
+      @title = @title + ' ( Ctrl + u )'
+    super()
+
   status: ($node) ->
     @setDisabled $node.is(@disableTag) if $node?
     return @disabled if @disabled

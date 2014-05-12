@@ -13,6 +13,13 @@ class BoldButton extends Button
 
   shortcut: 'cmd+66'
 
+  render: ->
+    if @editor.util.os.mac
+      @title = @title + ' ( Cmd + b )'
+    else
+      @title = @title + ' ( Ctrl + b )'
+    super()
+
   status: ($node) ->
     @setDisabled $node.is(@disableTag) if $node?
     return true if @disabled

@@ -13,6 +13,14 @@ class ItalicButton extends Button
 
   shortcut: 'cmd+73'
 
+  render: ->
+    if @editor.util.os.mac
+      @title = @title + ' ( Cmd + i )'
+    else
+      @title = @title + ' ( Ctrl + i )'
+
+    super()
+
   status: ($node) ->
     @setDisabled $node.is(@disableTag) if $node?
     return @disabled if @disabled
