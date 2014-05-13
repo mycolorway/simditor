@@ -11,6 +11,18 @@ class CodeButton extends Button
 
   disableTag: 'li, table'
 
+
+  constructor: (@editor) ->
+    super @editor
+
+    @editor.on 'decorate', (e, $el) =>
+      $el.find('pre').each (i, pre) =>
+        @decorate $(pre)
+
+    @editor.on 'undecorate', (e, $el) =>
+      $el.find('pre').each (i, pre) =>
+        @undecorate $(pre)
+
   render: (args...) ->
     super args...
     @popover = new CodePopover(@editor)
@@ -24,6 +36,16 @@ class CodeButton extends Button
       @popover.hide()
 
     result
+
+  decorate: ($pre) ->
+    lang = $pre.attr('data-lang')
+    $pre.removeClass()
+    $pre.addClass('lang-' + lang) if lang and lang != -1
+
+  undecorate: ($pre) ->
+    lang = $pre.attr('data-lang')
+    $pre.removeClass()
+    $pre.addClass('lang-' + lang) if lang and lang != -1
 
   command: ->
     range = @editor.selection.getRange()
@@ -102,14 +124,16 @@ class CodePopover extends Popover
     @selectEl = @el.find '.select-lang'
 
     @selectEl.on 'change', (e) =>
-      lang = @selectEl.val()
-      oldLang = @target.attr('data-lang')
-      @target.removeClass('lang-' + oldLang)
+      @lang = @selectEl.val()
+      selected = @target.hasClass('selected')
+      @target.removeClass()
         .removeAttr('data-lang')
 
       if @lang isnt -1
-        @target.addClass('lang-' + lang) 
-        @target.attr('data-lang', lang)
+        @target.addClass('lang-' + @lang) 
+        @target.attr('data-lang', @lang)
+
+      @target.addClass('selected') if selected
 
   show: (args...) ->
     super args...

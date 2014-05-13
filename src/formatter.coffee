@@ -16,7 +16,7 @@ class Formatter extends Plugin
   _allowedAttributes:
     img: ['src', 'alt', 'width', 'height', 'data-image-src', 'data-image-size', 'data-image-name']
     a: ['href', 'target']
-    pre: ['data-lang']
+    pre: ['data-lang', 'class']
     p: ['data-indent']
     h1: ['data-indent']
     h2: ['data-indent']
