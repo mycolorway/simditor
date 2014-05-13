@@ -2594,11 +2594,11 @@ class ImageButton extends Button
     @maxHeight = @editor.opts.maxImageHeight || $(window).height()
 
     @editor.on 'decorate', (e, $el) =>
-      $el.find('img').each (i, img) =>
+      $el.find('img:not([data-non-image])').each (i, img) =>
         @decorate $(img)
 
     @editor.on 'undecorate', (e, $el) =>
-      $el.find('img').each (i, img) =>
+      $el.find('img:not([data-non-image])').each (i, img) =>
         @undecorate $(img)
 
     @editor.body.on 'mousedown', '.simditor-image', (e) =>
