@@ -14,7 +14,7 @@ class Formatter extends Plugin
   _allowedTags: ['br', 'a', 'img', 'b', 'strong', 'i', 'u', 'p', 'ul', 'ol', 'li', 'blockquote', 'pre', 'h1', 'h2', 'h3', 'h4', 'hr']
 
   _allowedAttributes:
-    img: ['src', 'alt', 'width', 'height', 'data-image-src', 'data-image-size', 'data-image-name']
+    img: ['src', 'alt', 'width', 'height', 'data-image-src', 'data-image-size', 'data-image-name', 'data-non-image']
     a: ['href', 'target']
     pre: ['data-lang']
     p: ['data-indent']
