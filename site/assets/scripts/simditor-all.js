@@ -3818,7 +3818,8 @@
         return _this.loadImage($img, result.file_path, function() {
           file.imgWrapper.find(".mask, .simditor-image-progress").remove();
           _this.popover.srcEl.val(result.file_path);
-          return _this.editor.trigger('valuechanged');
+          _this.editor.trigger('valuechanged');
+          return _this.editor.uploader.trigger('uploadready', [file, result]);
         });
       });
       return this.editor.uploader.on('uploaderror', function(e, file, xhr) {

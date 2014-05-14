@@ -2750,6 +2750,7 @@ class ImageButton extends Button
         file.imgWrapper.find(".mask, .simditor-image-progress").remove()
         @popover.srcEl.val result.file_path
         @editor.trigger 'valuechanged'
+        @editor.uploader.trigger 'uploadready', [file, result]
 
     @editor.uploader.on 'uploaderror', (e, file, xhr) =>
       return unless file.inline
