@@ -40,7 +40,13 @@ class Button extends Module
           .removeClass('menu-on')
 
         if @wrapper.is('.menu-on')
-          @_autoMenuPosition()
+          exceed = @menuWrapper.offset().left + @menuWrapper.outerWidth() + 5 -
+            @editor.wrapper.offset().left - @editor.wrapper.outerWidth()
+
+          if exceed > 0
+            @menuWrapper.css
+              'left': 'auto'
+              'right': 1
 
         return false
 
@@ -132,16 +138,6 @@ class Button extends Module
     @active
 
   command: (param) ->
-
-  _autoMenuPosition: ->
-    minLeft = @el.outerWidth() - @menuWrapper.outerWidth() + 1
-    exceed = @menuWrapper.offset().left + @menuWrapper.outerWidth() + 5 -
-      @editor.wrapper.offset().left - @editor.wrapper.outerWidth()
-
-    if exceed > 0
-      left = parseInt @menuWrapper.css('left')
-      @menuWrapper.css 'left', Math.max(left - exceed, minLeft)
-
 
 
 window.SimditorButton = Button

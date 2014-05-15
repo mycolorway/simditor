@@ -2492,12 +2492,18 @@
       this.editor = editor;
       this.render();
       this.el.on('mousedown', function(e) {
-        var param;
+        var exceed, param;
         e.preventDefault();
         if (_this.menu) {
           _this.wrapper.toggleClass('menu-on').siblings('li').removeClass('menu-on');
           if (_this.wrapper.is('.menu-on')) {
-            _this._autoMenuPosition();
+            exceed = _this.menuWrapper.offset().left + _this.menuWrapper.outerWidth() + 5 - _this.editor.wrapper.offset().left - _this.editor.wrapper.outerWidth();
+            if (exceed > 0) {
+              _this.menuWrapper.css({
+                'left': 'auto',
+                'right': 1
+              });
+            }
           }
           return false;
         }
@@ -2604,16 +2610,6 @@
     };
 
     Button.prototype.command = function(param) {};
-
-    Button.prototype._autoMenuPosition = function() {
-      var exceed, left, minLeft;
-      minLeft = this.el.outerWidth() - this.menuWrapper.outerWidth() + 1;
-      exceed = this.menuWrapper.offset().left + this.menuWrapper.outerWidth() + 5 - this.editor.wrapper.offset().left - this.editor.wrapper.outerWidth();
-      if (exceed > 0) {
-        left = parseInt(this.menuWrapper.css('left'));
-        return this.menuWrapper.css('left', Math.max(left - exceed, minLeft));
-      }
-    };
 
     return Button;
 
