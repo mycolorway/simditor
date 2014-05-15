@@ -86,7 +86,7 @@ class CodeButton extends Button
         codeStr = '\n'
       else
         codeStr = @editor.formatter.clearHtml($el)
-      block = $('<' + @htmlTag + '/>').append(codeStr)
+      block = $('<' + @htmlTag + '/>').text(codeStr)
       results.push(block)
 
     results
