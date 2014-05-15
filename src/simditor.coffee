@@ -1709,7 +1709,7 @@ class Button extends Module
           if exceed > 0
             @menuWrapper.css
               'left': 'auto'
-              'right': 1
+              'right': 0
 
         return false
 

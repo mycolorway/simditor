@@ -2501,7 +2501,7 @@
             if (exceed > 0) {
               _this.menuWrapper.css({
                 'left': 'auto',
-                'right': 1
+                'right': 0
               });
             }
           }
