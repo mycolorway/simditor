@@ -147,7 +147,6 @@
   line-height: 40px;
   text-align: center;
   text-decoration: none;
-  margin: 0 1px;
 }
 .simditor .simditor-toolbar > ul > li > .toolbar-item span {
   opacity: 0.6;
@@ -198,7 +197,7 @@
   display: none;
   position: absolute;
   top: 39px;
-  left: 1px;
+  left: 0;
   z-index: 20;
   background: #ffffff;
   text-align: left;

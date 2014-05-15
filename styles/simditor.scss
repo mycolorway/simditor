@@ -172,7 +172,6 @@ $simditor-toolbar-height: 40px;
 					line-height: $simditor-toolbar-height;
 					text-align: center;
 					text-decoration: none;
-					margin: 0 1px;
 
 					span {
 						opacity: 0.6;
@@ -242,7 +241,7 @@ $simditor-toolbar-height: 40px;
 			display: none;
 			position: absolute;
 			top: $simditor-toolbar-height - 1px;
-			left: 1px;
+			left: 0;
 			z-index: 20;
 			background: #ffffff;
 			text-align: left;
