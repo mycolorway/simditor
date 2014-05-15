@@ -1701,6 +1701,16 @@ class Button extends Module
         @wrapper.toggleClass('menu-on')
           .siblings('li')
           .removeClass('menu-on')
+
+        if @wrapper.is('.menu-on')
+          exceed = @menuWrapper.offset().left + @menuWrapper.outerWidth() + 5 -
+            @editor.wrapper.offset().left - @editor.wrapper.outerWidth()
+
+          if exceed > 0
+            @menuWrapper.css
+              'left': 'auto'
+              'right': 1
+
         return false
 
       return false if @el.hasClass('disabled') or (@needFocus and !@editor.inputManager.focused)
