@@ -78,3 +78,6 @@ class Popover extends Module
     @active = false
     @editor.off('.linkpopover')
     @el.remove()
+
+
+window.SimditorPopover = Popover
