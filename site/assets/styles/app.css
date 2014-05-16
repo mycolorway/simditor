@@ -588,6 +588,7 @@ section#page-download .version.expand .release-notes {
   display: block;
 }
 
+/* Document Page */
 section.page-doc dt {
   border-top: 1px solid #ddd;
   margin-top: 30px;
@@ -644,4 +645,20 @@ section.page-doc dd {
 }
 section.page-doc dd.expand {
   display: block;
+}
+
+/* Extension Page */
+section#page-extension article {
+  padding: 40px 130px 10px;
+}
+section#page-extension article #btn-submit-extension {
+  margin: 20px 0 0 0;
+  display: inline-block;
+  padding: 6px 12px;
+  color: #ffffff;
+  background: #aaaaaa;
+  border-radius: 4px;
+}
+section#page-extension article #btn-submit-extension:hover {
+  background: #bbbbbb;
 }

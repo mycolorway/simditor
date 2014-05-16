@@ -268,78 +268,103 @@ section#page-download {
 	}
 }
 
+
+/* Document Page */
+
 section.page-doc {
-  dt {
-    border-top: 1px solid #ddd;
-    margin-top: 30px;
-    margin-bottom: 10px;
-    padding-top: 20px;
+	dt {
+		border-top: 1px solid #ddd;
+		margin-top: 30px;
+		margin-bottom: 10px;
+		padding-top: 20px;
 
-    &:first-child {
-      border-top: none;
-      margin-top: 0;
-      padding-top: 0;
-    }
+		&:first-child {
+			border-top: none;
+			margin-top: 0;
+			padding-top: 0;
+		}
 
-    & > span {
-      margin-left: 10px;
+		& > span {
+			margin-left: 10px;
 
-      &:first-child {
-        margin-left: 0;
-      }
-    }
+			&:first-child {
+				margin-left: 0;
+			}
+		}
 
-    .name {
-      font-size: 1.2em;
-      font-weight: bold;
-    }
+		.name {
+			font-size: 1.2em;
+			font-weight: bold;
+		}
 
-    .param-type,
-    .type {
-      background-color: #efefef;
-      border-radius: 3px;
-      padding: 2px 6px;
-      font-size: 0.8em;
-      vertical-align: text-top;
-    }
+		.param-type,
+		.type {
+			background-color: #efefef;
+			border-radius: 3px;
+			padding: 2px 6px;
+			font-size: 0.8em;
+			vertical-align: text-top;
+		}
 
-    .default {
-      color: #aaa;
-      font-size: 0.8em;
-    }
+		.default {
+			color: #aaa;
+			font-size: 0.8em;
+		}
 
-    .params {
-      &:before {
-        content: "(";
-      }
+		.params {
+			&:before {
+				content: "(";
+			}
 
-      &:after {
-        content: ")";
-      }
+			&:after {
+				content: ")";
+			}
 
-      .param:after {
-        content: ",";
-        margin: 0 6px 0 3px;
-      }
+			.param:after {
+				content: ",";
+				margin: 0 6px 0 3px;
+			}
 
-      .param:last-child:after {
-        content: "";
-        margin: 0;
-      }
-    }
+			.param:last-child:after {
+				content: "";
+				margin: 0;
+			}
+		}
 
-    .return {
-      font-size: 0.8em;
-      color: green;
-    }
-  }
+		.return {
+			font-size: 0.8em;
+			color: green;
+		}
+	}
 
-  dd {
-    display: none;
+	dd {
+		display: none;
 
-    &.expand {
-      display: block;
-    }
-  }
+		&.expand {
+			display: block;
+		}
+	}
 
+}
+
+
+/* Extension Page */
+
+section#page-extension {
+	article {
+		padding: 40px 130px 10px;
+
+		#btn-submit-extension {
+			margin: 20px 0 0 0;
+			display: inline-block;
+			padding: 6px 12px;
+			color: #ffffff;
+			background: #aaaaaa;
+			border-radius: 4px;
+
+			&:hover {
+				background: #bbbbbb;
+			}
+		}
+	}
 }
