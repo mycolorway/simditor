@@ -1887,6 +1887,9 @@ class Popover extends Module
     @el.remove()
 
 
+window.SimditorPopover = Popover
+
+
 class TitleButton extends Button
 
   name: 'title'

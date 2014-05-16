@@ -2722,6 +2722,8 @@
 
   })(Module);
 
+  window.SimditorPopover = Popover;
+
   TitleButton = (function(_super) {
     __extends(TitleButton, _super);
 
