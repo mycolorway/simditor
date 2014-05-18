@@ -27,6 +27,23 @@ class Keystroke extends Plugin
         true
 
 
+    # press enter at end of title block in webkit and IE
+    if @editor.util.browser.webkit or @editor.util.browser.msie
+      titleEnterHandler = (e, $node) =>
+        return unless @editor.selection.rangeAtEndOf $node
+        $p = $('<p/>').append(@editor.util.phBr)
+          .insertAfter($node)
+        @editor.selection.setRangeAtStartOf $p
+        true
+
+      @editor.inputManager.addKeystrokeHandler '13', 'h1', titleEnterHandler
+      @editor.inputManager.addKeystrokeHandler '13', 'h2', titleEnterHandler
+      @editor.inputManager.addKeystrokeHandler '13', 'h3', titleEnterHandler
+      @editor.inputManager.addKeystrokeHandler '13', 'h4', titleEnterHandler
+      @editor.inputManager.addKeystrokeHandler '13', 'h5', titleEnterHandler
+      @editor.inputManager.addKeystrokeHandler '13', 'h6', titleEnterHandler
+
+
     # Remove hr and img node
     @editor.inputManager.addKeystrokeHandler '8', '*', (e) =>
       $rootBlock = @editor.util.furthestBlockEl()
