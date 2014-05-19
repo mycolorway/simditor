@@ -296,13 +296,16 @@ class ImageButton extends Button
     @decorate $img
     $img
 
-  command: () ->
+  command: (src) ->
     $img = @createImage()
 
-    @loadImage $img, @defaultImage, =>
+    @loadImage $img, src or @defaultImage, =>
       @editor.trigger 'valuechanged'
-      $img.mousedown()
+      if src
+        @editor.selection.setRangeAtEndOf $img.parent().next()
+        return
 
+      $img.mousedown()
       @popover.one 'popovershow', =>
         @popover.srcEl.focus()
         @popover.srcEl[0].select()

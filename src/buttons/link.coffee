@@ -38,7 +38,7 @@ class LinkButton extends Button
 
     @active
 
-  command: ->
+  command: (text, url) ->
     range = @editor.selection.getRange()
 
     if @active
@@ -55,9 +55,9 @@ class LinkButton extends Button
       $contents = $(range.extractContents())
       linkText = @editor.formatter.clearHtml($contents.contents(), false)
       $link = $('<a/>', {
-        href: 'http://www.example.com',
+        href: url or 'http://www.example.com',
         target: '_blank',
-        text: linkText || '链接文字'
+        text: text or linkText or '链接文字'
       })
 
       if $startBlock[0] == $endBlock[0]
@@ -65,6 +65,11 @@ class LinkButton extends Button
       else
         $newBlock = $('<p/>').append($link)
         range.insertNode $newBlock[0]
+
+      if text and url
+        @editor.selection.setRangeAtEndOf $link
+        @editor.trigger 'valuechanged'
+        return
 
       range.selectNodeContents $link[0]
 
