@@ -296,10 +296,10 @@ class ImageButton extends Button
     @decorate $img
     $img
 
-  command: () ->
+  command: (src) ->
     $img = @createImage()
 
-    @loadImage $img, @defaultImage, =>
+    @loadImage $img, src or @defaultImage, =>
       @editor.trigger 'valuechanged'
       $img.mousedown()
 
