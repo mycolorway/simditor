@@ -1623,11 +1623,11 @@ class Simditor extends Widget
     children = cloneBody.children()
     lastP = children.last 'p'
     firstP = children.first 'p'
-    while lastP.is('p') and !lastP.text() and !lastP.find('img').length
+    while lastP.is('p') and @util.isEmptyNode(lastP)
       emptyP = lastP
       lastP = lastP.prev 'p'
       emptyP.remove()
-    while firstP.is('p') and !firstP.text() and !firstP.find('img').length
+    while firstP.is('p') and @util.isEmptyNode(firstP)
       emptyP = firstP
       firstP = lastP.next 'p'
       emptyP.remove()
