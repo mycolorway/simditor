@@ -1315,7 +1315,8 @@
     }
 
     Keystroke.prototype._init = function() {
-      var _this = this;
+      var titleEnterHandler,
+        _this = this;
       if (this.editor.util.browser.safari) {
         this.editor.inputManager.addKeystrokeHandler('13', '*', function(e) {
           var $br;
@@ -1332,6 +1333,23 @@
           }
           return true;
         });
+      }
+      if (this.editor.util.browser.webkit || this.editor.util.browser.msie) {
+        titleEnterHandler = function(e, $node) {
+          var $p;
+          if (!_this.editor.selection.rangeAtEndOf($node)) {
+            return;
+          }
+          $p = $('<p/>').append(_this.editor.util.phBr).insertAfter($node);
+          _this.editor.selection.setRangeAtStartOf($p);
+          return true;
+        };
+        this.editor.inputManager.addKeystrokeHandler('13', 'h1', titleEnterHandler);
+        this.editor.inputManager.addKeystrokeHandler('13', 'h2', titleEnterHandler);
+        this.editor.inputManager.addKeystrokeHandler('13', 'h3', titleEnterHandler);
+        this.editor.inputManager.addKeystrokeHandler('13', 'h4', titleEnterHandler);
+        this.editor.inputManager.addKeystrokeHandler('13', 'h5', titleEnterHandler);
+        this.editor.inputManager.addKeystrokeHandler('13', 'h6', titleEnterHandler);
       }
       this.editor.inputManager.addKeystrokeHandler('8', '*', function(e) {
         var $prevBlockEl, $rootBlock;
@@ -2371,12 +2389,12 @@
       children = cloneBody.children();
       lastP = children.last('p');
       firstP = children.first('p');
-      while (lastP.is('p') && !lastP.text() && !lastP.find('img').length) {
+      while (lastP.is('p') && this.util.isEmptyNode(lastP)) {
         emptyP = lastP;
         lastP = lastP.prev('p');
         emptyP.remove();
       }
-      while (firstP.is('p') && !firstP.text() && !firstP.find('img').length) {
+      while (firstP.is('p') && this.util.isEmptyNode(firstP)) {
         emptyP = firstP;
         firstP = lastP.next('p');
         emptyP.remove();
@@ -2721,6 +2739,8 @@
     return Popover;
 
   })(Module);
+
+  window.SimditorPopover = Popover;
 
   TitleButton = (function(_super) {
     __extends(TitleButton, _super);
@@ -3969,11 +3989,11 @@
       return $img;
     };
 
-    ImageButton.prototype.command = function() {
+    ImageButton.prototype.command = function(src) {
       var $img,
         _this = this;
       $img = this.createImage();
-      return this.loadImage($img, this.defaultImage, function() {
+      return this.loadImage($img, src || this.defaultImage, function() {
         _this.editor.trigger('valuechanged');
         $img.mousedown();
         return _this.popover.one('popovershow', function() {
