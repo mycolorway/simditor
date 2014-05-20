@@ -77,7 +77,7 @@ class Formatter extends Plugin
       if $node.is('br')
         blockNode = null if blockNode?
         $node.remove()
-      else if @editor.util.isBlockNode(node) or $node.is('img')
+      else if @editor.util.isBlockNode(node) or $node.is('img:not([data-non-image])')
         if $node.is('li')
           if blockNode and blockNode.is('ul, ol')
             blockNode.append node
