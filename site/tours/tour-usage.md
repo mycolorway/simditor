@@ -13,7 +13,7 @@ root: ../
 <link rel="stylesheet" type="text/css" href="[style path]/font-awesome.css" />
 <link rel="stylesheet" type="text/css" href="[style path]/simditor.css" />
 
-<script type="text/javascript" src="[script path]/jquery-2.1.0.js"></script>
+<script type="text/javascript" src="[script path]/jquery.min.js"></script>
 <script type="text/javascript" src="[script path]/module.js"></script>
 <script type="text/javascript" src="[script path]/uploader.js"></script>
 <script type="text/javascript" src="[script path]/simditor.js"></script>
