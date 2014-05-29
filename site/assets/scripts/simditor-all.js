@@ -3703,7 +3703,7 @@
         } else {
           _this.editor.body.blur();
           _this.editor.body.find('.simditor-image').removeClass('selected');
-          $imgWrapper.addClass('selected').focus();
+          $imgWrapper.addClass('selected').width($imgWrapper.find('img').width()).focus();
           _this.popover.show($imgWrapper);
         }
         return false;
@@ -3919,6 +3919,7 @@
     };
 
     ImageButton.prototype.loadImage = function($img, src, callback) {
+      debugger;
       var $wrapper, img,
         _this = this;
       $wrapper = $img.parent('.simditor-image');
