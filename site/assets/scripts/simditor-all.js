@@ -1161,7 +1161,7 @@
             return;
           }
           if (!imageFile.name) {
-            imageFile.name = "来自剪贴板的图片.png";
+            imageFile.name = "Clipboard Image.png";
           }
           uploadOpt = {};
           uploadOpt[this.opts.pasteImage] = true;
@@ -1238,7 +1238,7 @@
                 return;
               }
               blob = _this.editor.util.dataURLtoBlob($img.attr("src"));
-              blob.name = "来自剪贴板的图片.png";
+              blob.name = "Clipboard Image.png";
               uploadOpt = {};
               uploadOpt[_this.opts.pasteImage] = true;
               if ((_ref2 = _this.editor.uploader) != null) {

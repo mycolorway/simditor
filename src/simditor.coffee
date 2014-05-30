@@ -573,7 +573,7 @@ class InputManager extends Plugin
         return unless imageFile? and @opts.pasteImage
 
         unless imageFile.name
-          imageFile.name = "来自剪贴板的图片.png"
+          imageFile.name = "Clipboard Image.png"
 
         uploadOpt = {}
         uploadOpt[@opts.pasteImage] = true
@@ -637,7 +637,7 @@ class InputManager extends Plugin
           if /^data:image/.test($img.attr('src'))
             return unless @opts.pasteImage
             blob = @editor.util.dataURLtoBlob $img.attr( "src" )
-            blob.name = "来自剪贴板的图片.png"
+            blob.name = "Clipboard Image.png"
 
             uploadOpt = {}
             uploadOpt[@opts.pasteImage] = true
