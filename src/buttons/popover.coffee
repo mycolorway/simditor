@@ -15,8 +15,8 @@ class Popover extends Module
       .data('popover', @)
     @render()
 
-    @editor.on 'blur.linkpopover', =>
-      @target.addClass('selected') if @active and @target?
+    #@editor.on 'blur.popover', =>
+      #@target.addClass('selected') if @active and @target?
 
     @el.on 'mouseenter', (e) =>
       @el.addClass 'hover'
@@ -27,7 +27,7 @@ class Popover extends Module
 
   show: ($target, position = 'bottom') ->
     return unless $target?
-    @target = $target
+    @target = $target.addClass('selected')
 
     @el.siblings('.simditor-popover').each (i, el) =>
       popover = $(el).data('popover')

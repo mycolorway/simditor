@@ -105,6 +105,7 @@ class Simditor extends Widget
       @placeholderEl.hide()
 
   setValue: (val) ->
+    @hidePopover()
     @textarea.val val
     @body.html val
 
@@ -115,6 +116,7 @@ class Simditor extends Widget
     @sync()
 
   sync: ->
+    @hidePopover
     cloneBody = @body.clone()
     @formatter.undecorate cloneBody
     @formatter.format cloneBody

@@ -45,14 +45,15 @@
   cursor: pointer;
 }
 .simditor .simditor-body .simditor-image {
-  margin: 15px 0;
+  display: inline-block;
+  margin: 0 5px;
   cursor: pointer;
   outline: none;
   position: relative;
-}
-.simditor .simditor-body .simditor-image.selected {
-  background: none;
-  box-shadow: 0 0 0 4px rgba(0, 0, 0, 0.2);
+  /*&.selected {*/
+  /*background: none;*/
+  /*box-shadow: 0 0 0 4px rgba(0,0,0,0.2);*/
+  /*}*/
 }
 .simditor .simditor-body .simditor-image img {
   margin: 0;

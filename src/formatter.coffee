@@ -112,6 +112,10 @@ class Formatter extends Plugin
       if $node.is('a') and $node.find('img').length > 0
         contents.first().unwrap()
 
+      # exclude uploading img
+      if $node.is('img') and $node.hasClass('uploading')
+        $node.remove()
+
       # Clean attributes except `src` `alt` on `img` tag and `href` `target` on `a` tag
       unless isDecoration
         allowedAttributes = @_allowedAttributes[$node[0].tagName.toLowerCase()]

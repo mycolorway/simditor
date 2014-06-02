@@ -44,11 +44,11 @@ class Keystroke extends Plugin
       @editor.inputManager.addKeystrokeHandler '13', 'h6', titleEnterHandler
 
 
-    # Remove hr and img node
+    # Remove hr
     @editor.inputManager.addKeystrokeHandler '8', '*', (e) =>
       $rootBlock = @editor.util.furthestBlockEl()
       $prevBlockEl = $rootBlock.prev()
-      if $prevBlockEl.is('hr, .simditor-image') and @editor.selection.rangeAtStartOf $rootBlock
+      if $prevBlockEl.is('hr') and @editor.selection.rangeAtStartOf $rootBlock
         # TODO: need to test on IE
         @editor.selection.save()
         $prevBlockEl.remove()

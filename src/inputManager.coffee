@@ -33,8 +33,8 @@ class InputManager extends Plugin
       .appendTo(@editor.el)
 
     @editor.on 'valuechanged', =>
-      # make sure each code block, img and table has siblings
-      @editor.body.find('hr, pre, .simditor-image, .simditor-table').each (i, el) =>
+      # make sure each code block and table has siblings
+      @editor.body.find('hr, pre, .simditor-table').each (i, el) =>
         $el = $(el)
         if ($el.parent().is('blockquote') or $el.parent()[0] == @editor.body[0])
           formatted = false
@@ -103,7 +103,6 @@ class InputManager extends Plugin
     @editor.triggerHandler 'blur'
 
   _onMouseUp: (e) ->
-    return if $(e.target).is('img, .simditor-image')
     @editor.trigger 'selectionchanged'
     @editor.undoManager.update()
 
@@ -249,8 +248,8 @@ class InputManager extends Plugin
           @editor.selection.insertNode(node, range) for node in children
 
         # paste image in firefox and IE 11
-        else if pasteContent.is('.simditor-image')
-          $img = pasteContent.find('img')
+        else if pasteContent.is('img')
+          $img = pasteContent
 
           # firefox and IE 11
           if /^data:image/.test($img.attr('src'))
