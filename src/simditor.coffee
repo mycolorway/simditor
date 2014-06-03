@@ -488,8 +488,10 @@ class InputManager extends Plugin
     @editor.triggerHandler 'blur'
 
   _onMouseUp: (e) ->
-    @editor.trigger 'selectionchanged'
-    @editor.undoManager.update()
+    setTimeout =>
+      @editor.trigger 'selectionchanged'
+      @editor.undoManager.update()
+    , 0
 
   _onKeyDown: (e) ->
     if @editor.triggerHandler(e) == false
@@ -1557,9 +1559,9 @@ class Simditor extends Widget
       , 0
 
     # Disable the resizing of `img` and `table`
-    #if @browser.mozilla
-      #document.execCommand "enableObjectResizing", false, "false"
-      #document.execCommand "enableInlineTableEditing", false, "false"
+    if @util.browser.mozilla
+      #document.execCommand "enableObjectResizing", false, false
+      document.execCommand "enableInlineTableEditing", false, false
 
   _tpl:"""
     <div class="simditor">
@@ -1605,6 +1607,7 @@ class Simditor extends Widget
       @placeholderEl.hide()
 
   setValue: (val) ->
+    @hidePopover()
     @textarea.val val
     @body.html val
 
@@ -1615,6 +1618,7 @@ class Simditor extends Widget
     @sync()
 
   sync: ->
+    @hidePopover
     cloneBody = @body.clone()
     @formatter.undecorate cloneBody
     @formatter.format cloneBody
@@ -1842,8 +1846,8 @@ class Popover extends Module
       .data('popover', @)
     @render()
 
-    @editor.on 'blur.linkpopover', =>
-      @target.addClass('selected') if @active and @target?
+    #@editor.on 'blur.popover', =>
+      #@target.addClass('selected') if @active and @target?
 
     @el.on 'mouseenter', (e) =>
       @el.addClass 'hover'
@@ -1854,7 +1858,7 @@ class Popover extends Module
 
   show: ($target, position = 'bottom') ->
     return unless $target?
-    @target = $target
+    @target = $target.addClass('selected')
 
     @el.siblings('.simditor-popover').each (i, el) =>
       popover = $(el).data('popover')
@@ -2647,30 +2651,32 @@ class ImageButton extends Button
       #$el.find('img:not([data-non-image])').each (i, img) =>
         #@undecorate $(img)
 
-    @editor.body.on 'click', 'img:not[data-non-image]', (e) =>
+    @editor.body.on 'click', 'img:not([data-non-image])', (e) =>
       $img = $(e.currentTarget)
 
-      if $img.hasClass 'active'
+      if $img.hasClass 'selected'
         return false
       else
-        @editor.body.find('img.active').removeClass('active')
-        $img.addClass('active')
-        @popover.show $img
-        range = @editor.selection.getRange()
+        #@popover.show $img
+        range = document.createRange()
         range.selectNode $img[0]
         @editor.selection.selectRange range
-        @editor.triiger 'selectionchanged'
+        @editor.trigger 'selectionchanged'
 
       false
+
+    @editor.body.on 'mouseup', 'img:not([data-non-image])', (e) =>
+      return false
 
 
     @editor.on 'selectionchanged.image', =>
       range = @editor.selection.getRange()
       return unless range?
 
-      $contents = $(range.cloneContents())
-      if $contents.length == 1 and $contents.is('img:not[data-non-image]')
-        @popover.show $contents
+      $contents = $(range.cloneContents()).contents()
+      if $contents.length == 1 and $contents.is('img:not([data-non-image])')
+        $img = $(range.startContainer).contents().eq(range.startOffset)
+        @popover.show $img
       else
         @popover.hide()
 
@@ -2727,6 +2733,10 @@ class ImageButton extends Button
         $img.click()
         file.img = $img
 
+      $img.addClass 'uploading'
+      file.progressEl = $('<div class="simditor-upload-progress"><span></span></div>')
+        .appendTo(@editor.wrapper)
+
       @editor.uploader.readImageFile file.obj, (img) =>
         src = if img then img.src else @defaultImage
 
@@ -2735,18 +2745,13 @@ class ImageButton extends Button
           @popover.srcEl.val('正在上传...')
 
           imgPosition = $img.position()
-          $progress = $('<div class="upload-progress"><span></span></div>')
-            .css({
-              top: imgPosition.top(),
-              left: imgPosition.left(),
+          file.progressEl.css({
+              top: imgPosition.top  + @editor.toolbar.wrapper.outerHeight(),
+              left: imgPosition.left,
               width: $img.width(),
               height: $img.height()
             })
-            .appendTo(@editor.wrapper)
-          $progress.addClass('loading') unless @editor.uploader.html5
-
-          $img.addClass 'uploading'
-          $img.data 'progress', $progress
+          file.progressEl.addClass('loading') unless @editor.uploader.html5
 
     @editor.uploader.on 'uploadprogress', (e, file, loaded, total) =>
       return unless file.inline
@@ -2754,17 +2759,14 @@ class ImageButton extends Button
       percent = loaded / total
       percent = (percent * 100).toFixed(0)
       percent = 99 if percent > 99
-
-      $progress = file.img.data 'progress'
-      $progress.find("span").text(percent)
+      file.progressEl.find("span").text(percent)
 
     @editor.uploader.on 'uploadsuccess', (e, file, result) =>
       return unless file.inline
 
-      $img = file.img
+      $img = file.img.removeClass 'uploading'
       @loadImage $img, result.file_path, () =>
-        $img.data('progress').remove()
-        $img.removeData 'progress'
+        file.progressEl.remove()
 
         @popover.srcEl.val result.file_path
         @editor.trigger 'valuechanged'
@@ -2786,13 +2788,12 @@ class ImageButton extends Button
         else
           alert(msg)
 
-      $img = file.img
+      $img = file.img.removeClass 'uploading'
       @loadImage $img, @defaultImage, =>
         @popover.refresh()
         @popover.srcEl.val $img.attr('src')
 
-        $img.data('progress').remove()
-        $img.removeData 'progress'
+        file.progressEl.remove()
         @editor.trigger 'valuechanged'
 
   status: ($node) ->
@@ -2911,7 +2912,6 @@ class ImagePopover extends Popover
             @editor.trigger 'valuechanged'
 
         @srcEl.blur()
-        @target.removeClass('active')
         @hide()
 
     @editor.on 'valuechanged', (e) =>

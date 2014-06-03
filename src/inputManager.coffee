@@ -103,8 +103,10 @@ class InputManager extends Plugin
     @editor.triggerHandler 'blur'
 
   _onMouseUp: (e) ->
-    @editor.trigger 'selectionchanged'
-    @editor.undoManager.update()
+    setTimeout =>
+      @editor.trigger 'selectionchanged'
+      @editor.undoManager.update()
+    , 0
 
   _onKeyDown: (e) ->
     if @editor.triggerHandler(e) == false

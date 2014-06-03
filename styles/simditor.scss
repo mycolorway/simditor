@@ -14,7 +14,7 @@ $simditor-toolbar-height: 40px;
 		.simditor-placeholder {
 			display: none;
 			position: absolute;
-			top: $simditor-toolbar-height;
+			top: $simditor-toolbar-height + 1;
 			left: 0;
 			z-index: 0;
 			padding: 22px 15px;
@@ -26,13 +26,44 @@ $simditor-toolbar-height: 40px;
 		}
 
 		&.toolbar-floating {
-			padding-top: $simditor-toolbar-height;
+			padding-top: $simditor-toolbar-height + 1;
 
 			.simditor-toolbar {
 				position: fixed;
 				top: 0;
 				z-index: 10;
 				box-shadow: 0 0 6px rgba(0,0,0,0.1);
+			}
+		}
+
+		.simditor-upload-progress {
+			width: 100%;
+			height: 100%;
+			margin: 0 5px;
+			background: rgba(0,0,0,0.4);
+			position: absolute;
+			top: 0;
+			left: 0;
+			z-index: 2;
+
+			span {
+				width: 30px;
+				height: 30px;
+				background: #ffffff;
+				border-radius: 30px;
+				position: absolute;
+				top: 50%;
+				left: 50%;
+				margin: -15px 0 0 -15px;
+				color: #333333;
+				font-size: 14px;
+				line-height: 30px;
+				text-align: center;
+				box-shadow: 0 0 8px rgba(0,0,0,0.4);
+			}
+
+			&.loading span {
+				background: #ffffff url(../images/loading-upload.gif) no-repeat center center;
 			}
 		}
 	}
@@ -52,58 +83,6 @@ $simditor-toolbar-height: 40px;
 
 		a.simditor-mention {
 			cursor: pointer;
-		}
-
-		.simditor-image {
-			display: inline-block;
-			margin: 0 5px;
-			cursor: pointer;
-			outline: none;
-			position: relative;
-
-			/*&.selected {*/
-				/*background: none;*/
-				/*box-shadow: 0 0 0 4px rgba(0,0,0,0.2);*/
-			/*}*/
-
-			img {
-				margin: 0;
-			}
-
-			.mask {
-				position: absolute;
-				background: rgba(0,0,0,0.4);
-				width: 100%;
-				height: 100%;
-				top: 0;
-			}
-
-			.simditor-image-progress {
-				width: 30px;
-				height: 30px;
-				background: #ffffff;
-				border-radius: 30px;
-				position: absolute;
-				top: 50%;
-				left: 50%;
-				margin: -15px 0 0 -15px;
-				color: #333333;
-				font-size: 14px;
-				line-height: 30px;
-				text-align: center;
-				box-shadow: 0 0 8px rgba(0,0,0,0.4);
-
-				&.loading {
-					background: #ffffff url(../images/loading-upload.gif) no-repeat center center;
-					span {
-						display: none;
-					}
-				}
-			}
-
-			.simditor-image-resize-handle {
-				display: none;
-			}
 		}
 
 		.simditor-table {
@@ -129,6 +108,9 @@ $simditor-toolbar-height: 40px;
 			-moz-box-sizing: border-box;
 		}
 
+		img {
+			cursor: pointer;
+		}
 	}
 
 	.simditor-paste-area {
@@ -241,7 +223,7 @@ $simditor-toolbar-height: 40px;
 		.toolbar-menu {
 			display: none;
 			position: absolute;
-			top: $simditor-toolbar-height - 1px;
+			top: $simditor-toolbar-height;
 			left: 0;
 			z-index: 20;
 			background: #ffffff;
@@ -553,11 +535,8 @@ $simditor-toolbar-height: 40px;
 
 	img {
 		max-width: 800px;
-		margin: 20px 0;
-		display: block;
-		-ms-interpolation-mode: bicubic;
-		vertical-align: bottom;
-		box-shadow: 0 1px 6px rgba(0,0,0,0.3);
+		margin: 0 5px;
+		vertical-align: middle;
 	}
 
 	@for $i from 0 through 10 {
