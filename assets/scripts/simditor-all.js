@@ -826,7 +826,7 @@
             blockNode = null;
           }
           $node.remove();
-        } else if (this.editor.util.isBlockNode(node) || $node.is('img')) {
+        } else if (this.editor.util.isBlockNode(node)) {
           if ($node.is('li')) {
             if (blockNode && blockNode.is('ul, ol')) {
               blockNode.append(node);
@@ -866,6 +866,9 @@
       if ($node.is(this._allowedTags.join(',')) || isDecoration) {
         if ($node.is('a') && $node.find('img').length > 0) {
           contents.first().unwrap();
+        }
+        if ($node.is('img') && $node.hasClass('uploading')) {
+          $node.remove();
         }
         if (!isDecoration) {
           allowedAttributes = this._allowedAttributes[$node[0].tagName.toLowerCase()];
@@ -911,15 +914,16 @@
     };
 
     Formatter.prototype.clearHtml = function(html, lineBreak) {
-      var container, result,
+      var container, contents, result,
         _this = this;
       if (lineBreak == null) {
         lineBreak = true;
       }
       container = $('<div/>').append(html);
+      contents = container.contents();
       result = '';
-      container.contents().each(function(i, node) {
-        var $node, contents;
+      contents.each(function(i, node) {
+        var $node;
         if (node.nodeType === 3) {
           return result += node.nodeValue;
         } else if (node.nodeType === 1) {
@@ -928,7 +932,7 @@
           if (contents.length > 0) {
             result += _this.clearHtml(contents);
           }
-          if (lineBreak && $node.is('br, p, div, li, tr, pre, address, artticle, aside, dl, figcaption, footer, h1, h2, h3, h4, header')) {
+          if (lineBreak && i < contents.length - 1 && $node.is('br, p, div, li, tr, pre, address, artticle, aside, dl, figcaption, footer, h1, h2, h3, h4, header')) {
             return result += '\n';
           }
         }
@@ -996,7 +1000,7 @@
         contentEditable: true
       }).addClass('simditor-paste-area').appendTo(this.editor.el);
       this.editor.on('valuechanged', function() {
-        return _this.editor.body.find('hr, pre, .simditor-image, .simditor-table').each(function(i, el) {
+        return _this.editor.body.find('hr, pre, .simditor-table').each(function(i, el) {
           var $el, formatted;
           $el = $(el);
           if ($el.parent().is('blockquote') || $el.parent()[0] === _this.editor.body[0]) {
@@ -1058,11 +1062,11 @@
     };
 
     InputManager.prototype._onMouseUp = function(e) {
-      if ($(e.target).is('img, .simditor-image')) {
-        return;
-      }
-      this.editor.trigger('selectionchanged');
-      return this.editor.undoManager.update();
+      var _this = this;
+      return setTimeout(function() {
+        _this.editor.trigger('selectionchanged');
+        return _this.editor.undoManager.update();
+      }, 0);
     };
 
     InputManager.prototype._onKeyDown = function(e) {
@@ -1140,7 +1144,7 @@
         this.editor.undoManager.update();
         return;
       }
-      if (e.which === 8 && (this.editor.body.is(':empty') || (this.editor.body.children().length === 1 && this.editor.body.children().is('br')))) {
+      if (e.which === 8 && this.editor.util.isEmptyNode(this.editor.body)) {
         this.editor.body.empty();
         p = $('<p/>').append(this.editor.util.phBr).appendTo(this.editor.body);
         this.editor.selection.setRangeAtStartOf(p);
@@ -1161,7 +1165,7 @@
             return;
           }
           if (!imageFile.name) {
-            imageFile.name = "来自剪贴板的图片.png";
+            imageFile.name = "Clipboard Image.png";
           }
           uploadOpt = {};
           uploadOpt[this.opts.pasteImage] = true;
@@ -1211,6 +1215,7 @@
             _this.editor.selection.insertNode(document.createTextNode(lastLine));
           } else {
             pasteContent = $('<div/>').text(pasteContent);
+            console.log(pasteContent.contents());
             _ref1 = pasteContent.contents();
             for (_j = 0, _len1 = _ref1.length; _j < _len1; _j++) {
               node = _ref1[_j];
@@ -1227,26 +1232,28 @@
         } else if (pasteContent.length === 1) {
           if (pasteContent.is('p')) {
             children = pasteContent.contents();
-            for (_l = 0, _len3 = children.length; _l < _len3; _l++) {
-              node = children[_l];
-              _this.editor.selection.insertNode(node, range);
-            }
-          } else if (pasteContent.is('.simditor-image')) {
-            $img = pasteContent.find('img');
-            if (/^data:image/.test($img.attr('src'))) {
-              if (!_this.opts.pasteImage) {
+            if (children.length === 1 && children.is('img')) {
+              $img = children;
+              if (/^data:image/.test($img.attr('src'))) {
+                if (!_this.opts.pasteImage) {
+                  return;
+                }
+                blob = _this.editor.util.dataURLtoBlob($img.attr("src"));
+                blob.name = "Clipboard Image.png";
+                uploadOpt = {};
+                uploadOpt[_this.opts.pasteImage] = true;
+                if ((_ref2 = _this.editor.uploader) != null) {
+                  _ref2.upload(blob, uploadOpt);
+                }
+                return;
+              } else if ($img.is('img[src^="webkit-fake-url://"]')) {
                 return;
               }
-              blob = _this.editor.util.dataURLtoBlob($img.attr("src"));
-              blob.name = "来自剪贴板的图片.png";
-              uploadOpt = {};
-              uploadOpt[_this.opts.pasteImage] = true;
-              if ((_ref2 = _this.editor.uploader) != null) {
-                _ref2.upload(blob, uploadOpt);
+            } else {
+              for (_l = 0, _len3 = children.length; _l < _len3; _l++) {
+                node = children[_l];
+                _this.editor.selection.insertNode(node, range);
               }
-              return;
-            } else if ($img.is('img[src^="webkit-fake-url://"]')) {
-              return;
             }
           } else if ($blockEl.is('p') && _this.editor.util.isEmptyNode($blockEl)) {
             $blockEl.replaceWith(pasteContent);
@@ -1355,7 +1362,7 @@
         var $prevBlockEl, $rootBlock;
         $rootBlock = _this.editor.util.furthestBlockEl();
         $prevBlockEl = $rootBlock.prev();
-        if ($prevBlockEl.is('hr, .simditor-image') && _this.editor.selection.rangeAtStartOf($rootBlock)) {
+        if ($prevBlockEl.is('hr') && _this.editor.selection.rangeAtStartOf($rootBlock)) {
           _this.editor.selection.save();
           $prevBlockEl.remove();
           _this.editor.selection.restore();
@@ -1847,7 +1854,7 @@
     Util.prototype.isEmptyNode = function(node) {
       var $node;
       $node = $(node);
-      return !$node.text() && !$node.find(':not(br, span)').length;
+      return $node.is(':empty') || (!$node.text() && !$node.find(':not(br, span, div)').length);
     };
 
     Util.prototype.isBlockNode = function(node) {
@@ -2315,7 +2322,7 @@
           return _this.setValue('');
         });
       }
-      return this.on('pluginconnected', function() {
+      this.on('pluginconnected', function() {
         _this.setValue(_this.textarea.val() || '');
         if (_this.opts.placeholder) {
           _this.on('valuechanged', function() {
@@ -2326,6 +2333,10 @@
           return _this.trigger('valuechanged');
         }, 0);
       });
+      if (this.util.browser.mozilla) {
+        document.execCommand("enableObjectResizing", false, false);
+        return document.execCommand("enableInlineTableEditing", false, false);
+      }
     };
 
     Simditor.prototype._tpl = "<div class=\"simditor\">\n  <div class=\"simditor-wrapper\">\n    <div class=\"simditor-placeholder\"></div>\n    <div class=\"simditor-body\" contenteditable=\"true\">\n    </div>\n  </div>\n</div>";
@@ -2370,6 +2381,7 @@
     };
 
     Simditor.prototype.setValue = function(val) {
+      this.hidePopover();
       this.textarea.val(val);
       this.body.html(val);
       this.formatter.format();
@@ -2382,6 +2394,7 @@
 
     Simditor.prototype.sync = function() {
       var children, cloneBody, emptyP, firstP, lastP, val;
+      this.hidePopover;
       cloneBody = this.body.clone();
       this.formatter.undecorate(cloneBody);
       this.formatter.format(cloneBody);
@@ -2652,11 +2665,6 @@
       this.editor = editor;
       this.el = $('<div class="simditor-popover"></div>').appendTo(this.editor.wrapper).data('popover', this);
       this.render();
-      this.editor.on('blur.linkpopover', function() {
-        if (_this.active && (_this.target != null)) {
-          return _this.target.addClass('selected');
-        }
-      });
       this.el.on('mouseenter', function(e) {
         return _this.el.addClass('hover');
       });
@@ -2675,7 +2683,7 @@
       if ($target == null) {
         return;
       }
-      this.target = $target;
+      this.target = $target.addClass('selected');
       this.el.siblings('.simditor-popover').each(function(i, el) {
         var popover;
         popover = $(el).data('popover');
@@ -3646,8 +3654,6 @@
   ImageButton = (function(_super) {
     __extends(ImageButton, _super);
 
-    ImageButton.prototype._wrapperTpl = "<div class=\"simditor-image\" contenteditable=\"false\" tabindex=\"-1\">\n  <div class=\"simditor-image-resize-handle right\"></div>\n  <div class=\"simditor-image-resize-handle bottom\"></div>\n  <div class=\"simditor-image-resize-handle right-bottom\"></div>\n</div>";
-
     ImageButton.prototype.name = 'image';
 
     ImageButton.prototype.icon = 'picture-o';
@@ -3684,59 +3690,31 @@
       this.defaultImage = this.editor.opts.defaultImage;
       this.maxWidth = this.editor.opts.maxImageWidth || this.editor.body.width();
       this.maxHeight = this.editor.opts.maxImageHeight || $(window).height();
-      this.editor.on('decorate', function(e, $el) {
-        return $el.find('img:not([data-non-image])').each(function(i, img) {
-          return _this.decorate($(img));
-        });
-      });
-      this.editor.on('undecorate', function(e, $el) {
-        return $el.find('img:not([data-non-image])').each(function(i, img) {
-          return _this.undecorate($(img));
-        });
-      });
-      this.editor.body.on('mousedown', '.simditor-image', function(e) {
-        var $imgWrapper;
-        $imgWrapper = $(e.currentTarget);
-        if ($imgWrapper.hasClass('selected')) {
-          _this.popover.srcEl.blur();
-          $imgWrapper.focus();
-        } else {
-          _this.editor.body.blur();
-          _this.editor.body.find('.simditor-image').removeClass('selected');
-          $imgWrapper.addClass('selected').focus();
-          _this.popover.show($imgWrapper);
-        }
+      this.editor.body.on('click', 'img:not([data-non-image])', function(e) {
+        var $img, range;
+        $img = $(e.currentTarget);
+        range = document.createRange();
+        range.selectNode($img[0]);
+        _this.editor.selection.selectRange(range);
+        _this.editor.trigger('selectionchanged');
         return false;
       });
-      this.editor.body.on('click', '.simditor-image', function(e) {
+      this.editor.body.on('mouseup', 'img:not([data-non-image])', function(e) {
         return false;
       });
       this.editor.on('selectionchanged.image', function() {
-        var $container, range;
+        var $contents, $img, range;
         range = _this.editor.selection.getRange();
         if (range == null) {
           return;
         }
-        $container = $(range.commonAncestorContainer);
-        if (range.collapsed && $container.is('.simditor-image')) {
-          return $container.mousedown();
-        } else if (_this.popover.active) {
+        $contents = $(range.cloneContents()).contents();
+        if ($contents.length === 1 && $contents.is('img:not([data-non-image])')) {
+          $img = $(range.startContainer).contents().eq(range.startOffset);
+          return _this.popover.show($img);
+        } else {
           return _this.popover.hide();
         }
-      });
-      this.editor.body.on('keydown', '.simditor-image', function(e) {
-        var newBlockEl, range;
-        if (e.which !== 8) {
-          return;
-        }
-        _this.popover.hide();
-        newBlockEl = $('<p/>').append(_this.editor.util.phBr);
-        $(e.currentTarget).replaceWith(newBlockEl);
-        range = document.createRange();
-        _this.editor.selection.setRangeAtStartOf(newBlockEl, range);
-        _this.editor.trigger('valuechanged');
-        _this.editor.trigger('selectionchanged');
-        return false;
       });
     }
 
@@ -3794,32 +3772,36 @@
         if (!file.inline) {
           return;
         }
-        if (file.imgWrapper) {
-          $img = file.imgWrapper.find("img");
+        if (file.img) {
+          $img = $(file.img);
         } else {
-          $img = _this.createImage();
-          $img.mousedown();
-          file.imgWrapper = $img.parent('.simditor-image');
+          $img = _this.createImage(file.name);
+          $img.click();
+          file.img = $img;
         }
+        $img.addClass('uploading');
+        file.progressEl = $('<div class="simditor-upload-progress"><span></span></div>').appendTo(_this.editor.wrapper);
         return _this.editor.uploader.readImageFile(file.obj, function(img) {
-          var prepare;
-          prepare = function() {
-            var $progress;
-            _this.popover.srcEl.val('正在上传...');
-            file.imgWrapper.append('<div class="mask"></div>');
-            $progress = $('<div class="simditor-image-progress"><span></span></div>').appendTo(file.imgWrapper);
-            if (!_this.editor.uploader.html5) {
-              return $progress.addClass('loading');
-            }
-          };
-          if (img) {
-            return _this.loadImage($img, img.src, function() {
-              _this.popover.refresh();
-              return prepare();
-            });
-          } else {
-            return prepare();
+          var src;
+          if (!$img.hasClass('uploading')) {
+            return;
           }
+          src = img ? img.src : _this.defaultImage;
+          return _this.loadImage($img, src, function() {
+            var imgPosition;
+            _this.popover.refresh();
+            _this.popover.srcEl.val('正在上传...');
+            imgPosition = $img.position();
+            file.progressEl.css({
+              top: imgPosition.top + _this.editor.toolbar.wrapper.outerHeight(),
+              left: imgPosition.left,
+              width: $img.width(),
+              height: $img.height()
+            });
+            if (!_this.editor.uploader.html5) {
+              return file.progressEl.addClass('loading');
+            }
+          });
         });
       });
       this.editor.uploader.on('uploadprogress', function(e, file, loaded, total) {
@@ -3832,21 +3814,17 @@
         if (percent > 99) {
           percent = 99;
         }
-        file.imgWrapper.find(".simditor-image-progress span").text(percent);
-        return file.imgWrapper.find('.mask').css({
-          top: percent + '%',
-          height: (100 - percent) + '%'
-        });
+        return file.progressEl.find("span").text(percent);
       });
       this.editor.uploader.on('uploadsuccess', function(e, file, result) {
         var $img;
         if (!file.inline) {
           return;
         }
-        $img = file.imgWrapper.find("img");
+        $img = file.img.removeClass('uploading');
         return _this.loadImage($img, result.file_path, function() {
-          file.imgWrapper.find(".mask, .simditor-image-progress").remove();
-          _this.popover.srcEl.val(result.file_path);
+          file.progressEl.remove();
+          $img.click();
           _this.editor.trigger('valuechanged');
           return _this.editor.uploader.trigger('uploadready', [file, result]);
         });
@@ -3873,11 +3851,11 @@
             alert(msg);
           }
         }
-        $img = file.imgWrapper.find("img");
+        $img = file.img.removeClass('uploading');
         return _this.loadImage($img, _this.defaultImage, function() {
           _this.popover.refresh();
           _this.popover.srcEl.val($img.attr('src'));
-          file.imgWrapper.find(".mask, .simditor-image-progress").remove();
+          file.progressEl.remove();
           return _this.editor.trigger('valuechanged');
         });
       });
@@ -3892,36 +3870,9 @@
       }
     };
 
-    ImageButton.prototype.decorate = function($img) {
-      var $parent, $wrapper;
-      $parent = $img.parent();
-      if ($parent.is('.simditor-image')) {
-        return;
-      }
-      $wrapper = $(this._wrapperTpl).width($img.width());
-      if ($parent.is('p')) {
-        return $wrapper.prepend($img).replaceAll($parent);
-      } else {
-        return $wrapper.insertBefore($img).prepend($img);
-      }
-    };
-
-    ImageButton.prototype.undecorate = function($img) {
-      var $wrapper;
-      $wrapper = $img.parent('.simditor-image');
-      if ($wrapper.length < 1) {
-        return;
-      }
-      if (!/^data:image/.test($img.attr('src'))) {
-        $('<p/>').append($img).insertAfter($wrapper);
-      }
-      return $wrapper.remove();
-    };
-
     ImageButton.prototype.loadImage = function($img, src, callback) {
-      var $wrapper, img,
+      var img,
         _this = this;
-      $wrapper = $img.parent('.simditor-image');
       img = new Image();
       img.onload = function() {
         var height, width;
@@ -3939,12 +3890,9 @@
           src: src,
           width: width,
           height: height,
-          'data-image-src': src,
-          'data-image-name': '图片',
           'data-image-size': img.width + ',' + img.height
         });
-        $wrapper.width(width).height(height);
-        return callback(true);
+        return callback(img);
       };
       img.onerror = function() {
         return callback(false);
@@ -3952,40 +3900,15 @@
       return img.src = src;
     };
 
-    ImageButton.prototype.createImage = function() {
-      var $breakedEl, $endBlock, $img, $startBlock, endNode, range, startNode;
-      range = this.editor.selection.getRange();
-      startNode = range.startContainer;
-      endNode = range.endContainer;
-      $startBlock = this.editor.util.closestBlockEl(startNode);
-      $endBlock = this.editor.util.closestBlockEl(endNode);
-      range.deleteContents();
-      if ($startBlock[0] === $endBlock[0]) {
-        if ($startBlock.is('li')) {
-          $startBlock = this.editor.util.furthestNode($startBlock, 'ul, ol');
-          $endBlock = $startBlock;
-          range.setEndAfter($startBlock[0]);
-          range.collapse(false);
-        } else if ($startBlock.is('p')) {
-          if (this.editor.util.isEmptyNode($startBlock)) {
-            range.selectNode($startBlock[0]);
-            range.deleteContents();
-          } else if (this.editor.selection.rangeAtEndOf($startBlock, range)) {
-            range.setEndAfter($startBlock[0]);
-            range.collapse(false);
-          } else if (this.editor.selection.rangeAtStartOf($startBlock, range)) {
-            range.setEndBefore($startBlock[0]);
-            range.collapse(false);
-          } else {
-            $breakedEl = this.editor.selection.breakBlockEl($startBlock, range);
-            range.setEndBefore($breakedEl[0]);
-            range.collapse(false);
-          }
-        }
+    ImageButton.prototype.createImage = function(name) {
+      var $img, range;
+      if (name == null) {
+        name = 'Image';
       }
-      $img = $('<img/>');
+      range = this.editor.selection.getRange();
+      range.deleteContents();
+      $img = $('<img/>').attr('alt', name);
       range.insertNode($img[0]);
-      this.decorate($img);
       return $img;
     };
 
@@ -3995,7 +3918,7 @@
       $img = this.createImage();
       return this.loadImage($img, src || this.defaultImage, function() {
         _this.editor.trigger('valuechanged');
-        $img.mousedown();
+        $img.click();
         return _this.popover.one('popovershow', function() {
           _this.popover.srcEl.focus();
           return _this.popover.srcEl[0].select();
@@ -4034,24 +3957,24 @@
           clearTimeout(_this.timer);
         }
         return _this.timer = setTimeout(function() {
-          var $img, src;
-          src = _this.srcEl.val();
-          $img = _this.target.find('img');
-          _this.button.loadImage($img, src, function(success) {
-            if (!success) {
-              return;
-            }
-            _this.refresh();
-            return _this.editor.trigger('valuechanged');
-          });
           return _this.timer = null;
         }, 200);
       });
       this.srcEl.on('keydown', function(e) {
+        var src;
         if (e.which === 13 || e.which === 27 || e.which === 9) {
           e.preventDefault();
+          if (e.which === 13 && !_this.target.hasClass('uploading')) {
+            src = _this.srcEl.val();
+            _this.button.loadImage(_this.target, src, function(success) {
+              if (!success) {
+                return;
+              }
+              _this.refresh();
+              return _this.editor.trigger('valuechanged');
+            });
+          }
           _this.srcEl.blur();
-          _this.target.removeClass('selected');
           return _this.hide();
         }
       });
@@ -4084,7 +4007,7 @@
       return this.el.on('change', 'input[name=upload_file]', function(e) {
         _this.editor.uploader.upload(_this.input, {
           inline: true,
-          imgWrapper: _this.target
+          img: _this.target
         });
         return createInput();
       });
@@ -4094,8 +4017,12 @@
       var $img, args;
       args = 1 <= arguments.length ? __slice.call(arguments, 0) : [];
       ImagePopover.__super__.show.apply(this, args);
-      $img = this.target.find('img');
-      return this.srcEl.val($img.attr('src'));
+      $img = this.target;
+      if ($img.hasClass('uploading')) {
+        return this.srcEl.val('正在上传');
+      } else {
+        return this.srcEl.val($img.attr('src'));
+      }
     };
 
     return ImagePopover;
