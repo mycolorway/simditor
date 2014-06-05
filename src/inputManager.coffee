@@ -239,6 +239,7 @@ class InputManager extends Plugin
           @editor.selection.insertNode document.createTextNode(lastLine)
         else
           pasteContent = $('<div/>').text(pasteContent)
+          console.log(pasteContent.contents())
           @editor.selection.insertNode($(node)[0], range) for node in pasteContent.contents()
       else if $blockEl.is @editor.body
         @editor.selection.insertNode(node, range) for node in pasteContent
