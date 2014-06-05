@@ -57,7 +57,7 @@ class Util extends Plugin
 
   isEmptyNode: (node) ->
     $node = $(node)
-    !$node.text() and !$node.find(':not(br, span)').length
+    $node.is(':empty') or (!$node.text() and !$node.find(':not(br, span, div)').length)
 
   isBlockNode: (node) ->
     node = $(node)[0]

@@ -559,7 +559,7 @@ class InputManager extends Plugin
       @editor.undoManager.update()
       return
 
-    if e.which == 8 and (@editor.body.is(':empty') or (@editor.body.children().length == 1 and @editor.body.children().is('br')))
+    if e.which == 8 and @editor.util.isEmptyNode(@editor.body)
       @editor.body.empty()
       p = $('<p/>').append(@editor.util.phBr)
         .appendTo(@editor.body)
@@ -1182,7 +1182,7 @@ class Util extends Plugin
 
   isEmptyNode: (node) ->
     $node = $(node)
-    !$node.text() and !$node.find(':not(br, span)').length
+    $node.is(':empty') or (!$node.text() and !$node.find(':not(br, span, div)').length)
 
   isBlockNode: (node) ->
     node = $(node)[0]
