@@ -58,7 +58,7 @@ class Simditor extends Widget
 
     # Disable the resizing of `img` and `table`
     if @util.browser.mozilla
-      #document.execCommand "enableObjectResizing", false, false
+      document.execCommand "enableObjectResizing", false, false
       document.execCommand "enableInlineTableEditing", false, false
 
   _tpl:"""

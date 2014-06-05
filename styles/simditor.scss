@@ -110,6 +110,10 @@ $simditor-toolbar-height: 40px;
 
 		img {
 			cursor: pointer;
+
+			&.selected {
+				box-shadow: 0 0 0 4px #cccccc;
+			}
 		}
 	}
 

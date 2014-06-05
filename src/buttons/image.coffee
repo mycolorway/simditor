@@ -44,14 +44,11 @@ class ImageButton extends Button
     @editor.body.on 'click', 'img:not([data-non-image])', (e) =>
       $img = $(e.currentTarget)
 
-      if $img.hasClass 'selected'
-        return false
-      else
-        #@popover.show $img
-        range = document.createRange()
-        range.selectNode $img[0]
-        @editor.selection.selectRange range
-        @editor.trigger 'selectionchanged'
+      #@popover.show $img
+      range = document.createRange()
+      range.selectNode $img[0]
+      @editor.selection.selectRange range
+      @editor.trigger 'selectionchanged'
 
       false
 
@@ -128,6 +125,7 @@ class ImageButton extends Button
         .appendTo(@editor.wrapper)
 
       @editor.uploader.readImageFile file.obj, (img) =>
+        return unless $img.hasClass('uploading')
         src = if img then img.src else @defaultImage
 
         @loadImage $img, src, () =>
@@ -157,8 +155,8 @@ class ImageButton extends Button
       $img = file.img.removeClass 'uploading'
       @loadImage $img, result.file_path, () =>
         file.progressEl.remove()
+        $img.click()
 
-        @popover.srcEl.val result.file_path
         @editor.trigger 'valuechanged'
         @editor.uploader.trigger 'uploadready', [file, result]
 

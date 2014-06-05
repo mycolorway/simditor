@@ -284,7 +284,7 @@ class Formatter extends Plugin
       if $node.is('br')
         blockNode = null if blockNode?
         $node.remove()
-      else if @editor.util.isBlockNode(node) or $node.is('img:not([data-non-image])')
+      else if @editor.util.isBlockNode(node)
         if $node.is('li')
           if blockNode and blockNode.is('ul, ol')
             blockNode.append node
@@ -632,26 +632,27 @@ class InputManager extends Plugin
       else if pasteContent.length == 1
         if pasteContent.is('p')
           children = pasteContent.contents()
-          @editor.selection.insertNode(node, range) for node in children
 
-        # paste image in firefox and IE 11
-        else if pasteContent.is('img')
-          $img = pasteContent
+          if children.length == 1 and children.is('img')
+            $img = children
 
-          # firefox and IE 11
-          if /^data:image/.test($img.attr('src'))
-            return unless @opts.pasteImage
-            blob = @editor.util.dataURLtoBlob $img.attr( "src" )
-            blob.name = "Clipboard Image.png"
+            # paste image in firefox and IE 11
+            if /^data:image/.test($img.attr('src'))
+              return unless @opts.pasteImage
+              blob = @editor.util.dataURLtoBlob $img.attr( "src" )
+              blob.name = "Clipboard Image.png"
 
-            uploadOpt = {}
-            uploadOpt[@opts.pasteImage] = true
-            @editor.uploader?.upload(blob, uploadOpt)
-            return
+              uploadOpt = {}
+              uploadOpt[@opts.pasteImage] = true
+              @editor.uploader?.upload(blob, uploadOpt)
+              return
 
-          # cannot paste image in safari
-          else if $img.is('img[src^="webkit-fake-url://"]')
-            return
+            # cannot paste image in safari
+            else if $img.is('img[src^="webkit-fake-url://"]')
+              return
+          else
+            @editor.selection.insertNode(node, range) for node in children
+
         else if $blockEl.is('p') and @editor.util.isEmptyNode $blockEl
           $blockEl.replaceWith pasteContent
           @editor.selection.setRangeAtEndOf(pasteContent, range)
@@ -1560,7 +1561,7 @@ class Simditor extends Widget
 
     # Disable the resizing of `img` and `table`
     if @util.browser.mozilla
-      #document.execCommand "enableObjectResizing", false, false
+      document.execCommand "enableObjectResizing", false, false
       document.execCommand "enableInlineTableEditing", false, false
 
   _tpl:"""
@@ -2654,14 +2655,11 @@ class ImageButton extends Button
     @editor.body.on 'click', 'img:not([data-non-image])', (e) =>
       $img = $(e.currentTarget)
 
-      if $img.hasClass 'selected'
-        return false
-      else
-        #@popover.show $img
-        range = document.createRange()
-        range.selectNode $img[0]
-        @editor.selection.selectRange range
-        @editor.trigger 'selectionchanged'
+      #@popover.show $img
+      range = document.createRange()
+      range.selectNode $img[0]
+      @editor.selection.selectRange range
+      @editor.trigger 'selectionchanged'
 
       false
 
@@ -2738,6 +2736,7 @@ class ImageButton extends Button
         .appendTo(@editor.wrapper)
 
       @editor.uploader.readImageFile file.obj, (img) =>
+        return unless $img.hasClass('uploading')
         src = if img then img.src else @defaultImage
 
         @loadImage $img, src, () =>
@@ -2767,8 +2766,8 @@ class ImageButton extends Button
       $img = file.img.removeClass 'uploading'
       @loadImage $img, result.file_path, () =>
         file.progressEl.remove()
+        $img.click()
 
-        @popover.srcEl.val result.file_path
         @editor.trigger 'valuechanged'
         @editor.uploader.trigger 'uploadready', [file, result]
 

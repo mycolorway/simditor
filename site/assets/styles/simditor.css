@@ -94,6 +94,9 @@
 .simditor .simditor-body img {
   cursor: pointer;
 }
+.simditor .simditor-body img.selected {
+  box-shadow: 0 0 0 4px #cccccc;
+}
 .simditor .simditor-paste-area {
   background: transparent;
   border: none;

@@ -247,26 +247,27 @@ class InputManager extends Plugin
       else if pasteContent.length == 1
         if pasteContent.is('p')
           children = pasteContent.contents()
-          @editor.selection.insertNode(node, range) for node in children
 
-        # paste image in firefox and IE 11
-        else if pasteContent.is('img')
-          $img = pasteContent
+          if children.length == 1 and children.is('img')
+            $img = children
 
-          # firefox and IE 11
-          if /^data:image/.test($img.attr('src'))
-            return unless @opts.pasteImage
-            blob = @editor.util.dataURLtoBlob $img.attr( "src" )
-            blob.name = "Clipboard Image.png"
+            # paste image in firefox and IE 11
+            if /^data:image/.test($img.attr('src'))
+              return unless @opts.pasteImage
+              blob = @editor.util.dataURLtoBlob $img.attr( "src" )
+              blob.name = "Clipboard Image.png"
 
-            uploadOpt = {}
-            uploadOpt[@opts.pasteImage] = true
-            @editor.uploader?.upload(blob, uploadOpt)
-            return
+              uploadOpt = {}
+              uploadOpt[@opts.pasteImage] = true
+              @editor.uploader?.upload(blob, uploadOpt)
+              return
 
-          # cannot paste image in safari
-          else if $img.is('img[src^="webkit-fake-url://"]')
-            return
+            # cannot paste image in safari
+            else if $img.is('img[src^="webkit-fake-url://"]')
+              return
+          else
+            @editor.selection.insertNode(node, range) for node in children
+
         else if $blockEl.is('p') and @editor.util.isEmptyNode $blockEl
           $blockEl.replaceWith pasteContent
           @editor.selection.setRangeAtEndOf(pasteContent, range)
