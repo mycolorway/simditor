@@ -1021,7 +1021,7 @@
           }
         });
       });
-      this.editor.body.on('keydown', $.proxy(this._onKeyDown, this)).on('keypress', $.proxy(this._onKeyPress, this)).on('keyup', $.proxy(this._onKeyUp, this)).on('mouseup', $.proxy(this._onMouseUp, this)).on('focus', $.proxy(this._onFocus, this)).on('blur', $.proxy(this._onBlur, this)).on('paste', $.proxy(this._onPaste, this));
+      this.editor.body.on('keydown', $.proxy(this._onKeyDown, this)).on('keypress', $.proxy(this._onKeyPress, this)).on('keyup', $.proxy(this._onKeyUp, this)).on('mouseup', $.proxy(this._onMouseUp, this)).on('focus', $.proxy(this._onFocus, this)).on('blur', $.proxy(this._onBlur, this)).on('paste', $.proxy(this._onPaste, this)).on('drop', $.proxy(this._onDrop, this));
       if (this.editor.util.browser.firefox) {
         this.addShortcut('cmd+37', function(e) {
           e.preventDefault();
@@ -1046,7 +1046,6 @@
       this.editor.el.addClass('focus').removeClass('error');
       this.focused = true;
       this.lastCaretPosition = null;
-      this.editor.body.find('.selected').removeClass('selected');
       return setTimeout(function() {
         return _this.editor.triggerHandler('focus');
       }, 0);
@@ -1283,6 +1282,17 @@
         _this.editor.trigger('valuechanged');
         return _this.editor.trigger('selectionchanged');
       }, 10);
+    };
+
+    InputManager.prototype._onDrop = function(e) {
+      var _this = this;
+      if (this.editor.triggerHandler(e) === false) {
+        return false;
+      }
+      return setTimeout(function() {
+        _this.editor.trigger('valuechanged');
+        return _this.editor.trigger('selectionchanged');
+      }, 0);
     };
 
     InputManager.prototype._keystrokeHandlers = {};
@@ -3696,7 +3706,10 @@
         range = document.createRange();
         range.selectNode($img[0]);
         _this.editor.selection.selectRange(range);
-        _this.editor.trigger('selectionchanged');
+        setTimeout(function() {
+          _this.editor.body.focus();
+          return _this.editor.trigger('selectionchanged');
+        }, 0);
         return false;
       });
       this.editor.body.on('mouseup', 'img:not([data-non-image])', function(e) {
@@ -3704,7 +3717,7 @@
       });
       this.editor.on('selectionchanged.image', function() {
         var $contents, $img, range;
-        range = _this.editor.selection.getRange();
+        range = _this.editor.selection.sel.getRangeAt(0);
         if (range == null) {
           return;
         }
@@ -3780,7 +3793,6 @@
           file.img = $img;
         }
         $img.addClass('uploading');
-        file.progressEl = $('<div class="simditor-upload-progress"><span></span></div>').appendTo(_this.editor.wrapper);
         return _this.editor.uploader.readImageFile(file.obj, function(img) {
           var src;
           if (!$img.hasClass('uploading')) {
@@ -3788,24 +3800,13 @@
           }
           src = img ? img.src : _this.defaultImage;
           return _this.loadImage($img, src, function() {
-            var imgPosition;
             _this.popover.refresh();
-            _this.popover.srcEl.val('正在上传...');
-            imgPosition = $img.position();
-            file.progressEl.css({
-              top: imgPosition.top + _this.editor.toolbar.wrapper.outerHeight(),
-              left: imgPosition.left,
-              width: $img.width(),
-              height: $img.height()
-            });
-            if (!_this.editor.uploader.html5) {
-              return file.progressEl.addClass('loading');
-            }
+            return _this.popover.srcEl.val('正在上传...').prop('disabled', true);
           });
         });
       });
       this.editor.uploader.on('uploadprogress', function(e, file, loaded, total) {
-        var percent;
+        var $mask, percent;
         if (!file.inline) {
           return;
         }
@@ -3814,7 +3815,10 @@
         if (percent > 99) {
           percent = 99;
         }
-        return file.progressEl.find("span").text(percent);
+        $mask = file.img.data('mask');
+        if ($mask) {
+          return $mask.find("span").text(percent);
+        }
       });
       this.editor.uploader.on('uploadsuccess', function(e, file, result) {
         var $img;
@@ -3823,7 +3827,7 @@
         }
         $img = file.img.removeClass('uploading');
         return _this.loadImage($img, result.file_path, function() {
-          file.progressEl.remove();
+          _this.popover.srcEl.prop('disabled', false);
           $img.click();
           _this.editor.trigger('valuechanged');
           return _this.editor.uploader.trigger('uploadready', [file, result]);
@@ -3854,8 +3858,7 @@
         $img = file.img.removeClass('uploading');
         return _this.loadImage($img, _this.defaultImage, function() {
           _this.popover.refresh();
-          _this.popover.srcEl.val($img.attr('src'));
-          file.progressEl.remove();
+          _this.popover.srcEl.val($img.attr('src')).prop('disabled', false);
           return _this.editor.trigger('valuechanged');
         });
       });
@@ -3871,8 +3874,24 @@
     };
 
     ImageButton.prototype.loadImage = function($img, src, callback) {
-      var img,
+      var $mask, img, imgPosition, toolbarH,
         _this = this;
+      $mask = $img.data('mask');
+      if (!$mask) {
+        $mask = $('<div class="simditor-image-loading"><span></span></div>').appendTo(this.editor.wrapper);
+        if ($img.hasClass('uploading') && this.editor.uploader.html5) {
+          $mask.addClass('uploading');
+        }
+        $img.data('mask', $mask);
+      }
+      imgPosition = $img.position();
+      toolbarH = this.editor.toolbar.wrapper.outerHeight();
+      $mask.css({
+        top: imgPosition.top + toolbarH,
+        left: imgPosition.left,
+        width: $img.width(),
+        height: $img.height()
+      });
       img = new Image();
       img.onload = function() {
         var height, width;
@@ -3892,10 +3911,21 @@
           height: height,
           'data-image-size': img.width + ',' + img.height
         });
+        if ($img.hasClass('uploading')) {
+          $mask.css({
+            width: width,
+            height: height
+          });
+        } else {
+          $mask.remove();
+          $img.removeData('mask');
+        }
         return callback(img);
       };
       img.onerror = function() {
-        return callback(false);
+        callback(false);
+        $mask.remove();
+        return $img.removeData('mask');
       };
       return img.src = src;
     };
@@ -3949,33 +3979,26 @@
       var _this = this;
       this.el.addClass('image-popover').append(this._tpl);
       this.srcEl = this.el.find('.image-src');
-      this.srcEl.on('keyup', function(e) {
-        if (e.which === 13) {
-          return;
-        }
-        if (_this.timer) {
-          clearTimeout(_this.timer);
-        }
-        return _this.timer = setTimeout(function() {
-          return _this.timer = null;
-        }, 200);
-      });
       this.srcEl.on('keydown', function(e) {
         var src;
         if (e.which === 13 || e.which === 27 || e.which === 9) {
           e.preventDefault();
           if (e.which === 13 && !_this.target.hasClass('uploading')) {
             src = _this.srcEl.val();
-            _this.button.loadImage(_this.target, src, function(success) {
+            return _this.button.loadImage(_this.target, src, function(success) {
               if (!success) {
                 return;
               }
-              _this.refresh();
+              _this.button.editor.body.focus();
+              _this.button.editor.selection.setRangeAfter(_this.target);
+              _this.hide();
               return _this.editor.trigger('valuechanged');
             });
+          } else {
+            _this.button.editor.body.focus();
+            _this.button.editor.selection.setRangeAfter(_this.target);
+            return _this.hide();
           }
-          _this.srcEl.blur();
-          return _this.hide();
         }
       });
       this.editor.on('valuechanged', function(e) {

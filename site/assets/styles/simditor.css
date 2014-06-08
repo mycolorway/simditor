@@ -29,7 +29,7 @@
   z-index: 10;
   box-shadow: 0 0 6px rgba(0, 0, 0, 0.1);
 }
-.simditor .simditor-wrapper .simditor-upload-progress {
+.simditor .simditor-wrapper .simditor-image-loading {
   width: 100%;
   height: 100%;
   margin: 0 5px;
@@ -39,23 +39,23 @@
   left: 0;
   z-index: 2;
 }
-.simditor .simditor-wrapper .simditor-upload-progress span {
+.simditor .simditor-wrapper .simditor-image-loading span {
   width: 30px;
   height: 30px;
-  background: #ffffff;
+  background: white url(../images/loading-upload.gif) no-repeat center center;
   border-radius: 30px;
   position: absolute;
   top: 50%;
   left: 50%;
   margin: -15px 0 0 -15px;
+  box-shadow: 0 0 8px rgba(0, 0, 0, 0.4);
+}
+.simditor .simditor-wrapper .simditor-image-loading.uploading span {
+  background: #ffffff;
   color: #333333;
   font-size: 14px;
   line-height: 30px;
   text-align: center;
-  box-shadow: 0 0 8px rgba(0, 0, 0, 0.4);
-}
-.simditor .simditor-wrapper .simditor-upload-progress.loading span {
-  background: white url(../images/loading-upload.gif) no-repeat center center;
 }
 .simditor .simditor-body {
   padding: 22px 15px 40px;

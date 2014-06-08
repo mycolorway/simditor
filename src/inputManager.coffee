@@ -62,6 +62,7 @@ class InputManager extends Plugin
       .on('focus', $.proxy(@_onFocus, @))
       .on('blur', $.proxy(@_onBlur, @))
       .on('paste', $.proxy(@_onPaste, @))
+      .on('drop', $.proxy(@_onDrop, @))
 
     # fix firefox cmd+left/right bug
     if @editor.util.browser.firefox
@@ -87,7 +88,7 @@ class InputManager extends Plugin
     @focused = true
     @lastCaretPosition = null
 
-    @editor.body.find('.selected').removeClass('selected')
+    #@editor.body.find('.selected').removeClass('selected')
 
     setTimeout =>
       @editor.triggerHandler 'focus'
@@ -295,6 +296,15 @@ class InputManager extends Plugin
       @editor.trigger 'valuechanged'
       @editor.trigger 'selectionchanged'
     , 10
+
+  _onDrop: (e) ->
+    if @editor.triggerHandler(e) == false
+      return false
+
+    setTimeout =>
+      @editor.trigger 'valuechanged'
+      @editor.trigger 'selectionchanged'
+    , 0
 
 
   # handlers which will be called when specific key is pressed in specific node

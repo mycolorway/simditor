@@ -448,6 +448,7 @@ class InputManager extends Plugin
       .on('focus', $.proxy(@_onFocus, @))
       .on('blur', $.proxy(@_onBlur, @))
       .on('paste', $.proxy(@_onPaste, @))
+      .on('drop', $.proxy(@_onDrop, @))
 
     # fix firefox cmd+left/right bug
     if @editor.util.browser.firefox
@@ -473,7 +474,7 @@ class InputManager extends Plugin
     @focused = true
     @lastCaretPosition = null
 
-    @editor.body.find('.selected').removeClass('selected')
+    #@editor.body.find('.selected').removeClass('selected')
 
     setTimeout =>
       @editor.triggerHandler 'focus'
@@ -681,6 +682,15 @@ class InputManager extends Plugin
       @editor.trigger 'valuechanged'
       @editor.trigger 'selectionchanged'
     , 10
+
+  _onDrop: (e) ->
+    if @editor.triggerHandler(e) == false
+      return false
+
+    setTimeout =>
+      @editor.trigger 'valuechanged'
+      @editor.trigger 'selectionchanged'
+    , 0
 
 
   # handlers which will be called when specific key is pressed in specific node
@@ -2646,14 +2656,6 @@ class ImageButton extends Button
     @maxWidth = @editor.opts.maxImageWidth || @editor.body.width()
     @maxHeight = @editor.opts.maxImageHeight || $(window).height()
 
-    #@editor.on 'decorate', (e, $el) =>
-      #$el.find('img:not([data-non-image])').each (i, img) =>
-        #@decorate $(img)
-
-    #@editor.on 'undecorate', (e, $el) =>
-      #$el.find('img:not([data-non-image])').each (i, img) =>
-        #@undecorate $(img)
-
     @editor.body.on 'click', 'img:not([data-non-image])', (e) =>
       $img = $(e.currentTarget)
 
@@ -2661,7 +2663,10 @@ class ImageButton extends Button
       range = document.createRange()
       range.selectNode $img[0]
       @editor.selection.selectRange range
-      @editor.trigger 'selectionchanged'
+      setTimeout =>
+        @editor.body.focus()
+        @editor.trigger 'selectionchanged'
+      , 0
 
       false
 
@@ -2670,7 +2675,7 @@ class ImageButton extends Button
 
 
     @editor.on 'selectionchanged.image', =>
-      range = @editor.selection.getRange()
+      range = @editor.selection.sel.getRangeAt(0)
       return unless range?
 
       $contents = $(range.cloneContents()).contents()
@@ -2734,8 +2739,6 @@ class ImageButton extends Button
         file.img = $img
 
       $img.addClass 'uploading'
-      file.progressEl = $('<div class="simditor-upload-progress"><span></span></div>')
-        .appendTo(@editor.wrapper)
 
       @editor.uploader.readImageFile file.obj, (img) =>
         return unless $img.hasClass('uploading')
@@ -2744,15 +2747,7 @@ class ImageButton extends Button
         @loadImage $img, src, () =>
           @popover.refresh()
           @popover.srcEl.val('正在上传...')
-
-          imgPosition = $img.position()
-          file.progressEl.css({
-              top: imgPosition.top  + @editor.toolbar.wrapper.outerHeight(),
-              left: imgPosition.left,
-              width: $img.width(),
-              height: $img.height()
-            })
-          file.progressEl.addClass('loading') unless @editor.uploader.html5
+            .prop('disabled', true)
 
     @editor.uploader.on 'uploadprogress', (e, file, loaded, total) =>
       return unless file.inline
@@ -2760,14 +2755,16 @@ class ImageButton extends Button
       percent = loaded / total
       percent = (percent * 100).toFixed(0)
       percent = 99 if percent > 99
-      file.progressEl.find("span").text(percent)
+
+      $mask = file.img.data('mask')
+      $mask.find("span").text(percent) if $mask
 
     @editor.uploader.on 'uploadsuccess', (e, file, result) =>
       return unless file.inline
 
       $img = file.img.removeClass 'uploading'
       @loadImage $img, result.file_path, () =>
-        file.progressEl.remove()
+        @popover.srcEl.prop('disabled', false)
         $img.click()
 
         @editor.trigger 'valuechanged'
@@ -2792,34 +2789,32 @@ class ImageButton extends Button
       $img = file.img.removeClass 'uploading'
       @loadImage $img, @defaultImage, =>
         @popover.refresh()
-        @popover.srcEl.val $img.attr('src')
+        @popover.srcEl.val($img.attr('src'))
+          .prop('disabled', false)
 
-        file.progressEl.remove()
         @editor.trigger 'valuechanged'
 
   status: ($node) ->
     @setDisabled $node.is(@disableTag) if $node?
     return true if @disabled
 
-  #decorate: ($img) ->
-    #$parent = $img.parent()
-    #return if $parent.is('.simditor-image')
-
-    #$(@_wrapperTpl)
-      #.width($img.width())
-      #.insertBefore($img)
-      #.prepend($img)
-
-  #undecorate: ($img) ->
-    #$parent = $img.parent('.simditor-image')
-    #return if $parent.length < 1
-
-    #unless /^data:image/.test($img.attr('src'))
-      #$img.insertBefore $parent
-
-    #$parent.remove()
-
   loadImage: ($img, src, callback) ->
+    $mask = $img.data('mask')
+    if !$mask
+      $mask = $('<div class="simditor-image-loading"><span></span></div>')
+        .appendTo(@editor.wrapper)
+      $mask.addClass('uploading') if $img.hasClass('uploading') and @editor.uploader.html5
+      $img.data('mask', $mask)
+
+    imgPosition = $img.position()
+    toolbarH = @editor.toolbar.wrapper.outerHeight()
+    $mask.css({
+      top: imgPosition.top + toolbarH,
+      left: imgPosition.left,
+      width: $img.width(),
+      height: $img.height()
+    })
+
     img = new Image()
 
     img.onload = =>
@@ -2839,10 +2834,21 @@ class ImageButton extends Button
         'data-image-size': img.width + ',' + img.height
       })
 
+      if $img.hasClass 'uploading'
+        $mask.css({
+          width: width,
+          height: height
+        })
+      else
+        $mask.remove()
+        $img.removeData('mask')
+
       callback(img)
 
     img.onerror = =>
       callback(false)
+      $mask.remove()
+      $img.removeData('mask')
 
     img.src = src
 
@@ -2892,15 +2898,6 @@ class ImagePopover extends Popover
       .append(@_tpl)
     @srcEl = @el.find '.image-src'
 
-    @srcEl.on 'keyup', (e) =>
-      return if e.which == 13
-      clearTimeout @timer if @timer
-
-      @timer = setTimeout =>
-
-        @timer = null
-      , 200
-
     @srcEl.on 'keydown', (e) =>
       if e.which == 13 or e.which == 27 or e.which == 9
         e.preventDefault()
@@ -2909,11 +2906,14 @@ class ImagePopover extends Popover
           src = @srcEl.val()
           @button.loadImage @target, src, (success) =>
             return unless success
-            @refresh()
+            @button.editor.body.focus()
+            @button.editor.selection.setRangeAfter @target
+            @hide()
             @editor.trigger 'valuechanged'
-
-        @srcEl.blur()
-        @hide()
+        else
+          @button.editor.body.focus()
+          @button.editor.selection.setRangeAfter @target
+          @hide()
 
     @editor.on 'valuechanged', (e) =>
       @refresh() if @active
