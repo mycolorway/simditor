@@ -137,6 +137,9 @@ class Simditor extends Widget
       firstP = lastP.next 'p'
       emptyP.remove()
 
+    # remove images being uploaded
+    cloneBody.find('img.uploading').remove()
+
     val = $.trim(cloneBody.html())
     @textarea.val val
     val
