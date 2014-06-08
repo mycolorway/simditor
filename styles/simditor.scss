@@ -162,6 +162,10 @@ $simditor-toolbar-height: 40px;
 
 					span {
 						opacity: 0.6;
+
+						&.fa {
+							display: inline;
+						}
 					}
 
 					&:hover span {

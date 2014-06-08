@@ -141,6 +141,9 @@
 .simditor .simditor-toolbar > ul > li > .toolbar-item span {
   opacity: 0.6;
 }
+.simditor .simditor-toolbar > ul > li > .toolbar-item span.fa {
+  display: inline;
+}
 .simditor .simditor-toolbar > ul > li > .toolbar-item:hover span {
   opacity: 1;
 }
