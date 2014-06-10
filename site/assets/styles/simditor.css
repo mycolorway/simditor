@@ -284,17 +284,22 @@
 .simditor .simditor-popover .settings-field {
   margin: 0 0 5px 0;
   font-size: 12px;
+  height: 25px;
+  line-height: 25px;
 }
 .simditor .simditor-popover .settings-field label {
-  margin: 0 2px 0 0;
+  margin: 0 8px 0 0;
+  float: left;
 }
 .simditor .simditor-popover .settings-field input[type=text] {
+  float: left;
   width: 200px;
   box-sizing: border-box;
   font-size: 12px;
 }
 .simditor .simditor-popover.link-popover .btn-unlink, .simditor .simditor-popover.image-popover .btn-upload {
-  margin: 0 0 0 5px;
+  float: left;
+  margin: 0 0 0 8px;
   color: #333333;
   font-size: 14px;
 }

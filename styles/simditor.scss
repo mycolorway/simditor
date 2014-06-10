@@ -351,12 +351,16 @@ $simditor-toolbar-height: 40px;
 		.settings-field {
 			margin: 0 0 5px 0;
 			font-size: 12px;
+			height: 25px;
+			line-height: 25px;
 
 			label {
-				margin: 0 2px 0 0;
+				margin: 0 8px 0 0;
+				float: left;
 			}
 
 			input[type=text] {
+				float: left;
 				width: 200px;
 				box-sizing: border-box;
 				font-size: 12px;
@@ -365,7 +369,8 @@ $simditor-toolbar-height: 40px;
 
 		&.link-popover .btn-unlink,
 		&.image-popover .btn-upload {
-			margin: 0 0 0 5px;
+			float: left;
+			margin: 0 0 0 8px;
 			color: #333333;
 			font-size: 14px;
 
