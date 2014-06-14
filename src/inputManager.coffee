@@ -185,11 +185,17 @@ class InputManager extends Plugin
     if @editor.triggerHandler(e) == false
       return false
 
+
+    range = @editor.selection.deleteRangeContents()
+    range.collapse(true) unless range.collapsed
+    $blockEl = @editor.util.closestBlockEl()
+    cleanPaste = $blockEl.is 'pre, table'
+
     if e.originalEvent.clipboardData && e.originalEvent.clipboardData.items && e.originalEvent.clipboardData.items.length > 0
       pasteItem = e.originalEvent.clipboardData.items[0]
 
       # paste file in chrome
-      if /^image\//.test pasteItem.type
+      if /^image\//.test pasteItem.type and !cleanPaste
         imageFile = pasteItem.getAsFile()
         return unless imageFile? and @opts.pasteImage
 
@@ -201,11 +207,6 @@ class InputManager extends Plugin
         @editor.uploader?.upload(imageFile, uploadOpt)
         return false
 
-    range = @editor.selection.deleteRangeContents()
-    range.collapse(true) unless range.collapsed
-
-    $blockEl = @editor.util.closestBlockEl()
-    cleanPaste = $blockEl.is 'pre, table'
     @editor.selection.save range
 
     @_pasteArea.focus()
@@ -240,7 +241,6 @@ class InputManager extends Plugin
           @editor.selection.insertNode document.createTextNode(lastLine)
         else
           pasteContent = $('<div/>').text(pasteContent)
-          console.log(pasteContent.contents())
           @editor.selection.insertNode($(node)[0], range) for node in pasteContent.contents()
       else if $blockEl.is @editor.body
         @editor.selection.insertNode(node, range) for node in pasteContent

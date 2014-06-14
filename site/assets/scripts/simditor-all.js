@@ -1156,9 +1156,15 @@
       if (this.editor.triggerHandler(e) === false) {
         return false;
       }
+      range = this.editor.selection.deleteRangeContents();
+      if (!range.collapsed) {
+        range.collapse(true);
+      }
+      $blockEl = this.editor.util.closestBlockEl();
+      cleanPaste = $blockEl.is('pre, table');
       if (e.originalEvent.clipboardData && e.originalEvent.clipboardData.items && e.originalEvent.clipboardData.items.length > 0) {
         pasteItem = e.originalEvent.clipboardData.items[0];
-        if (/^image\//.test(pasteItem.type)) {
+        if (/^image\//.test(pasteItem.type && !cleanPaste)) {
           imageFile = pasteItem.getAsFile();
           if (!((imageFile != null) && this.opts.pasteImage)) {
             return;
@@ -1174,12 +1180,6 @@
           return false;
         }
       }
-      range = this.editor.selection.deleteRangeContents();
-      if (!range.collapsed) {
-        range.collapse(true);
-      }
-      $blockEl = this.editor.util.closestBlockEl();
-      cleanPaste = $blockEl.is('pre, table');
       this.editor.selection.save(range);
       this._pasteArea.focus();
       return setTimeout(function() {
@@ -1214,7 +1214,6 @@
             _this.editor.selection.insertNode(document.createTextNode(lastLine));
           } else {
             pasteContent = $('<div/>').text(pasteContent);
-            console.log(pasteContent.contents());
             _ref1 = pasteContent.contents();
             for (_j = 0, _len1 = _ref1.length; _j < _len1; _j++) {
               node = _ref1[_j];
