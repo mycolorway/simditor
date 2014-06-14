@@ -156,8 +156,8 @@ class Formatter extends Plugin
         result += node.nodeValue
       else if node.nodeType == 1
         $node = $(node)
-        contents = $node.contents()
-        result += @clearHtml contents if contents.length > 0
+        children = $node.contents()
+        result += @clearHtml children if children.length > 0
         if lineBreak and i < contents.length - 1 and $node.is 'br, p, div, li, tr, pre, address, artticle, aside, dl, figcaption, footer, h1, h2, h3, h4, header'
           result += '\n'
 

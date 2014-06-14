@@ -923,14 +923,14 @@
       contents = container.contents();
       result = '';
       contents.each(function(i, node) {
-        var $node;
+        var $node, children;
         if (node.nodeType === 3) {
           return result += node.nodeValue;
         } else if (node.nodeType === 1) {
           $node = $(node);
-          contents = $node.contents();
-          if (contents.length > 0) {
-            result += _this.clearHtml(contents);
+          children = $node.contents();
+          if (children.length > 0) {
+            result += _this.clearHtml(children);
           }
           if (lineBreak && i < contents.length - 1 && $node.is('br, p, div, li, tr, pre, address, artticle, aside, dl, figcaption, footer, h1, h2, h3, h4, header')) {
             return result += '\n';
@@ -999,6 +999,16 @@
         tabIndex: '-1',
         contentEditable: true
       }).addClass('simditor-paste-area').appendTo(this.editor.el);
+      this._cleanPasteArea = $('<textarea/>').css({
+        width: '1px',
+        height: '1px',
+        overflow: 'hidden',
+        position: 'fixed',
+        right: '0',
+        bottom: '101px'
+      }).attr({
+        tabIndex: '-1'
+      }).addClass('simditor-clean-paste-area').appendTo(this.editor.el);
       this.editor.on('valuechanged', function() {
         return _this.editor.body.find('hr, pre, .simditor-table').each(function(i, el) {
           var $el, formatted;
@@ -1181,13 +1191,17 @@
         }
       }
       this.editor.selection.save(range);
-      this._pasteArea.focus();
+      if (cleanPaste) {
+        this._cleanPasteArea.focus();
+      } else {
+        this._pasteArea.focus();
+      }
       return setTimeout(function() {
         var $img, blob, children, insertPosition, lastLine, line, lines, node, pasteContent, _i, _j, _k, _l, _len, _len1, _len2, _len3, _ref1, _ref2;
-        if (_this._pasteArea.is(':empty')) {
+        if (_this._pasteArea.is(':empty') && !_this._cleanPasteArea.val()) {
           pasteContent = null;
         } else if (cleanPaste) {
-          pasteContent = _this.editor.formatter.clearHtml(_this._pasteArea.html());
+          pasteContent = _this._cleanPasteArea.val();
         } else {
           pasteContent = $('<div/>').append(_this._pasteArea.contents());
           _this.editor.formatter.format(pasteContent);
@@ -1196,6 +1210,7 @@
           pasteContent = pasteContent.contents();
         }
         _this._pasteArea.empty();
+        _this._cleanPasteArea.val('');
         range = _this.editor.selection.restore();
         if (_this.editor.triggerHandler('pasting', [pasteContent]) === false) {
           return;

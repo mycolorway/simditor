@@ -117,7 +117,8 @@ $simditor-toolbar-height: 40px;
 		}
 	}
 
-	.simditor-paste-area {
+	.simditor-paste-area,
+	.simditor-clean-paste-area {
 		background: transparent;
 		border: none;
 		outline: none;

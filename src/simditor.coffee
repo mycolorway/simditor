@@ -363,8 +363,8 @@ class Formatter extends Plugin
         result += node.nodeValue
       else if node.nodeType == 1
         $node = $(node)
-        contents = $node.contents()
-        result += @clearHtml contents if contents.length > 0
+        children = $node.contents()
+        result += @clearHtml children if children.length > 0
         if lineBreak and i < contents.length - 1 and $node.is 'br, p, div, li, tr, pre, address, artticle, aside, dl, figcaption, footer, h1, h2, h3, h4, header'
           result += '\n'
 
@@ -416,6 +416,21 @@ class InputManager extends Plugin
         contentEditable: true
       })
       .addClass('simditor-paste-area')
+      .appendTo(@editor.el)
+
+    @_cleanPasteArea = $('<textarea/>')
+      .css({
+        width: '1px',
+        height: '1px',
+        overflow: 'hidden',
+        position: 'fixed',
+        right: '0',
+        bottom: '101px'
+      })
+      .attr({
+        tabIndex: '-1'
+      })
+      .addClass('simditor-clean-paste-area')
       .appendTo(@editor.el)
 
     @editor.on 'valuechanged', =>
@@ -571,7 +586,6 @@ class InputManager extends Plugin
     if @editor.triggerHandler(e) == false
       return false
 
-
     range = @editor.selection.deleteRangeContents()
     range.collapse(true) unless range.collapsed
     $blockEl = @editor.util.closestBlockEl()
@@ -595,13 +609,16 @@ class InputManager extends Plugin
 
     @editor.selection.save range
 
-    @_pasteArea.focus()
+    if cleanPaste
+      @_cleanPasteArea.focus()
+    else
+      @_pasteArea.focus()
 
     setTimeout =>
-      if @_pasteArea.is(':empty')
+      if @_pasteArea.is(':empty') and !@_cleanPasteArea.val()
         pasteContent = null
       else if cleanPaste
-        pasteContent = @editor.formatter.clearHtml @_pasteArea.html()
+        pasteContent = @_cleanPasteArea.val()
       else
         pasteContent = $('<div/>').append(@_pasteArea.contents())
         @editor.formatter.format pasteContent
@@ -610,6 +627,7 @@ class InputManager extends Plugin
         pasteContent = pasteContent.contents()
 
       @_pasteArea.empty()
+      @_cleanPasteArea.val('')
       range = @editor.selection.restore()
 
       if @editor.triggerHandler('pasting', [pasteContent]) == false

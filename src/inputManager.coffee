@@ -32,6 +32,21 @@ class InputManager extends Plugin
       .addClass('simditor-paste-area')
       .appendTo(@editor.el)
 
+    @_cleanPasteArea = $('<textarea/>')
+      .css({
+        width: '1px',
+        height: '1px',
+        overflow: 'hidden',
+        position: 'fixed',
+        right: '0',
+        bottom: '101px'
+      })
+      .attr({
+        tabIndex: '-1'
+      })
+      .addClass('simditor-clean-paste-area')
+      .appendTo(@editor.el)
+
     @editor.on 'valuechanged', =>
       # make sure each code block and table has siblings
       @editor.body.find('hr, pre, .simditor-table').each (i, el) =>
@@ -185,7 +200,6 @@ class InputManager extends Plugin
     if @editor.triggerHandler(e) == false
       return false
 
-
     range = @editor.selection.deleteRangeContents()
     range.collapse(true) unless range.collapsed
     $blockEl = @editor.util.closestBlockEl()
@@ -209,13 +223,16 @@ class InputManager extends Plugin
 
     @editor.selection.save range
 
-    @_pasteArea.focus()
+    if cleanPaste
+      @_cleanPasteArea.focus()
+    else
+      @_pasteArea.focus()
 
     setTimeout =>
-      if @_pasteArea.is(':empty')
+      if @_pasteArea.is(':empty') and !@_cleanPasteArea.val()
         pasteContent = null
       else if cleanPaste
-        pasteContent = @editor.formatter.clearHtml @_pasteArea.html()
+        pasteContent = @_cleanPasteArea.val()
       else
         pasteContent = $('<div/>').append(@_pasteArea.contents())
         @editor.formatter.format pasteContent
@@ -224,6 +241,7 @@ class InputManager extends Plugin
         pasteContent = pasteContent.contents()
 
       @_pasteArea.empty()
+      @_cleanPasteArea.val('')
       range = @editor.selection.restore()
 
       if @editor.triggerHandler('pasting', [pasteContent]) == false
