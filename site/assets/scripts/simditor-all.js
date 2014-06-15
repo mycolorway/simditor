@@ -1174,7 +1174,7 @@
       cleanPaste = $blockEl.is('pre, table');
       if (e.originalEvent.clipboardData && e.originalEvent.clipboardData.items && e.originalEvent.clipboardData.items.length > 0) {
         pasteItem = e.originalEvent.clipboardData.items[0];
-        if (/^image\//.test(pasteItem.type && !cleanPaste)) {
+        if (/^image\//.test(pasteItem.type) && !cleanPaste) {
           imageFile = pasteItem.getAsFile();
           if (!((imageFile != null) && this.opts.pasteImage)) {
             return;

@@ -595,7 +595,7 @@ class InputManager extends Plugin
       pasteItem = e.originalEvent.clipboardData.items[0]
 
       # paste file in chrome
-      if /^image\//.test pasteItem.type and !cleanPaste
+      if /^image\//.test(pasteItem.type) and !cleanPaste
         imageFile = pasteItem.getAsFile()
         return unless imageFile? and @opts.pasteImage
 
