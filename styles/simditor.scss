@@ -122,6 +122,9 @@ $simditor-toolbar-height: 40px;
 		background: transparent;
 		border: none;
 		outline: none;
+		resize: none;
+		padding: 0;
+		margin: 0;
 	}
 
 	.simditor-toolbar {
@@ -559,3 +562,5 @@ $simditor-toolbar-height: 40px;
 		}
 	}
 }
+
+
