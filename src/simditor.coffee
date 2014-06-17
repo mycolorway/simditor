@@ -316,8 +316,10 @@ class Formatter extends Plugin
 
     if $node.is(@_allowedTags.join(',')) or isDecoration
       # img inside a is not allowed
-      if $node.is('a') and $node.find('img').length > 0
-        contents.first().unwrap()
+      if $node.is('a') and ($childImg = $node.find('img')).length > 0
+        $node.replaceWith $childImg
+        $node = $childImg
+        contents = null
 
       # exclude uploading img
       if $node.is('img') and $node.hasClass('uploading')

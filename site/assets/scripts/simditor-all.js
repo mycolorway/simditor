@@ -848,7 +848,7 @@
     };
 
     Formatter.prototype.cleanNode = function(node, recursive) {
-      var $node, $p, $td, allowedAttributes, attr, contents, isDecoration, n, text, textNode, _i, _j, _len, _len1, _ref, _ref1,
+      var $childImg, $node, $p, $td, allowedAttributes, attr, contents, isDecoration, n, text, textNode, _i, _j, _len, _len1, _ref, _ref1,
         _this = this;
       $node = $(node);
       if ($node[0].nodeType === 3) {
@@ -864,8 +864,10 @@
       contents = $node.contents();
       isDecoration = $node.is('[class^="simditor-"]');
       if ($node.is(this._allowedTags.join(',')) || isDecoration) {
-        if ($node.is('a') && $node.find('img').length > 0) {
-          contents.first().unwrap();
+        if ($node.is('a') && ($childImg = $node.find('img')).length > 0) {
+          $node.replaceWith($childImg);
+          $node = $childImg;
+          contents = null;
         }
         if ($node.is('img') && $node.hasClass('uploading')) {
           $node.remove();

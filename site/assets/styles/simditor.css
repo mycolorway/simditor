@@ -102,6 +102,9 @@
   background: transparent;
   border: none;
   outline: none;
+  resize: none;
+  padding: 0;
+  margin: 0;
 }
 .simditor .simditor-toolbar {
   border-bottom: 1px solid #eeeeee;
