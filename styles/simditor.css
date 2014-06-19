@@ -87,7 +87,7 @@
   cursor: col-resize;
 }
 .simditor .simditor-body pre {
-  min-height: 28px;
+  /*min-height: 28px;*/
   box-sizing: border-box;
   -moz-box-sizing: border-box;
 }
@@ -431,9 +431,9 @@
   border-radius: 3px;
   font-size: 13px;
   font-family: 'monaco', 'Consolas', "Liberation Mono", Courier, monospace;
-  overflow-x: auto;
+  /*overflow-x: auto;*/
   white-space: pre;
-  word-wrap: normal;
+  word-wrap: break-word;
 }
 .simditor .simditor-body code, .editor-style code {
   display: inline-block;

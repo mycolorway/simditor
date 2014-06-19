@@ -141,7 +141,7 @@ class Selection extends Plugin
     startRange = range.cloneRange()
     endRange = range.cloneRange()
     startRange.collapse(true)
-    endRange.collapse()
+    endRange.collapse(false)
 
     # the default behavior of cmd+a is buggy
     if !range.collapsed and @rangeAtStartOf(@editor.body, startRange) and @rangeAtEndOf(@editor.body, endRange)

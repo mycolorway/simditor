@@ -225,8 +225,23 @@ class InputManager extends Plugin
 
     if cleanPaste
       @_cleanPasteArea.focus()
+
+      # firefox cannot set focus on textarea before pasting
+      if @editor.util.browser.firefox
+        e.preventDefault()
+        @_cleanPasteArea.val e.originalEvent.clipboardData.getData('text/plain')
+
+      # IE10 cannot set focus on textarea or editable div before pasting
+      else if @editor.util.browser.msie and @editor.util.browser.version == 10
+        e.preventDefault()
+        @_cleanPasteArea.val window.clipboardData.getData('Text')
     else
       @_pasteArea.focus()
+
+      # IE10 cannot set focus on textarea or editable div before pasting
+      if @editor.util.browser.msie and @editor.util.browser.version == 10
+        e.preventDefault()
+        @_pasteArea.html window.clipboardData.getData('Text')
 
     setTimeout =>
       if @_pasteArea.is(':empty') and !@_cleanPasteArea.val()

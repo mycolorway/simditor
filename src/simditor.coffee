@@ -141,7 +141,7 @@ class Selection extends Plugin
     startRange = range.cloneRange()
     endRange = range.cloneRange()
     startRange.collapse(true)
-    endRange.collapse()
+    endRange.collapse(false)
 
     # the default behavior of cmd+a is buggy
     if !range.collapsed and @rangeAtStartOf(@editor.body, startRange) and @rangeAtEndOf(@editor.body, endRange)
@@ -613,8 +613,23 @@ class InputManager extends Plugin
 
     if cleanPaste
       @_cleanPasteArea.focus()
+
+      # firefox cannot set focus on textarea before pasting
+      if @editor.util.browser.firefox
+        e.preventDefault()
+        @_cleanPasteArea.val e.originalEvent.clipboardData.getData('text/plain')
+
+      # IE10 cannot set focus on textarea or editable div before pasting
+      else if @editor.util.browser.msie and @editor.util.browser.version == 10
+        e.preventDefault()
+        @_cleanPasteArea.val window.clipboardData.getData('Text')
     else
       @_pasteArea.focus()
+
+      # IE10 cannot set focus on textarea or editable div before pasting
+      if @editor.util.browser.msie and @editor.util.browser.version == 10
+        e.preventDefault()
+        @_pasteArea.html window.clipboardData.getData('Text')
 
     setTimeout =>
       if @_pasteArea.is(':empty') and !@_cleanPasteArea.val()
@@ -1189,19 +1204,19 @@ class Util extends Plugin
 
     if ie
       msie: true
-      version: ua.match(/(msie |rv:)(\d+(\.\d+)?)/i)[2]
+      version: ua.match(/(msie |rv:)(\d+(\.\d+)?)/i)[2] * 1
     else if chrome
       webkit: true
       chrome: true
-      version: ua.match(/(?:chrome|crios)\/(\d+(\.\d+)?)/i)[1]
+      version: ua.match(/(?:chrome|crios)\/(\d+(\.\d+)?)/i)[1] * 1
     else if safari
       webkit: true
       safari: true
-      version: ua.match(/version\/(\d+(\.\d+)?)/i)[1]
+      version: ua.match(/version\/(\d+(\.\d+)?)/i)[1] * 1
     else if firefox
       mozilla: true
       firefox: true
-      version: ua.match(/firefox\/(\d+(\.\d+)?)/i)[1]
+      version: ua.match(/firefox\/(\d+(\.\d+)?)/i)[1] * 1
     else
       {}
   )()

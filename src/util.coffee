@@ -34,19 +34,19 @@ class Util extends Plugin
 
     if ie
       msie: true
-      version: ua.match(/(msie |rv:)(\d+(\.\d+)?)/i)[2]
+      version: ua.match(/(msie |rv:)(\d+(\.\d+)?)/i)[2] * 1
     else if chrome
       webkit: true
       chrome: true
-      version: ua.match(/(?:chrome|crios)\/(\d+(\.\d+)?)/i)[1]
+      version: ua.match(/(?:chrome|crios)\/(\d+(\.\d+)?)/i)[1] * 1
     else if safari
       webkit: true
       safari: true
-      version: ua.match(/version\/(\d+(\.\d+)?)/i)[1]
+      version: ua.match(/version\/(\d+(\.\d+)?)/i)[1] * 1
     else if firefox
       mozilla: true
       firefox: true
-      version: ua.match(/firefox\/(\d+(\.\d+)?)/i)[1]
+      version: ua.match(/firefox\/(\d+(\.\d+)?)/i)[1] * 1
     else
       {}
   )()
