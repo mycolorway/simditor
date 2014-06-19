@@ -1909,11 +1909,9 @@ class Popover extends Module
 
   show: ($target, position = 'bottom') ->
     return unless $target?
-    @target = $target.addClass('selected')
+    @editor.hidePopover()
 
-    @el.siblings('.simditor-popover').each (i, el) =>
-      popover = $(el).data('popover')
-      popover.hide()
+    @target = $target.addClass('selected')
 
     if @active
       @refresh(position)
