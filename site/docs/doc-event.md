@@ -9,14 +9,12 @@ Simditor 会在特定情况下触发下列事件，你可以为编辑器实例�
 
 ```coffee
 # 初始化 Simditor
-editor = new Simditor({
+editor = new Simditor
   textarea: $('#editor')
-})
 
 # 绑定 valuechanged 方法
-editor.on('valuechanged', (e, src) ->
+editor.on 'valuechanged', (e, src) ->
   alert('simditor valuechanged')
-)
 ```
 
 ###事件

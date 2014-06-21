@@ -9,9 +9,8 @@ Simditor 初始化之后，编辑器实例会暴露一些公共方法供调用�
 
 ```coffee
 # 初始化 Simditor
-editor = new Simditor({
+editor = new Simditor
   textarea: $('#editor')
-})
 
 # 调用 setValue 方法设置内容
 editor.setValue 'hello world'

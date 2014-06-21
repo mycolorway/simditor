@@ -87,11 +87,9 @@
 
     ```js
     // 如果粘贴的内容含有图片则中断粘贴
-    editor.on('pasting', function(e, $pasteContent) {
-      if ($pasteContent.find("img").length > 0) {
+    editor.on 'pasting', (e, $pasteContent) ->
+      if $pasteContent.find("img").length > 0
         return false
-      }
-    })
     ```
 
 - name: "focus"
