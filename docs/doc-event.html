@@ -60,14 +60,12 @@
 	<article class="editor-style">
 		<p>Simditor 会在特定情况下触发下列事件，你可以为编辑器实例绑定这些事件来做相应的操作：</p>
 <div class="highlight"><pre><code class="coffee language-coffee" data-lang="coffee"><span class="c1"># 初始化 Simditor</span>
-<span class="nv">editor = </span><span class="k">new</span> <span class="nx">Simditor</span><span class="p">({</span>
+<span class="nv">editor = </span><span class="k">new</span> <span class="nx">Simditor</span>
   <span class="nv">textarea: </span><span class="nx">$</span><span class="p">(</span><span class="s">&#39;#editor&#39;</span><span class="p">)</span>
-<span class="p">})</span>
 
 <span class="c1"># 绑定 valuechanged 方法</span>
-<span class="nx">editor</span><span class="p">.</span><span class="nx">on</span><span class="p">(</span><span class="s">&#39;valuechanged&#39;</span><span class="p">,</span> <span class="nf">(e, src) -&gt;</span>
+<span class="nx">editor</span><span class="p">.</span><span class="nx">on</span> <span class="s">&#39;valuechanged&#39;</span><span class="p">,</span> <span class="nf">(e, src) -&gt;</span>
   <span class="nx">alert</span><span class="p">(</span><span class="s">&#39;simditor valuechanged&#39;</span><span class="p">)</span>
-<span class="p">)</span>
 </code></pre></div>
 <h3>事件</h3>
 
@@ -212,11 +210,9 @@
 
 <h6>示例</h6>
 <div class="highlight"><pre><code class="js language-js" data-lang="js"><span class="c1">// 如果粘贴的内容含有图片则中断粘贴</span>
-<span class="nx">editor</span><span class="p">.</span><span class="nx">on</span><span class="p">(</span><span class="s1">&#39;pasting&#39;</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">e</span><span class="p">,</span> <span class="nx">$pasteContent</span><span class="p">)</span> <span class="p">{</span>
-  <span class="k">if</span> <span class="p">(</span><span class="nx">$pasteContent</span><span class="p">.</span><span class="nx">find</span><span class="p">(</span><span class="s2">&quot;img&quot;</span><span class="p">).</span><span class="nx">length</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+<span class="nx">editor</span><span class="p">.</span><span class="nx">on</span> <span class="s1">&#39;pasting&#39;</span><span class="p">,</span> <span class="p">(</span><span class="nx">e</span><span class="p">,</span> <span class="nx">$pasteContent</span><span class="p">)</span> <span class="o">-&gt;</span>
+  <span class="k">if</span> <span class="nx">$pasteContent</span><span class="p">.</span><span class="nx">find</span><span class="p">(</span><span class="s2">&quot;img&quot;</span><span class="p">).</span><span class="nx">length</span> <span class="o">&gt;</span> <span class="mi">0</span>
     <span class="k">return</span> <span class="kc">false</span>
-  <span class="p">}</span>
-<span class="p">})</span>
 </code></pre></div>
     </dd>
   

@@ -60,9 +60,8 @@
 	<article class="editor-style">
 		<p>Simditor 初始化之后，编辑器实例会暴露一些公共方法供调用：</p>
 <div class="highlight"><pre><code class="coffee language-coffee" data-lang="coffee"><span class="c1"># 初始化 Simditor</span>
-<span class="nv">editor = </span><span class="k">new</span> <span class="nx">Simditor</span><span class="p">({</span>
+<span class="nv">editor = </span><span class="k">new</span> <span class="nx">Simditor</span>
   <span class="nv">textarea: </span><span class="nx">$</span><span class="p">(</span><span class="s">&#39;#editor&#39;</span><span class="p">)</span>
-<span class="p">})</span>
 
 <span class="c1"># 调用 setValue 方法设置内容</span>
 <span class="nx">editor</span><span class="p">.</span><span class="nx">setValue</span> <span class="s">&#39;hello world&#39;</span>

@@ -61,7 +61,7 @@
 		<h3>默认配置</h3>
 
 <p>Simditor 构造函数创建一个新的编辑器实例。通过传递的 options 参数定制实例。下面的示例使用所有选项及其默认值：</p>
-<div class="highlight"><pre><code class="coffee language-coffee" data-lang="coffee"><span class="nv">editor = </span><span class="k">new</span> <span class="nx">Simditor</span><span class="p">({</span>
+<div class="highlight"><pre><code class="coffee language-coffee" data-lang="coffee"><span class="nv">editor = </span><span class="k">new</span> <span class="nx">Simditor</span>
   <span class="nv">textarea: </span><span class="kc">null</span>
   <span class="nv">placeholder: </span><span class="s">&#39;&#39;</span>
   <span class="nv">defaultImage: </span><span class="s">&#39;images/image.png&#39;</span>
@@ -71,7 +71,6 @@
   <span class="nv">toolbar: </span><span class="kc">true</span>
   <span class="nv">toolbarFloat: </span><span class="kc">true</span>
   <span class="nv">pasteImage: </span><span class="kc">false</span>
-<span class="p">})</span>
 </code></pre></div>
 <h3>配置选项</h3>
 
@@ -189,14 +188,13 @@
 </ul>
 
 <p>键值对参数的默认值：</p>
-<div class="highlight"><pre><code class="coffee language-coffee" data-lang="coffee"><span class="nv">editor = </span><span class="k">new</span> <span class="nx">Simditor</span><span class="p">({</span>
+<div class="highlight"><pre><code class="coffee language-coffee" data-lang="coffee"><span class="nv">editor = </span><span class="k">new</span> <span class="nx">Simditor</span>
   <span class="nv">textarea: </span><span class="nx">$</span><span class="p">(</span><span class="s">&#39;#editor&#39;</span><span class="p">)</span>
   <span class="nv">upload:</span>
     <span class="nv">url: </span><span class="s">&#39;&#39;</span>
     <span class="nv">params: </span><span class="kc">null</span>
     <span class="nv">connectionCount: </span><span class="mi">3</span>
     <span class="nv">leaveConfirm: </span><span class="s">&#39;正在上传文件，如果离开上传会自动取消&#39;</span>
-<span class="p">})</span>
 </code></pre></div>
 <p>图片上传成功后，服务端需要返回json格式的图片地址：</p>
 <div class="highlight"><pre><code class="json language-json" data-lang="json"><span class="p">{</span>
