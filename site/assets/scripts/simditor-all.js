@@ -2756,6 +2756,9 @@
       if (position == null) {
         position = 'bottom';
       }
+      if (!this.active) {
+        return;
+      }
       wrapperOffset = this.editor.wrapper.offset();
       targetOffset = this.target.offset();
       targetH = this.target.outerHeight();
@@ -3700,10 +3703,6 @@
 
     ImageButton.prototype.defaultImage = '';
 
-    ImageButton.prototype.maxWidth = 0;
-
-    ImageButton.prototype.maxHeight = 0;
-
     ImageButton.prototype.menu = [
       {
         name: 'upload-image',
@@ -3722,8 +3721,6 @@
       }
       ImageButton.__super__.constructor.call(this, this.editor);
       this.defaultImage = this.editor.opts.defaultImage;
-      this.maxWidth = this.editor.opts.maxImageWidth || this.editor.body.width();
-      this.maxHeight = this.editor.opts.maxImageHeight || $(window).height();
       this.editor.body.on('click', 'img:not([data-non-image])', function(e) {
         var $img, range;
         $img = $(e.currentTarget);
@@ -3813,7 +3810,6 @@
           $img = $(file.img);
         } else {
           $img = _this.createImage(file.name);
-          $img.click();
           file.img = $img;
         }
         $img.addClass('uploading');
@@ -3852,7 +3848,6 @@
         $img = file.img.removeClass('uploading');
         return _this.loadImage($img, result.file_path, function() {
           _this.popover.srcEl.prop('disabled', false);
-          $img.click();
           _this.editor.trigger('valuechanged');
           return _this.editor.uploader.trigger('uploadready', [file, result]);
         });
@@ -3921,24 +3916,14 @@
         var height, width;
         width = img.width;
         height = img.height;
-        if (width > _this.maxWidth) {
-          height = _this.maxWidth * height / width;
-          width = _this.maxWidth;
-        }
-        if (height > _this.maxHeight) {
-          width = _this.maxHeight * width / height;
-          height = _this.maxHeight;
-        }
         $img.attr({
           src: src,
-          width: width,
-          height: height,
           'data-image-size': img.width + ',' + img.height
         });
         if ($img.hasClass('uploading')) {
           $mask.css({
-            width: width,
-            height: height
+            width: $img.width(),
+            height: $img.height()
           });
         } else {
           $mask.remove();
@@ -3955,14 +3940,20 @@
     };
 
     ImageButton.prototype.createImage = function(name) {
-      var $img, range;
+      var $block, $img, $newBlock, range;
       if (name == null) {
         name = 'Image';
       }
       range = this.editor.selection.getRange();
       range.deleteContents();
+      $block = this.editor.util.closestBlockEl();
+      if ($block.is('p') && !this.editor.util.isEmptyNode($block)) {
+        $newBlock = $('<p/>').append(this.editor.util.phBr).insertAfter($block);
+        this.editor.selection.setRangeAtStartOf($newBlock, range);
+      }
       $img = $('<img/>').attr('alt', name);
       range.insertNode($img[0]);
+      this.editor.selection.setRangeAfter($img);
       return $img;
     };
 

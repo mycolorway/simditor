@@ -13,9 +13,9 @@ class ImageButton extends Button
 
   defaultImage: ''
 
-  maxWidth: 0
+  #maxWidth: 0
 
-  maxHeight: 0
+  #maxHeight: 0
 
   menu: [{
     name: 'upload-image',
@@ -30,8 +30,8 @@ class ImageButton extends Button
     super @editor
 
     @defaultImage = @editor.opts.defaultImage
-    @maxWidth = @editor.opts.maxImageWidth || @editor.body.width()
-    @maxHeight = @editor.opts.maxImageHeight || $(window).height()
+    #@maxWidth = @editor.opts.maxImageWidth || @editor.body.width()
+    #@maxHeight = @editor.opts.maxImageHeight || $(window).height()
 
     @editor.body.on 'click', 'img:not([data-non-image])', (e) =>
       $img = $(e.currentTarget)
@@ -112,7 +112,7 @@ class ImageButton extends Button
         $img = $(file.img)
       else
         $img = @createImage(file.name)
-        $img.click()
+        #$img.click()
         file.img = $img
 
       $img.addClass 'uploading'
@@ -142,7 +142,7 @@ class ImageButton extends Button
       $img = file.img.removeClass 'uploading'
       @loadImage $img, result.file_path, () =>
         @popover.srcEl.prop('disabled', false)
-        $img.click()
+        #$img.click()
 
         @editor.trigger 'valuechanged'
         @editor.uploader.trigger 'uploadready', [file, result]
@@ -197,24 +197,24 @@ class ImageButton extends Button
     img.onload = =>
       width = img.width
       height = img.height
-      if width > @maxWidth
-        height = @maxWidth * height / width
-        width = @maxWidth
-      if height > @maxHeight
-        width = @maxHeight * width / height
-        height = @maxHeight
+      #if width > @maxWidth
+        #height = @maxWidth * height / width
+        #width = @maxWidth
+      #if height > @maxHeight
+        #width = @maxHeight * width / height
+        #height = @maxHeight
 
       $img.attr({
         src: src,
-        width: width,
-        height: height,
+        #width: width,
+        #height: height,
         'data-image-size': img.width + ',' + img.height
       })
 
       if $img.hasClass 'uploading'
         $mask.css({
-          width: width,
-          height: height
+          width: $img.width(),
+          height: $img.height()
         })
       else
         $mask.remove()
@@ -233,8 +233,15 @@ class ImageButton extends Button
     range = @editor.selection.getRange()
     range.deleteContents()
 
+    $block = @editor.util.closestBlockEl()
+    if $block.is('p') and !@editor.util.isEmptyNode $block
+      $newBlock = $('<p/>').append(@editor.util.phBr).insertAfter($block)
+      @editor.selection.setRangeAtStartOf $newBlock, range
+
     $img = $('<img/>').attr('alt', name)
     range.insertNode $img[0]
+    @editor.selection.setRangeAfter $img
+
     $img
 
   command: (src) ->

@@ -55,6 +55,7 @@ class Popover extends Module
     @trigger 'popoverhide'
 
   refresh: (position = 'bottom') ->
+    return unless @active
     wrapperOffset = @editor.wrapper.offset()
     targetOffset = @target.offset()
     targetH = @target.outerHeight()
