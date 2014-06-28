@@ -386,7 +386,7 @@ a:hover, a:active {
 
 /* Layout */
 .wrapper {
-  width: 960px;
+  width: 600px;
   margin: 0 auto;
 }
 .wrapper header {

@@ -1485,6 +1485,7 @@ class Toolbar extends Plugin
     if @opts.toolbarFloat
       @wrapper.width @wrapper.outerWidth()
       @wrapper.css 'left', @wrapper.offset().left
+      toolbarHeight = @wrapper.outerHeight()
       $(window).on 'scroll.simditor-' + @editor.id, (e) =>
         topEdge = @editor.wrapper.offset().top
         bottomEdge = topEdge + @editor.wrapper.outerHeight() - 80
@@ -1492,8 +1493,10 @@ class Toolbar extends Plugin
 
         if scrollTop <= topEdge or scrollTop >= bottomEdge
           @editor.wrapper.removeClass('toolbar-floating')
+            .css('padding-top', '')
         else
           @editor.wrapper.addClass('toolbar-floating')
+            .css('padding-top', toolbarHeight)
 
     @editor.on 'selectionchanged focus', =>
       @toolbarStatus()
@@ -1519,6 +1522,8 @@ class Toolbar extends Plugin
         continue
 
       @buttons.push new @constructor.buttons[name](@editor)
+
+    @editor.placeholderEl.css 'top', @wrapper.outerHeight()
 
   toolbarStatus: (name) ->
     return unless @editor.inputManager.focused

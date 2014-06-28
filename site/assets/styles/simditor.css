@@ -10,7 +10,6 @@
 .simditor .simditor-wrapper .simditor-placeholder {
   display: none;
   position: absolute;
-  top: 41px;
   left: 0;
   z-index: 0;
   padding: 22px 15px;
@@ -19,9 +18,6 @@
   line-height: 1.5;
   color: #999999;
   background: transparent;
-}
-.simditor .simditor-wrapper.toolbar-floating {
-  padding-top: 41px;
 }
 .simditor .simditor-wrapper.toolbar-floating .simditor-toolbar {
   position: fixed;
@@ -112,10 +108,14 @@
   width: 100%;
 }
 .simditor .simditor-toolbar > ul {
-  height: 40px;
   margin: 0;
   padding: 0 0 0 6px;
   list-style: none;
+}
+.simditor .simditor-toolbar > ul:after {
+  content: "";
+  display: table;
+  clear: both;
 }
 .simditor .simditor-toolbar > ul > li {
   position: relative;
