@@ -2818,11 +2818,11 @@ class ImageButton extends Button
     @editor.uploader.on 'uploadsuccess', (e, file, result) =>
       return unless file.inline
 
-      $img = file.img.removeClass 'uploading'
+      $img = file.img
       $img.removeData 'file'
       @loadImage $img, result.file_path, () =>
         @popover.srcEl.prop('disabled', false)
-        #$img.click()
+        $img.removeClass 'uploading'
 
         @editor.trigger 'valuechanged'
         if @editor.body.find('img.uploading').length < 1
@@ -2845,12 +2845,13 @@ class ImageButton extends Button
         else
           alert msg
 
-      $img = file.img.removeClass 'uploading'
+      $img = file.img
       $img.removeData 'file'
       @loadImage $img, @defaultImage, =>
         @popover.refresh()
         @popover.srcEl.val($img.attr('src'))
           .prop('disabled', false)
+        $img.removeClass 'uploading'
 
         @editor.trigger 'valuechanged'
         if @editor.body.find('img.uploading').length < 1
@@ -2897,7 +2898,7 @@ class ImageButton extends Button
         'data-image-size': img.width + ',' + img.height
       })
 
-      if $img.hasClass 'uploading'
+      if $img.data 'file' # img being uploaded
         $mask.css({
           width: $img.width(),
           height: $img.height()
