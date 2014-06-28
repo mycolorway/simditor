@@ -2722,6 +2722,19 @@ class ImageButton extends Button
       else
         @popover.hide()
 
+    @editor.on 'valuechanged.image', =>
+      $masks = @editor.wrapper.find('.simditor-image-loading')
+      return unless $masks.length > 0
+      $masks.each (i, mask) =>
+        $mask = $(mask)
+        $img = $mask.data 'img'
+        $mask.remove() unless $img and $img.parent().length > 0
+        if $img
+          file = $img.data 'file'
+          @editor.uploader.cancel file if file
+          if @editor.body.find('img.uploading').length < 1
+            @editor.uploader.trigger 'uploadready', [file]
+
 
   render: (args...) ->
     super args...
@@ -2776,6 +2789,7 @@ class ImageButton extends Button
         file.img = $img
 
       $img.addClass 'uploading'
+      $img.data 'file', file
 
       @editor.uploader.readImageFile file.obj, (img) =>
         return unless $img.hasClass('uploading')
@@ -2794,18 +2808,25 @@ class ImageButton extends Button
       percent = 99 if percent > 99
 
       $mask = file.img.data('mask')
-      $mask.find("span").text(percent) if $mask
+      if $mask
+        $img = $mask.data('img')
+        if $img and $img.parent().length > 0
+          $mask.find("span").text(percent)
+        else
+          $mask.remove()
 
     @editor.uploader.on 'uploadsuccess', (e, file, result) =>
       return unless file.inline
 
       $img = file.img.removeClass 'uploading'
+      $img.removeData 'file'
       @loadImage $img, result.file_path, () =>
         @popover.srcEl.prop('disabled', false)
         #$img.click()
 
         @editor.trigger 'valuechanged'
-        @editor.uploader.trigger 'uploadready', [file, result]
+        if @editor.body.find('img.uploading').length < 1
+          @editor.uploader.trigger 'uploadready', [file, result]
 
     @editor.uploader.on 'uploaderror', (e, file, xhr) =>
       return unless file.inline
@@ -2819,17 +2840,21 @@ class ImageButton extends Button
           msg = '上传出错了'
 
         if simple? and simple.message?
-          simple.message(msg)
+          simple.message
+            content: msg
         else
-          alert(msg)
+          alert msg
 
       $img = file.img.removeClass 'uploading'
+      $img.removeData 'file'
       @loadImage $img, @defaultImage, =>
         @popover.refresh()
         @popover.srcEl.val($img.attr('src'))
           .prop('disabled', false)
 
         @editor.trigger 'valuechanged'
+        if @editor.body.find('img.uploading').length < 1
+          @editor.uploader.trigger 'uploadready', [file, result]
 
   status: ($node) ->
     @setDisabled $node.is(@disableTag) if $node?
@@ -2842,6 +2867,7 @@ class ImageButton extends Button
         .appendTo(@editor.wrapper)
       $mask.addClass('uploading') if $img.hasClass('uploading') and @editor.uploader.html5
       $img.data('mask', $mask)
+      $mask.data('img', $img)
 
     imgPosition = $img.position()
     toolbarH = @editor.toolbar.wrapper.outerHeight()
