@@ -2187,7 +2187,8 @@
     }
 
     Toolbar.prototype._init = function() {
-      var _this = this;
+      var toolbarHeight,
+        _this = this;
       if (!this.opts.toolbar) {
         return;
       }
@@ -2207,15 +2208,16 @@
       if (this.opts.toolbarFloat) {
         this.wrapper.width(this.wrapper.outerWidth());
         this.wrapper.css('left', this.wrapper.offset().left);
+        toolbarHeight = this.wrapper.outerHeight();
         $(window).on('scroll.simditor-' + this.editor.id, function(e) {
           var bottomEdge, scrollTop, topEdge;
           topEdge = _this.editor.wrapper.offset().top;
           bottomEdge = topEdge + _this.editor.wrapper.outerHeight() - 80;
           scrollTop = $(document).scrollTop();
           if (scrollTop <= topEdge || scrollTop >= bottomEdge) {
-            return _this.editor.wrapper.removeClass('toolbar-floating');
+            return _this.editor.wrapper.removeClass('toolbar-floating').css('padding-top', '');
           } else {
-            return _this.editor.wrapper.addClass('toolbar-floating');
+            return _this.editor.wrapper.addClass('toolbar-floating').css('padding-top', toolbarHeight);
           }
         });
       }
@@ -2231,12 +2233,11 @@
     };
 
     Toolbar.prototype._render = function() {
-      var name, _i, _len, _ref, _results;
+      var name, _i, _len, _ref;
       this.buttons = [];
       this.wrapper = $(this._tpl.wrapper).prependTo(this.editor.wrapper);
       this.list = this.wrapper.find('ul');
       _ref = this.opts.toolbar;
-      _results = [];
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         name = _ref[_i];
         if (name === '|') {
@@ -2247,9 +2248,9 @@
           throw new Error('simditor: invalid toolbar button "' + name + '"');
           continue;
         }
-        _results.push(this.buttons.push(new this.constructor.buttons[name](this.editor)));
+        this.buttons.push(new this.constructor.buttons[name](this.editor));
       }
-      return _results;
+      return this.editor.placeholderEl.css('top', this.wrapper.outerHeight());
     };
 
     Toolbar.prototype.toolbarStatus = function(name) {
@@ -2755,6 +2756,9 @@
       var left, targetH, targetOffset, top, wrapperOffset;
       if (position == null) {
         position = 'bottom';
+      }
+      if (!this.active) {
+        return;
       }
       wrapperOffset = this.editor.wrapper.offset();
       targetOffset = this.target.offset();
@@ -3700,10 +3704,6 @@
 
     ImageButton.prototype.defaultImage = '';
 
-    ImageButton.prototype.maxWidth = 0;
-
-    ImageButton.prototype.maxHeight = 0;
-
     ImageButton.prototype.menu = [
       {
         name: 'upload-image',
@@ -3722,8 +3722,6 @@
       }
       ImageButton.__super__.constructor.call(this, this.editor);
       this.defaultImage = this.editor.opts.defaultImage;
-      this.maxWidth = this.editor.opts.maxImageWidth || this.editor.body.width();
-      this.maxHeight = this.editor.opts.maxImageHeight || $(window).height();
       this.editor.body.on('click', 'img:not([data-non-image])', function(e) {
         var $img, range;
         $img = $(e.currentTarget);
@@ -3752,6 +3750,30 @@
         } else {
           return _this.popover.hide();
         }
+      });
+      this.editor.on('valuechanged.image', function() {
+        var $masks;
+        $masks = _this.editor.wrapper.find('.simditor-image-loading');
+        if (!($masks.length > 0)) {
+          return;
+        }
+        return $masks.each(function(i, mask) {
+          var $img, $mask, file;
+          $mask = $(mask);
+          $img = $mask.data('img');
+          if (!($img && $img.parent().length > 0)) {
+            $mask.remove();
+          }
+          if ($img) {
+            file = $img.data('file');
+            if (file) {
+              _this.editor.uploader.cancel(file);
+            }
+            if (_this.editor.body.find('img.uploading').length < 1) {
+              return _this.editor.uploader.trigger('uploadready', [file]);
+            }
+          }
+        });
       });
     }
 
@@ -3813,10 +3835,10 @@
           $img = $(file.img);
         } else {
           $img = _this.createImage(file.name);
-          $img.click();
           file.img = $img;
         }
         $img.addClass('uploading');
+        $img.data('file', file);
         return _this.editor.uploader.readImageFile(file.obj, function(img) {
           var src;
           if (!$img.hasClass('uploading')) {
@@ -3830,7 +3852,7 @@
         });
       });
       this.editor.uploader.on('uploadprogress', function(e, file, loaded, total) {
-        var $mask, percent;
+        var $img, $mask, percent;
         if (!file.inline) {
           return;
         }
@@ -3841,7 +3863,12 @@
         }
         $mask = file.img.data('mask');
         if ($mask) {
-          return $mask.find("span").text(percent);
+          $img = $mask.data('img');
+          if ($img && $img.parent().length > 0) {
+            return $mask.find("span").text(percent);
+          } else {
+            return $mask.remove();
+          }
         }
       });
       this.editor.uploader.on('uploadsuccess', function(e, file, result) {
@@ -3849,12 +3876,15 @@
         if (!file.inline) {
           return;
         }
-        $img = file.img.removeClass('uploading');
+        $img = file.img;
+        $img.removeData('file');
         return _this.loadImage($img, result.file_path, function() {
           _this.popover.srcEl.prop('disabled', false);
-          $img.click();
+          $img.removeClass('uploading');
           _this.editor.trigger('valuechanged');
-          return _this.editor.uploader.trigger('uploadready', [file, result]);
+          if (_this.editor.body.find('img.uploading').length < 1) {
+            return _this.editor.uploader.trigger('uploadready', [file, result]);
+          }
         });
       });
       return this.editor.uploader.on('uploaderror', function(e, file, xhr) {
@@ -3874,16 +3904,23 @@
             msg = '上传出错了';
           }
           if ((typeof simple !== "undefined" && simple !== null) && (simple.message != null)) {
-            simple.message(msg);
+            simple.message({
+              content: msg
+            });
           } else {
             alert(msg);
           }
         }
-        $img = file.img.removeClass('uploading');
+        $img = file.img;
+        $img.removeData('file');
         return _this.loadImage($img, _this.defaultImage, function() {
           _this.popover.refresh();
           _this.popover.srcEl.val($img.attr('src')).prop('disabled', false);
-          return _this.editor.trigger('valuechanged');
+          $img.removeClass('uploading');
+          _this.editor.trigger('valuechanged');
+          if (_this.editor.body.find('img.uploading').length < 1) {
+            return _this.editor.uploader.trigger('uploadready', [file, result]);
+          }
         });
       });
     };
@@ -3907,6 +3944,7 @@
           $mask.addClass('uploading');
         }
         $img.data('mask', $mask);
+        $mask.data('img', $img);
       }
       imgPosition = $img.position();
       toolbarH = this.editor.toolbar.wrapper.outerHeight();
@@ -3921,24 +3959,14 @@
         var height, width;
         width = img.width;
         height = img.height;
-        if (width > _this.maxWidth) {
-          height = _this.maxWidth * height / width;
-          width = _this.maxWidth;
-        }
-        if (height > _this.maxHeight) {
-          width = _this.maxHeight * width / height;
-          height = _this.maxHeight;
-        }
         $img.attr({
           src: src,
-          width: width,
-          height: height,
           'data-image-size': img.width + ',' + img.height
         });
-        if ($img.hasClass('uploading')) {
+        if ($img.data('file')) {
           $mask.css({
-            width: width,
-            height: height
+            width: $img.width(),
+            height: $img.height()
           });
         } else {
           $mask.remove();
@@ -3955,14 +3983,20 @@
     };
 
     ImageButton.prototype.createImage = function(name) {
-      var $img, range;
+      var $block, $img, $newBlock, range;
       if (name == null) {
         name = 'Image';
       }
       range = this.editor.selection.getRange();
       range.deleteContents();
+      $block = this.editor.util.closestBlockEl();
+      if ($block.is('p') && !this.editor.util.isEmptyNode($block)) {
+        $newBlock = $('<p/>').append(this.editor.util.phBr).insertAfter($block);
+        this.editor.selection.setRangeAtStartOf($newBlock, range);
+      }
       $img = $('<img/>').attr('alt', name);
       range.insertNode($img[0]);
+      this.editor.selection.setRangeAfter($img);
       return $img;
     };
 
