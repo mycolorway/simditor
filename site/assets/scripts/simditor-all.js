@@ -3983,7 +3983,7 @@
     };
 
     ImageButton.prototype.createImage = function(name) {
-      var $block, $img, $newBlock, range;
+      var $block, $img, $nextBlock, range;
       if (name == null) {
         name = 'Image';
       }
@@ -3991,12 +3991,16 @@
       range.deleteContents();
       $block = this.editor.util.closestBlockEl();
       if ($block.is('p') && !this.editor.util.isEmptyNode($block)) {
-        $newBlock = $('<p/>').append(this.editor.util.phBr).insertAfter($block);
-        this.editor.selection.setRangeAtStartOf($newBlock, range);
+        $block = $('<p/>').append(this.editor.util.phBr).insertAfter($block);
+        this.editor.selection.setRangeAtStartOf($block, range);
       }
       $img = $('<img/>').attr('alt', name);
       range.insertNode($img[0]);
-      this.editor.selection.setRangeAfter($img);
+      $nextBlock = $block.next('p');
+      if (!($nextBlock.length > 0)) {
+        $nextBlock = $('<p/>').append(this.editor.util.phBr).insertAfter($block);
+      }
+      this.editor.selection.setRangeAtStartOf($nextBlock);
       return $img;
     };
 

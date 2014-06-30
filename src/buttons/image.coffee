@@ -262,12 +262,16 @@ class ImageButton extends Button
 
     $block = @editor.util.closestBlockEl()
     if $block.is('p') and !@editor.util.isEmptyNode $block
-      $newBlock = $('<p/>').append(@editor.util.phBr).insertAfter($block)
-      @editor.selection.setRangeAtStartOf $newBlock, range
+      $block = $('<p/>').append(@editor.util.phBr).insertAfter($block)
+      @editor.selection.setRangeAtStartOf $block, range
 
     $img = $('<img/>').attr('alt', name)
     range.insertNode $img[0]
-    @editor.selection.setRangeAfter $img
+
+    $nextBlock = $block.next 'p'
+    unless $nextBlock.length > 0
+      $nextBlock = $('<p/>').append(@editor.util.phBr).insertAfter($block)
+    @editor.selection.setRangeAtStartOf $nextBlock
 
     $img
 
