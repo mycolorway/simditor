@@ -2733,12 +2733,14 @@ class ImageButton extends Button
       $masks.each (i, mask) =>
         $mask = $(mask)
         $img = $mask.data 'img'
-        $mask.remove() unless $img and $img.parent().length > 0
-        if $img
-          file = $img.data 'file'
-          @editor.uploader.cancel file if file
-          if @editor.body.find('img.uploading').length < 1
-            @editor.uploader.trigger 'uploadready', [file]
+        unless $img and $img.parent().length > 0
+          $mask.remove()
+          if $img
+            file = $img.data 'file'
+            if file
+              @editor.uploader.cancel file
+              if @editor.body.find('img.uploading').length < 1
+                @editor.uploader.trigger 'uploadready', [file]
 
 
   render: (args...) ->
@@ -2825,13 +2827,19 @@ class ImageButton extends Button
 
       $img = file.img
       $img.removeData 'file'
-      @loadImage $img, result.file_path, () =>
-        @popover.srcEl.prop('disabled', false)
-        $img.removeClass 'uploading'
+      $img.removeClass 'uploading'
 
-        @editor.trigger 'valuechanged'
-        if @editor.body.find('img.uploading').length < 1
-          @editor.uploader.trigger 'uploadready', [file, result]
+      $mask = $img.data('mask')
+      $mask.remove() if $mask
+      $img.removeData 'mask'
+
+      $img.attr 'src', result.file_path
+      @popover.srcEl.prop('disabled', false)
+
+      @editor.trigger 'valuechanged'
+      if @editor.body.find('img.uploading').length < 1
+        @editor.uploader.trigger 'uploadready', [file, result]
+
 
     @editor.uploader.on 'uploaderror', (e, file, xhr) =>
       return unless file.inline
@@ -2903,7 +2911,7 @@ class ImageButton extends Button
         'data-image-size': img.width + ',' + img.height
       })
 
-      if $img.data 'file' # img being uploaded
+      if $img.hasClass 'uploading' # img being uploaded
         $mask.css({
           width: $img.width(),
           height: $img.height()
