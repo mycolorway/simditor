@@ -2860,15 +2860,19 @@ class ImageButton extends Button
 
       $img = file.img
       $img.removeData 'file'
-      @loadImage $img, @defaultImage, =>
-        @popover.refresh()
-        @popover.srcEl.val($img.attr('src'))
-          .prop('disabled', false)
-        $img.removeClass 'uploading'
+      $img.removeClass 'uploading'
 
-        @editor.trigger 'valuechanged'
-        if @editor.body.find('img.uploading').length < 1
-          @editor.uploader.trigger 'uploadready', [file, result]
+      $mask = $img.data('mask')
+      $mask.remove() if $mask
+      $img.removeData 'mask'
+
+      $img.attr 'src', @defaultImage
+      @popover.srcEl.prop('disabled', false)
+
+      @editor.trigger 'valuechanged'
+      if @editor.body.find('img.uploading').length < 1
+        @editor.uploader.trigger 'uploadready', [file, result]
+
 
   status: ($node) ->
     @setDisabled $node.is(@disableTag) if $node?
