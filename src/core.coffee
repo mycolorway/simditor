@@ -46,15 +46,11 @@ class Simditor extends Widget
 
     # set default value after all plugins are connected
     @on 'pluginconnected', =>
-      @setValue @textarea.val() || ''
-
       if @opts.placeholder
         @on 'valuechanged', =>
           @_placeholder()
 
-      setTimeout =>
-        @trigger 'valuechanged'
-      , 0
+      @setValue @textarea.val() || ''
 
     # Disable the resizing of `img` and `table`
     if @util.browser.mozilla
@@ -111,6 +107,10 @@ class Simditor extends Widget
 
     @formatter.format()
     @formatter.decorate()
+
+    setTimeout =>
+      @trigger 'valuechanged'
+    , 0
 
   getValue: () ->
     @sync()
