@@ -65,6 +65,18 @@
       return (_ref = $(this)).triggerHandler.apply(_ref, args);
     };
 
+    Module.prototype._i18n = function(key) {
+      var cls, _ref;
+      cls = this.constructor;
+      return (_ref = cls.i18n[cls.locale]) != null ? _ref[key] : void 0;
+    };
+
+    Module.i18n = {
+      'zh-CN': {}
+    };
+
+    Module.locale = 'zh-CN';
+
     return Module;
 
   })();
@@ -280,6 +292,7 @@
       return file.xhr = $.ajax({
         url: file.url,
         data: formData,
+        dataType: 'json',
         processData: false,
         contentType: false,
         type: 'POST',
@@ -373,7 +386,7 @@
         _ref = this.files;
         for (_i = 0, _len = _ref.length; _i < _len; _i++) {
           f = _ref[_i];
-          if (f.id === file) {
+          if (f.id === file * 1) {
             file = f;
             break;
           }
@@ -2361,15 +2374,12 @@
         });
       }
       this.on('pluginconnected', function() {
-        _this.setValue(_this.textarea.val() || '');
         if (_this.opts.placeholder) {
           _this.on('valuechanged', function() {
             return _this._placeholder();
           });
         }
-        return setTimeout(function() {
-          return _this.trigger('valuechanged');
-        }, 0);
+        return _this.setValue(_this.textarea.val() || '');
       });
       if (this.util.browser.mozilla) {
         document.execCommand("enableObjectResizing", false, false);
@@ -2419,11 +2429,15 @@
     };
 
     Simditor.prototype.setValue = function(val) {
+      var _this = this;
       this.hidePopover();
       this.textarea.val(val);
       this.body.html(val);
       this.formatter.format();
-      return this.formatter.decorate();
+      this.formatter.decorate();
+      return setTimeout(function() {
+        return _this.trigger('valuechanged');
+      }, 0);
     };
 
     Simditor.prototype.getValue = function() {
@@ -3763,14 +3777,14 @@
           $img = $mask.data('img');
           if (!($img && $img.parent().length > 0)) {
             $mask.remove();
-          }
-          if ($img) {
-            file = $img.data('file');
-            if (file) {
-              _this.editor.uploader.cancel(file);
-            }
-            if (_this.editor.body.find('img.uploading').length < 1) {
-              return _this.editor.uploader.trigger('uploadready', [file]);
+            if ($img) {
+              file = $img.data('file');
+              if (file) {
+                _this.editor.uploader.cancel(file);
+                if (_this.editor.body.find('img.uploading').length < 1) {
+                  return _this.editor.uploader.trigger('uploadready', [file]);
+                }
+              }
             }
           }
         });
@@ -3872,23 +3886,27 @@
         }
       });
       this.editor.uploader.on('uploadsuccess', function(e, file, result) {
-        var $img;
+        var $img, $mask;
         if (!file.inline) {
           return;
         }
         $img = file.img;
         $img.removeData('file');
-        return _this.loadImage($img, result.file_path, function() {
-          _this.popover.srcEl.prop('disabled', false);
-          $img.removeClass('uploading');
-          _this.editor.trigger('valuechanged');
-          if (_this.editor.body.find('img.uploading').length < 1) {
-            return _this.editor.uploader.trigger('uploadready', [file, result]);
-          }
-        });
+        $img.removeClass('uploading');
+        $mask = $img.data('mask');
+        if ($mask) {
+          $mask.remove();
+        }
+        $img.removeData('mask');
+        $img.attr('src', result.file_path);
+        _this.popover.srcEl.prop('disabled', false);
+        _this.editor.trigger('valuechanged');
+        if (_this.editor.body.find('img.uploading').length < 1) {
+          return _this.editor.uploader.trigger('uploadready', [file, result]);
+        }
       });
       return this.editor.uploader.on('uploaderror', function(e, file, xhr) {
-        var $img, msg, result;
+        var $img, $mask, msg, result;
         if (!file.inline) {
           return;
         }
@@ -3913,15 +3931,18 @@
         }
         $img = file.img;
         $img.removeData('file');
-        return _this.loadImage($img, _this.defaultImage, function() {
-          _this.popover.refresh();
-          _this.popover.srcEl.val($img.attr('src')).prop('disabled', false);
-          $img.removeClass('uploading');
-          _this.editor.trigger('valuechanged');
-          if (_this.editor.body.find('img.uploading').length < 1) {
-            return _this.editor.uploader.trigger('uploadready', [file, result]);
-          }
-        });
+        $img.removeClass('uploading');
+        $mask = $img.data('mask');
+        if ($mask) {
+          $mask.remove();
+        }
+        $img.removeData('mask');
+        $img.attr('src', _this.defaultImage);
+        _this.popover.srcEl.prop('disabled', false);
+        _this.editor.trigger('valuechanged');
+        if (_this.editor.body.find('img.uploading').length < 1) {
+          return _this.editor.uploader.trigger('uploadready', [file, result]);
+        }
       });
     };
 
@@ -3963,7 +3984,7 @@
           src: src,
           'data-image-size': img.width + ',' + img.height
         });
-        if ($img.data('file')) {
+        if ($img.hasClass('uploading')) {
           $mask.css({
             width: $img.width(),
             height: $img.height()
@@ -3983,7 +4004,7 @@
     };
 
     ImageButton.prototype.createImage = function(name) {
-      var $block, $img, $newBlock, range;
+      var $block, $img, $nextBlock, range;
       if (name == null) {
         name = 'Image';
       }
@@ -3991,12 +4012,16 @@
       range.deleteContents();
       $block = this.editor.util.closestBlockEl();
       if ($block.is('p') && !this.editor.util.isEmptyNode($block)) {
-        $newBlock = $('<p/>').append(this.editor.util.phBr).insertAfter($block);
-        this.editor.selection.setRangeAtStartOf($newBlock, range);
+        $block = $('<p/>').append(this.editor.util.phBr).insertAfter($block);
+        this.editor.selection.setRangeAtStartOf($block, range);
       }
       $img = $('<img/>').attr('alt', name);
       range.insertNode($img[0]);
-      this.editor.selection.setRangeAfter($img);
+      $nextBlock = $block.next('p');
+      if (!($nextBlock.length > 0)) {
+        $nextBlock = $('<p/>').append(this.editor.util.phBr).insertAfter($block);
+      }
+      this.editor.selection.setRangeAtStartOf($nextBlock);
       return $img;
     };
 

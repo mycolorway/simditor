@@ -14,7 +14,7 @@
   z-index: 0;
   padding: 22px 15px;
   font-size: 16px;
-  font-family: helvetica,Arial;
+  font-family: arial, sans-serif;
   line-height: 1.5;
   color: #999999;
   background: transparent;
@@ -329,7 +329,7 @@
 
 .simditor .simditor-body, .editor-style {
   font-size: 16px;
-  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+  font-family: arial, sans-serif;
   line-height: 1.6;
   color: #333;
   outline: none;
