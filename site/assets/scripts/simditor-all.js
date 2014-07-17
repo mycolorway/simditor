@@ -3718,6 +3718,8 @@
 
     ImageButton.prototype.defaultImage = '';
 
+    ImageButton.prototype.needFocus = false;
+
     ImageButton.prototype.menu = [
       {
         name: 'upload-image',
@@ -3820,14 +3822,18 @@
             inline: true
           });
           createInput();
-        } else if (_this.editor.inputManager.lastCaretPosition) {
+        } else {
           _this.editor.one('focus', function(e) {
             _this.editor.uploader.upload($input, {
               inline: true
             });
             return createInput();
           });
-          _this.editor.undoManager.caretPosition(_this.editor.inputManager.lastCaretPosition);
+          if (_this.editor.inputManager.lastCaretPosition) {
+            _this.editor.undoManager.caretPosition(_this.editor.inputManager.lastCaretPosition);
+          } else {
+            _this.editor.focus();
+          }
         }
         return _this.wrapper.removeClass('menu-on');
       });
@@ -4007,6 +4013,9 @@
       var $block, $img, $nextBlock, range;
       if (name == null) {
         name = 'Image';
+      }
+      if (!this.editor.inputManager.focused) {
+        this.editor.focus();
       }
       range = this.editor.selection.getRange();
       range.deleteContents();

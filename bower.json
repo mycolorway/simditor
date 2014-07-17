@@ -25,7 +25,7 @@
   ],
 	"dependencies": {
 		"jquery": "~2.1.0",
-		"fontawesome": "~4.0.3",
+		"fontawesome": "~4.1.0",
 		"simple-module": "master",
 		"simple-uploader": "master"
 	}

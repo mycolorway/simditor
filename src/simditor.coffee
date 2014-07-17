@@ -2678,6 +2678,8 @@ class ImageButton extends Button
 
   defaultImage: ''
 
+  needFocus: false
+
   #maxWidth: 0
 
   #maxHeight: 0
@@ -2769,13 +2771,16 @@ class ImageButton extends Button
           inline: true
         })
         createInput()
-      else if @editor.inputManager.lastCaretPosition
+      else
         @editor.one 'focus', (e) =>
           @editor.uploader.upload($input, {
             inline: true
           })
           createInput()
-        @editor.undoManager.caretPosition @editor.inputManager.lastCaretPosition
+        if @editor.inputManager.lastCaretPosition
+          @editor.undoManager.caretPosition @editor.inputManager.lastCaretPosition
+        else
+          @editor.focus()
       @wrapper.removeClass('menu-on')
 
     @_initUploader()
@@ -2934,6 +2939,7 @@ class ImageButton extends Button
     img.src = src
 
   createImage: (name = 'Image') ->
+    @editor.focus() unless @editor.inputManager.focused
     range = @editor.selection.getRange()
     range.deleteContents()
 
