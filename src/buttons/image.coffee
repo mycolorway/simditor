@@ -112,10 +112,7 @@ class ImageButton extends Button
             inline: true
           })
           createInput()
-        if @editor.inputManager.lastCaretPosition
-          @editor.undoManager.caretPosition @editor.inputManager.lastCaretPosition
-        else
-          @editor.focus()
+        @editor.focus()
       @wrapper.removeClass('menu-on')
 
     @_initUploader()

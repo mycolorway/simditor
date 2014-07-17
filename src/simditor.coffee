@@ -1700,11 +1700,14 @@ class Simditor extends Widget
     val
 
   focus: ->
-    $blockEl = @body.find('p, li, pre, h1, h2, h3, h4, td').first()
-    return unless $blockEl.length > 0
-    range = document.createRange()
-    @selection.setRangeAtStartOf $blockEl, range
-    @body.focus()
+    if @inputManager.lastCaretPosition
+      @undoManager.caretPosition @inputManager.lastCaretPosition
+    else
+      $blockEl = @body.find('p, li, pre, h1, h2, h3, h4, td').first()
+      return unless $blockEl.length > 0
+      range = document.createRange()
+      @selection.setRangeAtStartOf $blockEl, range
+      @body.focus()
 
   blur: ->
     @body.blur()
@@ -2777,10 +2780,7 @@ class ImageButton extends Button
             inline: true
           })
           createInput()
-        if @editor.inputManager.lastCaretPosition
-          @editor.undoManager.caretPosition @editor.inputManager.lastCaretPosition
-        else
-          @editor.focus()
+        @editor.focus()
       @wrapper.removeClass('menu-on')
 
     @_initUploader()
