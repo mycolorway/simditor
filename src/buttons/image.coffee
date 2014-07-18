@@ -295,6 +295,7 @@ class ImageButton extends Button
 
     @loadImage $img, src or @defaultImage, =>
       @editor.trigger 'valuechanged'
+      $img[0].offsetHeight
       $img.click()
 
       @popover.one 'popovershow', =>
