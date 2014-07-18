@@ -2472,13 +2472,17 @@
 
     Simditor.prototype.focus = function() {
       var $blockEl, range;
-      $blockEl = this.body.find('p, li, pre, h1, h2, h3, h4, td').first();
-      if (!($blockEl.length > 0)) {
-        return;
+      if (this.inputManager.lastCaretPosition) {
+        return this.undoManager.caretPosition(this.inputManager.lastCaretPosition);
+      } else {
+        $blockEl = this.body.find('p, li, pre, h1, h2, h3, h4, td').first();
+        if (!($blockEl.length > 0)) {
+          return;
+        }
+        range = document.createRange();
+        this.selection.setRangeAtStartOf($blockEl, range);
+        return this.body.focus();
       }
-      range = document.createRange();
-      this.selection.setRangeAtStartOf($blockEl, range);
-      return this.body.focus();
     };
 
     Simditor.prototype.blur = function() {
@@ -3718,6 +3722,8 @@
 
     ImageButton.prototype.defaultImage = '';
 
+    ImageButton.prototype.needFocus = false;
+
     ImageButton.prototype.menu = [
       {
         name: 'upload-image',
@@ -3820,14 +3826,14 @@
             inline: true
           });
           createInput();
-        } else if (_this.editor.inputManager.lastCaretPosition) {
+        } else {
           _this.editor.one('focus', function(e) {
             _this.editor.uploader.upload($input, {
               inline: true
             });
             return createInput();
           });
-          _this.editor.undoManager.caretPosition(_this.editor.inputManager.lastCaretPosition);
+          _this.editor.focus();
         }
         return _this.wrapper.removeClass('menu-on');
       });
@@ -4008,6 +4014,9 @@
       if (name == null) {
         name = 'Image';
       }
+      if (!this.editor.inputManager.focused) {
+        this.editor.focus();
+      }
       range = this.editor.selection.getRange();
       range.deleteContents();
       $block = this.editor.util.closestBlockEl();
@@ -4031,6 +4040,7 @@
       $img = this.createImage();
       return this.loadImage($img, src || this.defaultImage, function() {
         _this.editor.trigger('valuechanged');
+        $img[0].offsetHeight;
         $img.click();
         return _this.popover.one('popovershow', function() {
           _this.popover.srcEl.focus();
