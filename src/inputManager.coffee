@@ -69,6 +69,8 @@ class InputManager extends Plugin
               @editor.trigger 'valuechanged'
             , 10
 
+      @editor.body.find('pre:empty').append(@editor.util.phBr)
+
 
     @editor.body.on('keydown', $.proxy(@_onKeyDown, @))
       .on('keypress', $.proxy(@_onKeyPress, @))
