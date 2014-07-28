@@ -36,7 +36,7 @@ class Formatter extends Plugin
     findLinkNode = ($parentNode) ->
       $parentNode.contents().each (i, node) ->
         $node = $(node)
-        if $node.is('a') or $node.closest('a', $el).length
+        if $node.is('a') or $node.closest('a, pre', $el).length
           return
 
         if $node.contents().length
@@ -57,7 +57,7 @@ class Formatter extends Plugin
         replaceEls.push document.createTextNode(text.substring(lastIndex, match.index))
         lastIndex = re.lastIndex
         uri = if /^(http(s)?:\/\/|\/)/.test(match[0]) then match[0] else 'http://' + match[0]
-        replaceEls.push $('<a href="' + uri + '" rel="nofollow">' + match[0] + '</a>')[0]
+        replaceEls.push $('<a href="' + uri + '" rel="nofollow"></a>').text(match[0])[0]
 
       replaceEls.push document.createTextNode(text.substring(lastIndex))
       $node.replaceWith $(replaceEls)
