@@ -505,6 +505,10 @@ $simditor-button-height: 40px;
     /*overflow-x: auto;*/
     white-space: pre;
     word-wrap: break-word;
+
+    & > code {
+      display: block;
+    }
   }
 
   code {

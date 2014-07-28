@@ -435,6 +435,9 @@
   white-space: pre;
   word-wrap: break-word;
 }
+.simditor .simditor-body pre > code, .editor-style pre > code {
+  display: block;
+}
 .simditor .simditor-body code, .editor-style code {
   display: inline-block;
   padding: 0 4px;
