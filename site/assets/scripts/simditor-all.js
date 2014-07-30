@@ -797,7 +797,7 @@
         });
       };
       findLinkNode($el);
-      re = /(https?:\/\/|www\.)[\w\-\.\?&=\/#%:\!\+]+/ig;
+      re = /(https?:\/\/|www\.)[\w\-\.\?&=\/#%:,\!\+]+/ig;
       for (_i = 0, _len = linkNodes.length; _i < _len; _i++) {
         $node = linkNodes[_i];
         text = $node.text();
