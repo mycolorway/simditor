@@ -19,4 +19,11 @@ app.post('/upload', function(req, res) {
 	});
 });
 
+app.post('/form', function(req, res) {
+    res.send({
+        txt1: req.param('txt1'),
+        txt2: req.param('txt2')
+    });
+});
+
 module.exports = app;
