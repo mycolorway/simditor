@@ -1627,6 +1627,9 @@
 
     UndoManager.prototype._pushUndoState = function() {
       var currentState, html;
+      if (this.editor.triggerHandler('pushundostate') === false) {
+        return;
+      }
       currentState = this.currentState();
       html = this.editor.body.html();
       if (currentState && currentState.html === html) {

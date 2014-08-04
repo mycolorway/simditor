@@ -49,6 +49,8 @@ class UndoManager extends Plugin
       , 200
 
   _pushUndoState: ->
+    return if @editor.triggerHandler('pushundostate') == false
+
     currentState = @currentState()
     html = @editor.body.html()
     return if currentState and currentState.html == html
