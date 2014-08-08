@@ -131,7 +131,15 @@ class Selection extends Plugin
         range.setEnd(node, 0)
     else
       nodeLength = @editor.util.getNodeLength node
-      nodeLength -= 1 if node.nodeType != 3 and nodeLength > 0 and $(node).contents().last().is('br')
+      if node.nodeType != 3 and nodeLength > 0
+        $lastNode = $(node).contents().last()
+        if $lastNode.is('br')
+          nodeLength -= 1
+        else if @editor.util.isEmptyNode($lastNode)
+          $lastNode.append @editor.util.phBr
+          node = $lastNode[0]
+          nodeLength = 0
+
       range.setEnd(node, nodeLength)
 
     range.collapse(false)
