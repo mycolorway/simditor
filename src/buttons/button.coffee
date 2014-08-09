@@ -34,6 +34,8 @@ class Button extends Module
 
     @el.on 'mousedown', (e) =>
       e.preventDefault()
+      return false if @el.hasClass('disabled') or (@needFocus and !@editor.inputManager.focused)
+
       if @menu
         @wrapper.toggleClass('menu-on')
           .siblings('li')
@@ -48,9 +50,9 @@ class Button extends Module
               'left': 'auto'
               'right': 0
 
-        return false
+          @trigger 'menuexpand'
 
-      return false if @el.hasClass('disabled') or (@needFocus and !@editor.inputManager.focused)
+        return false
 
       param = @el.data('param')
       @command(param)

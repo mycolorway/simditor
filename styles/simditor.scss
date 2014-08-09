@@ -217,6 +217,36 @@ $simditor-button-height: 40px;
               font-size: 18px;
             }
           }
+
+          &.toolbar-item-color {
+            font-size: 14px;
+            position: relative;
+
+            span:before {
+              position: relative;
+              top: -2px;
+            }
+
+            &:after {
+              content: '';
+              display: block;
+              width: 14px;
+              height: 4px;
+              background: #cccccc;
+              position: absolute;
+              top: 26px;
+              left: 50%;
+              margin: 0 0 0 -7px;
+            }
+
+            &:hover:after {
+              background: #999999;
+            }
+
+            &.disabled:after {
+              background: #dfdfdf;
+            }
+          }
         }
 
         &.menu-on {
@@ -225,6 +255,14 @@ $simditor-button-height: 40px;
             z-index: 21;
             background: #ffffff;
             box-shadow: 0 -3px 3px rgba(0,0,0,0.2);
+
+            span {
+              opacity: 1;
+            }
+
+            &.toolbar-item-color:after {
+              background: #999999;
+            }
           }
 
           .toolbar-menu {
@@ -290,6 +328,58 @@ $simditor-button-height: 40px;
           }
         }
 
+      }
+
+      &.toolbar-menu-color {
+        width: 96px;
+
+        .color-list {
+          padding: 10px 6px 10px 10px;
+          min-width: 0;
+
+          li {
+            float: left;
+            margin: 0 4px 4px 0;
+
+            .font-color {
+              display: block;
+              width: 16px;
+              height: 16px;
+              background: #dfdfdf;
+              border-radius: 2px;
+
+              &:hover {
+                opacity: 0.8;
+              }
+            }
+
+            $font-colors: #ef6559 #e28b41 #c8a732 #209361 #418caf #7071ac #aa8773 #777777;
+            $i: 1;
+            @each $color in $font-colors {
+              .font-color-#{$i} {
+                background: $color;
+              }
+              $i: $i + 1;
+            }
+
+
+            &.remove-color {
+              padding: 5px 4px 0 0;
+              margin: 0;
+              float: none;
+              text-align: center;
+              clear: both;
+
+              .link-remove-color {
+                font-size: 12px;
+                color: #666666;
+                &:hover {
+                  color: #999999;
+                }
+              }
+            }
+          }
+        }
       }
 
       &.toolbar-menu-table {
@@ -425,7 +515,7 @@ $simditor-button-height: 40px;
   a:hover, a:active{ outline: 0; }
 
   h1,h2,h3,h4,h5,h6 {
-    font-weight: bold;
+    font-weight: normal;
     margin: 40px 0 20px;
     color: #000000;
   }
