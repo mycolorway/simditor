@@ -181,11 +181,42 @@
   content: 'H3';
   font-size: 18px;
 }
+.simditor .simditor-toolbar > ul > li > .toolbar-item.toolbar-item-color {
+  font-size: 14px;
+  position: relative;
+}
+.simditor .simditor-toolbar > ul > li > .toolbar-item.toolbar-item-color span:before {
+  position: relative;
+  top: -2px;
+}
+.simditor .simditor-toolbar > ul > li > .toolbar-item.toolbar-item-color:after {
+  content: '';
+  display: block;
+  width: 14px;
+  height: 4px;
+  background: #cccccc;
+  position: absolute;
+  top: 26px;
+  left: 50%;
+  margin: 0 0 0 -7px;
+}
+.simditor .simditor-toolbar > ul > li > .toolbar-item.toolbar-item-color:hover:after {
+  background: #999999;
+}
+.simditor .simditor-toolbar > ul > li > .toolbar-item.toolbar-item-color.disabled:after {
+  background: #dfdfdf;
+}
 .simditor .simditor-toolbar > ul > li.menu-on .toolbar-item {
   position: relative;
   z-index: 21;
   background: #ffffff;
   box-shadow: 0 -3px 3px rgba(0, 0, 0, 0.2);
+}
+.simditor .simditor-toolbar > ul > li.menu-on .toolbar-item span {
+  opacity: 1;
+}
+.simditor .simditor-toolbar > ul > li.menu-on .toolbar-item.toolbar-item-color:after {
+  background: #999999;
 }
 .simditor .simditor-toolbar > ul > li.menu-on .toolbar-menu {
   display: block;
@@ -236,6 +267,66 @@
   line-height: 0;
   font-size: 0;
   margin: 6px 0;
+}
+.simditor .simditor-toolbar .toolbar-menu.toolbar-menu-color {
+  width: 96px;
+}
+.simditor .simditor-toolbar .toolbar-menu.toolbar-menu-color .color-list {
+  padding: 10px 6px 10px 10px;
+  min-width: 0;
+}
+.simditor .simditor-toolbar .toolbar-menu.toolbar-menu-color .color-list li {
+  float: left;
+  margin: 0 4px 4px 0;
+}
+.simditor .simditor-toolbar .toolbar-menu.toolbar-menu-color .color-list li .font-color {
+  display: block;
+  width: 16px;
+  height: 16px;
+  background: #dfdfdf;
+  border-radius: 2px;
+}
+.simditor .simditor-toolbar .toolbar-menu.toolbar-menu-color .color-list li .font-color:hover {
+  opacity: 0.8;
+}
+.simditor .simditor-toolbar .toolbar-menu.toolbar-menu-color .color-list li .font-color-1 {
+  background: #ef6559;
+}
+.simditor .simditor-toolbar .toolbar-menu.toolbar-menu-color .color-list li .font-color-2 {
+  background: #e28b41;
+}
+.simditor .simditor-toolbar .toolbar-menu.toolbar-menu-color .color-list li .font-color-3 {
+  background: #c8a732;
+}
+.simditor .simditor-toolbar .toolbar-menu.toolbar-menu-color .color-list li .font-color-4 {
+  background: #209361;
+}
+.simditor .simditor-toolbar .toolbar-menu.toolbar-menu-color .color-list li .font-color-5 {
+  background: #418caf;
+}
+.simditor .simditor-toolbar .toolbar-menu.toolbar-menu-color .color-list li .font-color-6 {
+  background: #7071ac;
+}
+.simditor .simditor-toolbar .toolbar-menu.toolbar-menu-color .color-list li .font-color-7 {
+  background: #aa8773;
+}
+.simditor .simditor-toolbar .toolbar-menu.toolbar-menu-color .color-list li .font-color-8 {
+  background: #777777;
+}
+.simditor .simditor-toolbar .toolbar-menu.toolbar-menu-color .color-list li.remove-color {
+  padding: 5px 4px 0 0;
+  margin: 0;
+  float: none;
+  text-align: center;
+  line-height: 12px;
+  clear: both;
+}
+.simditor .simditor-toolbar .toolbar-menu.toolbar-menu-color .color-list li.remove-color .link-remove-color {
+  font-size: 12px;
+  color: #666666;
+}
+.simditor .simditor-toolbar .toolbar-menu.toolbar-menu-color .color-list li.remove-color .link-remove-color:hover {
+  color: #999999;
 }
 .simditor .simditor-toolbar .toolbar-menu.toolbar-menu-table .menu-create-table {
   background: #ffffff;
@@ -356,7 +447,7 @@
   outline: 0;
 }
 .simditor .simditor-body h1, .simditor .simditor-body h2, .simditor .simditor-body h3, .simditor .simditor-body h4, .simditor .simditor-body h5, .simditor .simditor-body h6, .editor-style h1, .editor-style h2, .editor-style h3, .editor-style h4, .editor-style h5, .editor-style h6 {
-  font-weight: bold;
+  font-weight: normal;
   margin: 40px 0 20px;
   color: #000000;
 }

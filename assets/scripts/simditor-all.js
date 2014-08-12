@@ -452,7 +452,7 @@
 }).call(this);
 
 (function() {
-  var BlockquoteButton, BoldButton, Button, CodeButton, CodePopover, Formatter, HrButton, ImageButton, ImagePopover, IndentButton, InputManager, ItalicButton, Keystroke, LinkButton, LinkPopover, ListButton, OrderListButton, OutdentButton, Popover, Selection, Simditor, StrikethroughButton, TableButton, Test, TestPlugin, TitleButton, Toolbar, UnderlineButton, UndoManager, UnorderListButton, Util, _ref, _ref1, _ref10, _ref11, _ref12, _ref13, _ref14, _ref15, _ref16, _ref17, _ref2, _ref3, _ref4, _ref5, _ref6, _ref7, _ref8, _ref9,
+  var BlockquoteButton, BoldButton, Button, CodeButton, CodePopover, ColorButton, Formatter, HrButton, ImageButton, ImagePopover, IndentButton, InputManager, ItalicButton, Keystroke, LinkButton, LinkPopover, ListButton, OrderListButton, OutdentButton, Popover, Selection, Simditor, StrikethroughButton, TableButton, Test, TestPlugin, TitleButton, Toolbar, UnderlineButton, UndoManager, UnorderListButton, Util, _ref, _ref1, _ref10, _ref11, _ref12, _ref13, _ref14, _ref15, _ref16, _ref17, _ref18, _ref2, _ref3, _ref4, _ref5, _ref6, _ref7, _ref8, _ref9,
     __hasProp = {}.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
     __slice = [].slice,
@@ -613,7 +613,7 @@
     };
 
     Selection.prototype.setRangeAtEndOf = function(node, range) {
-      var $node, contents, lastChild, lastText, nodeLength;
+      var $lastNode, $node, contents, lastChild, lastText, nodeLength;
       if (range == null) {
         range = this.getRange();
       }
@@ -634,8 +634,15 @@
         }
       } else {
         nodeLength = this.editor.util.getNodeLength(node);
-        if (node.nodeType !== 3 && nodeLength > 0 && $(node).contents().last().is('br')) {
-          nodeLength -= 1;
+        if (node.nodeType !== 3 && nodeLength > 0) {
+          $lastNode = $(node).contents().last();
+          if ($lastNode.is('br')) {
+            nodeLength -= 1;
+          } else if ($lastNode[0].nodeType !== 3 && this.editor.util.isEmptyNode($lastNode)) {
+            $lastNode.append(this.editor.util.phBr);
+            node = $lastNode[0];
+            nodeLength = 0;
+          }
         }
         range.setEnd(node, nodeLength);
       }
@@ -748,11 +755,12 @@
       });
     };
 
-    Formatter.prototype._allowedTags = ['br', 'a', 'img', 'b', 'strong', 'i', 'u', 'p', 'ul', 'ol', 'li', 'blockquote', 'pre', 'h1', 'h2', 'h3', 'h4', 'hr'];
+    Formatter.prototype._allowedTags = ['br', 'a', 'img', 'b', 'strong', 'i', 'u', 'font', 'p', 'ul', 'ol', 'li', 'blockquote', 'pre', 'h1', 'h2', 'h3', 'h4', 'hr'];
 
     Formatter.prototype._allowedAttributes = {
       img: ['src', 'alt', 'width', 'height', 'data-image-src', 'data-image-size', 'data-image-name', 'data-non-image'],
       a: ['href', 'target'],
+      font: ['color'],
       pre: ['data-lang', 'class'],
       p: ['data-indent'],
       h1: ['data-indent'],
@@ -786,7 +794,7 @@
         return $parentNode.contents().each(function(i, node) {
           var $node, text;
           $node = $(node);
-          if ($node.is('a') || $node.closest('a', $el).length) {
+          if ($node.is('a') || $node.closest('a, pre', $el).length) {
             return;
           }
           if ($node.contents().length) {
@@ -797,7 +805,7 @@
         });
       };
       findLinkNode($el);
-      re = /(https?:\/\/|www\.)[\w\-\.\?&=\/#%:\!]+/ig;
+      re = /(https?:\/\/|www\.)[\w\-\.\?&=\/#%:,\!\+]+/ig;
       for (_i = 0, _len = linkNodes.length; _i < _len; _i++) {
         $node = linkNodes[_i];
         text = $node.text();
@@ -808,7 +816,7 @@
           replaceEls.push(document.createTextNode(text.substring(lastIndex, match.index)));
           lastIndex = re.lastIndex;
           uri = /^(http(s)?:\/\/|\/)/.test(match[0]) ? match[0] : 'http://' + match[0];
-          replaceEls.push($('<a href="' + uri + '" rel="nofollow">' + match[0] + '</a>')[0]);
+          replaceEls.push($('<a href="' + uri + '" rel="nofollow"></a>').text(match[0])[0]);
         }
         replaceEls.push(document.createTextNode(text.substring(lastIndex)));
         $node.replaceWith($(replaceEls));
@@ -1002,7 +1010,8 @@
     InputManager.prototype._arrowKeys = [37, 38, 39, 40];
 
     InputManager.prototype._init = function() {
-      var _this = this;
+      var submitKey,
+        _this = this;
       this._pasteArea = $('<div/>').css({
         width: '1px',
         height: '1px',
@@ -1025,7 +1034,7 @@
         tabIndex: '-1'
       }).addClass('simditor-clean-paste-area').appendTo(this.editor.el);
       this.editor.on('valuechanged', function() {
-        return _this.editor.body.find('hr, pre, .simditor-table').each(function(i, el) {
+        _this.editor.body.find('hr, pre, .simditor-table').each(function(i, el) {
           var $el, formatted;
           $el = $(el);
           if ($el.parent().is('blockquote') || $el.parent()[0] === _this.editor.body[0]) {
@@ -1045,6 +1054,7 @@
             }
           }
         });
+        return _this.editor.body.find('pre:empty').append(_this.editor.util.phBr);
       });
       this.editor.body.on('keydown', $.proxy(this._onKeyDown, this)).on('keypress', $.proxy(this._onKeyPress, this)).on('keyup', $.proxy(this._onKeyUp, this)).on('mouseup', $.proxy(this._onMouseUp, this)).on('focus', $.proxy(this._onFocus, this)).on('blur', $.proxy(this._onBlur, this)).on('paste', $.proxy(this._onPaste, this)).on('drop', $.proxy(this._onDrop, this));
       if (this.editor.util.browser.firefox) {
@@ -1059,6 +1069,11 @@
           return false;
         });
       }
+      submitKey = this.editor.util.os.mac ? 'cmd+13' : 'ctrl+13';
+      this.addShortcut(submitKey, function(e) {
+        _this.editor.el.closest('form').find('button:submit').click();
+        return false;
+      });
       if (this.editor.textarea.attr('autofocus')) {
         return setTimeout(function() {
           return _this.editor.focus();
@@ -1344,12 +1359,7 @@
       return this._keystrokeHandlers[key][node] = handler;
     };
 
-    InputManager.prototype._shortcuts = {
-      'cmd+13': function(e) {
-        this.editor.el.closest('form').find('button:submit').click();
-        return false;
-      }
-    };
+    InputManager.prototype._shortcuts = {};
 
     InputManager.prototype.addShortcut = function(keys, handler) {
       return this._shortcuts[keys] = $.proxy(handler, this);
@@ -1626,6 +1636,9 @@
 
     UndoManager.prototype._pushUndoState = function() {
       var currentState, html;
+      if (this.editor.triggerHandler('pushundostate') === false) {
+        return;
+      }
       currentState = this.currentState();
       html = this.editor.body.html();
       if (currentState && currentState.html === html) {
@@ -2582,6 +2595,9 @@
       this.el.on('mousedown', function(e) {
         var exceed, param;
         e.preventDefault();
+        if (_this.el.hasClass('disabled') || (_this.needFocus && !_this.editor.inputManager.focused)) {
+          return false;
+        }
         if (_this.menu) {
           _this.wrapper.toggleClass('menu-on').siblings('li').removeClass('menu-on');
           if (_this.wrapper.is('.menu-on')) {
@@ -2592,10 +2608,8 @@
                 'right': 0
               });
             }
+            _this.trigger('menuexpand');
           }
-          return false;
-        }
-        if (_this.el.hasClass('disabled') || (_this.needFocus && !_this.editor.inputManager.focused)) {
           return false;
         }
         param = _this.el.data('param');
@@ -3083,12 +3097,102 @@
 
   Simditor.Toolbar.addButton(UnderlineButton);
 
+  ColorButton = (function(_super) {
+    __extends(ColorButton, _super);
+
+    function ColorButton() {
+      _ref7 = ColorButton.__super__.constructor.apply(this, arguments);
+      return _ref7;
+    }
+
+    ColorButton.prototype.name = 'color';
+
+    ColorButton.prototype.icon = 'font';
+
+    ColorButton.prototype.title = '文字颜色';
+
+    ColorButton.prototype.disableTag = 'pre';
+
+    ColorButton.prototype.menu = true;
+
+    ColorButton.prototype.render = function() {
+      var args;
+      args = 1 <= arguments.length ? __slice.call(arguments, 0) : [];
+      return ColorButton.__super__.render.apply(this, args);
+    };
+
+    ColorButton.prototype.renderMenu = function() {
+      var _this = this;
+      $('<ul class="color-list">\n  <li><a href="javascript:;" class="font-color font-color-1" data-color=""></a></li>\n  <li><a href="javascript:;" class="font-color font-color-2" data-color=""></a></li>\n  <li><a href="javascript:;" class="font-color font-color-3" data-color=""></a></li>\n  <li><a href="javascript:;" class="font-color font-color-4" data-color=""></a></li>\n  <li><a href="javascript:;" class="font-color font-color-5" data-color=""></a></li>\n  <li><a href="javascript:;" class="font-color font-color-6" data-color=""></a></li>\n  <li><a href="javascript:;" class="font-color font-color-7" data-color=""></a></li>\n  <li><a href="javascript:;" class="font-color font-color-8" data-color=""></a></li>\n  <li class="remove-color"><a href="javascript:;" class="link-remove-color">去掉颜色</a></li>\n</ul>').appendTo(this.menuWrapper);
+      this.menuWrapper.on('mousedown', '.color-list', function(e) {
+        return false;
+      });
+      this.menuWrapper.on('click', '.font-color', function(e) {
+        var $link, hex, rgb;
+        _this.wrapper.removeClass('menu-on');
+        $link = $(e.currentTarget);
+        rgb = window.getComputedStyle($link[0], null).getPropertyValue('background-color');
+        hex = _this._convertRgbToHex(rgb);
+        if (!hex) {
+          return;
+        }
+        document.execCommand('foreColor', false, hex);
+        _this.editor.trigger('valuechanged');
+        return _this.editor.trigger('selectionchanged');
+      });
+      return this.menuWrapper.on('click', '.link-remove-color', function(e) {
+        var $p, hex, rgb;
+        _this.wrapper.removeClass('menu-on');
+        $p = _this.editor.body.find('p');
+        if (!($p.length > 0)) {
+          return;
+        }
+        rgb = window.getComputedStyle($p[0], null).getPropertyValue('color');
+        hex = _this._convertRgbToHex(rgb);
+        if (!hex) {
+          return;
+        }
+        document.execCommand('foreColor', false, hex);
+        _this.editor.trigger('valuechanged');
+        return _this.editor.trigger('selectionchanged');
+      });
+    };
+
+    ColorButton.prototype._convertRgbToHex = function(rgb) {
+      var match, re, rgbToHex;
+      re = /rgb\((\d+),\s?(\d+),\s?(\d+)\)/g;
+      match = re.exec(rgb);
+      if (!match) {
+        return '';
+      }
+      rgbToHex = function(r, g, b) {
+        var componentToHex;
+        componentToHex = function(c) {
+          var hex;
+          hex = c.toString(16);
+          if (hex.length === 1) {
+            return '0' + hex;
+          } else {
+            return hex;
+          }
+        };
+        return "#" + componentToHex(r) + componentToHex(g) + componentToHex(b);
+      };
+      return rgbToHex(match[1] * 1, match[2] * 1, match[3] * 1);
+    };
+
+    return ColorButton;
+
+  })(Button);
+
+  Simditor.Toolbar.addButton(ColorButton);
+
   ListButton = (function(_super) {
     __extends(ListButton, _super);
 
     function ListButton() {
-      _ref7 = ListButton.__super__.constructor.apply(this, arguments);
-      return _ref7;
+      _ref8 = ListButton.__super__.constructor.apply(this, arguments);
+      return _ref8;
     }
 
     ListButton.prototype.type = '';
@@ -3117,7 +3221,7 @@
     };
 
     ListButton.prototype.command = function(param) {
-      var $contents, $endBlock, $furthestEnd, $furthestStart, $parent, $startBlock, endLevel, endNode, getListLevel, node, range, results, startLevel, startNode, _i, _len, _ref8,
+      var $contents, $endBlock, $furthestEnd, $furthestStart, $parent, $startBlock, endLevel, endNode, getListLevel, node, range, results, startLevel, startNode, _i, _len, _ref9,
         _this = this;
       range = this.editor.selection.getRange();
       startNode = range.startContainer;
@@ -3170,9 +3274,9 @@
         }
         return _results;
       });
-      _ref8 = results.reverse();
-      for (_i = 0, _len = _ref8.length; _i < _len; _i++) {
-        node = _ref8[_i];
+      _ref9 = results.reverse();
+      for (_i = 0, _len = _ref9.length; _i < _len; _i++) {
+        node = _ref9[_i];
         range.insertNode(node[0]);
       }
       this.editor.selection.restore();
@@ -3181,7 +3285,7 @@
     };
 
     ListButton.prototype._convertEl = function(el) {
-      var $el, anotherType, block, child, children, results, _i, _len, _ref8,
+      var $el, anotherType, block, child, children, results, _i, _len, _ref9,
         _this = this;
       $el = $(el);
       results = [];
@@ -3201,9 +3305,9 @@
         block = $('<' + this.type + '/>').append($el.html());
         results.push(block);
       } else if ($el.is('blockquote')) {
-        _ref8 = $el.children().get();
-        for (_i = 0, _len = _ref8.length; _i < _len; _i++) {
-          child = _ref8[_i];
+        _ref9 = $el.children().get();
+        for (_i = 0, _len = _ref9.length; _i < _len; _i++) {
+          child = _ref9[_i];
           children = this._convertEl(child);
         }
         $.merge(results, children);
@@ -3225,8 +3329,8 @@
     __extends(OrderListButton, _super);
 
     function OrderListButton() {
-      _ref8 = OrderListButton.__super__.constructor.apply(this, arguments);
-      return _ref8;
+      _ref9 = OrderListButton.__super__.constructor.apply(this, arguments);
+      return _ref9;
     }
 
     OrderListButton.prototype.type = 'ol';
@@ -3259,8 +3363,8 @@
     __extends(UnorderListButton, _super);
 
     function UnorderListButton() {
-      _ref9 = UnorderListButton.__super__.constructor.apply(this, arguments);
-      return _ref9;
+      _ref10 = UnorderListButton.__super__.constructor.apply(this, arguments);
+      return _ref10;
     }
 
     UnorderListButton.prototype.type = 'ul';
@@ -3297,8 +3401,8 @@
     __extends(BlockquoteButton, _super);
 
     function BlockquoteButton() {
-      _ref10 = BlockquoteButton.__super__.constructor.apply(this, arguments);
-      return _ref10;
+      _ref11 = BlockquoteButton.__super__.constructor.apply(this, arguments);
+      return _ref11;
     }
 
     BlockquoteButton.prototype.name = 'blockquote';
@@ -3312,7 +3416,7 @@
     BlockquoteButton.prototype.disableTag = 'pre, table';
 
     BlockquoteButton.prototype.command = function() {
-      var $contents, $endBlock, $startBlock, endNode, node, range, results, startNode, _i, _len, _ref11,
+      var $contents, $endBlock, $startBlock, endNode, node, range, results, startNode, _i, _len, _ref12,
         _this = this;
       range = this.editor.selection.getRange();
       startNode = range.startContainer;
@@ -3338,9 +3442,9 @@
         }
         return _results;
       });
-      _ref11 = results.reverse();
-      for (_i = 0, _len = _ref11.length; _i < _len; _i++) {
-        node = _ref11[_i];
+      _ref12 = results.reverse();
+      for (_i = 0, _len = _ref12.length; _i < _len; _i++) {
+        node = _ref12[_i];
         range.insertNode(node[0]);
       }
       this.editor.selection.restore();
@@ -3436,7 +3540,7 @@
     };
 
     CodeButton.prototype.command = function() {
-      var $contents, $endBlock, $startBlock, endNode, node, range, results, startNode, _i, _len, _ref11,
+      var $contents, $endBlock, $startBlock, endNode, node, range, results, startNode, _i, _len, _ref12,
         _this = this;
       range = this.editor.selection.getRange();
       startNode = range.startContainer;
@@ -3461,9 +3565,9 @@
         }
         return _results;
       });
-      _ref11 = results.reverse();
-      for (_i = 0, _len = _ref11.length; _i < _len; _i++) {
-        node = _ref11[_i];
+      _ref12 = results.reverse();
+      for (_i = 0, _len = _ref12.length; _i < _len; _i++) {
+        node = _ref12[_i];
         range.insertNode(node[0]);
       }
       this.editor.selection.setRangeAtEndOf(results[0]);
@@ -3498,8 +3602,8 @@
     __extends(CodePopover, _super);
 
     function CodePopover() {
-      _ref11 = CodePopover.__super__.constructor.apply(this, arguments);
-      return _ref11;
+      _ref12 = CodePopover.__super__.constructor.apply(this, arguments);
+      return _ref12;
     }
 
     CodePopover.prototype._tpl = "<div class=\"code-settings\">\n  <div class=\"settings-field\">\n    <select class=\"select-lang\">\n      <option value=\"-1\">选择程序语言</option>\n      <option value=\"c++\">C++</option>\n      <option value=\"css\">CSS</option>\n      <option value=\"coffeeScript\">CoffeeScript</option>\n      <option value=\"html\">Html,XML</option>\n      <option value=\"json\">JSON</option>\n      <option value=\"java\">Java</option>\n      <option value=\"js\">JavaScript</option>\n      <option value=\"markdown\">Markdown</option>\n      <option value=\"oc\">Objective C</option>\n      <option value=\"php\">PHP</option>\n      <option value=\"perl\">Perl</option>\n      <option value=\"python\">Python</option>\n      <option value=\"ruby\">Ruby</option>\n      <option value=\"sql\">SQL</option>\n    </select>\n  </div>\n</div>";
@@ -3543,8 +3647,8 @@
     __extends(LinkButton, _super);
 
     function LinkButton() {
-      _ref12 = LinkButton.__super__.constructor.apply(this, arguments);
-      return _ref12;
+      _ref13 = LinkButton.__super__.constructor.apply(this, arguments);
+      return _ref13;
     }
 
     LinkButton.prototype.name = 'link';
@@ -3644,8 +3748,8 @@
     __extends(LinkPopover, _super);
 
     function LinkPopover() {
-      _ref13 = LinkPopover.__super__.constructor.apply(this, arguments);
-      return _ref13;
+      _ref14 = LinkPopover.__super__.constructor.apply(this, arguments);
+      return _ref14;
     }
 
     LinkPopover.prototype._tpl = "<div class=\"link-settings\">\n  <div class=\"settings-field\">\n    <label>文本</label>\n    <input class=\"link-text\" type=\"text\"/>\n    <a class=\"btn-unlink\" href=\"javascript:;\" title=\"取消链接\" tabindex=\"-1\"><span class=\"fa fa-unlink\"></span></a>\n  </div>\n  <div class=\"settings-field\">\n    <label>链接</label>\n    <input class=\"link-url\" type=\"text\"/>\n  </div>\n</div>";
@@ -3892,7 +3996,7 @@
         }
       });
       this.editor.uploader.on('uploadsuccess', function(e, file, result) {
-        var $img, $mask;
+        var $img, $mask, msg;
         if (!file.inline) {
           return;
         }
@@ -3904,7 +4008,19 @@
           $mask.remove();
         }
         $img.removeData('mask');
-        $img.attr('src', result.file_path);
+        if (result.success === false) {
+          msg = result.msg || '上传被拒绝了';
+          if ((typeof simple !== "undefined" && simple !== null) && (simple.message != null)) {
+            simple.message({
+              content: msg
+            });
+          } else {
+            alert(msg);
+          }
+          $img.attr('src', _this.defaultImage);
+        } else {
+          $img.attr('src', result.file_path);
+        }
         _this.popover.srcEl.prop('disabled', false);
         _this.editor.trigger('valuechanged');
         if (_this.editor.body.find('img.uploading').length < 1) {
@@ -4151,8 +4267,8 @@
     __extends(IndentButton, _super);
 
     function IndentButton() {
-      _ref14 = IndentButton.__super__.constructor.apply(this, arguments);
-      return _ref14;
+      _ref15 = IndentButton.__super__.constructor.apply(this, arguments);
+      return _ref15;
     }
 
     IndentButton.prototype.name = 'indent';
@@ -4179,8 +4295,8 @@
     __extends(OutdentButton, _super);
 
     function OutdentButton() {
-      _ref15 = OutdentButton.__super__.constructor.apply(this, arguments);
-      return _ref15;
+      _ref16 = OutdentButton.__super__.constructor.apply(this, arguments);
+      return _ref16;
     }
 
     OutdentButton.prototype.name = 'outdent';
@@ -4207,8 +4323,8 @@
     __extends(HrButton, _super);
 
     function HrButton() {
-      _ref16 = HrButton.__super__.constructor.apply(this, arguments);
-      return _ref16;
+      _ref17 = HrButton.__super__.constructor.apply(this, arguments);
+      return _ref17;
     }
 
     HrButton.prototype.name = 'hr';
@@ -4344,7 +4460,7 @@
       }
       $resizeHandle = $('<div class="simditor-resize-handle" contenteditable="false"></div>').appendTo($wrapper);
       $wrapper.on('mousemove', 'td', function(e) {
-        var $col, $td, index, x, _ref17, _ref18;
+        var $col, $td, index, x, _ref18, _ref19;
         if ($wrapper.hasClass('resizing')) {
           return;
         }
@@ -4357,13 +4473,13 @@
           $resizeHandle.hide();
           return;
         }
-        if ((_ref17 = $resizeHandle.data('td')) != null ? _ref17.is($td) : void 0) {
+        if ((_ref18 = $resizeHandle.data('td')) != null ? _ref18.is($td) : void 0) {
           $resizeHandle.show();
           return;
         }
         index = $td.parent().find('td').index($td);
         $col = $colgroup.find('col').eq(index);
-        if ((_ref18 = $resizeHandle.data('col')) != null ? _ref18.is($col) : void 0) {
+        if ((_ref19 = $resizeHandle.data('col')) != null ? _ref19.is($col) : void 0) {
           $resizeHandle.show();
           return;
         }
@@ -4642,8 +4758,8 @@
     __extends(StrikethroughButton, _super);
 
     function StrikethroughButton() {
-      _ref17 = StrikethroughButton.__super__.constructor.apply(this, arguments);
-      return _ref17;
+      _ref18 = StrikethroughButton.__super__.constructor.apply(this, arguments);
+      return _ref18;
     }
 
     StrikethroughButton.prototype.name = 'strikethrough';
