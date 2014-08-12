@@ -43,7 +43,7 @@ class Selection extends Plugin
     endNode = range.endContainer
     endNodeLength = @editor.util.getNodeLength endNode
     #node.normalize()
-    
+
     if !(range.endOffset == endNodeLength - 1 and $(endNode).contents().last().is('br')) and range.endOffset != endNodeLength
       return false
 
@@ -135,7 +135,7 @@ class Selection extends Plugin
         $lastNode = $(node).contents().last()
         if $lastNode.is('br')
           nodeLength -= 1
-        else if @editor.util.isEmptyNode($lastNode)
+        else if $lastNode[0].nodeType != 3 and @editor.util.isEmptyNode($lastNode)
           $lastNode.append @editor.util.phBr
           node = $lastNode[0]
           nodeLength = 0
