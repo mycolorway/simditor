@@ -318,6 +318,7 @@
   margin: 0;
   float: none;
   text-align: center;
+  line-height: 12px;
   clear: both;
 }
 .simditor .simditor-toolbar .toolbar-menu.toolbar-menu-color .color-list li.remove-color .link-remove-color {

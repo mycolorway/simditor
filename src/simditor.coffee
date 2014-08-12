@@ -226,11 +226,12 @@ class Formatter extends Plugin
     @editor.body.on 'click', 'a', (e) =>
       false
 
-  _allowedTags: ['br', 'a', 'img', 'b', 'strong', 'i', 'u', 'p', 'ul', 'ol', 'li', 'blockquote', 'pre', 'h1', 'h2', 'h3', 'h4', 'hr']
+  _allowedTags: ['br', 'a', 'img', 'b', 'strong', 'i', 'u', 'font', 'p', 'ul', 'ol', 'li', 'blockquote', 'pre', 'h1', 'h2', 'h3', 'h4', 'hr']
 
   _allowedAttributes:
     img: ['src', 'alt', 'width', 'height', 'data-image-src', 'data-image-size', 'data-image-name', 'data-non-image']
     a: ['href', 'target']
+    font: ['color']
     pre: ['data-lang', 'class']
     p: ['data-indent']
     h1: ['data-indent']
@@ -488,6 +489,13 @@ class InputManager extends Plugin
         @editor.selection.sel.modify('move', 'forward', 'lineboundary')
         false
 
+    # meta + enter: submit form
+    submitKey = if @editor.util.os.mac then 'cmd+13' else 'ctrl+13'
+    @addShortcut submitKey, (e) =>
+      @editor.el.closest('form')
+        .find('button:submit')
+        .click()
+      false
 
     if @editor.textarea.attr 'autofocus'
       setTimeout =>
@@ -746,13 +754,7 @@ class InputManager extends Plugin
     @_keystrokeHandlers[key][node] = handler
 
 
-  _shortcuts:
-    # meta + enter: submit form
-    'cmd+13': (e) ->
-      @editor.el.closest('form')
-        .find('button:submit')
-        .click()
-      false
+  _shortcuts: {}
 
   addShortcut: (keys, handler) ->
     @_shortcuts[keys] = $.proxy(handler, this)
