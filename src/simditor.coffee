@@ -2920,6 +2920,14 @@ class ImageButton extends Button
     @editor.uploader.on 'uploadsuccess', (e, file, result) =>
       return unless file.inline
 
+      if result.success == false
+        msg = result.msg || '上传被拒绝了'
+        if simple? and simple.message?
+          simple.message
+            content: msg
+        else
+          alert msg
+
       $img = file.img
       $img.removeData 'file'
       $img.removeClass 'uploading'

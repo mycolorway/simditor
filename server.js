@@ -14,7 +14,10 @@ app.post('/upload', function(req, res) {
 		if (err) throw err;
 		fs.unlink(tmp_path, function() {
 			if (err) throw err;
-			res.send({ file_path: 'assets/images/' + req.files.upload_file.name });
+			res.send({
+                success: true,
+                file_path: 'assets/images/' + req.files.upload_file.name
+            });
 		});
 	});
 });
