@@ -452,7 +452,7 @@
 }).call(this);
 
 (function() {
-  var BlockquoteButton, BoldButton, Button, CodeButton, CodePopover, ColorButton, Formatter, HrButton, ImageButton, ImagePopover, IndentButton, InputManager, ItalicButton, Keystroke, LinkButton, LinkPopover, ListButton, OrderListButton, OutdentButton, Popover, Selection, Simditor, StrikethroughButton, TableButton, Test, TestPlugin, TitleButton, Toolbar, UnderlineButton, UndoManager, UnorderListButton, Util, _ref, _ref1, _ref10, _ref11, _ref12, _ref13, _ref14, _ref15, _ref16, _ref17, _ref18, _ref2, _ref3, _ref4, _ref5, _ref6, _ref7, _ref8, _ref9,
+  var BlockquoteButton, BoldButton, Button, CodeButton, CodePopover, ColorButton, Formatter, HrButton, ImageButton, ImagePopover, IndentButton, InputManager, ItalicButton, Keystroke, LinkButton, LinkPopover, ListButton, OrderListButton, OutdentButton, Popover, Selection, Simditor, StrikethroughButton, TableButton, TitleButton, Toolbar, UnderlineButton, UndoManager, UnorderListButton, Util, _ref, _ref1, _ref10, _ref11, _ref12, _ref13, _ref14, _ref15, _ref16, _ref2, _ref3, _ref4, _ref5, _ref6, _ref7, _ref8, _ref9,
     __hasProp = {}.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
     __slice = [].slice,
@@ -1003,6 +1003,8 @@
       if (this.opts.pasteImage && typeof this.opts.pasteImage !== 'string') {
         this.opts.pasteImage = 'inline';
       }
+      this._keystrokeHandlers = {};
+      this._shortcuts = {};
     }
 
     InputManager.prototype._modifierKeys = [16, 17, 18, 91, 93, 224];
@@ -1350,16 +1352,12 @@
       }, 0);
     };
 
-    InputManager.prototype._keystrokeHandlers = {};
-
     InputManager.prototype.addKeystrokeHandler = function(key, node, handler) {
       if (!this._keystrokeHandlers[key]) {
         this._keystrokeHandlers[key] = {};
       }
       return this._keystrokeHandlers[key][node] = handler;
     };
-
-    InputManager.prototype._shortcuts = {};
 
     InputManager.prototype.addShortcut = function(keys, handler) {
       return this._shortcuts[keys] = $.proxy(handler, this);
@@ -1582,8 +1580,6 @@
 
     UndoManager.className = 'UndoManager';
 
-    UndoManager.prototype._stack = [];
-
     UndoManager.prototype._index = -1;
 
     UndoManager.prototype._capacity = 50;
@@ -1595,6 +1591,7 @@
       args = 1 <= arguments.length ? __slice.call(arguments, 0) : [];
       UndoManager.__super__.constructor.apply(this, args);
       this.editor = this.widget;
+      this._stack = [];
     }
 
     UndoManager.prototype._init = function() {
@@ -2529,32 +2526,6 @@
 
   window.Simditor = Simditor;
 
-  TestPlugin = (function(_super) {
-    __extends(TestPlugin, _super);
-
-    function TestPlugin() {
-      _ref1 = TestPlugin.__super__.constructor.apply(this, arguments);
-      return _ref1;
-    }
-
-    return TestPlugin;
-
-  })(Plugin);
-
-  Test = (function(_super) {
-    __extends(Test, _super);
-
-    function Test() {
-      _ref2 = Test.__super__.constructor.apply(this, arguments);
-      return _ref2;
-    }
-
-    Test.connect(TestPlugin);
-
-    return Test;
-
-  })(Widget);
-
   Button = (function(_super) {
     __extends(Button, _super);
 
@@ -2588,7 +2559,7 @@
     Button.prototype.shortcut = null;
 
     function Button(editor) {
-      var tag, _i, _len, _ref3,
+      var tag, _i, _len, _ref1,
         _this = this;
       this.editor = editor;
       this.render();
@@ -2642,9 +2613,9 @@
           return false;
         });
       }
-      _ref3 = this.htmlTag.split(',');
-      for (_i = 0, _len = _ref3.length; _i < _len; _i++) {
-        tag = _ref3[_i];
+      _ref1 = this.htmlTag.split(',');
+      for (_i = 0, _len = _ref1.length; _i < _len; _i++) {
+        tag = _ref1[_i];
         tag = $.trim(tag);
         if (tag && $.inArray(tag, this.editor.formatter._allowedTags) < 0) {
           this.editor.formatter._allowedTags.push(tag);
@@ -2666,22 +2637,22 @@
     };
 
     Button.prototype.renderMenu = function() {
-      var $menuBtntnEl, $menuItemEl, menuItem, _i, _len, _ref3, _ref4, _results;
+      var $menuBtntnEl, $menuItemEl, menuItem, _i, _len, _ref1, _ref2, _results;
       if (!$.isArray(this.menu)) {
         return;
       }
       this.menuEl = $('<ul/>').appendTo(this.menuWrapper);
-      _ref3 = this.menu;
+      _ref1 = this.menu;
       _results = [];
-      for (_i = 0, _len = _ref3.length; _i < _len; _i++) {
-        menuItem = _ref3[_i];
+      for (_i = 0, _len = _ref1.length; _i < _len; _i++) {
+        menuItem = _ref1[_i];
         if (menuItem === '|') {
           $(this._tpl.separator).appendTo(this.menuEl);
           continue;
         }
         $menuItemEl = $(this._tpl.menuItem).appendTo(this.menuEl);
         _results.push($menuBtntnEl = $menuItemEl.find('a.menu-item').attr({
-          'title': (_ref4 = menuItem.title) != null ? _ref4 : menuItem.text,
+          'title': (_ref2 = menuItem.title) != null ? _ref2 : menuItem.text,
           'data-param': menuItem.param
         }).addClass('menu-item-' + menuItem.name).find('span').text(menuItem.text));
       }
@@ -2824,8 +2795,8 @@
     __extends(TitleButton, _super);
 
     function TitleButton() {
-      _ref3 = TitleButton.__super__.constructor.apply(this, arguments);
-      return _ref3;
+      _ref1 = TitleButton.__super__.constructor.apply(this, arguments);
+      return _ref1;
     }
 
     TitleButton.prototype.name = 'title';
@@ -2866,7 +2837,7 @@
     };
 
     TitleButton.prototype.status = function($node) {
-      var param, _ref4;
+      var param, _ref2;
       if ($node != null) {
         this.setDisabled($node.is(this.disableTag));
       }
@@ -2874,14 +2845,14 @@
         return true;
       }
       if ($node != null) {
-        param = (_ref4 = $node[0].tagName) != null ? _ref4.toLowerCase() : void 0;
+        param = (_ref2 = $node[0].tagName) != null ? _ref2.toLowerCase() : void 0;
         this.setActive($node.is(this.htmlTag), param);
       }
       return this.active;
     };
 
     TitleButton.prototype.command = function(param) {
-      var $contents, $endBlock, $startBlock, endNode, node, range, results, startNode, _i, _len, _ref4,
+      var $contents, $endBlock, $startBlock, endNode, node, range, results, startNode, _i, _len, _ref2,
         _this = this;
       range = this.editor.selection.getRange();
       startNode = range.startContainer;
@@ -2903,9 +2874,9 @@
         }
         return _results;
       });
-      _ref4 = results.reverse();
-      for (_i = 0, _len = _ref4.length; _i < _len; _i++) {
-        node = _ref4[_i];
+      _ref2 = results.reverse();
+      for (_i = 0, _len = _ref2.length; _i < _len; _i++) {
+        node = _ref2[_i];
         range.insertNode(node[0]);
       }
       this.editor.selection.restore();
@@ -2936,8 +2907,8 @@
     __extends(BoldButton, _super);
 
     function BoldButton() {
-      _ref4 = BoldButton.__super__.constructor.apply(this, arguments);
-      return _ref4;
+      _ref2 = BoldButton.__super__.constructor.apply(this, arguments);
+      return _ref2;
     }
 
     BoldButton.prototype.name = 'bold';
@@ -2991,8 +2962,8 @@
     __extends(ItalicButton, _super);
 
     function ItalicButton() {
-      _ref5 = ItalicButton.__super__.constructor.apply(this, arguments);
-      return _ref5;
+      _ref3 = ItalicButton.__super__.constructor.apply(this, arguments);
+      return _ref3;
     }
 
     ItalicButton.prototype.name = 'italic';
@@ -3046,8 +3017,8 @@
     __extends(UnderlineButton, _super);
 
     function UnderlineButton() {
-      _ref6 = UnderlineButton.__super__.constructor.apply(this, arguments);
-      return _ref6;
+      _ref4 = UnderlineButton.__super__.constructor.apply(this, arguments);
+      return _ref4;
     }
 
     UnderlineButton.prototype.name = 'underline';
@@ -3101,8 +3072,8 @@
     __extends(ColorButton, _super);
 
     function ColorButton() {
-      _ref7 = ColorButton.__super__.constructor.apply(this, arguments);
-      return _ref7;
+      _ref5 = ColorButton.__super__.constructor.apply(this, arguments);
+      return _ref5;
     }
 
     ColorButton.prototype.name = 'color';
@@ -3191,8 +3162,8 @@
     __extends(ListButton, _super);
 
     function ListButton() {
-      _ref8 = ListButton.__super__.constructor.apply(this, arguments);
-      return _ref8;
+      _ref6 = ListButton.__super__.constructor.apply(this, arguments);
+      return _ref6;
     }
 
     ListButton.prototype.type = '';
@@ -3221,7 +3192,7 @@
     };
 
     ListButton.prototype.command = function(param) {
-      var $contents, $endBlock, $furthestEnd, $furthestStart, $parent, $startBlock, endLevel, endNode, getListLevel, node, range, results, startLevel, startNode, _i, _len, _ref9,
+      var $contents, $endBlock, $furthestEnd, $furthestStart, $parent, $startBlock, endLevel, endNode, getListLevel, node, range, results, startLevel, startNode, _i, _len, _ref7,
         _this = this;
       range = this.editor.selection.getRange();
       startNode = range.startContainer;
@@ -3274,9 +3245,9 @@
         }
         return _results;
       });
-      _ref9 = results.reverse();
-      for (_i = 0, _len = _ref9.length; _i < _len; _i++) {
-        node = _ref9[_i];
+      _ref7 = results.reverse();
+      for (_i = 0, _len = _ref7.length; _i < _len; _i++) {
+        node = _ref7[_i];
         range.insertNode(node[0]);
       }
       this.editor.selection.restore();
@@ -3285,7 +3256,7 @@
     };
 
     ListButton.prototype._convertEl = function(el) {
-      var $el, anotherType, block, child, children, results, _i, _len, _ref9,
+      var $el, anotherType, block, child, children, results, _i, _len, _ref7,
         _this = this;
       $el = $(el);
       results = [];
@@ -3305,9 +3276,9 @@
         block = $('<' + this.type + '/>').append($el.html());
         results.push(block);
       } else if ($el.is('blockquote')) {
-        _ref9 = $el.children().get();
-        for (_i = 0, _len = _ref9.length; _i < _len; _i++) {
-          child = _ref9[_i];
+        _ref7 = $el.children().get();
+        for (_i = 0, _len = _ref7.length; _i < _len; _i++) {
+          child = _ref7[_i];
           children = this._convertEl(child);
         }
         $.merge(results, children);
@@ -3329,8 +3300,8 @@
     __extends(OrderListButton, _super);
 
     function OrderListButton() {
-      _ref9 = OrderListButton.__super__.constructor.apply(this, arguments);
-      return _ref9;
+      _ref7 = OrderListButton.__super__.constructor.apply(this, arguments);
+      return _ref7;
     }
 
     OrderListButton.prototype.type = 'ol';
@@ -3363,8 +3334,8 @@
     __extends(UnorderListButton, _super);
 
     function UnorderListButton() {
-      _ref10 = UnorderListButton.__super__.constructor.apply(this, arguments);
-      return _ref10;
+      _ref8 = UnorderListButton.__super__.constructor.apply(this, arguments);
+      return _ref8;
     }
 
     UnorderListButton.prototype.type = 'ul';
@@ -3401,8 +3372,8 @@
     __extends(BlockquoteButton, _super);
 
     function BlockquoteButton() {
-      _ref11 = BlockquoteButton.__super__.constructor.apply(this, arguments);
-      return _ref11;
+      _ref9 = BlockquoteButton.__super__.constructor.apply(this, arguments);
+      return _ref9;
     }
 
     BlockquoteButton.prototype.name = 'blockquote';
@@ -3416,7 +3387,7 @@
     BlockquoteButton.prototype.disableTag = 'pre, table';
 
     BlockquoteButton.prototype.command = function() {
-      var $contents, $endBlock, $startBlock, endNode, node, range, results, startNode, _i, _len, _ref12,
+      var $contents, $endBlock, $startBlock, endNode, node, range, results, startNode, _i, _len, _ref10,
         _this = this;
       range = this.editor.selection.getRange();
       startNode = range.startContainer;
@@ -3442,9 +3413,9 @@
         }
         return _results;
       });
-      _ref12 = results.reverse();
-      for (_i = 0, _len = _ref12.length; _i < _len; _i++) {
-        node = _ref12[_i];
+      _ref10 = results.reverse();
+      for (_i = 0, _len = _ref10.length; _i < _len; _i++) {
+        node = _ref10[_i];
         range.insertNode(node[0]);
       }
       this.editor.selection.restore();
@@ -3540,7 +3511,7 @@
     };
 
     CodeButton.prototype.command = function() {
-      var $contents, $endBlock, $startBlock, endNode, node, range, results, startNode, _i, _len, _ref12,
+      var $contents, $endBlock, $startBlock, endNode, node, range, results, startNode, _i, _len, _ref10,
         _this = this;
       range = this.editor.selection.getRange();
       startNode = range.startContainer;
@@ -3565,9 +3536,9 @@
         }
         return _results;
       });
-      _ref12 = results.reverse();
-      for (_i = 0, _len = _ref12.length; _i < _len; _i++) {
-        node = _ref12[_i];
+      _ref10 = results.reverse();
+      for (_i = 0, _len = _ref10.length; _i < _len; _i++) {
+        node = _ref10[_i];
         range.insertNode(node[0]);
       }
       this.editor.selection.setRangeAtEndOf(results[0]);
@@ -3602,8 +3573,8 @@
     __extends(CodePopover, _super);
 
     function CodePopover() {
-      _ref12 = CodePopover.__super__.constructor.apply(this, arguments);
-      return _ref12;
+      _ref10 = CodePopover.__super__.constructor.apply(this, arguments);
+      return _ref10;
     }
 
     CodePopover.prototype._tpl = "<div class=\"code-settings\">\n  <div class=\"settings-field\">\n    <select class=\"select-lang\">\n      <option value=\"-1\">选择程序语言</option>\n      <option value=\"c++\">C++</option>\n      <option value=\"css\">CSS</option>\n      <option value=\"coffeeScript\">CoffeeScript</option>\n      <option value=\"html\">Html,XML</option>\n      <option value=\"json\">JSON</option>\n      <option value=\"java\">Java</option>\n      <option value=\"js\">JavaScript</option>\n      <option value=\"markdown\">Markdown</option>\n      <option value=\"oc\">Objective C</option>\n      <option value=\"php\">PHP</option>\n      <option value=\"perl\">Perl</option>\n      <option value=\"python\">Python</option>\n      <option value=\"ruby\">Ruby</option>\n      <option value=\"sql\">SQL</option>\n    </select>\n  </div>\n</div>";
@@ -3647,8 +3618,8 @@
     __extends(LinkButton, _super);
 
     function LinkButton() {
-      _ref13 = LinkButton.__super__.constructor.apply(this, arguments);
-      return _ref13;
+      _ref11 = LinkButton.__super__.constructor.apply(this, arguments);
+      return _ref11;
     }
 
     LinkButton.prototype.name = 'link';
@@ -3748,8 +3719,8 @@
     __extends(LinkPopover, _super);
 
     function LinkPopover() {
-      _ref14 = LinkPopover.__super__.constructor.apply(this, arguments);
-      return _ref14;
+      _ref12 = LinkPopover.__super__.constructor.apply(this, arguments);
+      return _ref12;
     }
 
     LinkPopover.prototype._tpl = "<div class=\"link-settings\">\n  <div class=\"settings-field\">\n    <label>文本</label>\n    <input class=\"link-text\" type=\"text\"/>\n    <a class=\"btn-unlink\" href=\"javascript:;\" title=\"取消链接\" tabindex=\"-1\"><span class=\"fa fa-unlink\"></span></a>\n  </div>\n  <div class=\"settings-field\">\n    <label>链接</label>\n    <input class=\"link-url\" type=\"text\"/>\n  </div>\n</div>";
@@ -4267,8 +4238,8 @@
     __extends(IndentButton, _super);
 
     function IndentButton() {
-      _ref15 = IndentButton.__super__.constructor.apply(this, arguments);
-      return _ref15;
+      _ref13 = IndentButton.__super__.constructor.apply(this, arguments);
+      return _ref13;
     }
 
     IndentButton.prototype.name = 'indent';
@@ -4295,8 +4266,8 @@
     __extends(OutdentButton, _super);
 
     function OutdentButton() {
-      _ref16 = OutdentButton.__super__.constructor.apply(this, arguments);
-      return _ref16;
+      _ref14 = OutdentButton.__super__.constructor.apply(this, arguments);
+      return _ref14;
     }
 
     OutdentButton.prototype.name = 'outdent';
@@ -4323,8 +4294,8 @@
     __extends(HrButton, _super);
 
     function HrButton() {
-      _ref17 = HrButton.__super__.constructor.apply(this, arguments);
-      return _ref17;
+      _ref15 = HrButton.__super__.constructor.apply(this, arguments);
+      return _ref15;
     }
 
     HrButton.prototype.name = 'hr';
@@ -4460,7 +4431,7 @@
       }
       $resizeHandle = $('<div class="simditor-resize-handle" contenteditable="false"></div>').appendTo($wrapper);
       $wrapper.on('mousemove', 'td', function(e) {
-        var $col, $td, index, x, _ref18, _ref19;
+        var $col, $td, index, x, _ref16, _ref17;
         if ($wrapper.hasClass('resizing')) {
           return;
         }
@@ -4473,13 +4444,13 @@
           $resizeHandle.hide();
           return;
         }
-        if ((_ref18 = $resizeHandle.data('td')) != null ? _ref18.is($td) : void 0) {
+        if ((_ref16 = $resizeHandle.data('td')) != null ? _ref16.is($td) : void 0) {
           $resizeHandle.show();
           return;
         }
         index = $td.parent().find('td').index($td);
         $col = $colgroup.find('col').eq(index);
-        if ((_ref19 = $resizeHandle.data('col')) != null ? _ref19.is($col) : void 0) {
+        if ((_ref17 = $resizeHandle.data('col')) != null ? _ref17.is($col) : void 0) {
           $resizeHandle.show();
           return;
         }
@@ -4758,8 +4729,8 @@
     __extends(StrikethroughButton, _super);
 
     function StrikethroughButton() {
-      _ref18 = StrikethroughButton.__super__.constructor.apply(this, arguments);
-      return _ref18;
+      _ref16 = StrikethroughButton.__super__.constructor.apply(this, arguments);
+      return _ref16;
     }
 
     StrikethroughButton.prototype.name = 'strikethrough';

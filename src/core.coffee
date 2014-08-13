@@ -183,8 +183,3 @@ class Simditor extends Widget
 
 window.Simditor = Simditor
 
-
-class TestPlugin extends Plugin
-
-class Test extends Widget
-  @connect TestPlugin

@@ -3,8 +3,6 @@ class UndoManager extends Plugin
 
   @className: 'UndoManager'
 
-  _stack: []
-
   _index: -1
 
   _capacity: 50
@@ -14,6 +12,7 @@ class UndoManager extends Plugin
   constructor: (args...) ->
     super args...
     @editor = @widget
+    @_stack = []
 
   _init: ->
     if @editor.util.os.mac

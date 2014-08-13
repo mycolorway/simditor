@@ -11,11 +11,17 @@ class InputManager extends Plugin
     @editor = @widget
     @opts.pasteImage = 'inline' if @opts.pasteImage and typeof @opts.pasteImage != 'string'
 
+    # handlers which will be called when specific key is pressed in specific node
+    @_keystrokeHandlers = {}
+
+    @_shortcuts = {}
+
   _modifierKeys: [16, 17, 18, 91, 93, 224]
 
   _arrowKeys: [37..40]
 
   _init: ->
+
     @_pasteArea = $('<div/>')
       .css({
         width: '1px',
@@ -349,15 +355,10 @@ class InputManager extends Plugin
     , 0
 
 
-  # handlers which will be called when specific key is pressed in specific node
-  _keystrokeHandlers: {}
-
   addKeystrokeHandler: (key, node, handler) ->
     @_keystrokeHandlers[key] = {} unless @_keystrokeHandlers[key]
     @_keystrokeHandlers[key][node] = handler
 
-
-  _shortcuts: {}
 
   addShortcut: (keys, handler) ->
     @_shortcuts[keys] = $.proxy(handler, this)
