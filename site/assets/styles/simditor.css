@@ -147,6 +147,7 @@
 }
 .simditor .simditor-toolbar > ul > li > .toolbar-item span.fa {
   display: inline;
+  line-height: normal;
 }
 .simditor .simditor-toolbar > ul > li > .toolbar-item:hover span {
   opacity: 1;
