@@ -1589,7 +1589,7 @@ class Simditor extends Widget
 
   _init: ->
     @textarea = $(@opts.textarea)
-    @opts.placeholder = @opts.placeholder ? @textarea.attr('placeholder')
+    @opts.placeholder = @opts.placeholder || @textarea.attr('placeholder')
 
     unless @textarea.length
       throw new Error 'simditor: param textarea is required.'
