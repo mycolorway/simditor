@@ -913,9 +913,15 @@ class Keystroke extends Plugin
       text = ''
       $textNode = null
       $node.contents().each (i, n) =>
-        if n.nodeType == 3 and n.nodeValue
+        return false if n.nodeType is 1 and /UL|OL/.test(n.nodeName)
+
+        if n.nodeType is 3 and n.nodeValue
           text += n.nodeValue
-          $textNode = $(n)
+        else if n.nodeType is 1
+          text += $(n).text()
+
+        $textNode= $(n)
+
       if $textNode and text.length == 1 and @editor.util.browser.firefox and !$textNode.next('br').length
         $br = $(@editor.util.phBr).insertAfter $textNode
         $textNode.remove()
