@@ -746,6 +746,18 @@
       args = 1 <= arguments.length ? __slice.call(arguments, 0) : [];
       Formatter.__super__.constructor.apply(this, args);
       this.editor = this.widget;
+      this._allowedTags = ['br', 'a', 'img', 'b', 'strong', 'i', 'u', 'font', 'p', 'ul', 'ol', 'li', 'blockquote', 'pre', 'h1', 'h2', 'h3', 'h4', 'hr'];
+      this._allowedAttributes = {
+        img: ['src', 'alt', 'width', 'height', 'data-image-src', 'data-image-size', 'data-image-name', 'data-non-image'],
+        a: ['href', 'target'],
+        font: ['color'],
+        pre: ['data-lang', 'class'],
+        p: ['data-indent'],
+        h1: ['data-indent'],
+        h2: ['data-indent'],
+        h3: ['data-indent'],
+        h4: ['data-indent']
+      };
     }
 
     Formatter.prototype._init = function() {
@@ -753,20 +765,6 @@
       return this.editor.body.on('click', 'a', function(e) {
         return false;
       });
-    };
-
-    Formatter.prototype._allowedTags = ['br', 'a', 'img', 'b', 'strong', 'i', 'u', 'font', 'p', 'ul', 'ol', 'li', 'blockquote', 'pre', 'h1', 'h2', 'h3', 'h4', 'hr'];
-
-    Formatter.prototype._allowedAttributes = {
-      img: ['src', 'alt', 'width', 'height', 'data-image-src', 'data-image-size', 'data-image-name', 'data-non-image'],
-      a: ['href', 'target'],
-      font: ['color'],
-      pre: ['data-lang', 'class'],
-      p: ['data-indent'],
-      h1: ['data-indent'],
-      h2: ['data-indent'],
-      h3: ['data-indent'],
-      h4: ['data-indent']
     };
 
     Formatter.prototype.decorate = function($el) {
