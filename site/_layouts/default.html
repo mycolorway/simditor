@@ -17,6 +17,14 @@
 	<link media="all" rel="stylesheet" type="text/css" href="{{ page.root }}assets/styles/mobile.css" />
 
 	<script type="text/javascript" src="{{ page.root }}assets/scripts/jquery.min.js"></script>
+	<script type="text/javascript" src="{{ page.root }}assets/scripts/mobilecheck.js"></script>
+	<script type="text/javascript">
+		if(mobilecheck()){
+			var style = $('<link media="all" rel="stylesheet" type="text/css" />');
+			style.attr("href","{{ page.root }}assets/styles/mobile.css");
+			$("head").append(style);
+		}
+	</script>
 </head>
 <body>
 
