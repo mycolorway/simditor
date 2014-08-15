@@ -160,7 +160,12 @@ class InputManager extends Plugin
         return unless node.nodeType == 1
         handler = @_keystrokeHandlers[e.which]?[node.tagName.toLowerCase()]
         result = handler?(e, $(node))
-        !result
+
+        # different result means:
+        # 1. true, has do everythings, stop browser default action and traverseUp
+        # 2. false, stop traverseUp
+        # 3. undefined, continue traverseUp
+        false if result == true or result == false
       if result
         @editor.trigger 'valuechanged'
         @editor.trigger 'selectionchanged'

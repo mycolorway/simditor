@@ -147,12 +147,13 @@ class Keystroke extends Plugin
     @editor.inputManager.addKeystrokeHandler '8', 'li', (e, $node) =>
       $childList = $node.children('ul, ol')
       $prevNode = $node.prev('li')
-      return unless $childList.length > 0 and $prevNode.length > 0
+      return false unless $childList.length > 0 and $prevNode.length > 0
 
       text = ''
       $textNode = null
       $node.contents().each (i, n) =>
         return false if n.nodeType is 1 and /UL|OL/.test(n.nodeName)
+        return if n.nodeType is 1 and /BR/.test(n.nodeName)
 
         if n.nodeType is 3 and n.nodeValue
           text += n.nodeValue
@@ -167,7 +168,7 @@ class Keystroke extends Plugin
         @editor.selection.setRangeBefore $br
         return true
       else if text.length > 0
-        return
+        return false
 
       range = document.createRange()
       $prevChildList = $prevNode.children('ul, ol')
