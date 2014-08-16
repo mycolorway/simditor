@@ -7,7 +7,7 @@
     width: 100%;
   }
   body .wrapper header {
-    padding-top: 20px;
+    padding: 30px 0 20px;
   }
   body .wrapper header h1 {
     background-size: 200px auto;
@@ -21,6 +21,9 @@
   }
   body .wrapper header p.desc {
     font-size: 16px;
+  }
+  body .wrapper footer {
+    margin: 20px 0;
   }
   body .wrapper #page-demo {
     width: 96%;
@@ -49,7 +52,7 @@
     width: 100%;
   }
   body .wrapper header {
-    padding-top: 20px;
+    padding: 30px 0 20px;
   }
   body .wrapper header h1 {
     background-size: 200px auto;
@@ -63,6 +66,9 @@
   }
   body .wrapper header p.desc {
     font-size: 16px;
+  }
+  body .wrapper footer {
+    margin: 20px 0;
   }
   body .wrapper #page-demo {
     width: 96%;
@@ -91,7 +97,7 @@
     width: 100%;
   }
   body .wrapper header {
-    padding-top: 20px;
+    padding: 30px 0 20px;
   }
   body .wrapper header h1 {
     background-size: 200px auto;
@@ -105,6 +111,9 @@
   }
   body .wrapper header p.desc {
     font-size: 16px;
+  }
+  body .wrapper footer {
+    margin: 20px 0;
   }
   body .wrapper #page-demo {
     width: 96%;
@@ -133,7 +142,7 @@
     width: 100%;
   }
   body .wrapper header {
-    padding-top: 20px;
+    padding: 30px 0 20px;
   }
   body .wrapper header h1 {
     background-size: 200px auto;
@@ -147,6 +156,9 @@
   }
   body .wrapper header p.desc {
     font-size: 16px;
+  }
+  body .wrapper footer {
+    margin: 20px 0;
   }
   body .wrapper #page-demo {
     width: 96%;
@@ -175,7 +187,7 @@
     width: 100%;
   }
   body .wrapper header {
-    padding-top: 20px;
+    padding: 30px 0 20px;
   }
   body .wrapper header h1 {
     background-size: 200px auto;
@@ -189,6 +201,9 @@
   }
   body .wrapper header p.desc {
     font-size: 16px;
+  }
+  body .wrapper footer {
+    margin: 20px 0;
   }
   body .wrapper #page-demo {
     width: 96%;
@@ -217,7 +232,7 @@
     width: 100%;
   }
   body .wrapper header {
-    padding-top: 20px;
+    padding: 30px 0 20px;
   }
   body .wrapper header h1 {
     background-size: 200px auto;
@@ -231,6 +246,9 @@
   }
   body .wrapper header p.desc {
     font-size: 16px;
+  }
+  body .wrapper footer {
+    margin: 20px 0;
   }
   body .wrapper #page-demo {
     width: 96%;
@@ -259,7 +277,7 @@
     width: 100%;
   }
   body .wrapper header {
-    padding-top: 20px;
+    padding: 30px 0 20px;
   }
   body .wrapper header h1 {
     background-size: 200px auto;
@@ -273,6 +291,9 @@
   }
   body .wrapper header p.desc {
     font-size: 16px;
+  }
+  body .wrapper footer {
+    margin: 20px 0;
   }
   body .wrapper #page-demo {
     width: 96%;
@@ -301,7 +322,7 @@
     width: 100%;
   }
   body .wrapper header {
-    padding-top: 20px;
+    padding: 30px 0 20px;
   }
   body .wrapper header h1 {
     background-size: 200px auto;
@@ -315,6 +336,9 @@
   }
   body .wrapper header p.desc {
     font-size: 16px;
+  }
+  body .wrapper footer {
+    margin: 20px 0;
   }
   body .wrapper #page-demo {
     width: 96%;
@@ -343,7 +367,7 @@
     width: 100%;
   }
   body .wrapper header {
-    padding-top: 20px;
+    padding: 30px 0 20px;
   }
   body .wrapper header h1 {
     background-size: 200px auto;
@@ -357,6 +381,9 @@
   }
   body .wrapper header p.desc {
     font-size: 16px;
+  }
+  body .wrapper footer {
+    margin: 20px 0;
   }
   body .wrapper #page-demo {
     width: 96%;
@@ -385,7 +412,7 @@
     width: 100%;
   }
   body .wrapper header {
-    padding-top: 20px;
+    padding: 30px 0 20px;
   }
   body .wrapper header h1 {
     background-size: 200px auto;
@@ -399,6 +426,9 @@
   }
   body .wrapper header p.desc {
     font-size: 16px;
+  }
+  body .wrapper footer {
+    margin: 20px 0;
   }
   body .wrapper #page-demo {
     width: 96%;
@@ -427,4 +457,7 @@
   body {
     width: 480px;
   }
+}
+.simditor .simditor-toolbar > ul > li > .toolbar-item {
+  width: 46px;
 }

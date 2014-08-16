@@ -15,7 +15,7 @@ $width:(240px,320px,360px,480px,640px,720px,800px,960px,1024px,1280px);
         width:100%;
 
         header{
-          padding-top: 20px;
+          padding: 30px 0 20px;
 
           h1{
             background-size: 200px auto;
@@ -30,6 +30,10 @@ $width:(240px,320px,360px,480px,640px,720px,800px,960px,1024px,1280px);
           p.desc{
             font-size: 16px;
           }
+        }
+
+        footer {
+          margin: 20px 0;
         }
 
         #page-demo{
@@ -73,4 +77,8 @@ $width:(240px,320px,360px,480px,640px,720px,800px,960px,1024px,1280px);
   body{
     width:480px;
   }
+}
+
+.simditor .simditor-toolbar > ul > li > .toolbar-item {
+  width: 46px;
 }
