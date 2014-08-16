@@ -23,7 +23,7 @@ root: ../
 
 * Simditor基于 [jQuery](http://jquery.com) 开发，`jquery.js` 是必需的；
 * [font-awesome.css](http://fontawesome.io/) 是一个图片字体 icon 库，Simditor 基于它来定义工具栏的按钮样式。为了让 icon 能够正常显示，需要将 font 文件（fontawesome-webfont.xxx）放到正确的路径里：`../fonts/`（如果把 font-awsome.css 放在 `styles` 文件夹，那么就应该把 font 文件放在跟 `styles` 同级的 `fonts` 文件夹）。另外，如果想自定义工具栏按钮的样式就可以不必引用 `font-awesome.css`；
-* [module.js](http://https://github.com/mycolorway/simple-module) 是彩程内部使用的 CoffeeScript 组件抽象类，Simditor 基于这个类开发；
+* [module.js](https://github.com/mycolorway/simple-module) 是彩程内部使用的 CoffeeScript 组件抽象类，Simditor 基于这个类开发；
 * [uploader.js](https://github.com/mycolorway/simple-uploader) 是一个与 UI 无关的上传逻辑，如果你的项目不需要上传附件，那么可以不引用这个文件。
 
 如果觉得需要引用的脚本文件太多，可以用 `simditor-all.js`（里面包含了`module.js` `uploader.js` 和 `simditor.js`）替换：
