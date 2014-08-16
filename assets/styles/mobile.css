@@ -1,0 +1,463 @@
+@media screen and (max-device-width: 240px) and (min-device-width: 220px) {
+  body {
+    width: 240px;
+    margin: 0 auto;
+  }
+  body .wrapper {
+    width: 100%;
+  }
+  body .wrapper header {
+    padding: 30px 0 20px;
+  }
+  body .wrapper header h1 {
+    background-size: 200px auto;
+    background-position: 50px 0;
+    padding-top: 90px;
+    height: 45px;
+  }
+  body .wrapper header h1 a {
+    background-size: 160px auto;
+    background-position: 10px 0;
+  }
+  body .wrapper header p.desc {
+    font-size: 16px;
+  }
+  body .wrapper footer {
+    margin: 20px 0;
+  }
+  body .wrapper #page-demo {
+    width: 96%;
+    margin: 0 2%;
+  }
+  body .wrapper #link-fork {
+    z-index: -1;
+    width: 80px;
+    height: auto;
+  }
+  body .wrapper #link-fork img {
+    max-width: 80px;
+    height: auto;
+  }
+
+  nav {
+    display: none;
+  }
+}
+@media screen and (max-device-width: 320px) and (min-device-width: 300px) {
+  body {
+    width: 320px;
+    margin: 0 auto;
+  }
+  body .wrapper {
+    width: 100%;
+  }
+  body .wrapper header {
+    padding: 30px 0 20px;
+  }
+  body .wrapper header h1 {
+    background-size: 200px auto;
+    background-position: 50px 0;
+    padding-top: 90px;
+    height: 45px;
+  }
+  body .wrapper header h1 a {
+    background-size: 160px auto;
+    background-position: 10px 0;
+  }
+  body .wrapper header p.desc {
+    font-size: 16px;
+  }
+  body .wrapper footer {
+    margin: 20px 0;
+  }
+  body .wrapper #page-demo {
+    width: 96%;
+    margin: 0 2%;
+  }
+  body .wrapper #link-fork {
+    z-index: -1;
+    width: 80px;
+    height: auto;
+  }
+  body .wrapper #link-fork img {
+    max-width: 80px;
+    height: auto;
+  }
+
+  nav {
+    display: none;
+  }
+}
+@media screen and (max-device-width: 360px) and (min-device-width: 340px) {
+  body {
+    width: 360px;
+    margin: 0 auto;
+  }
+  body .wrapper {
+    width: 100%;
+  }
+  body .wrapper header {
+    padding: 30px 0 20px;
+  }
+  body .wrapper header h1 {
+    background-size: 200px auto;
+    background-position: 50px 0;
+    padding-top: 90px;
+    height: 45px;
+  }
+  body .wrapper header h1 a {
+    background-size: 160px auto;
+    background-position: 10px 0;
+  }
+  body .wrapper header p.desc {
+    font-size: 16px;
+  }
+  body .wrapper footer {
+    margin: 20px 0;
+  }
+  body .wrapper #page-demo {
+    width: 96%;
+    margin: 0 2%;
+  }
+  body .wrapper #link-fork {
+    z-index: -1;
+    width: 80px;
+    height: auto;
+  }
+  body .wrapper #link-fork img {
+    max-width: 80px;
+    height: auto;
+  }
+
+  nav {
+    display: none;
+  }
+}
+@media screen and (max-device-width: 480px) and (min-device-width: 460px) {
+  body {
+    width: 480px;
+    margin: 0 auto;
+  }
+  body .wrapper {
+    width: 100%;
+  }
+  body .wrapper header {
+    padding: 30px 0 20px;
+  }
+  body .wrapper header h1 {
+    background-size: 200px auto;
+    background-position: 50px 0;
+    padding-top: 90px;
+    height: 45px;
+  }
+  body .wrapper header h1 a {
+    background-size: 160px auto;
+    background-position: 10px 0;
+  }
+  body .wrapper header p.desc {
+    font-size: 16px;
+  }
+  body .wrapper footer {
+    margin: 20px 0;
+  }
+  body .wrapper #page-demo {
+    width: 96%;
+    margin: 0 2%;
+  }
+  body .wrapper #link-fork {
+    z-index: -1;
+    width: 80px;
+    height: auto;
+  }
+  body .wrapper #link-fork img {
+    max-width: 80px;
+    height: auto;
+  }
+
+  nav {
+    display: none;
+  }
+}
+@media screen and (max-device-width: 640px) and (min-device-width: 620px) {
+  body {
+    width: 320px;
+    margin: 0 auto;
+  }
+  body .wrapper {
+    width: 100%;
+  }
+  body .wrapper header {
+    padding: 30px 0 20px;
+  }
+  body .wrapper header h1 {
+    background-size: 200px auto;
+    background-position: 50px 0;
+    padding-top: 90px;
+    height: 45px;
+  }
+  body .wrapper header h1 a {
+    background-size: 160px auto;
+    background-position: 10px 0;
+  }
+  body .wrapper header p.desc {
+    font-size: 16px;
+  }
+  body .wrapper footer {
+    margin: 20px 0;
+  }
+  body .wrapper #page-demo {
+    width: 96%;
+    margin: 0 2%;
+  }
+  body .wrapper #link-fork {
+    z-index: -1;
+    width: 80px;
+    height: auto;
+  }
+  body .wrapper #link-fork img {
+    max-width: 80px;
+    height: auto;
+  }
+
+  nav {
+    display: none;
+  }
+}
+@media screen and (max-device-width: 720px) and (min-device-width: 700px) {
+  body {
+    width: 360px;
+    margin: 0 auto;
+  }
+  body .wrapper {
+    width: 100%;
+  }
+  body .wrapper header {
+    padding: 30px 0 20px;
+  }
+  body .wrapper header h1 {
+    background-size: 200px auto;
+    background-position: 50px 0;
+    padding-top: 90px;
+    height: 45px;
+  }
+  body .wrapper header h1 a {
+    background-size: 160px auto;
+    background-position: 10px 0;
+  }
+  body .wrapper header p.desc {
+    font-size: 16px;
+  }
+  body .wrapper footer {
+    margin: 20px 0;
+  }
+  body .wrapper #page-demo {
+    width: 96%;
+    margin: 0 2%;
+  }
+  body .wrapper #link-fork {
+    z-index: -1;
+    width: 80px;
+    height: auto;
+  }
+  body .wrapper #link-fork img {
+    max-width: 80px;
+    height: auto;
+  }
+
+  nav {
+    display: none;
+  }
+}
+@media screen and (max-device-width: 800px) and (min-device-width: 780px) {
+  body {
+    width: 400px;
+    margin: 0 auto;
+  }
+  body .wrapper {
+    width: 100%;
+  }
+  body .wrapper header {
+    padding: 30px 0 20px;
+  }
+  body .wrapper header h1 {
+    background-size: 200px auto;
+    background-position: 50px 0;
+    padding-top: 90px;
+    height: 45px;
+  }
+  body .wrapper header h1 a {
+    background-size: 160px auto;
+    background-position: 10px 0;
+  }
+  body .wrapper header p.desc {
+    font-size: 16px;
+  }
+  body .wrapper footer {
+    margin: 20px 0;
+  }
+  body .wrapper #page-demo {
+    width: 96%;
+    margin: 0 2%;
+  }
+  body .wrapper #link-fork {
+    z-index: -1;
+    width: 88.88889px;
+    height: auto;
+  }
+  body .wrapper #link-fork img {
+    max-width: 88.88889px;
+    height: auto;
+  }
+
+  nav {
+    display: none;
+  }
+}
+@media screen and (max-device-width: 960px) and (min-device-width: 940px) {
+  body {
+    width: 480px;
+    margin: 0 auto;
+  }
+  body .wrapper {
+    width: 100%;
+  }
+  body .wrapper header {
+    padding: 30px 0 20px;
+  }
+  body .wrapper header h1 {
+    background-size: 200px auto;
+    background-position: 50px 0;
+    padding-top: 90px;
+    height: 45px;
+  }
+  body .wrapper header h1 a {
+    background-size: 160px auto;
+    background-position: 10px 0;
+  }
+  body .wrapper header p.desc {
+    font-size: 16px;
+  }
+  body .wrapper footer {
+    margin: 20px 0;
+  }
+  body .wrapper #page-demo {
+    width: 96%;
+    margin: 0 2%;
+  }
+  body .wrapper #link-fork {
+    z-index: -1;
+    width: 100px;
+    height: auto;
+  }
+  body .wrapper #link-fork img {
+    max-width: 100px;
+    height: auto;
+  }
+
+  nav {
+    display: none;
+  }
+}
+@media screen and (max-device-width: 1024px) and (min-device-width: 1004px) {
+  body {
+    width: 512px;
+    margin: 0 auto;
+  }
+  body .wrapper {
+    width: 100%;
+  }
+  body .wrapper header {
+    padding: 30px 0 20px;
+  }
+  body .wrapper header h1 {
+    background-size: 200px auto;
+    background-position: 50px 0;
+    padding-top: 90px;
+    height: 45px;
+  }
+  body .wrapper header h1 a {
+    background-size: 160px auto;
+    background-position: 10px 0;
+  }
+  body .wrapper header p.desc {
+    font-size: 16px;
+  }
+  body .wrapper footer {
+    margin: 20px 0;
+  }
+  body .wrapper #page-demo {
+    width: 96%;
+    margin: 0 2%;
+  }
+  body .wrapper #link-fork {
+    z-index: -1;
+    width: 100px;
+    height: auto;
+  }
+  body .wrapper #link-fork img {
+    max-width: 100px;
+    height: auto;
+  }
+
+  nav {
+    display: none;
+  }
+}
+@media screen and (max-device-width: 1280px) and (min-device-width: 1260px) {
+  body {
+    width: 640px;
+    margin: 0 auto;
+  }
+  body .wrapper {
+    width: 100%;
+  }
+  body .wrapper header {
+    padding: 30px 0 20px;
+  }
+  body .wrapper header h1 {
+    background-size: 200px auto;
+    background-position: 50px 0;
+    padding-top: 90px;
+    height: 45px;
+  }
+  body .wrapper header h1 a {
+    background-size: 160px auto;
+    background-position: 10px 0;
+  }
+  body .wrapper header p.desc {
+    font-size: 16px;
+  }
+  body .wrapper footer {
+    margin: 20px 0;
+  }
+  body .wrapper #page-demo {
+    width: 96%;
+    margin: 0 2%;
+  }
+  body .wrapper #link-fork {
+    z-index: -1;
+    width: 100px;
+    height: auto;
+  }
+  body .wrapper #link-fork img {
+    max-width: 100px;
+    height: auto;
+  }
+
+  nav {
+    display: none;
+  }
+}
+@media screen and (device-aspect-ratio: 40 / 71) and (orientation: landscape) {
+  body {
+    width: 568px;
+  }
+}
+@media screen and (device-aspect-ratio: 2 / 3) and (orientation: landscape) {
+  body {
+    width: 480px;
+  }
+}
+.simditor .simditor-toolbar > ul > li > .toolbar-item {
+  width: 46px;
+}

@@ -1,26 +1,37 @@
 <!DOCTYPE html>
 <html>
 <head>
-	<meta charset="utf-8">
-	<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
-	<title>使用方法 - Simditor</title>
-	<meta name="viewport" content="width=device-width">
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <title>使用方法 - Simditor</title>
+    <meta name="viewport" content="width=device-width,initial-scale=1.0">
 
-	<link rel="shortcut icon" href="../favicon.ico" type="image/x-icon" />
-	<link rel="icon" href="../favicon.ico" sizes="32x32" />
-	<link rel="icon" href="../favicon.ico" sizes="64x64" />
-	<link rel="icon" href="../favicon.ico" sizes="128x128" />
+    <link rel="shortcut icon" href="../favicon.ico" type="image/x-icon" />
+    <link rel="icon" href="../favicon.ico" sizes="32x32" />
+    <link rel="icon" href="../favicon.ico" sizes="64x64" />
+    <link rel="icon" href="../favicon.ico" sizes="128x128" />
 
-	<link media="all" rel="stylesheet" type="text/css" href="../assets/styles/app.css" />
-	<link media="all" rel="stylesheet" type="text/css" href="../assets/styles/font-awesome.css" />
-	<link media="all" rel="stylesheet" type="text/css" href="../assets/styles/simditor.css" />
+    <link media="all" rel="stylesheet" type="text/css" href="../assets/styles/app.css" />
+    <link media="all" rel="stylesheet" type="text/css" href="../assets/styles/font-awesome.css" />
+    <link media="all" rel="stylesheet" type="text/css" href="../assets/styles/simditor.css" />
 
-	<script type="text/javascript" src="../assets/scripts/jquery.min.js"></script>
+    <script type="text/javascript" src="../assets/scripts/jquery.min.js"></script>
+    <script type="text/javascript" src="../assets/scripts/mobilecheck.js"></script>
+    <script type="text/javascript">
+        if(mobilecheck()){
+            $('<link/>', {
+                media: 'all',
+                rel: 'stylesheet',
+                type: 'text/css',
+                href: '../assets/styles/mobile.css'
+            }).appendTo('head')
+        }
+    </script>
 </head>
 <body>
 
 <div class="wrapper">
-	
+    
 <header>
 	<h1><a href="../.">Simditor</a></h1>
 	<p class="desc">简单快速的富文本编辑器</p>
@@ -33,7 +44,7 @@
 	<a href="../download.html">下载</a>
 </nav>
 
-	<section class="page-tour page-sidebar" id="page-tour-usage">
+    <section class="page-tour page-sidebar" id="page-tour-usage">
 	<aside>
 	<ul>
 		<li class="active">
@@ -73,7 +84,7 @@
 <ul>
 <li>Simditor基于 <a href="http://jquery.com">jQuery</a> 开发，<code>jquery.js</code> 是必需的；</li>
 <li><a href="http://fontawesome.io/">font-awesome.css</a> 是一个图片字体 icon 库，Simditor 基于它来定义工具栏的按钮样式。为了让 icon 能够正常显示，需要将 font 文件（fontawesome-webfont.xxx）放到正确的路径里：<code>../fonts/</code>（如果把 font-awsome.css 放在 <code>styles</code> 文件夹，那么就应该把 font 文件放在跟 <code>styles</code> 同级的 <code>fonts</code> 文件夹）。另外，如果想自定义工具栏按钮的样式就可以不必引用 <code>font-awesome.css</code>；</li>
-<li><a href="http://https://github.com/mycolorway/simple-module">module.js</a> 是彩程内部使用的 CoffeeScript 组件抽象类，Simditor 基于这个类开发；</li>
+<li><a href="https://github.com/mycolorway/simple-module">module.js</a> 是彩程内部使用的 CoffeeScript 组件抽象类，Simditor 基于这个类开发；</li>
 <li><a href="https://github.com/mycolorway/simple-uploader">uploader.js</a> 是一个与 UI 无关的上传逻辑，如果你的项目不需要上传附件，那么可以不引用这个文件。</li>
 </ul>
 
@@ -127,15 +138,15 @@
 
 
 
-	
+    
 <footer>
 	&copy; <a href="http://tower.im">彩程设计</a>
 </footer>
 
 
-	<a href="https://github.com/mycolorway/simditor" id="link-fork">
-		<img src="../assets/images/fork.png" alt="Fork me on GitHub" />
-	</a>
+    <a href="https://github.com/mycolorway/simditor" id="link-fork">
+        <img src="../assets/images/fork.png" alt="Fork me on GitHub" />
+    </a>
 </div>
 
 

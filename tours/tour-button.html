@@ -1,26 +1,37 @@
 <!DOCTYPE html>
 <html>
 <head>
-	<meta charset="utf-8">
-	<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
-	<title>编写按钮 - Simditor</title>
-	<meta name="viewport" content="width=device-width">
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <title>编写按钮 - Simditor</title>
+    <meta name="viewport" content="width=device-width,initial-scale=1.0">
 
-	<link rel="shortcut icon" href="../favicon.ico" type="image/x-icon" />
-	<link rel="icon" href="../favicon.ico" sizes="32x32" />
-	<link rel="icon" href="../favicon.ico" sizes="64x64" />
-	<link rel="icon" href="../favicon.ico" sizes="128x128" />
+    <link rel="shortcut icon" href="../favicon.ico" type="image/x-icon" />
+    <link rel="icon" href="../favicon.ico" sizes="32x32" />
+    <link rel="icon" href="../favicon.ico" sizes="64x64" />
+    <link rel="icon" href="../favicon.ico" sizes="128x128" />
 
-	<link media="all" rel="stylesheet" type="text/css" href="../assets/styles/app.css" />
-	<link media="all" rel="stylesheet" type="text/css" href="../assets/styles/font-awesome.css" />
-	<link media="all" rel="stylesheet" type="text/css" href="../assets/styles/simditor.css" />
+    <link media="all" rel="stylesheet" type="text/css" href="../assets/styles/app.css" />
+    <link media="all" rel="stylesheet" type="text/css" href="../assets/styles/font-awesome.css" />
+    <link media="all" rel="stylesheet" type="text/css" href="../assets/styles/simditor.css" />
 
-	<script type="text/javascript" src="../assets/scripts/jquery.min.js"></script>
+    <script type="text/javascript" src="../assets/scripts/jquery.min.js"></script>
+    <script type="text/javascript" src="../assets/scripts/mobilecheck.js"></script>
+    <script type="text/javascript">
+        if(mobilecheck()){
+            $('<link/>', {
+                media: 'all',
+                rel: 'stylesheet',
+                type: 'text/css',
+                href: '../assets/styles/mobile.css'
+            }).appendTo('head')
+        }
+    </script>
 </head>
 <body>
 
 <div class="wrapper">
-	
+    
 <header>
 	<h1><a href="../.">Simditor</a></h1>
 	<p class="desc">简单快速的富文本编辑器</p>
@@ -33,7 +44,7 @@
 	<a href="../download.html">下载</a>
 </nav>
 
-	<section class="page-tour page-sidebar" id="page-tour-button">
+    <section class="page-tour page-sidebar" id="page-tour-button">
 	<aside>
 	<ul>
 		<li>
@@ -126,15 +137,15 @@
 
 
 
-	
+    
 <footer>
 	&copy; <a href="http://tower.im">彩程设计</a>
 </footer>
 
 
-	<a href="https://github.com/mycolorway/simditor" id="link-fork">
-		<img src="../assets/images/fork.png" alt="Fork me on GitHub" />
-	</a>
+    <a href="https://github.com/mycolorway/simditor" id="link-fork">
+        <img src="../assets/images/fork.png" alt="Fork me on GitHub" />
+    </a>
 </div>
 
 

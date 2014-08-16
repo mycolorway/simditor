@@ -746,6 +746,18 @@
       args = 1 <= arguments.length ? __slice.call(arguments, 0) : [];
       Formatter.__super__.constructor.apply(this, args);
       this.editor = this.widget;
+      this._allowedTags = ['br', 'a', 'img', 'b', 'strong', 'i', 'u', 'font', 'p', 'ul', 'ol', 'li', 'blockquote', 'pre', 'h1', 'h2', 'h3', 'h4', 'hr'];
+      this._allowedAttributes = {
+        img: ['src', 'alt', 'width', 'height', 'data-image-src', 'data-image-size', 'data-image-name', 'data-non-image'],
+        a: ['href', 'target'],
+        font: ['color'],
+        pre: ['data-lang', 'class'],
+        p: ['data-indent'],
+        h1: ['data-indent'],
+        h2: ['data-indent'],
+        h3: ['data-indent'],
+        h4: ['data-indent']
+      };
     }
 
     Formatter.prototype._init = function() {
@@ -753,20 +765,6 @@
       return this.editor.body.on('click', 'a', function(e) {
         return false;
       });
-    };
-
-    Formatter.prototype._allowedTags = ['br', 'a', 'img', 'b', 'strong', 'i', 'u', 'font', 'p', 'ul', 'ol', 'li', 'blockquote', 'pre', 'h1', 'h2', 'h3', 'h4', 'hr'];
-
-    Formatter.prototype._allowedAttributes = {
-      img: ['src', 'alt', 'width', 'height', 'data-image-src', 'data-image-size', 'data-image-name', 'data-non-image'],
-      a: ['href', 'target'],
-      font: ['color'],
-      pre: ['data-lang', 'class'],
-      p: ['data-indent'],
-      h1: ['data-indent'],
-      h2: ['data-indent'],
-      h3: ['data-indent'],
-      h4: ['data-indent']
     };
 
     Formatter.prototype.decorate = function($el) {
@@ -1134,7 +1132,9 @@
           }
           handler = (_ref = _this._keystrokeHandlers[e.which]) != null ? _ref[node.tagName.toLowerCase()] : void 0;
           result = typeof handler === "function" ? handler(e, $(node)) : void 0;
-          return !result;
+          if (result === true || result === false) {
+            return false;
+          }
         });
         if (result) {
           this.editor.trigger('valuechanged');
@@ -1150,7 +1150,18 @@
       if (metaKey && e.which === 86) {
         return;
       }
-      if (this._typing) {
+      if (this.editor.util.browser.webkit && e.which === 8 && this.editor.selection.rangeAtStartOf($blockEl)) {
+        setTimeout(function() {
+          var $newBlockEl;
+          $newBlockEl = _this.editor.util.closestBlockEl();
+          _this.editor.selection.save();
+          _this.editor.formatter.cleanNode($newBlockEl, true);
+          _this.editor.selection.restore();
+          _this.editor.trigger('valuechanged');
+          return _this.editor.trigger('selectionchanged');
+        }, 10);
+        this.typing = true;
+      } else if (this._typing) {
         if (this._typing !== true) {
           clearTimeout(this._typing);
         }
@@ -1516,15 +1527,23 @@
         $childList = $node.children('ul, ol');
         $prevNode = $node.prev('li');
         if (!($childList.length > 0 && $prevNode.length > 0)) {
-          return;
+          return false;
         }
         text = '';
         $textNode = null;
         $node.contents().each(function(i, n) {
+          if (n.nodeType === 1 && /UL|OL/.test(n.nodeName)) {
+            return false;
+          }
+          if (n.nodeType === 1 && /BR/.test(n.nodeName)) {
+            return;
+          }
           if (n.nodeType === 3 && n.nodeValue) {
             text += n.nodeValue;
-            return $textNode = $(n);
+          } else if (n.nodeType === 1) {
+            text += $(n).text();
           }
+          return $textNode = $(n);
         });
         if ($textNode && text.length === 1 && _this.editor.util.browser.firefox && !$textNode.next('br').length) {
           $br = $(_this.editor.util.phBr).insertAfter($textNode);
@@ -1532,7 +1551,7 @@
           _this.editor.selection.setRangeBefore($br);
           return true;
         } else if (text.length > 0) {
-          return;
+          return false;
         }
         range = document.createRange();
         $prevChildList = $prevNode.children('ul, ol');
