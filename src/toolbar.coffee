@@ -34,7 +34,8 @@ class Toolbar extends Plugin
 
     if @opts.toolbarFloat
       @wrapper.width @wrapper.outerWidth()
-      @wrapper.css 'left', @wrapper.offset().left
+      unless @editor.util.os.mobile
+        @wrapper.css 'left', @wrapper.offset().left
       toolbarHeight = @wrapper.outerHeight()
       $(window).on 'scroll.simditor-' + @editor.id, (e) =>
         topEdge = @editor.wrapper.offset().top
@@ -44,9 +45,15 @@ class Toolbar extends Plugin
         if scrollTop <= topEdge or scrollTop >= bottomEdge
           @editor.wrapper.removeClass('toolbar-floating')
             .css('padding-top', '')
+          if @editor.util.os.mobile
+            @wrapper.css
+              top: 'auto'
         else
           @editor.wrapper.addClass('toolbar-floating')
             .css('padding-top', toolbarHeight)
+          if @editor.util.os.mobile
+            @wrapper.css
+              top: scrollTop - topEdge
 
     @editor.on 'selectionchanged focus', =>
       @toolbarStatus()

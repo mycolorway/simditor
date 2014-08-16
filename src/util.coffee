@@ -13,16 +13,20 @@ class Util extends Plugin
   phBr: '<br/>'
 
   os: (->
+    os = {}
     if /Mac/.test navigator.appVersion
-      mac: true
+      os.mac = true
     else if /Linux/.test navigator.appVersion
-      linux: true
+      os.linux = true
     else if /Win/.test navigator.appVersion
-      win: true
+      os.win = true
     else if /X11/.test navigator.appVersion
-      unix: true
-    else
-      {}
+      os.unix = true
+
+    if /Mobi/.test navigator.appVersion
+      os.mobile = true
+
+    os
   )()
 
   browser: (->

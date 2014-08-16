@@ -418,6 +418,15 @@
   height: 100%;
   width: 28px;
 }
+.simditor.simditor-mobile .simditor-toolbar > ul > li > .toolbar-item {
+  width: 46px;
+}
+.simditor.simditor-mobile .simditor-wrapper.toolbar-floating .simditor-toolbar {
+  position: absolute;
+  top: 0;
+  z-index: 10;
+  box-shadow: 0 0 6px rgba(0, 0, 0, 0.1);
+}
 
 .simditor .simditor-body, .editor-style {
   font-size: 16px;

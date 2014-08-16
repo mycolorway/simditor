@@ -1219,16 +1219,20 @@ class Util extends Plugin
   phBr: '<br/>'
 
   os: (->
+    os = {}
     if /Mac/.test navigator.appVersion
-      mac: true
+      os.mac = true
     else if /Linux/.test navigator.appVersion
-      linux: true
+      os.linux = true
     else if /Win/.test navigator.appVersion
-      win: true
+      os.win = true
     else if /X11/.test navigator.appVersion
-      unix: true
-    else
-      {}
+      os.unix = true
+
+    if /Mobi/.test navigator.appVersion
+      os.mobile = true
+
+    os
   )()
 
   browser: (->
@@ -1520,7 +1524,8 @@ class Toolbar extends Plugin
 
     if @opts.toolbarFloat
       @wrapper.width @wrapper.outerWidth()
-      @wrapper.css 'left', @wrapper.offset().left
+      unless @editor.util.os.mobile
+        @wrapper.css 'left', @wrapper.offset().left
       toolbarHeight = @wrapper.outerHeight()
       $(window).on 'scroll.simditor-' + @editor.id, (e) =>
         topEdge = @editor.wrapper.offset().top
@@ -1530,9 +1535,15 @@ class Toolbar extends Plugin
         if scrollTop <= topEdge or scrollTop >= bottomEdge
           @editor.wrapper.removeClass('toolbar-floating')
             .css('padding-top', '')
+          if @editor.util.os.mobile
+            @wrapper.css
+              top: 'auto'
         else
           @editor.wrapper.addClass('toolbar-floating')
             .css('padding-top', toolbarHeight)
+          if @editor.util.os.mobile
+            @wrapper.css
+              top: scrollTop - topEdge
 
     @editor.on 'selectionchanged focus', =>
       @toolbarStatus()
@@ -1675,6 +1686,9 @@ class Simditor extends Widget
       @el.addClass 'simditor-mac'
     else if @util.os.linux
       @el.addClass 'simditor-linux'
+
+    if @util.os.mobile
+      @el.addClass 'simditor-mobile'
 
     if @opts.params
       for key, val of @opts.params

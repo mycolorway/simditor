@@ -85,6 +85,9 @@ class Simditor extends Widget
     else if @util.os.linux
       @el.addClass 'simditor-linux'
 
+    if @util.os.mobile
+      @el.addClass 'simditor-mobile'
+
     if @opts.params
       for key, val of @opts.params
         $('<input/>', {
