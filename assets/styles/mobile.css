@@ -5,6 +5,7 @@
   }
   body .wrapper {
     width: 100%;
+    height: 1000px;
   }
   body .wrapper header {
     padding: 30px 0 20px;
@@ -50,6 +51,7 @@
   }
   body .wrapper {
     width: 100%;
+    height: 1000px;
   }
   body .wrapper header {
     padding: 30px 0 20px;
@@ -95,6 +97,7 @@
   }
   body .wrapper {
     width: 100%;
+    height: 1000px;
   }
   body .wrapper header {
     padding: 30px 0 20px;
@@ -140,6 +143,7 @@
   }
   body .wrapper {
     width: 100%;
+    height: 1000px;
   }
   body .wrapper header {
     padding: 30px 0 20px;
@@ -185,6 +189,7 @@
   }
   body .wrapper {
     width: 100%;
+    height: 1000px;
   }
   body .wrapper header {
     padding: 30px 0 20px;
@@ -230,6 +235,7 @@
   }
   body .wrapper {
     width: 100%;
+    height: 1000px;
   }
   body .wrapper header {
     padding: 30px 0 20px;
@@ -275,6 +281,7 @@
   }
   body .wrapper {
     width: 100%;
+    height: 1000px;
   }
   body .wrapper header {
     padding: 30px 0 20px;
@@ -320,6 +327,7 @@
   }
   body .wrapper {
     width: 100%;
+    height: 1000px;
   }
   body .wrapper header {
     padding: 30px 0 20px;
@@ -365,6 +373,7 @@
   }
   body .wrapper {
     width: 100%;
+    height: 1000px;
   }
   body .wrapper header {
     padding: 30px 0 20px;
@@ -410,6 +419,7 @@
   }
   body .wrapper {
     width: 100%;
+    height: 1000px;
   }
   body .wrapper header {
     padding: 30px 0 20px;
@@ -457,7 +467,4 @@
   body {
     width: 480px;
   }
-}
-.simditor .simditor-toolbar > ul > li > .toolbar-item {
-  width: 46px;
 }

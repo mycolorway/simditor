@@ -1864,25 +1864,21 @@
     Util.prototype.phBr = '<br/>';
 
     Util.prototype.os = (function() {
+      var os;
+      os = {};
       if (/Mac/.test(navigator.appVersion)) {
-        return {
-          mac: true
-        };
+        os.mac = true;
       } else if (/Linux/.test(navigator.appVersion)) {
-        return {
-          linux: true
-        };
+        os.linux = true;
       } else if (/Win/.test(navigator.appVersion)) {
-        return {
-          win: true
-        };
+        os.win = true;
       } else if (/X11/.test(navigator.appVersion)) {
-        return {
-          unix: true
-        };
-      } else {
-        return {};
+        os.unix = true;
       }
+      if (/Mobi/.test(navigator.appVersion)) {
+        os.mobile = true;
+      }
+      return os;
     })();
 
     Util.prototype.browser = (function() {
@@ -2249,7 +2245,9 @@
       });
       if (this.opts.toolbarFloat) {
         this.wrapper.width(this.wrapper.outerWidth());
-        this.wrapper.css('left', this.wrapper.offset().left);
+        if (!this.editor.util.os.mobile) {
+          this.wrapper.css('left', this.wrapper.offset().left);
+        }
         toolbarHeight = this.wrapper.outerHeight();
         $(window).on('scroll.simditor-' + this.editor.id, function(e) {
           var bottomEdge, scrollTop, topEdge;
@@ -2257,9 +2255,19 @@
           bottomEdge = topEdge + _this.editor.wrapper.outerHeight() - 80;
           scrollTop = $(document).scrollTop();
           if (scrollTop <= topEdge || scrollTop >= bottomEdge) {
-            return _this.editor.wrapper.removeClass('toolbar-floating').css('padding-top', '');
+            _this.editor.wrapper.removeClass('toolbar-floating').css('padding-top', '');
+            if (_this.editor.util.os.mobile) {
+              return _this.wrapper.css({
+                top: 'auto'
+              });
+            }
           } else {
-            return _this.editor.wrapper.addClass('toolbar-floating').css('padding-top', toolbarHeight);
+            _this.editor.wrapper.addClass('toolbar-floating').css('padding-top', toolbarHeight);
+            if (_this.editor.util.os.mobile) {
+              return _this.wrapper.css({
+                top: scrollTop - topEdge
+              });
+            }
           }
         });
       }
@@ -2431,6 +2439,9 @@
         this.el.addClass('simditor-mac');
       } else if (this.util.os.linux) {
         this.el.addClass('simditor-linux');
+      }
+      if (this.util.os.mobile) {
+        this.el.addClass('simditor-mobile');
       }
       if (this.opts.params) {
         _ref1 = this.opts.params;
