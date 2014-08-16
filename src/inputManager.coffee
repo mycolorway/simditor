@@ -180,7 +180,18 @@ class InputManager extends Plugin
     # paste shortcut
     return if metaKey and e.which == 86
 
-    if @_typing
+    if @editor.util.browser.webkit and e.which == 8 and @editor.selection.rangeAtStartOf $blockEl
+      # fix the span bug in webkit browsers
+      setTimeout =>
+        $newBlockEl = @editor.util.closestBlockEl()
+        @editor.selection.save()
+        @editor.formatter.cleanNode $newBlockEl, true
+        @editor.selection.restore()
+        @editor.trigger 'valuechanged'
+        @editor.trigger 'selectionchanged'
+      , 10
+      @typing = true
+    else if @_typing
       clearTimeout @_typing if @_typing != true
       @_typing = setTimeout =>
         @editor.trigger 'valuechanged'
