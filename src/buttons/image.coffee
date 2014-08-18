@@ -92,15 +92,15 @@ class ImageButton extends Button
 
     createInput = =>
       $input.remove() if $input
-      $input = $('<input type="file" title="上传图片" name="upload_file" accept="image/*">')
+      $input = $('<input type="file" title="上传图片" accept="image/*">')
         .appendTo($uploadItem)
 
     createInput()
 
-    $uploadItem.on 'click mousedown', 'input[name=upload_file]', (e) =>
+    $uploadItem.on 'click mousedown', 'input[type=file]', (e) =>
       e.stopPropagation()
 
-    $uploadItem.on 'change', 'input[name=upload_file]', (e) =>
+    $uploadItem.on 'change', 'input[type=file]', (e) =>
       if @editor.inputManager.focused
         @editor.uploader.upload($input, {
           inline: true
@@ -369,15 +369,15 @@ class ImagePopover extends Popover
 
     createInput = =>
       @input.remove() if @input
-      @input = $('<input type="file" title="上传图片" name="upload_file" accept="image/*">')
+      @input = $('<input type="file" title="上传图片" accept="image/*">')
         .appendTo($uploadBtn)
 
     createInput()
 
-    @el.on 'click mousedown', 'input[name=upload_file]', (e) =>
+    @el.on 'click mousedown', 'input[type=file]', (e) =>
       e.stopPropagation()
 
-    @el.on 'change', 'input[name=upload_file]', (e) =>
+    @el.on 'change', 'input[type=file]', (e) =>
       @editor.uploader.upload(@input, {
         inline: true,
         img: @target

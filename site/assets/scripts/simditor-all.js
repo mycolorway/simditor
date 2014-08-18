@@ -175,6 +175,7 @@
     Uploader.prototype.opts = {
       url: '',
       params: null,
+      fileKey: 'upload_file',
       connectionCount: 3,
       leaveConfirm: '正在上传文件，如果离开上传会自动取消'
     };
@@ -218,7 +219,7 @@
     })();
 
     Uploader.prototype.upload = function(file, opts) {
-      var f, _i, _len;
+      var f, key, _i, _len;
       if (opts == null) {
         opts = {};
       }
@@ -231,6 +232,10 @@
           this.upload(f, opts);
         }
       } else if ($(file).is('input:file') && this.html5) {
+        key = $(file).attr('name');
+        if (key) {
+          opts.fileKey = key;
+        }
         this.upload($.makeArray($(file)[0].files), opts);
       } else if (!file.id || !file.obj) {
         file = this.getFile(file);
@@ -269,6 +274,7 @@
         id: this.generateId(),
         url: this.opts.url,
         params: this.opts.params,
+        fileKey: this.opts.fileKey,
         name: name,
         size: (_ref1 = fileObj.fileSize) != null ? _ref1 : fileObj.size,
         ext: name ? name.split('.').pop().toLowerCase() : '',
@@ -280,7 +286,7 @@
       var formData, k, v, _ref,
         _this = this;
       formData = new FormData();
-      formData.append("upload_file", file.obj);
+      formData.append(file.fileKey, file.obj);
       formData.append("original_filename", file.name);
       if (file.params) {
         _ref = file.params;
@@ -336,6 +342,7 @@
         src: 'javascript:false;',
         name: 'uploader-' + file.id
       }).hide().appendTo(document.body);
+      fileObj.attr('name', file.fileKey);
       file.form = $('<form/>', {
         method: 'post',
         enctype: 'multipart/form-data',
@@ -3919,13 +3926,13 @@
         if ($input) {
           $input.remove();
         }
-        return $input = $('<input type="file" title="上传图片" name="upload_file" accept="image/*">').appendTo($uploadItem);
+        return $input = $('<input type="file" title="上传图片" accept="image/*">').appendTo($uploadItem);
       };
       createInput();
-      $uploadItem.on('click mousedown', 'input[name=upload_file]', function(e) {
+      $uploadItem.on('click mousedown', 'input[type=file]', function(e) {
         return e.stopPropagation();
       });
-      $uploadItem.on('change', 'input[name=upload_file]', function(e) {
+      $uploadItem.on('change', 'input[type=file]', function(e) {
         if (_this.editor.inputManager.focused) {
           _this.editor.uploader.upload($input, {
             inline: true
@@ -4231,13 +4238,13 @@
         if (_this.input) {
           _this.input.remove();
         }
-        return _this.input = $('<input type="file" title="上传图片" name="upload_file" accept="image/*">').appendTo($uploadBtn);
+        return _this.input = $('<input type="file" title="上传图片" accept="image/*">').appendTo($uploadBtn);
       };
       createInput();
-      this.el.on('click mousedown', 'input[name=upload_file]', function(e) {
+      this.el.on('click mousedown', 'input[type=file]', function(e) {
         return e.stopPropagation();
       });
-      return this.el.on('change', 'input[name=upload_file]', function(e) {
+      return this.el.on('change', 'input[type=file]', function(e) {
         _this.editor.uploader.upload(_this.input, {
           inline: true,
           img: _this.target

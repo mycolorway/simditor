@@ -72,6 +72,7 @@
 
     * `url` 文件上传的接口地址；
     * `params` 键值对，指定文件上传接口的额外参数，上传的时候随文件一起提交；
+    * `fileKey` 服务器端获取文件数据的参数名；
     * `connectionCount` 同时上传文件的最大数量；
     * `leaveConfirm` 在文件上传过程中离开页面时提醒的文案。
 
@@ -83,6 +84,7 @@
       upload:
         url: ''
         params: null
+        fileKey: 'upload_file'
         connectionCount: 3
         leaveConfirm: '正在上传文件，如果离开上传会自动取消'
     ```
