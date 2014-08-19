@@ -261,7 +261,7 @@ class Formatter extends Plugin
 
     findLinkNode $el
 
-    re = /(https?:\/\/|www\.)[\w\-\.\?&=\/#%:,\!\+]+/ig
+    re = /(https?:\/\/|www\.)[\w\-\.\?&=\/#%:,@\!\+]+/ig
     for $node in linkNodes
       text = $node.text()
       replaceEls = []
