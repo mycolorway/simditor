@@ -2932,7 +2932,7 @@ class ImageButton extends Button
         return unless $img.hasClass('uploading')
         src = if img then img.src else @defaultImage
 
-        @loadImage $img, src, () =>
+        @loadImage $img, src, =>
           @popover.refresh()
           @popover.srcEl.val('正在上传...')
             .prop('disabled', true)
@@ -3022,19 +3022,11 @@ class ImageButton extends Button
     $mask = $img.data('mask')
     if !$mask
       $mask = $('<div class="simditor-image-loading"><span></span></div>')
+        .hide()
         .appendTo(@editor.wrapper)
       $mask.addClass('uploading') if $img.hasClass('uploading') and @editor.uploader.html5
       $img.data('mask', $mask)
       $mask.data('img', $img)
-
-    imgPosition = $img.position()
-    toolbarH = @editor.toolbar.wrapper.outerHeight()
-    $mask.css({
-      top: imgPosition.top + toolbarH,
-      left: imgPosition.left,
-      width: $img.width(),
-      height: $img.height()
-    })
 
     img = new Image()
 
@@ -3056,7 +3048,12 @@ class ImageButton extends Button
       })
 
       if $img.hasClass 'uploading' # img being uploaded
+        @editor.body[0].offsetHeight # force reflow
+        imgPosition = $img.position()
+        toolbarH = @editor.toolbar.wrapper.outerHeight()
         $mask.css({
+          top: imgPosition.top + toolbarH,
+          left: imgPosition.left,
           width: $img.width(),
           height: $img.height()
         })
@@ -3082,6 +3079,10 @@ class ImageButton extends Button
     if $block.is('p') and !@editor.util.isEmptyNode $block
       $block = $('<p/>').append(@editor.util.phBr).insertAfter($block)
       @editor.selection.setRangeAtStartOf $block, range
+    #else if $block.is('li')
+      #$block = @editor.util.furthestNode $block, 'ul, ol'
+      #$block = $('<p/>').append(@editor.util.phBr).insertAfter($block)
+      #@editor.selection.setRangeAtStartOf $block, range
 
     $img = $('<img/>').attr('alt', name)
     range.insertNode $img[0]
