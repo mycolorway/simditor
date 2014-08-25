@@ -263,7 +263,7 @@ class ImageButton extends Button
           left: imgPosition.left,
           width: $img.width(),
           height: $img.height()
-        })
+        }).show()
       else
         $mask.remove()
         $img.removeData('mask')
