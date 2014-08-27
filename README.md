@@ -6,4 +6,6 @@ Simditor是团队协作工具 [Tower](http://tower.im) 使用的富文本编辑�
 * 输出格式化的标准HTML
 * 每一个功能都有非常优秀的使用体验
 
+兼容的浏览器：IE10+、Chrome、Firefox、Safari。
+
 Demo和文档：http://simditor.tower.im/

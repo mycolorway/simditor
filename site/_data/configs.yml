@@ -23,6 +23,7 @@
       'italic'         # 斜体文字
       'underline'      # 下划线文字
       'strikethrough'  # 删除线文字
+      'color'          # 修改文字颜色
       'ol'             # 有序列表
       'ul'             # 无序列表
       'blockquote'     # 引用

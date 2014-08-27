@@ -3049,11 +3049,11 @@ class ImageButton extends Button
 
       if $img.hasClass 'uploading' # img being uploaded
         @editor.body[0].offsetHeight # force reflow
-        imgPosition = $img.position()
-        toolbarH = @editor.toolbar.wrapper.outerHeight()
+        wrapperOffset = @editor.wrapper.offset()
+        imgOffset = $img.offset()
         $mask.css({
-          top: imgPosition.top + toolbarH,
-          left: imgPosition.left,
+          top: imgOffset.top - wrapperOffset.top,
+          left: imgOffset.left - wrapperOffset.left,
           width: $img.width(),
           height: $img.height()
         }).show()

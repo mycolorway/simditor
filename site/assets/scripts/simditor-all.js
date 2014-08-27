@@ -4108,7 +4108,7 @@
       }
       img = new Image();
       img.onload = function() {
-        var height, imgPosition, toolbarH, width;
+        var height, imgOffset, width, wrapperOffset;
         width = img.width;
         height = img.height;
         $img.attr({
@@ -4117,11 +4117,11 @@
         });
         if ($img.hasClass('uploading')) {
           _this.editor.body[0].offsetHeight;
-          imgPosition = $img.position();
-          toolbarH = _this.editor.toolbar.wrapper.outerHeight();
+          wrapperOffset = _this.editor.wrapper.offset();
+          imgOffset = $img.offset();
           $mask.css({
-            top: imgPosition.top + toolbarH,
-            left: imgPosition.left,
+            top: imgOffset.top - wrapperOffset.top,
+            left: imgOffset.left - wrapperOffset.left,
             width: $img.width(),
             height: $img.height()
           }).show();
