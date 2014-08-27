@@ -810,7 +810,7 @@
         });
       };
       findLinkNode($el);
-      re = /(https?:\/\/|www\.)[\w\-\.\?&=\/#%:,\!\+]+/ig;
+      re = /(https?:\/\/|www\.)[\w\-\.\?&=\/#%:,@\!\+]+/ig;
       for (_i = 0, _len = linkNodes.length; _i < _len; _i++) {
         $node = linkNodes[_i];
         text = $node.text();
@@ -1258,7 +1258,7 @@
         }
       }
       return setTimeout(function() {
-        var $img, blob, children, insertPosition, lastLine, line, lines, node, pasteContent, _i, _j, _k, _l, _len, _len1, _len2, _len3, _ref1, _ref2;
+        var $img, blob, children, insertPosition, lastLine, line, lines, node, pasteContent, _i, _j, _k, _l, _len, _len1, _len2, _len3, _len4, _m, _ref1, _ref2, _ref3;
         if (_this._pasteArea.is(':empty') && !_this._cleanPasteArea.val()) {
           pasteContent = null;
         } else if (cleanPaste) {
@@ -1332,9 +1332,18 @@
           } else if ($blockEl.is('p') && _this.editor.util.isEmptyNode($blockEl)) {
             $blockEl.replaceWith(pasteContent);
             _this.editor.selection.setRangeAtEndOf(pasteContent, range);
-          } else if (pasteContent.is('ul, ol') && $blockEl.is('li')) {
-            $blockEl.parent().after(pasteContent);
-            _this.editor.selection.setRangeAtEndOf(pasteContent, range);
+          } else if (pasteContent.is('ul, ol')) {
+            if (pasteContent.find('li').length === 1) {
+              pasteContent = $('<div/>').text(pasteContent.text());
+              _ref3 = pasteContent.contents();
+              for (_m = 0, _len4 = _ref3.length; _m < _len4; _m++) {
+                node = _ref3[_m];
+                _this.editor.selection.insertNode($(node)[0], range);
+              }
+            } else if ($blockEl.is('li')) {
+              $blockEl.parent().after(pasteContent);
+              _this.editor.selection.setRangeAtEndOf(pasteContent, range);
+            }
           } else {
             $blockEl.after(pasteContent);
             _this.editor.selection.setRangeAtEndOf(pasteContent, range);
@@ -4086,28 +4095,20 @@
     };
 
     ImageButton.prototype.loadImage = function($img, src, callback) {
-      var $mask, img, imgPosition, toolbarH,
+      var $mask, img,
         _this = this;
       $mask = $img.data('mask');
       if (!$mask) {
-        $mask = $('<div class="simditor-image-loading"><span></span></div>').appendTo(this.editor.wrapper);
+        $mask = $('<div class="simditor-image-loading"><span></span></div>').hide().appendTo(this.editor.wrapper);
         if ($img.hasClass('uploading') && this.editor.uploader.html5) {
           $mask.addClass('uploading');
         }
         $img.data('mask', $mask);
         $mask.data('img', $img);
       }
-      imgPosition = $img.position();
-      toolbarH = this.editor.toolbar.wrapper.outerHeight();
-      $mask.css({
-        top: imgPosition.top + toolbarH,
-        left: imgPosition.left,
-        width: $img.width(),
-        height: $img.height()
-      });
       img = new Image();
       img.onload = function() {
-        var height, width;
+        var height, imgOffset, width, wrapperOffset;
         width = img.width;
         height = img.height;
         $img.attr({
@@ -4115,10 +4116,15 @@
           'data-image-size': img.width + ',' + img.height
         });
         if ($img.hasClass('uploading')) {
+          _this.editor.body[0].offsetHeight;
+          wrapperOffset = _this.editor.wrapper.offset();
+          imgOffset = $img.offset();
           $mask.css({
+            top: imgOffset.top - wrapperOffset.top,
+            left: imgOffset.left - wrapperOffset.left,
             width: $img.width(),
             height: $img.height()
-          });
+          }).show();
         } else {
           $mask.remove();
           $img.removeData('mask');

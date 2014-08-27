@@ -28,7 +28,6 @@
 .simditor .simditor-wrapper .simditor-image-loading {
   width: 100%;
   height: 100%;
-  margin: 0 5px;
   background: rgba(0, 0, 0, 0.4);
   position: absolute;
   top: 0;
