@@ -58,6 +58,7 @@ var editor = new Simditor({
 * `placeholder`（默认值：''）编辑器的 placeholder，如果为空 Simditor 会取 textarea 的 placeholder 属性；
 * `toolbar` （默认值：true）是否显示工具栏按钮；
 * `toolbarFloat` （默认值：true）是否让工具栏按钮在页面滚动的过程中始终可见；
+* `toolbarHidden` （默认值：false）是否隐藏工具栏，隐藏后 `toolbarFloat` 会失效；
 * `defaultImage`（默认值：'images/image.png'）编辑器插入混排图片时使用的默认图片；
 * `tabIndent`（默认值：true）是否在编辑器中使用 `tab` 键来缩进；
 * `params`（默认值：{}）键值对，在编辑器中增加 hidden 字段（input:hidden），通常用于生成 form 表单的默认参数；

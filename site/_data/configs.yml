@@ -43,6 +43,12 @@
   description: |
     是否让工具栏按钮在页面滚动的过程中始终可见。
 
+- name: "toolbarHidden"
+  type: "Boolean"
+  default: "false"
+  description: |
+    是否隐藏工具栏，隐藏后 `toolbarFloat` 会失效。
+
 - name: "defaultImage"
   type: "String"
   default: "images/image.png"
