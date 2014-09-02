@@ -6,6 +6,7 @@ class Toolbar extends Plugin
   opts:
     toolbar: true
     toolbarFloat: true
+    toolbarHidden: false
 
   _tpl:
     wrapper: '<div class="simditor-toolbar"><ul></ul></div>'
@@ -32,7 +33,7 @@ class Toolbar extends Plugin
     $(document).on 'mousedown.simditor', (e) =>
       @list.find('.menu-on').removeClass('.menu-on')
 
-    if @opts.toolbarFloat
+    if not @opts.toolbarHidden and @opts.toolbarFloat
       @wrapper.width @wrapper.outerWidth()
       unless @editor.util.os.mobile
         @wrapper.css 'left', @wrapper.offset().left
@@ -80,7 +81,10 @@ class Toolbar extends Plugin
 
       @buttons.push new @constructor.buttons[name](@editor)
 
-    @editor.placeholderEl.css 'top', @wrapper.outerHeight()
+    if @opts.toolbarHidden
+      @wrapper.hide()
+    else
+      @editor.placeholderEl.css 'top', @wrapper.outerHeight()
 
   toolbarStatus: (name) ->
     return unless @editor.inputManager.focused
