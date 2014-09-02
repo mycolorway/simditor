@@ -65,7 +65,7 @@
       return (_ref = $(this)).triggerHandler.apply(_ref, args);
     };
 
-    Module.prototype._i18n = function(key) {
+    Module.prototype._t = function(key) {
       var cls, _ref;
       cls = this.constructor;
       return (_ref = cls.i18n[cls.locale]) != null ? _ref[key] : void 0;
