@@ -220,7 +220,7 @@ class InputManager extends Plugin
       @editor.undoManager.update()
       return
 
-    if e.which == 8 and @editor.util.isEmptyNode(@editor.body)
+    if (e.which == 8 or e.which == 46) and @editor.util.isEmptyNode(@editor.body)
       @editor.body.empty()
       p = $('<p/>').append(@editor.util.phBr)
         .appendTo(@editor.body)
