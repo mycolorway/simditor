@@ -2279,7 +2279,7 @@ class ColorButton extends Button
 
     @menuWrapper.on 'click', '.link-remove-color', (e) =>
       @wrapper.removeClass('menu-on')
-      $p = @editor.body.find 'p'
+      $p = @editor.body.find 'p, li'
       return unless $p.length > 0
 
       rgb = window.getComputedStyle($p[0], null).getPropertyValue('color')
