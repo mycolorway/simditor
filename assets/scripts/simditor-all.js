@@ -65,7 +65,7 @@
       return (_ref = $(this)).triggerHandler.apply(_ref, args);
     };
 
-    Module.prototype._i18n = function(key) {
+    Module.prototype._t = function(key) {
       var cls, _ref;
       cls = this.constructor;
       return (_ref = cls.i18n[cls.locale]) != null ? _ref[key] : void 0;
@@ -1203,7 +1203,7 @@
         this.editor.undoManager.update();
         return;
       }
-      if (e.which === 8 && this.editor.util.isEmptyNode(this.editor.body)) {
+      if ((e.which === 8 || e.which === 46) && this.editor.util.isEmptyNode(this.editor.body)) {
         this.editor.body.empty();
         p = $('<p/>').append(this.editor.util.phBr).appendTo(this.editor.body);
         this.editor.selection.setRangeAtStartOf(p);
@@ -2225,7 +2225,8 @@
 
     Toolbar.prototype.opts = {
       toolbar: true,
-      toolbarFloat: true
+      toolbarFloat: true,
+      toolbarHidden: false
     };
 
     Toolbar.prototype._tpl = {
@@ -2259,7 +2260,7 @@
       $(document).on('mousedown.simditor', function(e) {
         return _this.list.find('.menu-on').removeClass('.menu-on');
       });
-      if (this.opts.toolbarFloat) {
+      if (!this.opts.toolbarHidden && this.opts.toolbarFloat) {
         this.wrapper.width(this.wrapper.outerWidth());
         if (!this.editor.util.os.mobile) {
           this.wrapper.css('left', this.wrapper.offset().left);
@@ -2316,7 +2317,11 @@
         }
         this.buttons.push(new this.constructor.buttons[name](this.editor));
       }
-      return this.editor.placeholderEl.css('top', this.wrapper.outerHeight());
+      if (this.opts.toolbarHidden) {
+        return this.wrapper.hide();
+      } else {
+        return this.editor.placeholderEl.css('top', this.wrapper.outerHeight());
+      }
     };
 
     Toolbar.prototype.toolbarStatus = function(name) {
@@ -3160,7 +3165,7 @@
       return this.menuWrapper.on('click', '.link-remove-color', function(e) {
         var $p, hex, rgb;
         _this.wrapper.removeClass('menu-on');
-        $p = _this.editor.body.find('p');
+        $p = _this.editor.body.find('p, li');
         if (!($p.length > 0)) {
           return;
         }
