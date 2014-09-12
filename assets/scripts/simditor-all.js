@@ -184,8 +184,6 @@
 
     Uploader.prototype.queue = [];
 
-    Uploader.prototype.html5 = !!(window.File && window.FileList);
-
     function Uploader(opts) {
       var _this = this;
       if (opts == null) {
@@ -231,7 +229,7 @@
           f = file[_i];
           this.upload(f, opts);
         }
-      } else if ($(file).is('input:file') && this.html5) {
+      } else if ($(file).is('input:file')) {
         key = $(file).attr('name');
         if (key) {
           opts.fileKey = key;
@@ -252,11 +250,7 @@
         return;
       }
       this.files.push(file);
-      if (this.html5) {
-        this.xhrUpload(file);
-      } else {
-        this.iframeUpload(file);
-      }
+      this.xhrUpload(file);
       return this.uploading = true;
     };
 
@@ -264,9 +258,6 @@
       var name, _ref, _ref1;
       if (fileObj instanceof window.File || fileObj instanceof window.Blob) {
         name = (_ref = fileObj.fileName) != null ? _ref : fileObj.name;
-      } else if ($(fileObj).is('input:file')) {
-        name = $input.val().replace(/.*(\/|\\)/, "");
-        fileObj = $(fileObj).clone();
       } else {
         return null;
       }
@@ -335,58 +326,6 @@
       });
     };
 
-    Uploader.prototype.iframeUpload = function(file) {
-      var k, v, _ref,
-        _this = this;
-      file.iframe = $('iframe', {
-        src: 'javascript:false;',
-        name: 'uploader-' + file.id
-      }).hide().appendTo(document.body);
-      fileObj.attr('name', file.fileKey);
-      file.form = $('<form/>', {
-        method: 'post',
-        enctype: 'multipart/form-data',
-        action: file.url,
-        target: file.iframe[0].name
-      }).hide().append(file.obj).appendTo(document.body);
-      if (file.params) {
-        _ref = file.params;
-        for (k in _ref) {
-          v = _ref[k];
-          $('<input/>', {
-            type: 'hidden',
-            name: k,
-            value: v
-          }).appendTo(form);
-        }
-      }
-      file.iframe.on('load', function() {
-        var error, iframeDoc, json, responseEl, result;
-        if (!(iframe.parent().length > 0)) {
-          return;
-        }
-        iframeDoc = iframe[0].contentDocument;
-        if (iframeDoc && iframeDoc.body && iframeDoc.body.innerHTML === "false") {
-          return;
-        }
-        responseEl = iframeDoc.getElementById('json-response');
-        json = responseEl ? responseEl.innerHTML : iframeDoc.body.innerHTML;
-        try {
-          result = $.parseJSON(json);
-        } catch (_error) {
-          error = _error;
-          _this.trigger('uploaderror', [file, null, 'parsererror']);
-          result = {};
-        }
-        if (result.success) {
-          _this.trigger('uploadsuccess', [file, result]);
-        }
-        _this.trigger('uploadcomplete', [file, result]);
-        return file.iframe.remove();
-      });
-      return file.form.submit().remove();
-    };
-
     Uploader.prototype.cancel = function(file) {
       var f, _i, _len, _ref;
       if (!file.id) {
@@ -400,15 +339,10 @@
         }
       }
       this.trigger('uploadcancel', [file]);
-      if (this.html5) {
-        if (file.xhr) {
-          file.xhr.abort();
-        }
-        return file.xhr = null;
-      } else {
-        file.iframe.attr('src', 'javascript:false;').remove();
-        return this.trigger('uploadcomplete', [file]);
+      if (file.xhr) {
+        file.xhr.abort();
       }
+      return file.xhr = null;
     };
 
     Uploader.prototype.readImageFile = function(fileObj, callback) {
