@@ -37,7 +37,7 @@
 .simditor .simditor-wrapper .simditor-image-loading span {
   width: 30px;
   height: 30px;
-  background: white url(../images/loading-upload.gif) no-repeat center center;
+  background: #ffffff url(../images/loading-upload.gif) no-repeat center center;
   border-radius: 30px;
   position: absolute;
   top: 50%;
@@ -392,16 +392,23 @@
   box-sizing: border-box;
   font-size: 12px;
 }
-.simditor .simditor-popover.link-popover .btn-unlink, .simditor .simditor-popover.image-popover .btn-upload {
+.simditor .simditor-popover .settings-field input[type=text].image-size {
+  width: 87px;
+}
+.simditor .simditor-popover .settings-field .times {
+  float: left;
+  margin: 0 10px;
+}
+.simditor .simditor-popover.link-popover .btn-unlink, .simditor .simditor-popover.image-popover .btn-upload, .simditor .simditor-popover.image-popover .btn-restore {
   float: left;
   margin: 0 0 0 8px;
   color: #333333;
   font-size: 14px;
 }
-.simditor .simditor-popover.link-popover .btn-unlink span, .simditor .simditor-popover.image-popover .btn-upload span {
+.simditor .simditor-popover.link-popover .btn-unlink span, .simditor .simditor-popover.image-popover .btn-upload span, .simditor .simditor-popover.image-popover .btn-restore span {
   opacity: 0.6;
 }
-.simditor .simditor-popover.link-popover .btn-unlink:hover span, .simditor .simditor-popover.image-popover .btn-upload:hover span {
+.simditor .simditor-popover.link-popover .btn-unlink:hover span, .simditor .simditor-popover.image-popover .btn-upload:hover span, .simditor .simditor-popover.image-popover .btn-restore:hover span {
   opacity: 1;
 }
 .simditor .simditor-popover.image-popover .btn-upload {
@@ -574,7 +581,6 @@
   background-color: #ffffee;
 }
 .simditor .simditor-body img, .editor-style img {
-  max-width: 800px;
   margin: 0 5px;
   vertical-align: middle;
 }

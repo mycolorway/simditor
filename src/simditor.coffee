@@ -3048,7 +3048,7 @@ class ImageButton extends Button
         src: src,
         #width: width,
         #height: height,
-        'data-image-size': img.width + ',' + img.height
+        'data-image-size': width + ',' + height
       })
 
       if $img.hasClass 'uploading' # img being uploaded
@@ -3122,6 +3122,15 @@ class ImagePopover extends Popover
           <span class="fa fa-upload"></span>
         </a>
       </div>
+      <div class="settings-field">
+        <label>图片尺寸</label>
+        <input class="image-size" id="image-width" type="text"/>
+        <span class="times">×</span>
+        <input class="image-size" id="image-height" type="text"/>
+        <a class="btn-restore" href="javascript:;" title="还原尺寸" tabindex="-1">
+          <span class="fa fa-reply"></span>
+        </a>
+      </div>
     </div>
   """
 
@@ -3154,6 +3163,37 @@ class ImagePopover extends Popover
           @button.editor.selection.setRangeAfter @target
           @hide()
 
+    @widthEl = @el.find '#image-width'
+    @heightEl = @el.find '#image-height'
+
+    @el.find('.image-size').on 'keyup', (e) =>
+      inputEl = $(e.currentTarget)
+      value = inputEl.val() * 1
+      return  unless $.isNumeric(value) or value < 0
+
+      if inputEl.is @widthEl
+        height = @height * value / @width
+        @heightEl.val height
+      else
+        width = @width * value / @height
+        @widthEl.val width
+
+      @target.css
+        width: width || value
+        height: height || value
+      @el.data('popover').refresh()
+      inputEl.blur().focus()
+
+    @el.find('.btn-restore').on 'click', (e) =>
+      size = @target.data('image-size').split(",") || [@width, @height]
+      @target.css
+        width: size[0] * 1
+        height: size[1] * 1
+      @el.data('popover').refresh()
+      @widthEl.val(size[0])
+      @heightEl.val(size[1])
+
+
     @editor.on 'valuechanged', (e) =>
       @refresh() if @active
 
@@ -3185,10 +3225,15 @@ class ImagePopover extends Popover
   show: (args...) ->
     super args...
     $img = @target
+    @width = $img.width()
+    @height = $img.height()
+
     if $img.hasClass 'uploading'
       @srcEl.val '正在上传'
     else
       @srcEl.val $img.attr('src')
+      @widthEl.val @width
+      @heightEl.val @height
 
 
 Simditor.Toolbar.addButton(ImageButton)
