@@ -404,6 +404,7 @@
   margin: 0 0 0 8px;
   color: #333333;
   font-size: 14px;
+  outline: 0;
 }
 .simditor .simditor-popover.link-popover .btn-unlink span, .simditor .simditor-popover.image-popover .btn-upload span, .simditor .simditor-popover.image-popover .btn-restore span {
   opacity: 0.6;
