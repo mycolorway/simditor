@@ -11,7 +11,7 @@ class Popover extends Module
 
   constructor: (@editor) ->
     @el = $('<div class="simditor-popover"></div>')
-      .appendTo(@editor.wrapper)
+      .appendTo(@editor.el)
       .data('popover', @)
     @render()
 
@@ -56,16 +56,16 @@ class Popover extends Module
 
   refresh: (position = 'bottom') ->
     return unless @active
-    wrapperOffset = @editor.wrapper.offset()
+    editorOffset = @editor.el.offset()
     targetOffset = @target.offset()
     targetH = @target.outerHeight()
 
     if position is 'bottom'
-      top = targetOffset.top - wrapperOffset.top + targetH
+      top = targetOffset.top - editorOffset.top + targetH
     else if position is 'top'
-      top = targetOffset.top - wrapperOffset.top - @el.height()
+      top = targetOffset.top - editorOffset.top - @el.height()
 
-    left = Math.min(targetOffset.left - wrapperOffset.left, @editor.wrapper.width() - @el.outerWidth() - 10)
+    left = Math.min(targetOffset.left - editorOffset.left, @editor.wrapper.width() - @el.outerWidth() - 10)
 
     @el.css({
       top: top + @offset.top,
