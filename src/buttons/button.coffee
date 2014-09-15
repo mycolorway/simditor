@@ -125,12 +125,16 @@ class Button extends Module
         .text(menuItem.text)
 
   setActive: (active) ->
+    return if active == @active
     @active = active
     @el.toggleClass('active', @active)
+    @editor.toolbar.trigger 'buttonstatus', [@]
 
   setDisabled: (disabled) ->
+    return if disabled == @disabled
     @disabled = disabled
     @el.toggleClass('disabled', @disabled)
+    @editor.toolbar.trigger 'buttonstatus', [@]
 
   status: ($node) ->
     @setDisabled $node.is(@disableTag) if $node?

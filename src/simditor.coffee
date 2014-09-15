@@ -1924,12 +1924,16 @@ class Button extends Module
         .text(menuItem.text)
 
   setActive: (active) ->
+    return if active == @active
     @active = active
     @el.toggleClass('active', @active)
+    @editor.toolbar.trigger 'buttonstatus', [@]
 
   setDisabled: (disabled) ->
+    return if disabled == @disabled
     @disabled = disabled
     @el.toggleClass('disabled', @disabled)
+    @editor.toolbar.trigger 'buttonstatus', [@]
 
   status: ($node) ->
     @setDisabled $node.is(@disableTag) if $node?
@@ -2056,11 +2060,10 @@ class TitleButton extends Button
   }]
 
   setActive: (active, param) ->
-    @active = active
-    if active
-      @el.addClass('active active-' + param)
-    else
-      @el.removeClass('active active-p active-h1 active-h2 active-h3')
+    super active
+
+    @el.removeClass 'active-p active-h1 active-h2 active-h3'
+    @el.addClass('active active-' + param) if active
 
   status: ($node) ->
     @setDisabled $node.is(@disableTag) if $node?
