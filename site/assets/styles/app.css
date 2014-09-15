@@ -197,7 +197,7 @@ table {
 
 /* Literal.String */
 .highlight .na {
-  color: #008080;
+  color: teal;
 }
 
 /* Name.Attribute */
@@ -213,12 +213,12 @@ table {
 
 /* Name.Class */
 .highlight .no {
-  color: #008080;
+  color: teal;
 }
 
 /* Name.Constant */
 .highlight .ni {
-  color: #800080;
+  color: purple;
 }
 
 /* Name.Entity */
@@ -240,12 +240,12 @@ table {
 
 /* Name.Namespace */
 .highlight .nt {
-  color: #000080;
+  color: navy;
 }
 
 /* Name.Tag */
 .highlight .nv {
-  color: #008080;
+  color: teal;
 }
 
 /* Name.Variable */
@@ -320,7 +320,7 @@ table {
 
 /* Literal.String.Other */
 .highlight .sr {
-  color: #808000;
+  color: olive;
 }
 
 /* Literal.String.Regex */
@@ -340,17 +340,17 @@ table {
 
 /* Name.Builtin.Pseudo */
 .highlight .vc {
-  color: #008080;
+  color: teal;
 }
 
 /* Name.Variable.Class */
 .highlight .vg {
-  color: #008080;
+  color: teal;
 }
 
 /* Name.Variable.Global */
 .highlight .vi {
-  color: #008080;
+  color: teal;
 }
 
 /* Name.Variable.Instance */
