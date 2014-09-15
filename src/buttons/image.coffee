@@ -149,7 +149,7 @@ class ImageButton extends Button
 
       percent = loaded / total
       percent = (percent * 100).toFixed(0)
-      percent = 99 if percent > 99
+      percent = '' if percent > 99
 
       $mask = file.img.data('mask')
       if $mask
