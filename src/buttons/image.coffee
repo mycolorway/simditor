@@ -231,7 +231,7 @@ class ImageButton extends Button
       $mask = $('<div class="simditor-image-loading"><span></span></div>')
         .hide()
         .appendTo(@editor.wrapper)
-      $mask.addClass('uploading') if $img.hasClass('uploading') and @editor.uploader.html5
+      $mask.addClass('uploading') if $img.hasClass('uploading')
       $img.data('mask', $mask)
       $mask.data('img', $img)
 
