@@ -461,15 +461,26 @@ $simditor-button-height: 40px;
         width: 200px;
         box-sizing: border-box;
         font-size: 12px;
+
+        &.image-size {
+          width: 87px;
+        }
+      }
+
+      .times {
+        float: left;
+        margin: 0 10px;
       }
     }
 
     &.link-popover .btn-unlink,
-    &.image-popover .btn-upload {
+    &.image-popover .btn-upload,
+    &.image-popover .btn-restore {
       float: left;
       margin: 0 0 0 8px;
       color: #333333;
       font-size: 14px;
+      outline: 0;
 
       span {
         opacity: 0.6;
@@ -659,7 +670,6 @@ $simditor-button-height: 40px;
 
 
   img {
-    max-width: 800px;
     margin: 0 5px;
     vertical-align: middle;
   }

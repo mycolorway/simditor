@@ -251,7 +251,7 @@ class ImageButton extends Button
         src: src,
         #width: width,
         #height: height,
-        'data-image-size': img.width + ',' + img.height
+        'data-image-size': width + ',' + height
       })
 
       if $img.hasClass 'uploading' # img being uploaded
@@ -320,9 +320,18 @@ class ImagePopover extends Popover
     <div class="link-settings">
       <div class="settings-field">
         <label>图片地址</label>
-        <input class="image-src" type="text"/>
+        <input class="image-src" type="text" tabindex="1" />
         <a class="btn-upload" href="javascript:;" title="上传图片" tabindex="-1">
           <span class="fa fa-upload"></span>
+        </a>
+      </div>
+      <div class="settings-field">
+        <label>图片尺寸</label>
+        <input class="image-size" id="image-width" type="text" tabindex="2" />
+        <span class="times">×</span>
+        <input class="image-size" id="image-height" type="text" tabindex="3" />
+        <a class="btn-restore" href="javascript:;" title="还原尺寸" tabindex="-1">
+          <span class="fa fa-reply"></span>
         </a>
       </div>
     </div>
@@ -341,7 +350,7 @@ class ImagePopover extends Popover
     @srcEl = @el.find '.image-src'
 
     @srcEl.on 'keydown', (e) =>
-      if e.which == 13 or e.which == 27 or e.which == 9
+      if e.which == 13 or e.which == 27
         e.preventDefault()
 
         if e.which == 13 and !@target.hasClass('uploading')
@@ -356,6 +365,32 @@ class ImagePopover extends Popover
           @button.editor.body.focus()
           @button.editor.selection.setRangeAfter @target
           @hide()
+
+    @widthEl = @el.find '#image-width'
+    @heightEl = @el.find '#image-height'
+
+    @el.find('.image-size').on 'blur', (e) =>
+      @_resizeImg $(e.currentTarget)
+    @el.find('.image-size').on 'keyup', (e) =>
+      inputEl = $(e.currentTarget)
+      if e.which == 13 or e.which == 27
+        e.preventDefault()
+        if e.which == 13
+          @_resizeImg inputEl
+        else
+          @_restoreImg()
+
+        @button.editor.body.focus()
+        @button.editor.selection.setRangeAfter @target
+        @hide()
+      else if e.which == 9
+        @el.data('popover').refresh()
+      else
+        @_resizeImg inputEl, true
+
+    @el.find('.btn-restore').on 'click', (e) =>
+      @_restoreImg()
+      @el.data('popover').refresh()
 
     @editor.on 'valuechanged', (e) =>
       @refresh() if @active
@@ -385,13 +420,42 @@ class ImagePopover extends Popover
       })
       createInput()
 
+  _resizeImg: (inputEl, onlySetVal = false) ->
+    value = inputEl.val() * 1
+    return  unless $.isNumeric(value) or value < 0
+
+    if inputEl.is @widthEl
+      height = @height * value / @width
+      @heightEl.val height
+    else
+      width = @width * value / @height
+      @widthEl.val width
+
+    unless onlySetVal
+      @target.css
+        width: width || value
+        height: height || value
+
+  _restoreImg: ->
+    size = @target.data('image-size')?.split(",") || [@width, @height]
+    @target.css
+      width: size[0] * 1
+      height: size[1] * 1
+    @widthEl.val(size[0])
+    @heightEl.val(size[1])
+
   show: (args...) ->
     super args...
     $img = @target
+    @width = $img.width()
+    @height = $img.height()
+
     if $img.hasClass 'uploading'
       @srcEl.val '正在上传'
     else
       @srcEl.val $img.attr('src')
+      @widthEl.val @width
+      @heightEl.val @height
 
 
 Simditor.Toolbar.addButton(ImageButton)
