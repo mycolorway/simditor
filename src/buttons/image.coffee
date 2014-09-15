@@ -371,7 +371,14 @@ class ImagePopover extends Popover
 
     @el.find('.image-size').on 'blur', (e) =>
       @_resizeImg $(e.currentTarget)
+      @el.data('popover').refresh()
+
     @el.find('.image-size').on 'keyup', (e) =>
+      inputEl = $(e.currentTarget)
+      unless e.which == 13 or e.which == 27 or e.which == 9
+        @_resizeImg inputEl, true
+
+    @el.find('.image-size').on 'keydown', (e) =>
       inputEl = $(e.currentTarget)
       if e.which == 13 or e.which == 27
         e.preventDefault()
@@ -385,8 +392,6 @@ class ImagePopover extends Popover
         @hide()
       else if e.which == 9
         @el.data('popover').refresh()
-      else
-        @_resizeImg inputEl, true
 
     @el.find('.btn-restore').on 'click', (e) =>
       @_restoreImg()
@@ -422,7 +427,7 @@ class ImagePopover extends Popover
 
   _resizeImg: (inputEl, onlySetVal = false) ->
     value = inputEl.val() * 1
-    return  unless $.isNumeric(value) or value < 0
+    return unless $.isNumeric(value) or value < 0
 
     if inputEl.is @widthEl
       height = @height * value / @width
@@ -438,7 +443,7 @@ class ImagePopover extends Popover
 
   _restoreImg: ->
     size = @target.data('image-size')?.split(",") || [@width, @height]
-    @target.css
+    @target.attr
       width: size[0] * 1
       height: size[1] * 1
     @widthEl.val(size[0])

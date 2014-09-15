@@ -4292,10 +4292,20 @@
       this.heightEl = this.el.find('#image-height');
       this.el.find('.image-size').on('blur', (function(_this) {
         return function(e) {
-          return _this._resizeImg($(e.currentTarget));
+          _this._resizeImg($(e.currentTarget));
+          return _this.el.data('popover').refresh();
         };
       })(this));
       this.el.find('.image-size').on('keyup', (function(_this) {
+        return function(e) {
+          var inputEl;
+          inputEl = $(e.currentTarget);
+          if (!(e.which === 13 || e.which === 27 || e.which === 9)) {
+            return _this._resizeImg(inputEl, true);
+          }
+        };
+      })(this));
+      this.el.find('.image-size').on('keydown', (function(_this) {
         return function(e) {
           var inputEl;
           inputEl = $(e.currentTarget);
@@ -4311,8 +4321,6 @@
             return _this.hide();
           } else if (e.which === 9) {
             return _this.el.data('popover').refresh();
-          } else {
-            return _this._resizeImg(inputEl, true);
           }
         };
       })(this));
@@ -4391,7 +4399,7 @@
     ImagePopover.prototype._restoreImg = function() {
       var size, _ref;
       size = ((_ref = this.target.data('image-size')) != null ? _ref.split(",") : void 0) || [this.width, this.height];
-      this.target.css({
+      this.target.attr({
         width: size[0] * 1,
         height: size[1] * 1
       });
