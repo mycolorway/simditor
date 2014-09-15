@@ -3229,7 +3229,7 @@ class ImagePopover extends Popover
       @widthEl.val width
 
     unless onlySetVal
-      @target.css
+      @target.attr
         width: width || value
         height: height || value
 
