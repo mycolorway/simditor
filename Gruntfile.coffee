@@ -47,12 +47,14 @@ module.exports = (grunt) ->
         options:
           style: 'expanded'
           bundleExec: true
+          sourcemap: 'none'
         files:
           'styles/simditor.css': 'styles/simditor.scss'
       site:
         options:
           style: 'expanded'
           bundleExec: true
+          sourcemap: 'none'
         files:
           'site/assets/styles/app.css': 'site/assets/_sass/app.scss'
           'site/assets/styles/mobile.css': 'site/assets/_sass/mobile.scss'

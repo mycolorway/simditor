@@ -37,7 +37,7 @@
 .simditor .simditor-wrapper .simditor-image-loading span {
   width: 30px;
   height: 30px;
-  background: white url(../images/loading-upload.gif) no-repeat center center;
+  background: #ffffff url(../images/loading-upload.gif) no-repeat center center;
   border-radius: 30px;
   position: absolute;
   top: 50%;
@@ -397,7 +397,9 @@
 }
 .simditor .simditor-popover .settings-field .times {
   float: left;
-  margin: 0 10px;
+  width: 26px;
+  font-size: 12px;
+  text-align: center;
 }
 .simditor .simditor-popover.link-popover .btn-unlink, .simditor .simditor-popover.image-popover .btn-upload, .simditor .simditor-popover.image-popover .btn-restore {
   float: left;
