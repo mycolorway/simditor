@@ -635,18 +635,18 @@
     };
 
     Selection.prototype.save = function(range) {
-      var endCaret, startCaret;
+      var endCaret, endRange, startCaret;
       if (range == null) {
         range = this.getRange();
       }
       if (this._selectionSaved) {
         return;
       }
+      endRange = range.clone().collapse(false);
       startCaret = $('<span/>').addClass('simditor-caret-start');
       endCaret = $('<span/>').addClass('simditor-caret-end');
       range.insertNode(startCaret[0]);
-      range.collapse(false);
-      range.insertNode(endCaret[0]);
+      endRange.insertNode(endCaret[0]);
       this.clear();
       return this._selectionSaved = true;
     };

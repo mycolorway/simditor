@@ -172,12 +172,12 @@ class Selection extends Plugin
   save: (range = @getRange()) ->
     return if @_selectionSaved
 
+    endRange = range.clone().collapse(false)
     startCaret = $('<span/>').addClass('simditor-caret-start')
     endCaret = $('<span/>').addClass('simditor-caret-end')
 
     range.insertNode(startCaret[0])
-    range.collapse(false)
-    range.insertNode(endCaret[0])
+    endRange.insertNode(endCaret[0])
 
     @clear()
     @_selectionSaved = true
