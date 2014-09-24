@@ -161,9 +161,10 @@ class Simditor extends Widget
     @body.blur()
 
   hidePopover: ->
-    @wrapper.find('.simditor-popover').each (i, popover) =>
+    @el.find('.simditor-popover').each (i, popover) =>
       popover = $(popover).data('popover')
-      popover.hide() if popover.active
+      if popover.active
+        popover.hide()
 
   destroy: ->
     @triggerHandler 'destroy'

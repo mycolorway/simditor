@@ -172,12 +172,14 @@ class Selection extends Plugin
   save: (range = @getRange()) ->
     return if @_selectionSaved
 
-    endRange = range.clone().collapse(false)
+    endRange = range.cloneRange()
+    endRange.collapse(false)
+
     startCaret = $('<span/>').addClass('simditor-caret-start')
     endCaret = $('<span/>').addClass('simditor-caret-end')
 
-    range.insertNode(startCaret[0])
     endRange.insertNode(endCaret[0])
+    range.insertNode(startCaret[0])
 
     @clear()
     @_selectionSaved = true
@@ -1771,9 +1773,10 @@ class Simditor extends Widget
     @body.blur()
 
   hidePopover: ->
-    @wrapper.find('.simditor-popover').each (i, popover) =>
+    @el.find('.simditor-popover').each (i, popover) =>
       popover = $(popover).data('popover')
-      popover.hide() if popover.active
+      if popover.active
+        popover.hide()
 
   destroy: ->
     @triggerHandler 'destroy'
