@@ -35,9 +35,16 @@ class Toolbar extends Plugin
 
     if not @opts.toolbarHidden and @opts.toolbarFloat
       @wrapper.width @wrapper.outerWidth()
-      unless @editor.util.os.mobile
-        @wrapper.css 'left', @wrapper.offset().left
       toolbarHeight = @wrapper.outerHeight()
+
+      unless @editor.util.os.mobile
+        $(window).on 'resize.simditor-' + @editor.id, (e) =>
+          @wrapper.css 'position', 'static'
+          @wrapper[0].offsetHeight
+          @wrapper.css 'left', @wrapper.offset().left
+          @wrapper.css 'position', ''
+        .resize()
+
       $(window).on 'scroll.simditor-' + @editor.id, (e) =>
         topEdge = @editor.wrapper.offset().top
         bottomEdge = topEdge + @editor.wrapper.outerHeight() - 80
