@@ -3827,10 +3827,15 @@
       })(this));
       this.urlEl.on('keyup', (function(_this) {
         return function(e) {
+          var val;
           if (e.which === 13) {
             return;
           }
-          return _this.target.attr('href', _this.urlEl.val());
+          val = _this.urlEl.val();
+          if (!(/https?:\/\/|^\//ig.test(val) || !val)) {
+            val = 'http://' + val;
+          }
+          return _this.target.attr('href', val);
         };
       })(this));
       $([this.urlEl[0], this.textEl[0]]).on('keydown', (function(_this) {

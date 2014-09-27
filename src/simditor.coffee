@@ -2767,7 +2767,11 @@ class LinkPopover extends Popover
 
     @urlEl.on 'keyup', (e) =>
       return if e.which == 13
-      @target.attr 'href', @urlEl.val()
+
+      val = @urlEl.val()
+      val = 'http://' + val unless /https?:\/\/|^\//ig.test(val) or !val
+
+      @target.attr 'href', val
 
     $([@urlEl[0], @textEl[0]]).on 'keydown', (e) =>
       if e.which == 13 or e.which == 27 or (!e.shiftKey and e.which == 9 and $(e.target).hasClass('link-url'))
