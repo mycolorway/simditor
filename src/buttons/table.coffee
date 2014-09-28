@@ -225,7 +225,6 @@ class TableButton extends Button
       @decorate $table
       @editor.selection.setRangeAtStartOf $table.find('td:first')
       @editor.trigger 'valuechanged'
-      @editor.trigger 'selectionchanged'
       false
 
   createTable: (row, col, phBr) ->
@@ -350,7 +349,6 @@ class TableButton extends Button
       return
 
     @editor.trigger 'valuechanged'
-    @editor.trigger 'selectionchanged'
 
 
 Simditor.Toolbar.addButton TableButton

@@ -33,7 +33,9 @@ class ItalicButton extends Button
   command: ->
     document.execCommand 'italic'
     @editor.trigger 'valuechanged'
-    @editor.trigger 'selectionchanged'
+
+    # italic command won't trigger selectionchange event automatically
+    $(document).trigger 'selectionchange'
 
 
 Simditor.Toolbar.addButton(ItalicButton)

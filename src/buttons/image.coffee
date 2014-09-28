@@ -44,7 +44,6 @@ class ImageButton extends Button
       @editor.selection.selectRange range
       setTimeout =>
         @editor.body.focus()
-        @editor.trigger 'selectionchanged'
       , 0
 
       false

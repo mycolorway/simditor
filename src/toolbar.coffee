@@ -30,7 +30,7 @@ class Toolbar extends Plugin
     @wrapper.on 'mousedown', (e) =>
       @list.find('.menu-on').removeClass('.menu-on')
 
-    $(document).on 'mousedown.simditor', (e) =>
+    $(document).on 'mousedown.simditor' + @editor.id, (e) =>
       @list.find('.menu-on').removeClass('.menu-on')
 
     if not @opts.toolbarHidden and @opts.toolbarFloat
@@ -63,7 +63,7 @@ class Toolbar extends Plugin
             @wrapper.css
               top: scrollTop - topEdge
 
-    @editor.on 'selectionchanged focus', =>
+    @editor.on 'selectionchanged', =>
       @toolbarStatus()
 
     @editor.on 'destroy', =>

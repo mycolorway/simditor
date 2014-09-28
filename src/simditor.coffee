@@ -10,13 +10,6 @@ class Selection extends Plugin
 
   _init: ->
 
-    #@editor.on 'selectionchanged focus', (e) =>
-      #range = @editor.selection.getRange()
-      #return unless range?
-      #$container = $(range.commonAncestorContainer)
-
-      #if range.collapsed and $container.is('.simditor-body') and @editor.util.isBlockNode($container.children())
-        #@editor.blur()
 
   clear: ->
     try
@@ -451,6 +444,17 @@ class InputManager extends Plugin
       .addClass('simditor-clean-paste-area')
       .appendTo(@editor.el)
 
+    $(document).on 'selectionchange.simditor' + @editor.id, (e) =>
+      return unless @editor.inputManager.focused
+
+
+      if @_selectionTimer
+        clearTimeout @_selectionTimer
+        @_selectionTimer = null
+      @_selectionTimer = setTimeout =>
+        @editor.trigger 'selectionchanged'
+      , 50
+
     @editor.on 'valuechanged', =>
       # make sure each code block and table has siblings
       @editor.body.find('hr, pre, .simditor-table').each (i, el) =>
@@ -474,6 +478,12 @@ class InputManager extends Plugin
             , 10
 
       @editor.body.find('pre:empty').append(@editor.util.phBr)
+
+      if !@editor.util.supportSelectionChange and @editor.inputManager.focused
+        @editor.trigger 'selectionchanged'
+
+    @editor.on 'selectionchange', (e) =>
+      @editor.undoManager.update()
 
 
     @editor.body.on('keydown', $.proxy(@_onKeyDown, @))
@@ -520,7 +530,7 @@ class InputManager extends Plugin
 
     setTimeout =>
       @editor.triggerHandler 'focus'
-      #@editor.trigger 'selectionchanged'
+      @editor.trigger 'selectionchange'
     , 0
 
   _onBlur: (e) ->
@@ -532,10 +542,10 @@ class InputManager extends Plugin
     @editor.triggerHandler 'blur'
 
   _onMouseUp: (e) ->
-    setTimeout =>
-      @editor.trigger 'selectionchanged'
-      @editor.undoManager.update()
-    , 0
+    unless @editor.util.supportSelectionChange
+      setTimeout =>
+        @editor.trigger 'selectionchanged'
+      , 0
 
   _onKeyDown: (e) ->
     if @editor.triggerHandler(e) == false
@@ -551,7 +561,6 @@ class InputManager extends Plugin
       result = @_keystrokeHandlers[e.which]['*']?(e)
       if result
         @editor.trigger 'valuechanged'
-        @editor.trigger 'selectionchanged'
         return false
 
       @editor.util.traverseUp (node) =>
@@ -566,7 +575,6 @@ class InputManager extends Plugin
         false if result == true or result == false
       if result
         @editor.trigger 'valuechanged'
-        @editor.trigger 'selectionchanged'
         return false
 
     if e.which in @_modifierKeys or e.which in @_arrowKeys
@@ -586,20 +594,17 @@ class InputManager extends Plugin
         @editor.formatter.cleanNode $newBlockEl, true
         @editor.selection.restore()
         @editor.trigger 'valuechanged'
-        @editor.trigger 'selectionchanged'
       , 10
       @typing = true
     else if @_typing
       clearTimeout @_typing if @_typing != true
       @_typing = setTimeout =>
         @editor.trigger 'valuechanged'
-        @editor.trigger 'selectionchanged'
         @_typing = false
       , 200
     else
       setTimeout =>
         @editor.trigger 'valuechanged'
-        @editor.trigger 'selectionchanged'
       , 10
       @_typing = true
 
@@ -613,7 +618,7 @@ class InputManager extends Plugin
     if @editor.triggerHandler(e) == false
       return false
 
-    if e.which in @_arrowKeys
+    if !@editor.util.supportSelectionChange and e.which in @_arrowKeys
       @editor.trigger 'selectionchanged'
       @editor.undoManager.update()
       return
@@ -760,7 +765,6 @@ class InputManager extends Plugin
         @editor.selection.setRangeAtEndOf(pasteContent.last(), range)
 
       @editor.trigger 'valuechanged'
-      @editor.trigger 'selectionchanged'
     , 10
 
   _onDrop: (e) ->
@@ -769,7 +773,6 @@ class InputManager extends Plugin
 
     setTimeout =>
       @editor.trigger 'valuechanged'
-      @editor.trigger 'selectionchanged'
     , 0
 
 
@@ -1073,7 +1076,6 @@ class UndoManager extends Plugin
     @editor.sync()
 
     @editor.trigger 'valuechanged', ['undo']
-    @editor.trigger 'selectionchanged', ['undo']
 
   redo: ->
     return if @_index < 0 or @_stack.length < @_index + 2
@@ -1089,9 +1091,9 @@ class UndoManager extends Plugin
     @editor.sync()
 
     @editor.trigger 'valuechanged', ['undo']
-    @editor.trigger 'selectionchanged', ['undo']
 
   update: () ->
+    return if @_timer
     currentState = @currentState()
     return unless currentState
 
@@ -1267,6 +1269,19 @@ class Util extends Plugin
       {}
   )()
 
+  # check whether the browser supports selectionchange event
+  supportSelectionChange: (->
+    onselectionchange = document.onselectionchange
+    if onselectionchange != undefined
+      try
+        document.onselectionchange = 0
+        return document.onselectionchange == null
+      catch e
+      finally
+        document.onselectionchange = onselectionchange
+    false
+  )()
+
   # force element to reflow, about relow: 
   # http://blog.letitialew.com/post/30425074101/repaints-and-reflows-manipulating-the-dom-responsibly
   reflow: (el = document) ->
@@ -1408,7 +1423,6 @@ class Util extends Plugin
       @editor.selection.insertNode spaceNode
 
     @editor.trigger 'valuechanged'
-    @editor.trigger 'selectionchanged'
     true
 
   outdent: () ->
@@ -1453,7 +1467,6 @@ class Util extends Plugin
       return false
 
     @editor.trigger 'valuechanged'
-    @editor.trigger 'selectionchanged'
     true
 
   # convert base64 data url to blob object for pasting images in firefox and IE11
@@ -1531,7 +1544,7 @@ class Toolbar extends Plugin
     @wrapper.on 'mousedown', (e) =>
       @list.find('.menu-on').removeClass('.menu-on')
 
-    $(document).on 'mousedown.simditor', (e) =>
+    $(document).on 'mousedown.simditor' + @editor.id, (e) =>
       @list.find('.menu-on').removeClass('.menu-on')
 
     if not @opts.toolbarHidden and @opts.toolbarFloat
@@ -1564,7 +1577,7 @@ class Toolbar extends Plugin
             @wrapper.css
               top: scrollTop - topEdge
 
-    @editor.on 'selectionchanged focus', =>
+    @editor.on 'selectionchanged', =>
       @toolbarStatus()
 
     @editor.on 'destroy', =>
@@ -2111,7 +2124,6 @@ class TitleButton extends Button
     @editor.selection.restore()
 
     @editor.trigger 'valuechanged'
-    @editor.trigger 'selectionchanged'
 
   _convertEl: (el, param) ->
     $el = $(el)
@@ -2163,7 +2175,9 @@ class BoldButton extends Button
   command: ->
     document.execCommand 'bold'
     @editor.trigger 'valuechanged'
-    @editor.trigger 'selectionchanged'
+
+    # bold command won't trigger selectionchange event automatically
+    $(document).trigger 'selectionchange'
 
 
 Simditor.Toolbar.addButton(BoldButton)
@@ -2203,7 +2217,9 @@ class ItalicButton extends Button
   command: ->
     document.execCommand 'italic'
     @editor.trigger 'valuechanged'
-    @editor.trigger 'selectionchanged'
+
+    # italic command won't trigger selectionchange event automatically
+    $(document).trigger 'selectionchange'
 
 
 Simditor.Toolbar.addButton(ItalicButton)
@@ -2243,7 +2259,9 @@ class UnderlineButton extends Button
   command: ->
     document.execCommand 'underline'
     @editor.trigger 'valuechanged'
-    @editor.trigger 'selectionchanged'
+
+    # underline command won't trigger selectionchange event automatically
+    $(document).trigger 'selectionchange'
 
 
 Simditor.Toolbar.addButton(UnderlineButton)
@@ -2292,7 +2310,6 @@ class ColorButton extends Button
       return unless hex
       document.execCommand 'foreColor', false, hex
       @editor.trigger 'valuechanged'
-      @editor.trigger 'selectionchanged'
 
     @menuWrapper.on 'click', '.link-remove-color', (e) =>
       @wrapper.removeClass('menu-on')
@@ -2305,7 +2322,6 @@ class ColorButton extends Button
 
       document.execCommand 'foreColor', false, hex
       @editor.trigger 'valuechanged'
-      @editor.trigger 'selectionchanged'
 
   _convertRgbToHex:(rgb) ->
     re = /rgb\((\d+),\s?(\d+),\s?(\d+)\)/g
@@ -2396,7 +2412,6 @@ class ListButton extends Button
     @editor.selection.restore()
 
     @editor.trigger 'valuechanged'
-    @editor.trigger 'selectionchanged'
 
   _convertEl: (el) ->
     $el = $(el)
@@ -2500,7 +2515,6 @@ class BlockquoteButton extends Button
     @editor.selection.restore()
 
     @editor.trigger 'valuechanged'
-    @editor.trigger 'selectionchanged'
 
   _convertEl: (el) ->
     $el = $(el)
@@ -2594,7 +2608,6 @@ class CodeButton extends Button
     @editor.selection.setRangeAtEndOf results[0]
 
     @editor.trigger 'valuechanged'
-    @editor.trigger 'selectionchanged'
 
   _convertEl: (el) ->
     $el = $(el)
@@ -2747,7 +2760,6 @@ class LinkButton extends Button
 
     @editor.selection.selectRange range
     @editor.trigger 'valuechanged'
-    @editor.trigger 'selectionchanged'
 
 
 class LinkPopover extends Popover
@@ -2793,7 +2805,6 @@ class LinkPopover extends Popover
           @editor.selection.setRangeAfter @target, range
           @hide()
           @editor.trigger 'valuechanged'
-          @editor.trigger 'selectionchanged'
         , 0
 
     @unlinkEl.on 'click', (e) =>
@@ -2804,7 +2815,6 @@ class LinkPopover extends Popover
       range = document.createRange()
       @editor.selection.setRangeAfter txtNode, range
       @editor.trigger 'valuechanged'
-      @editor.trigger 'selectionchanged'
 
   show: (args...) ->
     super args...
@@ -2862,7 +2872,6 @@ class ImageButton extends Button
       @editor.selection.selectRange range
       setTimeout =>
         @editor.body.focus()
-        @editor.trigger 'selectionchanged'
       , 0
 
       false
@@ -3354,7 +3363,6 @@ class HrButton extends Button
       @editor.selection.restore()
 
     @editor.trigger 'valuechanged'
-    @editor.trigger 'selectionchanged'
 
 
 Simditor.Toolbar.addButton(HrButton)
@@ -3587,7 +3595,6 @@ class TableButton extends Button
       @decorate $table
       @editor.selection.setRangeAtStartOf $table.find('td:first')
       @editor.trigger 'valuechanged'
-      @editor.trigger 'selectionchanged'
       false
 
   createTable: (row, col, phBr) ->
@@ -3712,7 +3719,6 @@ class TableButton extends Button
       return
 
     @editor.trigger 'valuechanged'
-    @editor.trigger 'selectionchanged'
 
 
 Simditor.Toolbar.addButton TableButton
@@ -3742,7 +3748,9 @@ class StrikethroughButton extends Button
   command: ->
     document.execCommand 'strikethrough'
     @editor.trigger 'valuechanged'
-    @editor.trigger 'selectionchanged'
+
+    # strikethrough command won't trigger selectionchange event automatically
+    $(document).trigger 'selectionchange'
 
 
 Simditor.Toolbar.addButton(StrikethroughButton)

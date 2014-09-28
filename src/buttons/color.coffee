@@ -40,7 +40,6 @@ class ColorButton extends Button
       return unless hex
       document.execCommand 'foreColor', false, hex
       @editor.trigger 'valuechanged'
-      @editor.trigger 'selectionchanged'
 
     @menuWrapper.on 'click', '.link-remove-color', (e) =>
       @wrapper.removeClass('menu-on')
@@ -53,7 +52,6 @@ class ColorButton extends Button
 
       document.execCommand 'foreColor', false, hex
       @editor.trigger 'valuechanged'
-      @editor.trigger 'selectionchanged'
 
   _convertRgbToHex:(rgb) ->
     re = /rgb\((\d+),\s?(\d+),\s?(\d+)\)/g

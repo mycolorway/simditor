@@ -30,7 +30,6 @@ class HrButton extends Button
       @editor.selection.restore()
 
     @editor.trigger 'valuechanged'
-    @editor.trigger 'selectionchanged'
 
 
 Simditor.Toolbar.addButton(HrButton)

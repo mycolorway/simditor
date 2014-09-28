@@ -65,7 +65,6 @@ class TitleButton extends Button
     @editor.selection.restore()
 
     @editor.trigger 'valuechanged'
-    @editor.trigger 'selectionchanged'
 
   _convertEl: (el, param) ->
     $el = $(el)

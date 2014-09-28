@@ -10,13 +10,6 @@ class Selection extends Plugin
 
   _init: ->
 
-    #@editor.on 'selectionchanged focus', (e) =>
-      #range = @editor.selection.getRange()
-      #return unless range?
-      #$container = $(range.commonAncestorContainer)
-
-      #if range.collapsed and $container.is('.simditor-body') and @editor.util.isBlockNode($container.children())
-        #@editor.blur()
 
   clear: ->
     try

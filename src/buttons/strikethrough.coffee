@@ -22,7 +22,9 @@ class StrikethroughButton extends Button
   command: ->
     document.execCommand 'strikethrough'
     @editor.trigger 'valuechanged'
-    @editor.trigger 'selectionchanged'
+
+    # strikethrough command won't trigger selectionchange event automatically
+    $(document).trigger 'selectionchange'
 
 
 Simditor.Toolbar.addButton(StrikethroughButton)

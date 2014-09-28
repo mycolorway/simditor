@@ -55,6 +55,19 @@ class Util extends Plugin
       {}
   )()
 
+  # check whether the browser supports selectionchange event
+  supportSelectionChange: (->
+    onselectionchange = document.onselectionchange
+    if onselectionchange != undefined
+      try
+        document.onselectionchange = 0
+        return document.onselectionchange == null
+      catch e
+      finally
+        document.onselectionchange = onselectionchange
+    false
+  )()
+
   # force element to reflow, about relow: 
   # http://blog.letitialew.com/post/30425074101/repaints-and-reflows-manipulating-the-dom-responsibly
   reflow: (el = document) ->
@@ -196,7 +209,6 @@ class Util extends Plugin
       @editor.selection.insertNode spaceNode
 
     @editor.trigger 'valuechanged'
-    @editor.trigger 'selectionchanged'
     true
 
   outdent: () ->
@@ -241,7 +253,6 @@ class Util extends Plugin
       return false
 
     @editor.trigger 'valuechanged'
-    @editor.trigger 'selectionchanged'
     true
 
   # convert base64 data url to blob object for pasting images in firefox and IE11

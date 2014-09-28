@@ -53,6 +53,17 @@ class InputManager extends Plugin
       .addClass('simditor-clean-paste-area')
       .appendTo(@editor.el)
 
+    $(document).on 'selectionchange.simditor' + @editor.id, (e) =>
+      return unless @editor.inputManager.focused
+
+
+      if @_selectionTimer
+        clearTimeout @_selectionTimer
+        @_selectionTimer = null
+      @_selectionTimer = setTimeout =>
+        @editor.trigger 'selectionchanged'
+      , 50
+
     @editor.on 'valuechanged', =>
       # make sure each code block and table has siblings
       @editor.body.find('hr, pre, .simditor-table').each (i, el) =>
@@ -76,6 +87,12 @@ class InputManager extends Plugin
             , 10
 
       @editor.body.find('pre:empty').append(@editor.util.phBr)
+
+      if !@editor.util.supportSelectionChange and @editor.inputManager.focused
+        @editor.trigger 'selectionchanged'
+
+    @editor.on 'selectionchange', (e) =>
+      @editor.undoManager.update()
 
 
     @editor.body.on('keydown', $.proxy(@_onKeyDown, @))
@@ -122,7 +139,7 @@ class InputManager extends Plugin
 
     setTimeout =>
       @editor.triggerHandler 'focus'
-      #@editor.trigger 'selectionchanged'
+      @editor.trigger 'selectionchange'
     , 0
 
   _onBlur: (e) ->
@@ -134,10 +151,10 @@ class InputManager extends Plugin
     @editor.triggerHandler 'blur'
 
   _onMouseUp: (e) ->
-    setTimeout =>
-      @editor.trigger 'selectionchanged'
-      @editor.undoManager.update()
-    , 0
+    unless @editor.util.supportSelectionChange
+      setTimeout =>
+        @editor.trigger 'selectionchanged'
+      , 0
 
   _onKeyDown: (e) ->
     if @editor.triggerHandler(e) == false
@@ -153,7 +170,6 @@ class InputManager extends Plugin
       result = @_keystrokeHandlers[e.which]['*']?(e)
       if result
         @editor.trigger 'valuechanged'
-        @editor.trigger 'selectionchanged'
         return false
 
       @editor.util.traverseUp (node) =>
@@ -168,7 +184,6 @@ class InputManager extends Plugin
         false if result == true or result == false
       if result
         @editor.trigger 'valuechanged'
-        @editor.trigger 'selectionchanged'
         return false
 
     if e.which in @_modifierKeys or e.which in @_arrowKeys
@@ -188,20 +203,17 @@ class InputManager extends Plugin
         @editor.formatter.cleanNode $newBlockEl, true
         @editor.selection.restore()
         @editor.trigger 'valuechanged'
-        @editor.trigger 'selectionchanged'
       , 10
       @typing = true
     else if @_typing
       clearTimeout @_typing if @_typing != true
       @_typing = setTimeout =>
         @editor.trigger 'valuechanged'
-        @editor.trigger 'selectionchanged'
         @_typing = false
       , 200
     else
       setTimeout =>
         @editor.trigger 'valuechanged'
-        @editor.trigger 'selectionchanged'
       , 10
       @_typing = true
 
@@ -215,7 +227,7 @@ class InputManager extends Plugin
     if @editor.triggerHandler(e) == false
       return false
 
-    if e.which in @_arrowKeys
+    if !@editor.util.supportSelectionChange and e.which in @_arrowKeys
       @editor.trigger 'selectionchanged'
       @editor.undoManager.update()
       return
@@ -362,7 +374,6 @@ class InputManager extends Plugin
         @editor.selection.setRangeAtEndOf(pasteContent.last(), range)
 
       @editor.trigger 'valuechanged'
-      @editor.trigger 'selectionchanged'
     , 10
 
   _onDrop: (e) ->
@@ -371,7 +382,6 @@ class InputManager extends Plugin
 
     setTimeout =>
       @editor.trigger 'valuechanged'
-      @editor.trigger 'selectionchanged'
     , 0
 
 

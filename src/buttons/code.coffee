@@ -72,7 +72,6 @@ class CodeButton extends Button
     @editor.selection.setRangeAtEndOf results[0]
 
     @editor.trigger 'valuechanged'
-    @editor.trigger 'selectionchanged'
 
   _convertEl: (el) ->
     $el = $(el)

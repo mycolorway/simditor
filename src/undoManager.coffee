@@ -85,7 +85,6 @@ class UndoManager extends Plugin
     @editor.sync()
 
     @editor.trigger 'valuechanged', ['undo']
-    @editor.trigger 'selectionchanged', ['undo']
 
   redo: ->
     return if @_index < 0 or @_stack.length < @_index + 2
@@ -101,9 +100,9 @@ class UndoManager extends Plugin
     @editor.sync()
 
     @editor.trigger 'valuechanged', ['undo']
-    @editor.trigger 'selectionchanged', ['undo']
 
   update: () ->
+    return if @_timer
     currentState = @currentState()
     return unless currentState
 

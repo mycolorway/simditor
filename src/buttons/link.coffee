@@ -78,7 +78,6 @@ class LinkButton extends Button
 
     @editor.selection.selectRange range
     @editor.trigger 'valuechanged'
-    @editor.trigger 'selectionchanged'
 
 
 class LinkPopover extends Popover
@@ -124,7 +123,6 @@ class LinkPopover extends Popover
           @editor.selection.setRangeAfter @target, range
           @hide()
           @editor.trigger 'valuechanged'
-          @editor.trigger 'selectionchanged'
         , 0
 
     @unlinkEl.on 'click', (e) =>
@@ -135,7 +133,6 @@ class LinkPopover extends Popover
       range = document.createRange()
       @editor.selection.setRangeAfter txtNode, range
       @editor.trigger 'valuechanged'
-      @editor.trigger 'selectionchanged'
 
   show: (args...) ->
     super args...

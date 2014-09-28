@@ -70,7 +70,6 @@ class ListButton extends Button
     @editor.selection.restore()
 
     @editor.trigger 'valuechanged'
-    @editor.trigger 'selectionchanged'
 
   _convertEl: (el) ->
     $el = $(el)
