@@ -130,7 +130,7 @@ class CodePopover extends Popover
         .removeAttr('data-lang')
 
       if @lang isnt -1
-        @target.addClass('lang-' + @lang) 
+        @target.addClass('lang-' + @lang)
         @target.attr('data-lang', @lang)
 
       @target.addClass('selected') if selected
@@ -138,7 +138,7 @@ class CodePopover extends Popover
   show: (args...) ->
     super args...
     @lang = @target.attr('data-lang')
-    @selectEl.val(@lang) if @lang?
+    if @lang? then @selectEl.val(@lang) else @selectEl.val(-1)
 
 
 Simditor.Toolbar.addButton(CodeButton)
