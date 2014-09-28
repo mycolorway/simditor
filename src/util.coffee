@@ -55,6 +55,11 @@ class Util extends Plugin
       {}
   )()
 
+  # force element to reflow, about relow: 
+  # http://blog.letitialew.com/post/30425074101/repaints-and-reflows-manipulating-the-dom-responsibly
+  reflow: (el = document) ->
+    $(el)[0].offsetHeight
+
   metaKey: (e) ->
     isMac = /Mac/.test navigator.userAgent
     if isMac then e.metaKey else e.ctrlKey

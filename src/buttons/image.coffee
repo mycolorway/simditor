@@ -255,7 +255,7 @@ class ImageButton extends Button
       })
 
       if $img.hasClass 'uploading' # img being uploaded
-        @editor.body[0].offsetHeight # force reflow
+        @editor.util.reflow @editor.body
         wrapperOffset = @editor.wrapper.offset()
         imgOffset = $img.offset()
         $mask.css({
@@ -306,7 +306,7 @@ class ImageButton extends Button
 
     @loadImage $img, src or @defaultImage, =>
       @editor.trigger 'valuechanged'
-      $img[0].offsetHeight
+      @editor.util.reflow $img
       $img.click()
 
       @popover.one 'popovershow', =>

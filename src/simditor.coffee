@@ -1267,6 +1267,11 @@ class Util extends Plugin
       {}
   )()
 
+  # force element to reflow, about relow: 
+  # http://blog.letitialew.com/post/30425074101/repaints-and-reflows-manipulating-the-dom-responsibly
+  reflow: (el = document) ->
+    $(el)[0].offsetHeight
+
   metaKey: (e) ->
     isMac = /Mac/.test navigator.userAgent
     if isMac then e.metaKey else e.ctrlKey
@@ -1536,7 +1541,7 @@ class Toolbar extends Plugin
       unless @editor.util.os.mobile
         $(window).on 'resize.simditor-' + @editor.id, (e) =>
           @wrapper.css 'position', 'static'
-          @wrapper[0].offsetHeight
+          @editor.util.reflow @wrapper
           @wrapper.css 'left', @wrapper.offset().left
           @wrapper.css 'position', ''
         .resize()
@@ -3068,7 +3073,7 @@ class ImageButton extends Button
       })
 
       if $img.hasClass 'uploading' # img being uploaded
-        @editor.body[0].offsetHeight # force reflow
+        @editor.util.reflow @editor.body
         wrapperOffset = @editor.wrapper.offset()
         imgOffset = $img.offset()
         $mask.css({
@@ -3119,7 +3124,7 @@ class ImageButton extends Button
 
     @loadImage $img, src or @defaultImage, =>
       @editor.trigger 'valuechanged'
-      $img[0].offsetHeight
+      @editor.util.reflow $img
       $img.click()
 
       @popover.one 'popovershow', =>

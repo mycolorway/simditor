@@ -40,7 +40,7 @@ class Toolbar extends Plugin
       unless @editor.util.os.mobile
         $(window).on 'resize.simditor-' + @editor.id, (e) =>
           @wrapper.css 'position', 'static'
-          @wrapper[0].offsetHeight
+          @editor.util.reflow @wrapper
           @wrapper.css 'left', @wrapper.offset().left
           @wrapper.css 'position', ''
         .resize()
