@@ -1,7 +1,7 @@
 ---
 layout: tour
 title: 搭建环境 - Simditor
-name: tour-dev-env
+id: tour-dev-env
 root: ../
 ---
 
@@ -25,7 +25,6 @@ $ git clone git@github.com:[your username]/simditor.git
 Simditor 使用 [Bundler](http://bundler.io/) 来管理依赖的 Ruby Gem：
 
 * [sass](https://github.com/nex3/sass)：用来将 scss 文件编译为 css 文件
-* [coffee-script](https://github.com/josh/ruby-coffee-script): 用来将 coffee 文件编译为 js 文件
 * [github-pages](https://github.com/github/pages-gem): 在本地安装 [Github Pages](https://pages.github.com/) 使用的 [Jekyll](http://jekyllrb.com/) 环境，用来生成 Simditor 的网站
 
 首先，确保你的系统中已经安装了 [Ruby](https://www.ruby-lang.org/en/installation/)，然后在命令行中安装 Bundler：

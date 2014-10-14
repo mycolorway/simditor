@@ -1,8 +1,8 @@
 
-class Simditor extends Widget
+class Simditor extends SimpleModule
   @connect Util
-  @connect UndoManager
   @connect InputManager
+  @connect UndoManager
   @connect Keystroke
   @connect Formatter
   @connect Selection
@@ -45,7 +45,7 @@ class Simditor extends Widget
         @setValue ''
 
     # set default value after all plugins are connected
-    @on 'pluginconnected', =>
+    @on 'initialized', =>
       if @opts.placeholder
         @on 'valuechanged', =>
           @_placeholder()
@@ -74,8 +74,8 @@ class Simditor extends Widget
     @placeholderEl = @wrapper.find('.simditor-placeholder').append(@opts.placeholder)
 
     @el.append(@textarea)
-      .data 'simditor', this
-    @textarea.data('simditor', this)
+      .data 'simditor', @
+    @textarea.data('simditor', @)
       .hide()
       .blur()
     @body.attr 'tabindex', @textarea.attr('tabindex')
@@ -182,7 +182,4 @@ class Simditor extends Widget
     $(document).off '.simditor-' + @id
     $(window).off '.simditor-' + @id
     @off()
-
-
-window.Simditor = Simditor
 

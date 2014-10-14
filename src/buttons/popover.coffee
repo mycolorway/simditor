@@ -1,5 +1,5 @@
 
-class Popover extends Module
+class Popover extends SimpleModule
 
   offset:
     top: 4
@@ -9,7 +9,12 @@ class Popover extends Module
 
   active: false
 
-  constructor: (@editor) ->
+  constructor: (opts) ->
+    @button = opts.button
+    @editor = opts.button.editor
+    super opts
+
+  _init: ->
     @el = $('<div class="simditor-popover"></div>')
       .appendTo(@editor.el)
       .data('popover', @)
@@ -79,4 +84,4 @@ class Popover extends Module
     @el.remove()
 
 
-window.SimditorPopover = Popover
+Simditor.Popover = Popover

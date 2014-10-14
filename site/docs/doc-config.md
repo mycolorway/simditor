@@ -1,7 +1,7 @@
 ---
 layout: doc
 title: 配置 - Simditor
-name: doc-config
+id: doc-config
 root: ../
 ---
 

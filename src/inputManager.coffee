@@ -1,26 +1,22 @@
 
-class InputManager extends Plugin
-
-  @className: 'InputManager'
+class InputManager extends SimpleModule
 
   opts:
     pasteImage: false
-
-  constructor: (args...) ->
-    super args...
-    @editor = @widget
-    @opts.pasteImage = 'inline' if @opts.pasteImage and typeof @opts.pasteImage != 'string'
-
-    # handlers which will be called when specific key is pressed in specific node
-    @_keystrokeHandlers = {}
-
-    @_shortcuts = {}
 
   _modifierKeys: [16, 17, 18, 91, 93, 224]
 
   _arrowKeys: [37..40]
 
   _init: ->
+    @editor = @_module
+
+    @opts.pasteImage = 'inline' if @opts.pasteImage and typeof @opts.pasteImage != 'string'
+
+    # handlers which will be called when specific key is pressed in specific node
+    @_keystrokeHandlers = {}
+
+    @_shortcuts = {}
 
     @_pasteArea = $('<div/>')
       .css({

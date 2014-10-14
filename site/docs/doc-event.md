@@ -1,7 +1,7 @@
 ---
 layout: doc
 title: 事件 - Simditor
-name: doc-event
+id: doc-event
 root: ../
 ---
 

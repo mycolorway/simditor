@@ -1,14 +1,11 @@
 
-class Util extends Plugin
+class Util extends SimpleModule
 
   @className: 'Util'
 
-  constructor: (args...) ->
-    super args...
-    @phBr = '' if @browser.msie and @browser.version < 11
-    @editor = @widget
-
   _init: ->
+    @editor = @_module
+    @phBr = '' if @browser.msie and @browser.version < 11
 
   phBr: '<br/>'
 

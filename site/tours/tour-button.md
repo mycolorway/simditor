@@ -1,7 +1,7 @@
 ---
 layout: tour
 title: 编写按钮 - Simditor
-name: tour-button
+id: tour-button
 root: ../
 ---
 
@@ -13,7 +13,7 @@ root: ../
 创建文件 `simditor-undo.coffee`，输入 Simditor 按钮的基本结构：
 
 ```coffee
-class UndoButton extends SimditorButton
+class UndoButton extends Simditor.Button
 
   name: 'undo'
 
@@ -43,7 +43,7 @@ Button 类有这些可以设置的属性：
 按钮被点击之后，Simditor 会调用 Button 的 `command` 方法，我们需要在这个方法里处理按钮的点击事件：
 
 ```coffee
-class UndoButton extends SimditorButton
+class UndoButton extends Simditor.Button
 
   name: 'undo'
 
@@ -62,8 +62,9 @@ Simditor.Toolbar.addButton UndoButton
 为了在工具栏上显示 undo 按钮，我们需要编译并引用新编写的按钮文件：
 
 ```html
-<script type="text/javascript" src="[script path]/jquery-2.1.0.js"></script>
-<script type="text/javascript" src="[script path]/simditor-all.js"></script>
+<script type="text/javascript" src="[script path]/jquery.min.js"></script>
+<script type="text/javascript" src="[script path]/module.js"></script>
+<script type="text/javascript" src="[script path]/simditor.js"></script>
 <script type="text/javascript" src="[script path]/simditor-undo.js"></script>
 ```
 

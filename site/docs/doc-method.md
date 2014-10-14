@@ -1,7 +1,7 @@
 ---
 layout: doc
 title: 方法 - Simditor
-name: doc-method
+id: doc-method
 root: ../
 ---
 

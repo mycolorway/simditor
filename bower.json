@@ -1,32 +1,35 @@
 {
   "name": "simditor",
-  "version": "1.0.5",
+  "version": "2.0.0",
   "homepage": "http://simditor.tower.im/",
   "authors": [
     "farthinker <farthinker@gmail.com>"
   ],
-  "description": "simple rich editor",
-  "main": "lib/simditor-all.min.js",
+  "description": "A simple online editor",
+  "main": "lib/simditor.min.js",
   "keywords": [
     "editor"
   ],
   "license": "MIT",
   "ignore": [
     "**/.*",
+    "spec",
     "node_modules",
     "vendor",
-		"site",
-		"_config.yml",
-		"Gemfile",
-		"Gruntfile.coffee",
-		"package.json",
-		"server.js",
-		"README"
+    "site",
+    "_config.yml",
+    "Gemfile",
+    "Gemfile.lock",
+    "Gruntfile.coffee",
+    "package.json",
+    "server.js",
+    "README.md",
+    "umd.hbs"
   ],
-	"dependencies": {
-		"jquery": "~2.1.0",
-		"fontawesome": "~4.1.0",
-		"simple-module": "master",
-		"simple-uploader": "master"
-	}
+  "dependencies": {
+    "jquery": "2.x",
+    "fontawesome": "4.x",
+    "simple-module": "2.x",
+    "simple-uploader": "2.x"
+  }
 }

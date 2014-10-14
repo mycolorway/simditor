@@ -1,5 +1,5 @@
 
-class UndoManager extends Plugin
+class UndoManager extends SimpleModule
 
   @className: 'UndoManager'
 
@@ -9,12 +9,10 @@ class UndoManager extends Plugin
 
   _timer: null
 
-  constructor: (args...) ->
-    super args...
-    @editor = @widget
+  _init: ->
+    @editor = @_module
     @_stack = []
 
-  _init: ->
     if @editor.util.os.mac
       undoShortcut = 'cmd+90'
       redoShortcut = 'shift+cmd+90'

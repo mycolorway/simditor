@@ -4,43 +4,45 @@ module.exports = (grunt) ->
 
     pkg: grunt.file.readJSON 'package.json'
 
-    concat:
+    coffee:
       simditor:
-        src: [
-          'src/selection.coffee',
-          'src/formatter.coffee',
-          'src/inputManager.coffee',
-          'src/keystroke.coffee',
-          'src/undoManager.coffee',
-          'src/util.coffee',
-          'src/toolbar.coffee',
-          'src/core.coffee',
-          'src/buttons/button.coffee',
-          'src/buttons/popover.coffee',
-          'src/buttons/title.coffee',
-          'src/buttons/bold.coffee',
-          'src/buttons/italic.coffee',
-          'src/buttons/underline.coffee',
-          'src/buttons/color.coffee',
-          'src/buttons/list.coffee',
-          'src/buttons/blockquote.coffee',
-          'src/buttons/code.coffee',
-          'src/buttons/link.coffee',
-          'src/buttons/image.coffee',
-          'src/buttons/indent.coffee',
-          'src/buttons/outdent.coffee',
-          'src/buttons/hr.coffee',
-          'src/buttons/table.coffee',
-          'src/buttons/strikethrough.coffee'
-        ]
-        dest: 'src/simditor.coffee'
-      all:
-        src: [
-          'vendor/bower/simple-module/lib/module.js',
-          'vendor/bower/simple-uploader/lib/uploader.js',
-          'lib/simditor.js'
-        ]
-        dest: 'lib/simditor-all.js'
+        options:
+          bare: true
+        files:
+          'lib/simditor.js': [
+            'src/selection.coffee',
+            'src/formatter.coffee',
+            'src/inputManager.coffee',
+            'src/keystroke.coffee',
+            'src/undoManager.coffee',
+            'src/util.coffee',
+            'src/toolbar.coffee',
+            'src/core.coffee',
+            'src/i18n.coffee',
+            'src/buttons/button.coffee',
+            'src/buttons/popover.coffee',
+            'src/buttons/title.coffee',
+            'src/buttons/bold.coffee',
+            'src/buttons/italic.coffee',
+            'src/buttons/underline.coffee',
+            'src/buttons/color.coffee',
+            'src/buttons/list.coffee',
+            'src/buttons/blockquote.coffee',
+            'src/buttons/code.coffee',
+            'src/buttons/link.coffee',
+            'src/buttons/image.coffee',
+            'src/buttons/indent.coffee',
+            'src/buttons/outdent.coffee',
+            'src/buttons/hr.coffee',
+            'src/buttons/table.coffee',
+            'src/buttons/strikethrough.coffee'
+          ]
+      site:
+        expand: true
+        flatten: true
+        src: 'site/assets/_coffee/*.coffee'
+        dest: 'site/assets/scripts/'
+        ext: '.js'
 
     sass:
       simditor:
@@ -59,19 +61,23 @@ module.exports = (grunt) ->
           'site/assets/styles/app.css': 'site/assets/_sass/app.scss'
           'site/assets/styles/mobile.css': 'site/assets/_sass/mobile.scss'
 
-    coffee:
-      simditor:
-        files:
-          'lib/simditor.js': 'src/simditor.coffee'
-      site:
-        expand: true
-        flatten: true
-        src: 'site/assets/_coffee/*.coffee'
-        dest: 'site/assets/scripts/'
-        ext: '.js'
+    umd:
+      all:
+        src: 'lib/simditor.js'
+        template: 'umd'
+        amdModuleId: 'simditor'
+        objectToExport: 'Simditor'
+        globalAlias: 'Simditor'
+        deps:
+          'default': ['$', 'SimpleModule']
+          amd: ['jquery', 'simple-module']
+          cjs: ['jquery', 'simple-module']
+          global:
+            items: ['jQuery', 'SimpleModule']
+            prefix: ''
 
     copy:
-      site:
+      vendor:
         files: [{
           src: 'vendor/bower/jquery/dist/jquery.min.js',
           dest: 'site/assets/scripts/jquery.min.js'
@@ -83,14 +89,7 @@ module.exports = (grunt) ->
           flatten: true,
           src: 'vendor/bower/fontawesome/fonts/*',
           dest: 'site/assets/fonts/'
-        }, {
-          src: 'styles/simditor.css',
-          dest: 'site/assets/styles/simditor.css'
-        }, {
-          src: 'lib/simditor-all.js',
-          dest: 'site/assets/scripts/simditor-all.js'
         }]
-
       styles:
         files: [{
           src: 'styles/simditor.css',
@@ -98,10 +97,15 @@ module.exports = (grunt) ->
         }]
       scripts:
         files: [{
-          src: 'lib/simditor-all.js',
-          dest: 'site/assets/scripts/simditor-all.js'
+          src: 'vendor/bower/simple-module/lib/module.js',
+          dest: 'site/assets/scripts/module.js'
+        }, {
+          src: 'vendor/bower/simple-uploader/lib/uploader.js',
+          dest: 'site/assets/scripts/uploader.js'
+        }, {
+          src: 'lib/simditor.js',
+          dest: 'site/assets/scripts/simditor.js'
         }]
-
       package:
         files: [{
           expand: true,
@@ -117,15 +121,6 @@ module.exports = (grunt) ->
         }, {
           src: 'vendor/bower/simple-uploader/lib/uploader.js',
           dest: 'package/scripts/js/uploader.js'
-        }, {
-          src: 'src/simditor.coffee',
-          dest: 'package/scripts/coffee/simditor.coffee'
-        }, {
-          src: 'vendor/bower/simple-module/src/module.coffee',
-          dest: 'package/scripts/coffee/module.coffee'
-        }, {
-          src: 'vendor/bower/simple-uploader/src/uploader.coffee',
-          dest: 'package/scripts/coffee/uploader.coffee'
         }, {
           expand: true,
           flatten: true
@@ -150,23 +145,25 @@ module.exports = (grunt) ->
     watch:
       styles:
         files: ['styles/*.scss']
-        tasks: ['sass:simditor', 'copy:styles', 'shell']
+        tasks: ['sass:simditor', 'copy:styles', 'jekyll']
       scripts:
         files: ['src/*.coffee', 'src/buttons/*.coffee']
-        tasks: ['concat:simditor', 'coffee:simditor', 'concat:all', 'copy:site', 'shell']
+        tasks: ['coffee:simditor', 'umd', 'copy:scripts', 'jekyll']
       siteStyles:
         files: ['site/assets/_sass/*.scss']
         tasks: ['sass:site', 'shell']
       siteScripts:
         files: ['site/assets/_coffee/*.coffee']
-        tasks: ['coffee:site', 'shell']
+        tasks: ['coffee:site', 'jekyll']
       jekyll:
         files: ['site/**/*.html', 'site/**/*.md', 'site/**/*.yml']
-        tasks: ['shell']
+        tasks: ['jekyll']
 
-    shell:
-      jekyll:
-        command: 'bundle exec jekyll build'
+    jekyll:
+      site:
+        options:
+          bundleExec: true
+          config: 'jekyll.yml'
 
     express:
       server:
@@ -177,7 +174,8 @@ module.exports = (grunt) ->
     uglify:
       simditor:
         files:
-          'package/scripts/js/simditor-all.min.js': 'package/scripts/js/simditor-all.js'
+          'package/scripts/js/module.min.js': 'package/scripts/js/module.js'
+          'package/scripts/js/uploader.min.js': 'package/scripts/js/uploader.js'
           'package/scripts/js/simditor.min.js': 'package/scripts/js/simditor.js'
 
     compress:
@@ -198,16 +196,16 @@ module.exports = (grunt) ->
 
   grunt.loadNpmTasks 'grunt-contrib-sass'
   grunt.loadNpmTasks 'grunt-contrib-coffee'
-  grunt.loadNpmTasks 'grunt-contrib-concat'
   grunt.loadNpmTasks 'grunt-contrib-watch'
   grunt.loadNpmTasks 'grunt-contrib-copy'
   grunt.loadNpmTasks 'grunt-contrib-uglify'
   grunt.loadNpmTasks 'grunt-contrib-compress'
   grunt.loadNpmTasks 'grunt-contrib-clean'
+  grunt.loadNpmTasks 'grunt-umd'
   grunt.loadNpmTasks 'grunt-express'
-  grunt.loadNpmTasks 'grunt-shell'
+  grunt.loadNpmTasks 'grunt-jekyll'
 
   grunt.registerTask 'default', ['site', 'express', 'watch']
-  grunt.registerTask 'site', ['sass', 'concat:simditor', 'coffee', 'concat:all', 'copy:site', 'shell']
+  grunt.registerTask 'site', ['sass', 'coffee', 'umd', 'copy:vendor', 'copy:scripts', 'copy:styles', 'jekyll']
   grunt.registerTask 'package', ['clean:package', 'copy:package', 'uglify:simditor', 'compress']
 

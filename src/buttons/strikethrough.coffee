@@ -5,7 +5,7 @@ class StrikethroughButton extends Button
 
   icon: 'strikethrough'
 
-  title: '删除线文字'
+  title: Simditor._t 'strikethrough'
 
   htmlTag: 'strike'
 
@@ -27,4 +27,4 @@ class StrikethroughButton extends Button
     $(document).trigger 'selectionchange'
 
 
-Simditor.Toolbar.addButton(StrikethroughButton)
+Simditor.Toolbar.addButton StrikethroughButton

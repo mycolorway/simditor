@@ -1,15 +1,10 @@
 
 # Standardize keystroke actions across browsers
 
-class Keystroke extends Plugin
-
-  @className: 'Keystroke'
-
-  constructor: (args...) ->
-    super args...
-    @editor = @widget
+class Keystroke extends SimpleModule
 
   _init: ->
+    @editor = @_module
 
     # safari doesn't support shift + enter default behavior
     if @editor.util.browser.safari

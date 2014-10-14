@@ -1,5 +1,5 @@
 
-class Toolbar extends Plugin
+class Toolbar extends SimpleModule
 
   @className: 'Toolbar'
 
@@ -12,11 +12,8 @@ class Toolbar extends Plugin
     wrapper: '<div class="simditor-toolbar"><ul></ul></div>'
     separator: '<li><span class="separator"></span></li>'
 
-  constructor: (args...) ->
-    super args...
-    @editor = @widget
-
   _init: ->
+    @editor = @_module
     return unless @opts.toolbar
 
     unless $.isArray @opts.toolbar
@@ -86,7 +83,8 @@ class Toolbar extends Plugin
         throw new Error 'simditor: invalid toolbar button "' + name + '"'
         continue
 
-      @buttons.push new @constructor.buttons[name](@editor)
+      @buttons.push new @constructor.buttons[name]
+        editor: @editor
 
     if @opts.toolbarHidden
       @wrapper.hide()

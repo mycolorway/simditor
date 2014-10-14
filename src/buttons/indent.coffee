@@ -5,7 +5,7 @@ class IndentButton extends Button
 
   icon: 'indent'
 
-  title: '向右缩进（Tab）'
+  title: Simditor._t('indent') + ' (Tab)'
 
   status: ($node) ->
     true
@@ -14,5 +14,5 @@ class IndentButton extends Button
     @editor.util.indent()
 
 
-Simditor.Toolbar.addButton(IndentButton)
+Simditor.Toolbar.addButton IndentButton
 

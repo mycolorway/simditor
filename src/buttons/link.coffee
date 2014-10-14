@@ -5,7 +5,7 @@ class LinkButton extends Button
 
   icon: 'link'
 
-  title: '插入链接'
+  title: Simditor._t 'insertLink'
 
   htmlTag: 'a'
 
@@ -13,7 +13,8 @@ class LinkButton extends Button
 
   render: (args...) ->
     super args...
-    @popover = new LinkPopover(@editor)
+    @popover = new LinkPopover
+      button: @
 
   status: ($node) ->
     @setDisabled $node.is(@disableTag) if $node?
@@ -57,7 +58,7 @@ class LinkButton extends Button
       $link = $('<a/>', {
         href: 'http://www.example.com',
         target: '_blank',
-        text: linkText || '链接文字'
+        text: linkText || Simditor._t('linkText')
       })
 
       if $startBlock[0] == $endBlock[0]
@@ -85,12 +86,12 @@ class LinkPopover extends Popover
   _tpl: """
     <div class="link-settings">
       <div class="settings-field">
-        <label>文本</label>
+        <label>#{ Simditor._t 'text' }</label>
         <input class="link-text" type="text"/>
-        <a class="btn-unlink" href="javascript:;" title="取消链接" tabindex="-1"><span class="fa fa-unlink"></span></a>
+        <a class="btn-unlink" href="javascript:;" title="#{ Simditor._t 'removeLink' }" tabindex="-1"><span class="fa fa-unlink"></span></a>
       </div>
       <div class="settings-field">
-        <label>链接</label>
+        <label>#{ Simditor._t 'linkUrl' }</label>
         <input class="link-url" type="text"/>
       </div>
     </div>
@@ -141,5 +142,5 @@ class LinkPopover extends Popover
 
 
 
-Simditor.Toolbar.addButton(LinkButton)
+Simditor.Toolbar.addButton LinkButton
 

@@ -1,14 +1,14 @@
 ---
 layout: doc
 title: Button - Simditor
-name: doc-button
+id: doc-button
 root: ../
 ---
 
 Simditor 的按钮都继承自 [Button 类](https://github.com/mycolorway/simditor/blob/master/src/buttons/button.coffee)，并且需要通过 `Simditor.Toolbar.addButton(Button)` 方法来注册，例如：
 
 ```coffee
-class TitleButton extends SimditorButton
+class TitleButton extends Simditor.Button
   name: 'title'
   title: '标题文字'
   ...

@@ -1,5 +1,5 @@
 
-class Button extends Module
+class Button extends SimpleModule
 
   _tpl:
     item: '<li><a tabindex="-1" unselectable="on" class="toolbar-item" href="javascript:;"><span></span></a></li>'
@@ -29,7 +29,11 @@ class Button extends Module
 
   shortcut: null
 
-  constructor: (@editor) ->
+  constructor: (opts) ->
+    @editor = opts.editor
+    super opts
+
+  _init: ->
     @render()
 
     @el.on 'mousedown', (e) =>
@@ -146,4 +150,4 @@ class Button extends Module
   command: (param) ->
 
 
-window.SimditorButton = Button
+Simditor.Button = Button

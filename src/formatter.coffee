@@ -1,11 +1,8 @@
 
-class Formatter extends Plugin
+class Formatter extends SimpleModule
 
-  @className: 'Formatter'
-
-  constructor: (args...) ->
-    super args...
-    @editor = @widget
+  _init: ->
+    @editor = @_module
 
     @_allowedTags = ['br', 'a', 'img', 'b', 'strong', 'i', 'u', 'font', 'p', 'ul', 'ol', 'li', 'blockquote', 'pre', 'h1', 'h2', 'h3', 'h4', 'hr']
     @_allowedAttributes =
@@ -19,7 +16,6 @@ class Formatter extends Plugin
       h3: ['data-indent']
       h4: ['data-indent']
 
-  _init: ->
     @editor.body.on 'click', 'a', (e) =>
       false
 

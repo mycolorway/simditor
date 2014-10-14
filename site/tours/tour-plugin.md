@@ -1,7 +1,7 @@
 ---
 layout: tour
 title: 编写扩展 - Simditor
-name: tour-plugin
+id: tour-plugin
 root: ../
 ---
 
@@ -17,25 +17,16 @@ root: ../
 创建 `simditor-autosave.coffee`，输入扩展的基本结构：
 
 ```coffee
-class SimditorAutosave extends Plugin
-  constructor: (@widget) ->
-    super @widget
-    @editor = @widget
-
+class SimditorAutosave extends SimpleModule
   _init: ->
+    @editor = @_module
 
 Simditor.connect SimditorAutosave
 ```
 
-Simditor 的扩展继承自 [Simple Module](https://github.com/mycolorway/simple-module) 的 [Plugin类](https://github.com/mycolorway/simple-module/blob/master/src/module.coffee#L66)，并且 Simditor 提供一个类方法 `connect` 用来安装扩展。
+Simditor 的扩展继承自 [Simple Module](https://github.com/mycolorway/simple-module)，并且 Simditor 提供一个类方法 `connect` 用来安装扩展。
 
-在初始化扩展的时候，Simditor 会给 Plugin 的 constructor 方法传入自己的引用 `@widget`。
-
-`_init` 方法和 `constructor` 的区别是，constructor 在 Simditor 初始化扩展的时候（Simditor 自身初始化之前）调用，而 `_init` 方法会在 Simditor 自身初始化完成之后调用。所以，在 `_init` 方法中，@widget 的这些属性才是可用的：
-
-* `@widget.textarea`：与 Simditor 绑定的 textarea 元素；
-* `@widtet.el`：Simditor 的容器元素 `div.simditor`；
-* `@widget.body`：Simditor的内容元素 `div.simditor-body[contenteditable=true]`。
+在初始化扩展的时候，Simditor 会给 Plugin 的 constructor 方法传入自己的引用 `@_module`。
 
 
 ###扩展的初始化选项
@@ -43,15 +34,12 @@ Simditor 的扩展继承自 [Simple Module](https://github.com/mycolorway/simple
 我们需要给 Simditor 增加一个 autosave 选项，用来开关 autosave 功能并且构造 localStorage 的 key：
 
 ```coffee
-class SimditorAutosave extends Plugin
+class SimditorAutosave extends SimpleModule
   opts:
     autosave: false
 
-  constructor: (@widget) ->
-    super @widget
-    @editor = @widget
-
   _init: ->
+    @editor = @_module
     @opts.autosave = @opts.autosave || @editor.textarea.data('autosave')
     return unless @opts.autosave
 	key = 'simditor-autosave-' + (@opts.autosave || @editor.id)
@@ -67,15 +55,12 @@ Plugin 的 opts 属性会与 Simditor 的 opts 保持同步，所以我们可以
 准备工作都做好之后，我们就可以添加扩展的核心逻辑了：
 
 ```coffee
-class SimditorAutosave extends Plugin
+class SimditorAutosave extends SimpleModule
   opts:
     autosave: false
 
-  constructor: (@widget) ->
-    super @widget
-    @editor = @widget
-
   _init: ->
+    @editor = @_module
     @opts.autosave = @opts.autosave || @editor.textarea.data('autosave')
     return unless @opts.autosave
 	key = 'simditor-autosave-' + (@opts.autosave || @editor.id)

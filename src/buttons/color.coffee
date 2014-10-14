@@ -5,7 +5,7 @@ class ColorButton extends Button
 
   icon: 'font'
 
-  title: '文字颜色'
+  title: Simditor._t 'color'
 
   disableTag: 'pre'
 
@@ -67,5 +67,5 @@ class ColorButton extends Button
     rgbToHex match[1] * 1, match[2] * 1, match[3] * 1
 
 
-Simditor.Toolbar.addButton(ColorButton)
+Simditor.Toolbar.addButton ColorButton
 

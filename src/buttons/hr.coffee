@@ -5,7 +5,7 @@ class HrButton extends Button
 
   icon: 'minus'
 
-  title: '分隔线'
+  title: Simditor._t 'hr'
 
   htmlTag: 'hr'
 
@@ -32,5 +32,5 @@ class HrButton extends Button
     @editor.trigger 'valuechanged'
 
 
-Simditor.Toolbar.addButton(HrButton)
+Simditor.Toolbar.addButton HrButton
 

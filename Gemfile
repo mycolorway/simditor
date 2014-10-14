@@ -1,6 +1,5 @@
 source 'http://ruby.taobao.org'
 
 gem 'github-pages'
-gem 'sass'
-gem 'coffee-script'
+gem 'sass',    '>= 3.4.0'
 

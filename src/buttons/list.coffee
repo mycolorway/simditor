@@ -102,7 +102,7 @@ class ListButton extends Button
 class OrderListButton extends ListButton
   type: 'ol'
   name: 'ol'
-  title: '有序列表'
+  title: Simditor._t 'ol'
   icon: 'list-ol'
   htmlTag: 'ol'
   shortcut: 'cmd+191'
@@ -117,7 +117,7 @@ class OrderListButton extends ListButton
 class UnorderListButton extends ListButton
   type: 'ul'
   name: 'ul'
-  title: '无序列表'
+  title: Simditor._t 'ul'
   icon: 'list-ul'
   htmlTag: 'ul'
   shortcut: 'cmd+190'
@@ -129,6 +129,6 @@ class UnorderListButton extends ListButton
       @shortcut = 'ctrl+190'
     super()
 
-Simditor.Toolbar.addButton(OrderListButton)
-Simditor.Toolbar.addButton(UnorderListButton)
+Simditor.Toolbar.addButton OrderListButton
+Simditor.Toolbar.addButton UnorderListButton
 

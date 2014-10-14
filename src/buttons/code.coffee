@@ -5,15 +5,14 @@ class CodeButton extends Button
 
   icon: 'code'
 
-  title: '插入代码'
+  title: Simditor._t 'code'
 
   htmlTag: 'pre'
 
   disableTag: 'li, table'
 
-
-  constructor: (@editor) ->
-    super @editor
+  _init: ->
+    super()
 
     @editor.on 'decorate', (e, $el) =>
       $el.find('pre').each (i, pre) =>
@@ -25,7 +24,8 @@ class CodeButton extends Button
 
   render: (args...) ->
     super args...
-    @popover = new CodePopover(@editor)
+    @popover = new CodePopover
+      button: @
 
   status: ($node) ->
     result = super $node
@@ -140,6 +140,6 @@ class CodePopover extends Popover
     if @lang? then @selectEl.val(@lang) else @selectEl.val(-1)
 
 
-Simditor.Toolbar.addButton(CodeButton)
+Simditor.Toolbar.addButton CodeButton
 
 

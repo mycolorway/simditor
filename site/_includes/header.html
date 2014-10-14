@@ -4,9 +4,9 @@
 	<p class="desc">简单快速的富文本编辑器</p>
 </header>
 <nav>
-	<a href="{{ page.root }}."{% if page.name == 'demo' %} class="active"{% endif %}>Demo</a>
-	<a href="{{ page.root }}tours/tour-usage.html"{% if page.name contains 'tour' %} class="active"{% endif %}>教程</a>
-	<a href="{{ page.root }}docs/doc-config.html"{% if page.name contains 'doc' %} class="active"{% endif %}>文档</a>
-	<a href="{{ page.root }}extension.html"{% if page.name == 'extension' %} class="active"{% endif %}>扩展</a>
-	<a href="{{ page.root }}download.html"{% if page.name == 'download' %} class="active"{% endif %}>下载</a>
+	<a href="{{ page.root }}."{% if page.id == 'demo' %} class="active"{% endif %}>Demo</a>
+	<a href="{{ page.root }}tours/tour-usage.html"{% if page.id contains 'tour' %} class="active"{% endif %}>教程</a>
+	<a href="{{ page.root }}docs/doc-config.html"{% if page.id contains 'doc' %} class="active"{% endif %}>文档</a>
+	<a href="{{ page.root }}extension.html"{% if page.id == 'extension' %} class="active"{% endif %}>扩展</a>
+	<a href="{{ page.root }}download.html"{% if page.id == 'download' %} class="active"{% endif %}>下载</a>
 </nav>

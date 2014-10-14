@@ -5,7 +5,7 @@ class UnderlineButton extends Button
 
   icon: 'underline'
 
-  title: '下划线文字'
+  title: Simditor._t 'underline'
 
   htmlTag: 'u'
 
@@ -37,6 +37,6 @@ class UnderlineButton extends Button
     $(document).trigger 'selectionchange'
 
 
-Simditor.Toolbar.addButton(UnderlineButton)
+Simditor.Toolbar.addButton UnderlineButton
 
 

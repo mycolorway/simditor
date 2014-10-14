@@ -5,7 +5,7 @@ class ItalicButton extends Button
 
   icon: 'italic'
 
-  title: '斜体文字'
+  title: Simditor._t 'italic'
 
   htmlTag: 'i'
 
@@ -38,5 +38,5 @@ class ItalicButton extends Button
     $(document).trigger 'selectionchange'
 
 
-Simditor.Toolbar.addButton(ItalicButton)
+Simditor.Toolbar.addButton ItalicButton
 

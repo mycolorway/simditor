@@ -5,7 +5,7 @@ class BlockquoteButton extends Button
 
   icon: 'quote-left'
 
-  title: '引用'
+  title: Simditor._t 'blockquote'
 
   htmlTag: 'blockquote'
 
@@ -54,5 +54,5 @@ class BlockquoteButton extends Button
 
 
 
-Simditor.Toolbar.addButton(BlockquoteButton)
+Simditor.Toolbar.addButton BlockquoteButton
 

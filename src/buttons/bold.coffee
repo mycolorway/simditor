@@ -5,7 +5,7 @@ class BoldButton extends Button
 
   icon: 'bold'
 
-  title: '加粗文字'
+  title: Simditor._t 'bold'
 
   htmlTag: 'b, strong'
 
@@ -37,4 +37,4 @@ class BoldButton extends Button
     $(document).trigger 'selectionchange'
 
 
-Simditor.Toolbar.addButton(BoldButton)
+Simditor.Toolbar.addButton BoldButton

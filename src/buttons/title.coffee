@@ -3,7 +3,7 @@ class TitleButton extends Button
 
   name: 'title'
 
-  title: '标题文字'
+  title: Simditor._t 'title'
 
   htmlTag: 'h1, h2, h3, h4'
 
@@ -11,19 +11,19 @@ class TitleButton extends Button
 
   menu: [{
     name: 'normal',
-    text: '普通文本',
+    text: Simditor._t('normalText'),
     param: 'p'
   }, '|', {
     name: 'h1',
-    text: '标题 1',
+    text: Simditor._t('title') + ' 1',
     param: 'h1'
   }, {
     name: 'h2',
-    text: '标题 2',
+    text: Simditor._t('title') + ' 2',
     param: 'h2'
   }, {
     name: 'h3',
-    text: '标题 3',
+    text: Simditor._t('title') + ' 3',
     param: 'h3'
   }]
 
@@ -79,5 +79,5 @@ class TitleButton extends Button
     results
 
 
-Simditor.Toolbar.addButton(TitleButton)
+Simditor.Toolbar.addButton TitleButton
 

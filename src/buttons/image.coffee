@@ -5,7 +5,7 @@ class ImageButton extends Button
 
   icon: 'picture-o'
 
-  title: '插入图片'
+  title: Simditor._t 'insertImage'
 
   htmlTag: 'img'
 
@@ -21,15 +21,15 @@ class ImageButton extends Button
 
   menu: [{
     name: 'upload-image',
-    text: '本地图片'
+    text: Simditor._t 'localImage'
   }, {
     name: 'external-image',
-    text: '外链图片'
+    text: Simditor._t 'externalImage'
   }]
 
-  constructor: (@editor) ->
+  _init: () ->
     @menu = false unless @editor.uploader?
-    super @editor
+    super()
 
     @defaultImage = @editor.opts.defaultImage
     #@maxWidth = @editor.opts.maxImageWidth || @editor.body.width()
@@ -81,7 +81,8 @@ class ImageButton extends Button
 
   render: (args...) ->
     super args...
-    @popover = new ImagePopover(@)
+    @popover = new ImagePopover
+      button: @
 
   renderMenu: ->
     super()
@@ -91,7 +92,7 @@ class ImageButton extends Button
 
     createInput = =>
       $input.remove() if $input
-      $input = $('<input type="file" title="上传图片" accept="image/*">')
+      $input = $('<input type="file" title="' + Simditor._t('uploadImage') + '" accept="image/*">')
         .appendTo($uploadItem)
 
     createInput()
@@ -170,7 +171,7 @@ class ImageButton extends Button
       $img.removeData 'mask'
 
       if result.success == false
-        msg = result.msg || '上传被拒绝了'
+        msg = result.msg || Simditor._t('uploadFailed')
         if simple? and simple.message?
           simple.message
             content: msg
@@ -196,7 +197,7 @@ class ImageButton extends Button
           result = $.parseJSON xhr.responseText
           msg = result.msg
         catch e
-          msg = '上传出错了'
+          msg = Simditor._t('uploadError')
 
         if simple? and simple.message?
           simple.message
@@ -318,18 +319,18 @@ class ImagePopover extends Popover
   _tpl: """
     <div class="link-settings">
       <div class="settings-field">
-        <label>图片地址</label>
+        <label>#{ Simditor._t 'imageUrl' }</label>
         <input class="image-src" type="text" tabindex="1" />
-        <a class="btn-upload" href="javascript:;" title="上传图片" tabindex="-1">
+        <a class="btn-upload" href="javascript:;" title="#{ Simditor._t 'uploadImage' }" tabindex="-1">
           <span class="fa fa-upload"></span>
         </a>
       </div>
       <div class="settings-field">
-        <label>图片尺寸</label>
+        <label>#{ Simditor._t 'imageSize' }</label>
         <input class="image-size" id="image-width" type="text" tabindex="2" />
         <span class="times">×</span>
         <input class="image-size" id="image-height" type="text" tabindex="3" />
-        <a class="btn-restore" href="javascript:;" title="还原尺寸" tabindex="-1">
+        <a class="btn-restore" href="javascript:;" title="#{ Simditor._t 'restoreImageSize' }" tabindex="-1">
           <span class="fa fa-reply"></span>
         </a>
       </div>
@@ -339,9 +340,6 @@ class ImagePopover extends Popover
   offset:
     top: 6
     left: -4
-
-  constructor: (@button) ->
-    super @button.editor
 
   render: ->
     @el.addClass('image-popover')
@@ -409,7 +407,7 @@ class ImagePopover extends Popover
 
     createInput = =>
       @input.remove() if @input
-      @input = $('<input type="file" title="上传图片" accept="image/*">')
+      @input = $('<input type="file" title="' + Simditor._t('uploadImage') + '" accept="image/*">')
         .appendTo($uploadBtn)
 
     createInput()
@@ -455,11 +453,11 @@ class ImagePopover extends Popover
     @height = $img.height()
 
     if $img.hasClass 'uploading'
-      @srcEl.val '正在上传'
+      @srcEl.val Simditor._t('uploading')
     else
       @srcEl.val $img.attr('src')
       @widthEl.val @width
       @heightEl.val @height
 
 
-Simditor.Toolbar.addButton(ImageButton)
+Simditor.Toolbar.addButton ImageButton

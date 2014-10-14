@@ -1,15 +1,11 @@
 
-class Selection extends Plugin
+class Selection extends SimpleModule
 
   @className: 'Selection'
 
-  constructor: (args...) ->
-    super args...
-    @sel = document.getSelection()
-    @editor = @widget
-
   _init: ->
-
+    @editor = @_module
+    @sel = document.getSelection()
 
   clear: ->
     try
