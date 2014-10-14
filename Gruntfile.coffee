@@ -111,16 +111,16 @@ module.exports = (grunt) ->
           expand: true,
           flatten: true
           src: 'lib/*',
-          dest: 'package/scripts/js/'
+          dest: 'package/scripts/'
         }, {
           src: 'vendor/bower/jquery/dist/jquery.min.js',
-          dest: 'package/scripts/js/jquery.min.js'
+          dest: 'package/scripts/jquery.min.js'
         }, {
           src: 'vendor/bower/simple-module/lib/module.js',
-          dest: 'package/scripts/js/module.js'
+          dest: 'package/scripts/module.js'
         }, {
           src: 'vendor/bower/simple-uploader/lib/uploader.js',
-          dest: 'package/scripts/js/uploader.js'
+          dest: 'package/scripts/uploader.js'
         }, {
           expand: true,
           flatten: true
@@ -174,9 +174,9 @@ module.exports = (grunt) ->
     uglify:
       simditor:
         files:
-          'package/scripts/js/module.min.js': 'package/scripts/js/module.js'
-          'package/scripts/js/uploader.min.js': 'package/scripts/js/uploader.js'
-          'package/scripts/js/simditor.min.js': 'package/scripts/js/simditor.js'
+          'package/scripts/module.min.js': 'package/scripts/module.js'
+          'package/scripts/uploader.min.js': 'package/scripts/uploader.js'
+          'package/scripts/simditor.min.js': 'package/scripts/simditor.js'
 
     compress:
       package:
