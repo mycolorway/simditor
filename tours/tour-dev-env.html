@@ -77,7 +77,7 @@
 <p><img src="http://pic.yupoo.com/farthinker_v/DFeVxRCs/custom.jpg" alt="Fork Simditor"></p>
 
 <p>然后将 fork 之后的仓库 clone 到本地：</p>
-<div class="highlight"><pre><code class="bash language-bash" data-lang="bash"><span class="nv">$ </span>git clone git@github.com:<span class="o">[</span>your username<span class="o">]</span>/simditor.git
+<div class="highlight"><pre><code class="language-bash" data-lang="bash"><span class="nv">$ </span>git clone git@github.com:<span class="o">[</span>your username<span class="o">]</span>/simditor.git
 </code></pre></div>
 <h3>用 Bundler 管理 Gem 包</h3>
 
@@ -85,15 +85,14 @@
 
 <ul>
 <li><a href="https://github.com/nex3/sass">sass</a>：用来将 scss 文件编译为 css 文件</li>
-<li><a href="https://github.com/josh/ruby-coffee-script">coffee-script</a>: 用来将 coffee 文件编译为 js 文件</li>
 <li><a href="https://github.com/github/pages-gem">github-pages</a>: 在本地安装 <a href="https://pages.github.com/">Github Pages</a> 使用的 <a href="http://jekyllrb.com/">Jekyll</a> 环境，用来生成 Simditor 的网站</li>
 </ul>
 
 <p>首先，确保你的系统中已经安装了 <a href="https://www.ruby-lang.org/en/installation/">Ruby</a>，然后在命令行中安装 Bundler：</p>
-<div class="highlight"><pre><code class="bash language-bash" data-lang="bash"><span class="nv">$ </span>gem install bundler
+<div class="highlight"><pre><code class="language-bash" data-lang="bash"><span class="nv">$ </span>gem install bundler
 </code></pre></div>
 <p>进入 Simditor 根目录，安装依赖的 Gem 包：</p>
-<div class="highlight"><pre><code class="bash language-bash" data-lang="bash"><span class="nv">$ </span><span class="nb">cd </span>simditor
+<div class="highlight"><pre><code class="language-bash" data-lang="bash"><span class="nv">$ </span><span class="nb">cd </span>simditor
 <span class="nv">$ </span>bundle install
 </code></pre></div>
 <h3>用 Grunt 管理自动化任务</h3>
@@ -101,10 +100,10 @@
 <p>Simditor 使用 <a href="http://gruntjs.com/">Grunt</a> 来实现本地的自动化任务，例如运行本地开发服务器、监视源代码文件并自动编译等等。</p>
 
 <p>Grunt 需要通过 <a href="http://nodejs.org/">Node.js</a> 的包管理工具 npm 来安装，所以先确保你的系统已经安装了 Node.js，然后通过 npm 安装 Grunt 的命令行工具：</p>
-<div class="highlight"><pre><code class="bash language-bash" data-lang="bash"><span class="nv">$ </span>sudo npm install -g grunt-cli
+<div class="highlight"><pre><code class="language-bash" data-lang="bash"><span class="nv">$ </span>sudo npm install -g grunt-cli
 </code></pre></div>
 <p>最后安装 <code>package.json</code> 里配置的 grunt 插件：</p>
-<div class="highlight"><pre><code class="bash language-bash" data-lang="bash"><span class="nv">$ </span>npm install
+<div class="highlight"><pre><code class="language-bash" data-lang="bash"><span class="nv">$ </span>npm install
 </code></pre></div>
 <h3>用 Bower 管理依赖项目</h3>
 
@@ -117,15 +116,15 @@
 </ul>
 
 <p>先通过<code>npm</code>安装bower：</p>
-<div class="highlight"><pre><code class="bash language-bash" data-lang="bash">npm install -g bower
+<div class="highlight"><pre><code class="language-bash" data-lang="bash">npm install -g bower
 </code></pre></div>
 <p>然后安装 <code>bower.json</code> 里面配置的依赖项目：</p>
-<div class="highlight"><pre><code class="bash language-bash" data-lang="bash">bower install
+<div class="highlight"><pre><code class="language-bash" data-lang="bash">bower install
 </code></pre></div>
 <h3>开始开发</h3>
 
 <p>现在运行 grunt 的默认任务：</p>
-<div class="highlight"><pre><code class="bash language-bash" data-lang="bash"><span class="nv">$ </span>grunt
+<div class="highlight"><pre><code class="language-bash" data-lang="bash"><span class="nv">$ </span>grunt
 </code></pre></div>
 <p>然后用浏览器访问 <code>http://localhost:3000/demo.html</code>，就可以打开本地生成的 Simditor 网站了。这个时候修改 Simditor 的源代码，grunt 会自动编译并重新生成网站，你只需要刷新页面就可以测试最新的改动。</p>
 

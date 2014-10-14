@@ -70,7 +70,7 @@
 
 	<article class="editor-style">
 		<p>Simditor 会在特定情况下触发下列事件，你可以为编辑器实例绑定这些事件来做相应的操作：</p>
-<div class="highlight"><pre><code class="coffee language-coffee" data-lang="coffee"><span class="c1"># 初始化 Simditor</span>
+<div class="highlight"><pre><code class="language-coffee" data-lang="coffee"><span class="c1"># 初始化 Simditor</span>
 <span class="nv">editor = </span><span class="k">new</span> <span class="nx">Simditor</span>
   <span class="nv">textarea: </span><span class="nx">$</span><span class="p">(</span><span class="s">&#39;#editor&#39;</span><span class="p">)</span>
 
@@ -139,13 +139,13 @@
 <p>在扩展或者按钮中可能会在编辑的内容中插入一些比较复杂元素（比如表格），在编辑过程中，为了给用户呈现更友好的编辑体验，我们需要加入一些与内容无关的交互元素（我们称这个过程为「修饰」），这些起修饰作用的元素不应该成为内容的一部分，因此会在获取编辑器内容的时候被去掉。</p>
 
 <p>例如，为了实现表格拖动调整列宽的功能，我们需要一些额外的 HTML 标签：</p>
-<div class="highlight"><pre><code class="html language-html" data-lang="html"><span class="nt">&lt;div</span> <span class="na">class=</span><span class="s">&quot;simditor-table&quot;</span><span class="nt">&gt;</span> <span class="c">&lt;!-- 额外的标签 --&gt;</span>
+<div class="highlight"><pre><code class="language-html" data-lang="html"><span class="nt">&lt;div</span> <span class="na">class=</span><span class="s">&quot;simditor-table&quot;</span><span class="nt">&gt;</span> <span class="c">&lt;!-- 额外的标签 --&gt;</span>
   <span class="nt">&lt;table&gt;</span>...<span class="nt">&lt;/table&gt;</span>
   <span class="nt">&lt;div</span> <span class="na">class=</span><span class="s">&quot;simditor-resize-handle&quot;</span> <span class="na">contenteditable=</span><span class="s">&quot;false&quot;</span><span class="nt">&gt;&lt;/div&gt;</span> <span class="c">&lt;!-- 额外的标签 --&gt;</span>
 <span class="nt">&lt;/div&gt;</span>
 </code></pre></div>
 <p>在插入表格的时候，编辑器会调用表格的 decorate 方法（创建额外的 HTML 标签），在获取编辑器内容的时候会通过 undecorate 事件调用表格的 undecorate 方法（去掉额外的 HTML 标签）。</p>
-<div class="highlight"><pre><code class="coffee language-coffee" data-lang="coffee"><span class="k">class</span> <span class="nx">TableButton</span> <span class="k">extends</span> <span class="nx">Button</span>
+<div class="highlight"><pre><code class="language-coffee" data-lang="coffee"><span class="k">class</span> <span class="nx">TableButton</span> <span class="k">extends</span> <span class="nx">Button</span>
   <span class="nv">constructor: </span><span class="nf">(@editor) -&gt;</span>
     <span class="p">...</span>
 
@@ -220,7 +220,7 @@
 <p>参数<code>$pasteContent</code>是粘贴的内容，可以根据它来决定是否要中断粘贴，如果返回false，粘贴将不会生效</p>
 
 <h6>示例</h6>
-<div class="highlight"><pre><code class="js language-js" data-lang="js"><span class="c1">// 如果粘贴的内容含有图片则中断粘贴</span>
+<div class="highlight"><pre><code class="language-js" data-lang="js"><span class="c1">// 如果粘贴的内容含有图片则中断粘贴</span>
 <span class="nx">editor</span><span class="p">.</span><span class="nx">on</span> <span class="s1">&#39;pasting&#39;</span><span class="p">,</span> <span class="p">(</span><span class="nx">e</span><span class="p">,</span> <span class="nx">$pasteContent</span><span class="p">)</span> <span class="o">-&gt;</span>
   <span class="k">if</span> <span class="nx">$pasteContent</span><span class="p">.</span><span class="nx">find</span><span class="p">(</span><span class="s2">&quot;img&quot;</span><span class="p">).</span><span class="nx">length</span> <span class="o">&gt;</span> <span class="mi">0</span>
     <span class="k">return</span> <span class="kc">false</span>

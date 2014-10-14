@@ -71,7 +71,7 @@
 		<h3>第一步：下载并引用</h3>
 
 <p>在<a href="../download.html">这里</a>下载并解压最新版的 Simditor 文件，然后在页面中引入这些文件：</p>
-<div class="highlight"><pre><code class="html language-html" data-lang="html"><span class="nt">&lt;link</span> <span class="na">rel=</span><span class="s">&quot;stylesheet&quot;</span> <span class="na">type=</span><span class="s">&quot;text/css&quot;</span> <span class="na">href=</span><span class="s">&quot;[style path]/font-awesome.css&quot;</span> <span class="nt">/&gt;</span>
+<div class="highlight"><pre><code class="language-html" data-lang="html"><span class="nt">&lt;link</span> <span class="na">rel=</span><span class="s">&quot;stylesheet&quot;</span> <span class="na">type=</span><span class="s">&quot;text/css&quot;</span> <span class="na">href=</span><span class="s">&quot;[style path]/font-awesome.css&quot;</span> <span class="nt">/&gt;</span>
 <span class="nt">&lt;link</span> <span class="na">rel=</span><span class="s">&quot;stylesheet&quot;</span> <span class="na">type=</span><span class="s">&quot;text/css&quot;</span> <span class="na">href=</span><span class="s">&quot;[style path]/simditor.css&quot;</span> <span class="nt">/&gt;</span>
 
 <span class="nt">&lt;script </span><span class="na">type=</span><span class="s">&quot;text/javascript&quot;</span> <span class="na">src=</span><span class="s">&quot;[script path]/jquery.min.js&quot;</span><span class="nt">&gt;&lt;/script&gt;</span>
@@ -88,20 +88,13 @@
 <li><a href="https://github.com/mycolorway/simple-uploader">uploader.js</a> 是一个与 UI 无关的上传逻辑，如果你的项目不需要上传附件，那么可以不引用这个文件。</li>
 </ul>
 
-<p>如果觉得需要引用的脚本文件太多，可以用 <code>simditor-all.js</code>（里面包含了<code>module.js</code> <code>uploader.js</code> 和 <code>simditor.js</code>）替换：</p>
-<div class="highlight"><pre><code class="html language-html" data-lang="html"><span class="nt">&lt;link</span> <span class="na">rel=</span><span class="s">&quot;stylesheet&quot;</span> <span class="na">type=</span><span class="s">&quot;text/css&quot;</span> <span class="na">href=</span><span class="s">&quot;[style path]/font-awesome.css&quot;</span> <span class="nt">/&gt;</span>
-<span class="nt">&lt;link</span> <span class="na">rel=</span><span class="s">&quot;stylesheet&quot;</span> <span class="na">type=</span><span class="s">&quot;text/css&quot;</span> <span class="na">href=</span><span class="s">&quot;[style path]/simditor.css&quot;</span> <span class="nt">/&gt;</span>
-
-<span class="nt">&lt;script </span><span class="na">type=</span><span class="s">&quot;text/javascript&quot;</span> <span class="na">src=</span><span class="s">&quot;[script path]/jquery-2.1.0.js&quot;</span><span class="nt">&gt;&lt;/script&gt;</span>
-<span class="nt">&lt;script </span><span class="na">type=</span><span class="s">&quot;text/javascript&quot;</span> <span class="na">src=</span><span class="s">&quot;[script path]/simditor-all.js&quot;</span><span class="nt">&gt;&lt;/script&gt;</span>
-</code></pre></div>
 <h3>第二步，初始化配置</h3>
 
 <p>在使用 Simditor 的 HTML 页面里应该有一个对应的 <code>textarea</code> 文本框，例如：</p>
-<div class="highlight"><pre><code class="html language-html" data-lang="html"><span class="nt">&lt;textarea</span> <span class="na">id=</span><span class="s">&quot;editor&quot;</span> <span class="na">placeholder=</span><span class="s">&quot;这里输入内容&quot;</span> <span class="na">autofocus</span><span class="nt">&gt;&lt;/textarea&gt;</span>
+<div class="highlight"><pre><code class="language-html" data-lang="html"><span class="nt">&lt;textarea</span> <span class="na">id=</span><span class="s">&quot;editor&quot;</span> <span class="na">placeholder=</span><span class="s">&quot;这里输入内容&quot;</span> <span class="na">autofocus</span><span class="nt">&gt;&lt;/textarea&gt;</span>
 </code></pre></div>
 <p>我们需要在这个页面的脚本里初始化 Simditor：</p>
-<div class="highlight"><pre><code class="js language-js" data-lang="js"><span class="kd">var</span> <span class="nx">editor</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Simditor</span><span class="p">({</span>
+<div class="highlight"><pre><code class="language-js" data-lang="js"><span class="kd">var</span> <span class="nx">editor</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Simditor</span><span class="p">({</span>
   <span class="nx">textarea</span><span class="o">:</span> <span class="nx">$</span><span class="p">(</span><span class="s1">&#39;#editor&#39;</span><span class="p">)</span>
 <span class="p">});</span>
 </code></pre></div>

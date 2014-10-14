@@ -79,39 +79,25 @@
 <h3>扩展的基本结构</h3>
 
 <p>创建 <code>simditor-autosave.coffee</code>，输入扩展的基本结构：</p>
-<div class="highlight"><pre><code class="coffee language-coffee" data-lang="coffee"><span class="k">class</span> <span class="nx">SimditorAutosave</span> <span class="k">extends</span> <span class="nx">Plugin</span>
-  <span class="nv">constructor: </span><span class="nf">(@widget) -&gt;</span>
-    <span class="k">super</span> <span class="nx">@widget</span>
-    <span class="vi">@editor = </span><span class="nx">@widget</span>
-
+<div class="highlight"><pre><code class="language-coffee" data-lang="coffee"><span class="k">class</span> <span class="nx">SimditorAutosave</span> <span class="k">extends</span> <span class="nx">SimpleModule</span>
   <span class="nv">_init: </span><span class="nf">-&gt;</span>
+    <span class="vi">@editor = </span><span class="nx">@_module</span>
 
 <span class="nx">Simditor</span><span class="p">.</span><span class="nx">connect</span> <span class="nx">SimditorAutosave</span>
 </code></pre></div>
-<p>Simditor 的扩展继承自 <a href="https://github.com/mycolorway/simple-module">Simple Module</a> 的 <a href="https://github.com/mycolorway/simple-module/blob/master/src/module.coffee#L66">Plugin类</a>，并且 Simditor 提供一个类方法 <code>connect</code> 用来安装扩展。</p>
+<p>Simditor 的扩展继承自 <a href="https://github.com/mycolorway/simple-module">Simple Module</a>，并且 Simditor 提供一个类方法 <code>connect</code> 用来安装扩展。</p>
 
-<p>在初始化扩展的时候，Simditor 会给 Plugin 的 constructor 方法传入自己的引用 <code>@widget</code>。</p>
-
-<p><code>_init</code> 方法和 <code>constructor</code> 的区别是，constructor 在 Simditor 初始化扩展的时候（Simditor 自身初始化之前）调用，而 <code>_init</code> 方法会在 Simditor 自身初始化完成之后调用。所以，在 <code>_init</code> 方法中，@widget 的这些属性才是可用的：</p>
-
-<ul>
-<li><code>@widget.textarea</code>：与 Simditor 绑定的 textarea 元素；</li>
-<li><code>@widtet.el</code>：Simditor 的容器元素 <code>div.simditor</code>；</li>
-<li><code>@widget.body</code>：Simditor的内容元素 <code>div.simditor-body[contenteditable=true]</code>。</li>
-</ul>
+<p>在初始化扩展的时候，Simditor 会给 Plugin 的 constructor 方法传入自己的引用 <code>@_module</code>。</p>
 
 <h3>扩展的初始化选项</h3>
 
 <p>我们需要给 Simditor 增加一个 autosave 选项，用来开关 autosave 功能并且构造 localStorage 的 key：</p>
-<div class="highlight"><pre><code class="coffee language-coffee" data-lang="coffee"><span class="k">class</span> <span class="nx">SimditorAutosave</span> <span class="k">extends</span> <span class="nx">Plugin</span>
+<div class="highlight"><pre><code class="language-coffee" data-lang="coffee"><span class="k">class</span> <span class="nx">SimditorAutosave</span> <span class="k">extends</span> <span class="nx">SimpleModule</span>
   <span class="nv">opts:</span>
     <span class="nv">autosave: </span><span class="kc">false</span>
 
-  <span class="nv">constructor: </span><span class="nf">(@widget) -&gt;</span>
-    <span class="k">super</span> <span class="nx">@widget</span>
-    <span class="vi">@editor = </span><span class="nx">@widget</span>
-
   <span class="nv">_init: </span><span class="nf">-&gt;</span>
+    <span class="vi">@editor = </span><span class="nx">@_module</span>
     <span class="vi">@opts.autosave = </span><span class="nx">@opts</span><span class="p">.</span><span class="nx">autosave</span> <span class="o">||</span> <span class="nx">@editor</span><span class="p">.</span><span class="nx">textarea</span><span class="p">.</span><span class="nx">data</span><span class="p">(</span><span class="s">&#39;autosave&#39;</span><span class="p">)</span>
     <span class="k">return</span> <span class="k">unless</span> <span class="nx">@opts</span><span class="p">.</span><span class="nx">autosave</span>
     <span class="nv">key = </span><span class="s">&#39;simditor-autosave-&#39;</span> <span class="o">+</span> <span class="p">(</span><span class="nx">@opts</span><span class="p">.</span><span class="nx">autosave</span> <span class="o">||</span> <span class="nx">@editor</span><span class="p">.</span><span class="nx">id</span><span class="p">)</span>
@@ -123,20 +109,17 @@
 <h3>添加核心逻辑</h3>
 
 <p>准备工作都做好之后，我们就可以添加扩展的核心逻辑了：</p>
-<div class="highlight"><pre><code class="coffee language-coffee" data-lang="coffee"><span class="k">class</span> <span class="nx">SimditorAutosave</span> <span class="k">extends</span> <span class="nx">Plugin</span>
+<div class="highlight"><pre><code class="language-coffee" data-lang="coffee"><span class="k">class</span> <span class="nx">SimditorAutosave</span> <span class="k">extends</span> <span class="nx">SimpleModule</span>
   <span class="nv">opts:</span>
     <span class="nv">autosave: </span><span class="kc">false</span>
 
-  <span class="nv">constructor: </span><span class="nf">(@widget) -&gt;</span>
-    <span class="k">super</span> <span class="nx">@widget</span>
-    <span class="vi">@editor = </span><span class="nx">@widget</span>
-
   <span class="nv">_init: </span><span class="nf">-&gt;</span>
+    <span class="vi">@editor = </span><span class="nx">@_module</span>
     <span class="vi">@opts.autosave = </span><span class="nx">@opts</span><span class="p">.</span><span class="nx">autosave</span> <span class="o">||</span> <span class="nx">@editor</span><span class="p">.</span><span class="nx">textarea</span><span class="p">.</span><span class="nx">data</span><span class="p">(</span><span class="s">&#39;autosave&#39;</span><span class="p">)</span>
     <span class="k">return</span> <span class="k">unless</span> <span class="nx">@opts</span><span class="p">.</span><span class="nx">autosave</span>
     <span class="nv">key = </span><span class="s">&#39;simditor-autosave-&#39;</span> <span class="o">+</span> <span class="p">(</span><span class="nx">@opts</span><span class="p">.</span><span class="nx">autosave</span> <span class="o">||</span> <span class="nx">@editor</span><span class="p">.</span><span class="nx">id</span><span class="p">)</span>
 
-    <span class="nx">@editor</span><span class="p">.</span><span class="nx">on</span> <span class="s">&quot;valuechanged&quot;</span><span class="p">,</span> <span class="o">=&gt;</span>
+    <span class="nx">@editor</span><span class="p">.</span><span class="nx">on</span> <span class="s">&quot;valuechanged&quot;</span><span class="p">,</span> <span class="nf">=&gt;</span>
       <span class="nx">localStorage</span><span class="p">[</span><span class="nx">key</span><span class="p">]</span> <span class="o">=</span> <span class="nx">@editor</span><span class="p">.</span><span class="nx">getValue</span><span class="p">()</span>
 
     <span class="nx">@editor</span><span class="p">.</span><span class="nx">el</span><span class="p">.</span><span class="nx">closest</span><span class="p">(</span><span class="s">&#39;form&#39;</span><span class="p">).</span><span class="nx">on</span> <span class="s">&#39;submit&#39;</span><span class="p">,</span> <span class="nf">(e) -&gt;</span>

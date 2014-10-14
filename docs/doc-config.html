@@ -72,7 +72,7 @@
 		<h3>默认配置</h3>
 
 <p>Simditor 构造函数创建一个新的编辑器实例。通过传递的 options 参数定制实例。下面的示例使用所有选项及其默认值：</p>
-<div class="highlight"><pre><code class="coffee language-coffee" data-lang="coffee"><span class="nv">editor = </span><span class="k">new</span> <span class="nx">Simditor</span>
+<div class="highlight"><pre><code class="language-coffee" data-lang="coffee"><span class="nv">editor = </span><span class="k">new</span> <span class="nx">Simditor</span>
   <span class="nv">textarea: </span><span class="kc">null</span>
   <span class="nv">placeholder: </span><span class="s">&#39;&#39;</span>
   <span class="nv">defaultImage: </span><span class="s">&#39;images/image.png&#39;</span>
@@ -118,7 +118,7 @@
     </dt>
     <dd class="expand">
       <p>是否显示工具栏按钮，可通过数组的形式配置具体显示按钮，支持以下按钮：</p>
-<div class="highlight"><pre><code class="coffee language-coffee" data-lang="coffee"><span class="p">[</span>
+<div class="highlight"><pre><code class="language-coffee" data-lang="coffee"><span class="p">[</span>
   <span class="s">&#39;title&#39;</span>          <span class="c1"># 标题文字</span>
   <span class="s">&#39;bold&#39;</span>           <span class="c1"># 加粗文字</span>
   <span class="s">&#39;italic&#39;</span>         <span class="c1"># 斜体文字</span>
@@ -191,7 +191,7 @@
     </dt>
     <dd class="expand">
       <p>键值对，在编辑器中增加 hidden 字段（input:hidden），通常用于生成 form 表单的默认参数。可生成如下标签：</p>
-<div class="highlight"><pre><code class="html language-html" data-lang="html"><span class="nt">&lt;input</span> <span class="na">type=</span><span class="s">&quot;hidden&quot;</span> <span class="na">name=</span><span class="s">&quot;key&quot;</span> <span class="na">value=</span><span class="s">&quot;val&quot;</span> <span class="nt">/&gt;</span>
+<div class="highlight"><pre><code class="language-html" data-lang="html"><span class="nt">&lt;input</span> <span class="na">type=</span><span class="s">&quot;hidden&quot;</span> <span class="na">name=</span><span class="s">&quot;key&quot;</span> <span class="na">value=</span><span class="s">&quot;val&quot;</span> <span class="nt">/&gt;</span>
 </code></pre></div>
     </dd>
   
@@ -213,7 +213,7 @@
 </ul>
 
 <p>键值对参数的默认值：</p>
-<div class="highlight"><pre><code class="coffee language-coffee" data-lang="coffee"><span class="nv">editor = </span><span class="k">new</span> <span class="nx">Simditor</span>
+<div class="highlight"><pre><code class="language-coffee" data-lang="coffee"><span class="nv">editor = </span><span class="k">new</span> <span class="nx">Simditor</span>
   <span class="nv">textarea: </span><span class="nx">$</span><span class="p">(</span><span class="s">&#39;#editor&#39;</span><span class="p">)</span>
   <span class="nv">upload:</span>
     <span class="nv">url: </span><span class="s">&#39;&#39;</span>
@@ -223,7 +223,7 @@
     <span class="nv">leaveConfirm: </span><span class="s">&#39;正在上传文件，如果离开上传会自动取消&#39;</span>
 </code></pre></div>
 <p>图片上传成功后，服务端需要返回json格式的图片地址：</p>
-<div class="highlight"><pre><code class="coffee language-coffee" data-lang="coffee"><span class="p">{</span>
+<div class="highlight"><pre><code class="language-coffee" data-lang="coffee"><span class="p">{</span>
   <span class="s">&quot;success&quot;</span><span class="o">:</span> <span class="kc">true</span><span class="o">/</span><span class="kc">false</span><span class="p">,</span>
   <span class="s">&quot;msg&quot;</span><span class="o">:</span> <span class="s">&quot;上传失败信息&quot;</span><span class="p">,</span> <span class="c1"># 可选</span>
   <span class="s">&quot;file_path&quot;</span><span class="o">:</span> <span class="s">&quot;[real file path]&quot;</span>
