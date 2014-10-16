@@ -3707,9 +3707,9 @@ ImageButton = (function(_super) {
         range = document.createRange();
         range.selectNode($img[0]);
         _this.editor.selection.selectRange(range);
-        setTimeout(function() {
-          return _this.editor.body.focus();
-        }, 0);
+        if (!_this.editor.util.supportSelectionChange) {
+          _this.editor.trigger('selectionchanged');
+        }
         return false;
       };
     })(this));

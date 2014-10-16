@@ -42,9 +42,7 @@ class ImageButton extends Button
       range = document.createRange()
       range.selectNode $img[0]
       @editor.selection.selectRange range
-      setTimeout =>
-        @editor.body.focus()
-      , 0
+      @editor.trigger 'selectionchanged' unless @editor.util.supportSelectionChange
 
       false
 
