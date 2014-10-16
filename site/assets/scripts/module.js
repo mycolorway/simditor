@@ -68,7 +68,6 @@ Module = (function() {
 
   function Module(opts) {
     var cls, instance, instances, name, _base, _i, _len;
-    this.eventDelegate = {};
     this.opts = $.extend({}, this.opts, opts);
     (_base = this.constructor)._connectedClasses || (_base._connectedClasses = []);
     instances = (function() {
@@ -104,35 +103,35 @@ Module = (function() {
   Module.prototype.on = function() {
     var args, _ref;
     args = 1 <= arguments.length ? __slice.call(arguments, 0) : [];
-    (_ref = $(this.eventDelegate)).on.apply(_ref, args);
+    (_ref = $(this)).on.apply(_ref, args);
     return this;
   };
 
   Module.prototype.one = function() {
     var args, _ref;
     args = 1 <= arguments.length ? __slice.call(arguments, 0) : [];
-    (_ref = $(this.eventDelegate)).one.apply(_ref, args);
+    (_ref = $(this)).one.apply(_ref, args);
     return this;
   };
 
   Module.prototype.off = function() {
     var args, _ref;
     args = 1 <= arguments.length ? __slice.call(arguments, 0) : [];
-    (_ref = $(this.eventDelegate)).off.apply(_ref, args);
+    (_ref = $(this)).off.apply(_ref, args);
     return this;
   };
 
   Module.prototype.trigger = function() {
     var args, _ref;
     args = 1 <= arguments.length ? __slice.call(arguments, 0) : [];
-    (_ref = $(this.eventDelegate)).trigger.apply(_ref, args);
+    (_ref = $(this)).trigger.apply(_ref, args);
     return this;
   };
 
   Module.prototype.triggerHandler = function() {
     var args, _ref;
     args = 1 <= arguments.length ? __slice.call(arguments, 0) : [];
-    return (_ref = $(this.eventDelegate)).triggerHandler.apply(_ref, args);
+    return (_ref = $(this)).triggerHandler.apply(_ref, args);
   };
 
   Module.prototype._t = function() {
