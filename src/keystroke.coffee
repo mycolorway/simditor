@@ -108,8 +108,14 @@ class Keystroke extends SimpleModule
 
 
     # press enter in a code block: insert \n instead of br
+    # press shift + enter in code block: insert a paragrash after code block
     @editor.inputManager.addKeystrokeHandler '13', 'pre', (e, $node) =>
       e.preventDefault()
+      if e.shiftKey
+        $p = $('<p/>').append(@editor.util.phBr).insertAfter($node)
+        @editor.selection.setRangeAtStartOf $p
+        return true
+
       range = @editor.selection.getRange()
       breakNode = null
 

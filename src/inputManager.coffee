@@ -61,6 +61,11 @@ class InputManager extends SimpleModule
       , 50
 
     @editor.on 'valuechanged', =>
+      unless @editor.util.closestBlockEl()
+        @editor.selection.save()
+        @editor.formatter.format()
+        @editor.selection.restore()
+
       # make sure each code block and table has siblings
       @editor.body.find('hr, pre, .simditor-table').each (i, el) =>
         $el = $(el)

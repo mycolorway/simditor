@@ -436,6 +436,9 @@ Formatter = (function(_super) {
   Formatter.prototype.cleanNode = function(node, recursive) {
     var $childImg, $node, $p, $td, allowedAttributes, attr, contents, isDecoration, n, text, textNode, _i, _j, _len, _len1, _ref, _ref1;
     $node = $(node);
+    if (!($node.length > 0)) {
+      return;
+    }
     if ($node[0].nodeType === 3) {
       text = $node.text().replace(/(\r\n|\n|\r)/gm, '');
       if (text) {
@@ -619,6 +622,11 @@ InputManager = (function(_super) {
     })(this));
     this.editor.on('valuechanged', (function(_this) {
       return function() {
+        if (!_this.editor.util.closestBlockEl()) {
+          _this.editor.selection.save();
+          _this.editor.formatter.format();
+          _this.editor.selection.restore();
+        }
         _this.editor.body.find('hr, pre, .simditor-table').each(function(i, el) {
           var $el, formatted;
           $el = $(el);
@@ -1121,8 +1129,13 @@ Keystroke = (function(_super) {
     })(this));
     this.editor.inputManager.addKeystrokeHandler('13', 'pre', (function(_this) {
       return function(e, $node) {
-        var breakNode, range;
+        var $p, breakNode, range;
         e.preventDefault();
+        if (e.shiftKey) {
+          $p = $('<p/>').append(_this.editor.util.phBr).insertAfter($node);
+          _this.editor.selection.setRangeAtStartOf($p);
+          return true;
+        }
         range = _this.editor.selection.getRange();
         breakNode = null;
         range.deleteContents();
