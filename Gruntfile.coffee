@@ -173,6 +173,8 @@ module.exports = (grunt) ->
 
     uglify:
       simditor:
+        options:
+          mangle: false
         files:
           'package/scripts/module.min.js': 'package/scripts/module.js'
           'package/scripts/uploader.min.js': 'package/scripts/uploader.js'
