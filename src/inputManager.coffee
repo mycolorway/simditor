@@ -50,7 +50,7 @@ class InputManager extends SimpleModule
       .appendTo(@editor.el)
 
     $(document).on 'selectionchange.simditor' + @editor.id, (e) =>
-      return unless @editor.inputManager.focused
+      return unless @focused
 
 
       if @_selectionTimer
@@ -62,6 +62,7 @@ class InputManager extends SimpleModule
 
     @editor.on 'valuechanged', =>
       unless @editor.util.closestBlockEl()
+        return unless @focused
         @editor.selection.save()
         @editor.formatter.format()
         @editor.selection.restore()
@@ -89,7 +90,7 @@ class InputManager extends SimpleModule
 
       @editor.body.find('pre:empty').append(@editor.util.phBr)
 
-      if !@editor.util.supportSelectionChange and @editor.inputManager.focused
+      if !@editor.util.supportSelectionChange and @focused
         @editor.trigger 'selectionchanged'
 
     @editor.on 'selectionchange', (e) =>
