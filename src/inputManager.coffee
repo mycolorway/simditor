@@ -52,7 +52,6 @@ class InputManager extends SimpleModule
     $(document).on 'selectionchange.simditor' + @editor.id, (e) =>
       return unless @focused
 
-
       if @_selectionTimer
         clearTimeout @_selectionTimer
         @_selectionTimer = null
@@ -93,7 +92,7 @@ class InputManager extends SimpleModule
       if !@editor.util.supportSelectionChange and @focused
         @editor.trigger 'selectionchanged'
 
-    @editor.on 'selectionchange', (e) =>
+    @editor.on 'selectionchanged', (e) =>
       @editor.undoManager.update()
 
 
@@ -141,7 +140,7 @@ class InputManager extends SimpleModule
 
     setTimeout =>
       @editor.triggerHandler 'focus'
-      @editor.trigger 'selectionchange'
+      @editor.trigger 'selectionchanged'
     , 0
 
   _onBlur: (e) ->

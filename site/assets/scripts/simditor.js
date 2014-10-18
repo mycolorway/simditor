@@ -656,7 +656,7 @@ InputManager = (function(_super) {
         }
       };
     })(this));
-    this.editor.on('selectionchange', (function(_this) {
+    this.editor.on('selectionchanged', (function(_this) {
       return function(e) {
         return _this.editor.undoManager.update();
       };
@@ -701,7 +701,7 @@ InputManager = (function(_super) {
     return setTimeout((function(_this) {
       return function() {
         _this.editor.triggerHandler('focus');
-        return _this.editor.trigger('selectionchange');
+        return _this.editor.trigger('selectionchanged');
       };
     })(this), 0);
   };
