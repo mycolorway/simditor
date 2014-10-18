@@ -357,6 +357,9 @@ class InputManager extends SimpleModule
           else if $blockEl.is 'li'
             $blockEl.parent().after pasteContent
             @editor.selection.setRangeAtEndOf(pasteContent, range)
+          else
+            $blockEl.after pasteContent
+            @editor.selection.setRangeAtEndOf(pasteContent, range)
         else
           $blockEl.after pasteContent
           @editor.selection.setRangeAtEndOf(pasteContent, range)

@@ -955,6 +955,9 @@ InputManager = (function(_super) {
             } else if ($blockEl.is('li')) {
               $blockEl.parent().after(pasteContent);
               _this.editor.selection.setRangeAtEndOf(pasteContent, range);
+            } else {
+              $blockEl.after(pasteContent);
+              _this.editor.selection.setRangeAtEndOf(pasteContent, range);
             }
           } else {
             $blockEl.after(pasteContent);
