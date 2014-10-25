@@ -44,6 +44,12 @@ module.exports = (grunt) ->
         dest: 'site/assets/scripts/'
         ext: '.js'
 
+      spec:
+        options:
+          bare: true
+        files:
+          'spec/simditor-spec.js': 'spec/simditor-spec.coffee'
+
     sass:
       simditor:
         options:
@@ -158,6 +164,9 @@ module.exports = (grunt) ->
       jekyll:
         files: ['site/**/*.html', 'site/**/*.md', 'site/**/*.yml']
         tasks: ['jekyll']
+      spec:
+        files: ['spec/**/*.coffee']
+        tasks: ['coffee']
 
     jekyll:
       site:
@@ -193,6 +202,22 @@ module.exports = (grunt) ->
       package:
         src: ['package/']
 
+    jasmine:
+      test:
+        src: ['lib/**/*.js']
+        options:
+          outfile: 'spec/index.html'
+          styles: [
+            'vendor/bower/fontawesome/css/font-awesome.css'
+            'styles/simditor.css'
+          ]
+          specs: 'spec/simditor-spec.js'
+          vendor: [
+            'vendor/bower/jquery/dist/jquery.min.js'
+            'vendor/bower/simple-module/lib/module.js'
+            'vendor/bower/simple-uploader/lib/uploader.js'
+          ]
+
 
   grunt.loadNpmTasks 'grunt-contrib-sass'
   grunt.loadNpmTasks 'grunt-contrib-coffee'
@@ -204,8 +229,9 @@ module.exports = (grunt) ->
   grunt.loadNpmTasks 'grunt-umd'
   grunt.loadNpmTasks 'grunt-express'
   grunt.loadNpmTasks 'grunt-jekyll'
+  grunt.loadNpmTasks 'grunt-contrib-jasmine'
 
   grunt.registerTask 'default', ['site', 'express', 'watch']
   grunt.registerTask 'site', ['sass', 'coffee', 'umd', 'copy:vendor', 'copy:scripts', 'copy:styles', 'jekyll']
   grunt.registerTask 'package', ['clean:package', 'copy:package', 'uglify:simditor', 'compress']
-
+  grunt.registerTask 'test', ['coffee', 'jasmine:test:build', 'express', 'watch:spec']
