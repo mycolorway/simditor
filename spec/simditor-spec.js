@@ -78,7 +78,6 @@ describe('Selection', function() {
     });
     xit('should insert text node', function() {
       editor.selection.insertNode(document.createTextNode('test'));
-      console.log(editor.selection.getRange());
       return expect(editor.selection.getRange().innerHTML).toBe('nodethis is test text');
     });
     it('setRangeAfter', function() {
@@ -163,5 +162,82 @@ describe('Util', function() {
       return expect($('#para').attr('data-indent')).toBe('2');
     });
     return it('table', function() {});
+  });
+});
+
+describe('Formatter', function() {
+  it('_init', function() {
+    return expect(editor.formatter.editor).toBe(editor);
+  });
+  describe('autolink', function() {
+    return it('autolink', function() {
+      var tpl;
+      tpl = '<p>http://www.test.com</p>';
+      tpl = $(tpl);
+      tpl.appendTo('.simditor-body');
+      editor.formatter.autolink();
+      return expect(editor.body.find('a').length).toBe(1);
+    });
+  });
+  describe('cleanNode', function() {
+    it('\\r\\n node', function() {
+      var tpl;
+      tpl = '<p id="para">\ntest</p>';
+      tpl = $(tpl);
+      tpl.appendTo('.simditor-body');
+      editor.formatter.cleanNode(editor.body, true);
+      return expect(editor.body.find('p').text()).toBe('test');
+    });
+    it('img in a', function() {
+      var tpl;
+      tpl = '<a><img src="" alt="BlankImg"/></a>';
+      tpl = $(tpl);
+      tpl.appendTo('.simditor-body');
+      editor.formatter.cleanNode(editor.body, true);
+      return expect(editor.body.find('a').length).toBe(0);
+    });
+    it('img is uploading', function() {
+      var tpl;
+      tpl = '<img src="" alt="BlankImg" class="uploading"/>';
+      tpl = $(tpl);
+      tpl.appendTo('.simditor-body');
+      editor.formatter.cleanNode(editor.body, true);
+      return expect(editor.body.find('img').length).toBe(1);
+    });
+    it(':empty typical node', function() {
+      var tpl;
+      tpl = '<div></div>';
+      tpl = $(tpl);
+      tpl.appendTo('.simditor-body');
+      editor.formatter.cleanNode(editor.body, true);
+      return expect(editor.body.find('div').length).toBe(0);
+    });
+    return xit('table node', function() {});
+  });
+  describe('format', function() {
+    return it('<br />', function() {
+      var tpl;
+      editor.body.empty();
+      tpl = '<br/><br/><br/><br/>';
+      tpl = $(tpl);
+      tpl.appendTo('.simditor-body');
+      editor.formatter.format();
+      return expect(editor.body.find('br').length).toBe(0);
+    });
+  });
+  it('clearHtml', function() {
+    var html;
+    html = '<p>test</p>';
+    return expect(editor.formatter.clearHtml(html)).toBe('test');
+  });
+  return it('beautify', function() {
+    var tpl;
+    editor.body.empty();
+    tpl = '<p></p><img></img><p><br/></p>';
+    tpl = $(tpl);
+    tpl.appendTo('.simditor-body');
+    editor.body.empty();
+    editor.formatter.beautify(editor.body);
+    return expect(editor.body.children().length).toBe(0);
   });
 });

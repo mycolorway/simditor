@@ -7,7 +7,6 @@ afterEach ->
   editor?.destroy()
   $('#test').remove()
 
-
 describe 'Core', ->
   describe '_init & destroy method', ->
     it 'should render DOM', ->
@@ -67,7 +66,6 @@ describe 'Selection', ->
 
     xit 'should insert text node', ->
       editor.selection.insertNode(document.createTextNode 'test')
-      console.log editor.selection.getRange()
       expect(editor.selection.getRange().innerHTML).toBe('nodethis is test text')
 
     it 'setRangeAfter', ->
@@ -162,3 +160,84 @@ describe 'Util', ->
 
     it 'table', ->
       #TODO: add spec
+
+describe 'Formatter', ->
+  it '_init', ->
+    expect(editor.formatter.editor).toBe(editor)
+  describe 'autolink', ->
+    it 'autolink', ->
+      tpl = '''
+          <p>http://www.test.com</p>
+        '''
+      tpl = $(tpl)
+      tpl.appendTo '.simditor-body'
+      editor.formatter.autolink()
+      expect(editor.body.find('a').length).toBe(1)
+
+  describe 'cleanNode', ->
+    it '\\r\\n node', ->
+      tpl = '''
+        <p id="para">\ntest</p>
+      '''
+      tpl = $(tpl)
+      tpl.appendTo '.simditor-body'
+      editor.formatter.cleanNode editor.body, true
+      expect(editor.body.find('p').text()).toBe('test')
+
+    it 'img in a', ->
+      tpl = '''
+      <a><img src="" alt="BlankImg"/></a>
+      '''
+      tpl = $(tpl)
+      tpl.appendTo '.simditor-body'
+      editor.formatter.cleanNode editor.body, true
+      expect(editor.body.find('a').length).toBe(0)
+
+    #perhaps it's a BUG
+    it 'img is uploading', ->
+      tpl = '''
+      <img src="" alt="BlankImg" class="uploading"/>
+      '''
+      tpl = $(tpl)
+      tpl.appendTo '.simditor-body'
+      editor.formatter.cleanNode editor.body, true
+      expect(editor.body.find('img').length).toBe(1)
+
+    it ':empty typical node', ->
+      tpl = '''
+      <div></div>
+      '''
+      tpl = $(tpl)
+      tpl.appendTo '.simditor-body'
+      editor.formatter.cleanNode editor.body, true
+      expect(editor.body.find('div').length).toBe(0)
+
+    xit 'table node', ->
+      #TODO add spec
+
+  describe 'format', ->
+    it '<br />', ->
+      editor.body.empty()
+      tpl = '''
+      <br/><br/><br/><br/>
+      '''
+      tpl = $(tpl)
+      tpl.appendTo '.simditor-body'
+      editor.formatter.format()
+      expect(editor.body.find('br').length).toBe(0)
+    #TODO add li
+
+  it 'clearHtml', ->
+    html = '<p>test</p>'
+    expect(editor.formatter.clearHtml(html)).toBe('test')
+
+  it 'beautify', ->
+    editor.body.empty()
+    tpl = '''
+      <p></p><img></img><p><br/></p>
+    '''
+    tpl = $(tpl)
+    tpl.appendTo '.simditor-body'
+    editor.body.empty()
+    editor.formatter.beautify(editor.body)
+    expect(editor.body.children().length).toBe(0)
