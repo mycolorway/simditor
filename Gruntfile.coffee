@@ -45,10 +45,11 @@ module.exports = (grunt) ->
         ext: '.js'
 
       spec:
-        options:
-          bare: true
-        files:
-          'spec/simditor-spec.js': 'spec/simditor-spec.coffee'
+        expand: true
+        flatten: true
+        src: 'spec/coffee/*.coffee'
+        dest: 'spec/scripts'
+        ext: '.js'
 
     sass:
       simditor:
@@ -211,9 +212,10 @@ module.exports = (grunt) ->
             'vendor/bower/fontawesome/css/font-awesome.css'
             'styles/simditor.css'
           ]
-          specs: 'spec/simditor-spec.js'
+          specs: 'spec/scripts/*.js'
           vendor: [
             'vendor/bower/jquery/dist/jquery.min.js'
+            'spec/jasmine-jquery.js'
             'vendor/bower/simple-module/lib/module.js'
             'vendor/bower/simple-uploader/lib/uploader.js'
           ]
@@ -231,7 +233,6 @@ module.exports = (grunt) ->
   grunt.loadNpmTasks 'grunt-jekyll'
   grunt.loadNpmTasks 'grunt-contrib-jasmine'
 
-  grunt.registerTask 'default', ['site', 'express', 'watch']
+  grunt.registerTask 'default', ['site', 'express', 'jasmine:test:build', 'watch']
   grunt.registerTask 'site', ['sass', 'coffee', 'umd', 'copy:vendor', 'copy:scripts', 'copy:styles', 'jekyll']
   grunt.registerTask 'package', ['clean:package', 'copy:package', 'uglify:simditor', 'compress']
-  grunt.registerTask 'test', ['coffee', 'jasmine:test:build', 'express', 'watch:spec']
