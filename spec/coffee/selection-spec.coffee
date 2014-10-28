@@ -34,7 +34,7 @@ describe 'Selection', ->
       editor.selection.clear()
       expect(editor.selection.getRange()).toBe(null)
 
-describe 'operate range method', ->
+  describe 'operate range method', ->
     beforeEach ->
       tmp = $('<p id="test1">this <b id="test2">is</b> <b id="test3">test</b>text</p>')
       .appendTo '.simditor-body'
