@@ -360,7 +360,7 @@ $simditor-button-height: 40px;
               }
             }
 
-            $font-colors: #E33737 #e28b41 #c8a732 #209361 #418caf #7071ac #aa8773;
+            $font-colors: #E33737 #e28b41 #c8a732 #209361 #418caf #aa8773 #999999;
             $i: 1;
             @each $color in $font-colors {
               .font-color-#{$i} {
