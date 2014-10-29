@@ -38,7 +38,7 @@
         range.setEnd($('#test2')[0], 0);
         editor.focus();
         editor.selection.selectRange(range);
-        expect(editor.selection.getRange().toString() === range.toString()).toBe(true);
+        expect(compareRange(editor.selection.getRange(), range)).toBe(true);
         editor.selection.clear();
         return expect(editor.selection.getRange()).toBe(null);
       });

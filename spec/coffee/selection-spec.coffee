@@ -30,7 +30,7 @@ describe 'Selection', ->
       editor.focus()
       editor.selection.selectRange range
       #range not support equal
-      expect(editor.selection.getRange().toString() == range.toString()).toBe(true)
+      expect(compareRange(editor.selection.getRange(), range)).toBe(true)
       editor.selection.clear()
       expect(editor.selection.getRange()).toBe(null)
 
