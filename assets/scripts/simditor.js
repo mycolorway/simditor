@@ -2,20 +2,23 @@
   if (typeof define === 'function' && define.amd) {
     // AMD. Register as an anonymous module.
     define('simditor', ["jquery",
-      "simple-module"], function ($, SimpleModule) {
-      return (root.returnExportsGlobal = factory($, SimpleModule));
+      "simple-module",
+      "simple-uploader"], function ($, SimpleModule, simpleUploader) {
+      return (root.returnExportsGlobal = factory($, SimpleModule, simpleUploader));
     });
   } else if (typeof exports === 'object') {
     // Node. Does not work with strict CommonJS, but
     // only CommonJS-like enviroments that support module.exports,
     // like Node.
     module.exports = factory(require("jquery"),
-      require("simple-module"));
+      require("simple-module"),
+      require("simple-uploader"));
   } else {
     root['Simditor'] = factory(jQuery,
-      SimpleModule);
+      SimpleModule,
+      simple.uploader);
   }
-}(this, function ($, SimpleModule) {
+}(this, function ($, SimpleModule, simpleUploader) {
 
 var Selection,
   __hasProp = {}.hasOwnProperty,
@@ -608,7 +611,7 @@ InputManager = (function(_super) {
     }).addClass('simditor-clean-paste-area').appendTo(this.editor.el);
     $(document).on('selectionchange.simditor' + this.editor.id, (function(_this) {
       return function(e) {
-        if (!_this.editor.inputManager.focused) {
+        if (!_this.focused) {
           return;
         }
         if (_this._selectionTimer) {
@@ -623,6 +626,9 @@ InputManager = (function(_super) {
     this.editor.on('valuechanged', (function(_this) {
       return function() {
         if (!_this.editor.util.closestBlockEl()) {
+          if (!_this.focused) {
+            return;
+          }
           _this.editor.selection.save();
           _this.editor.formatter.format();
           _this.editor.selection.restore();
@@ -648,12 +654,12 @@ InputManager = (function(_super) {
           }
         });
         _this.editor.body.find('pre:empty').append(_this.editor.util.phBr);
-        if (!_this.editor.util.supportSelectionChange && _this.editor.inputManager.focused) {
+        if (!_this.editor.util.supportSelectionChange && _this.focused) {
           return _this.editor.trigger('selectionchanged');
         }
       };
     })(this));
-    this.editor.on('selectionchange', (function(_this) {
+    this.editor.on('selectionchanged', (function(_this) {
       return function(e) {
         return _this.editor.undoManager.update();
       };
@@ -698,7 +704,7 @@ InputManager = (function(_super) {
     return setTimeout((function(_this) {
       return function() {
         _this.editor.triggerHandler('focus');
-        return _this.editor.trigger('selectionchange');
+        return _this.editor.trigger('selectionchanged');
       };
     })(this), 0);
   };
@@ -951,6 +957,9 @@ InputManager = (function(_super) {
               }
             } else if ($blockEl.is('li')) {
               $blockEl.parent().after(pasteContent);
+              _this.editor.selection.setRangeAtEndOf(pasteContent, range);
+            } else {
+              $blockEl.after(pasteContent);
               _this.editor.selection.setRangeAtEndOf(pasteContent, range);
             }
           } else {
@@ -2114,9 +2123,9 @@ Simditor = (function(_super) {
     }
     this.id = ++Simditor.count;
     this._render();
-    if (this.opts.upload && (typeof simple !== "undefined" && simple !== null ? simple.uploader : void 0)) {
+    if (this.opts.upload && simpleUploader) {
       uploadOpts = typeof this.opts.upload === 'object' ? this.opts.upload : {};
-      this.uploader = simple.uploader(uploadOpts);
+      this.uploader = simpleUploader(uploadOpts);
     }
     form = this.textarea.closest('form');
     if (form.length) {
@@ -2945,34 +2954,26 @@ ColorButton = (function(_super) {
   };
 
   ColorButton.prototype.renderMenu = function() {
-    $('<ul class="color-list">\n  <li><a href="javascript:;" class="font-color font-color-1" data-color=""></a></li>\n  <li><a href="javascript:;" class="font-color font-color-2" data-color=""></a></li>\n  <li><a href="javascript:;" class="font-color font-color-3" data-color=""></a></li>\n  <li><a href="javascript:;" class="font-color font-color-4" data-color=""></a></li>\n  <li><a href="javascript:;" class="font-color font-color-5" data-color=""></a></li>\n  <li><a href="javascript:;" class="font-color font-color-6" data-color=""></a></li>\n  <li><a href="javascript:;" class="font-color font-color-7" data-color=""></a></li>\n  <li><a href="javascript:;" class="font-color font-color-8" data-color=""></a></li>\n  <li class="remove-color"><a href="javascript:;" class="link-remove-color">去掉颜色</a></li>\n</ul>').appendTo(this.menuWrapper);
+    $('<ul class="color-list">\n  <li><a href="javascript:;" class="font-color font-color-1" data-color=""></a></li>\n  <li><a href="javascript:;" class="font-color font-color-2" data-color=""></a></li>\n  <li><a href="javascript:;" class="font-color font-color-3" data-color=""></a></li>\n  <li><a href="javascript:;" class="font-color font-color-4" data-color=""></a></li>\n  <li><a href="javascript:;" class="font-color font-color-5" data-color=""></a></li>\n  <li><a href="javascript:;" class="font-color font-color-6" data-color=""></a></li>\n  <li><a href="javascript:;" class="font-color font-color-7" data-color=""></a></li>\n  <li><a href="javascript:;" class="font-color font-color-default" data-color=""></a></li>\n</ul>').appendTo(this.menuWrapper);
     this.menuWrapper.on('mousedown', '.color-list', function(e) {
       return false;
     });
-    this.menuWrapper.on('click', '.font-color', (function(_this) {
+    return this.menuWrapper.on('click', '.font-color', (function(_this) {
       return function(e) {
-        var $link, hex, rgb;
+        var $link, $p, hex, rgb;
         _this.wrapper.removeClass('menu-on');
         $link = $(e.currentTarget);
-        rgb = window.getComputedStyle($link[0], null).getPropertyValue('background-color');
-        hex = _this._convertRgbToHex(rgb);
-        if (!hex) {
-          return;
+        if ($link.hasClass('font-color-default')) {
+          $p = _this.editor.body.find('p, li');
+          if (!($p.length > 0)) {
+            return;
+          }
+          rgb = window.getComputedStyle($p[0], null).getPropertyValue('color');
+          hex = _this._convertRgbToHex(rgb);
+        } else {
+          rgb = window.getComputedStyle($link[0], null).getPropertyValue('background-color');
+          hex = _this._convertRgbToHex(rgb);
         }
-        document.execCommand('foreColor', false, hex);
-        return _this.editor.trigger('valuechanged');
-      };
-    })(this));
-    return this.menuWrapper.on('click', '.link-remove-color', (function(_this) {
-      return function(e) {
-        var $p, hex, rgb;
-        _this.wrapper.removeClass('menu-on');
-        $p = _this.editor.body.find('p, li');
-        if (!($p.length > 0)) {
-          return;
-        }
-        rgb = window.getComputedStyle($p[0], null).getPropertyValue('color');
-        hex = _this._convertRgbToHex(rgb);
         if (!hex) {
           return;
         }
@@ -3895,13 +3896,7 @@ ImageButton = (function(_super) {
         $img.removeData('mask');
         if (result.success === false) {
           msg = result.msg || Simditor._t('uploadFailed');
-          if ((typeof simple !== "undefined" && simple !== null) && (simple.dialog != null) && (simple.dialog.message != null)) {
-            simple.dialog.message({
-              content: msg
-            });
-          } else {
-            alert(msg);
-          }
+          alert(msg);
           $img.attr('src', _this.defaultImage);
         } else {
           $img.attr('src', result.file_path);
@@ -3930,13 +3925,7 @@ ImageButton = (function(_super) {
             e = _error;
             msg = Simditor._t('uploadError');
           }
-          if ((typeof simple !== "undefined" && simple !== null) && (simple.dialog != null) && (simple.dialog.message != null)) {
-            simple.dialog.message({
-              content: msg
-            });
-          } else {
-            alert(msg);
-          }
+          alert(msg);
         }
         $img = file.img;
         $img.removeData('file');
