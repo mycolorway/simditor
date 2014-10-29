@@ -33,9 +33,9 @@ class Simditor extends SimpleModule
     @id = ++ Simditor.count
     @_render()
 
-    if @opts.upload and simple?.uploader
+    if @opts.upload and simpleUploader
       uploadOpts = if typeof @opts.upload == 'object' then @opts.upload else {}
-      @uploader = simple.uploader(uploadOpts)
+      @uploader = simpleUploader(uploadOpts)
 
     form = @textarea.closest 'form'
     if form.length

@@ -170,11 +170,7 @@ class ImageButton extends Button
 
       if result.success == false
         msg = result.msg || Simditor._t('uploadFailed')
-        if simple? and simple.dialog? and simple.dialog.message?
-          simple.dialog.message
-            content: msg
-        else
-          alert msg
+        alert msg
         $img.attr 'src', @defaultImage
       else
         $img.attr 'src', result.file_path
@@ -197,11 +193,7 @@ class ImageButton extends Button
         catch e
           msg = Simditor._t('uploadError')
 
-        if simple? and simple.dialog? and simple.dialog.message?
-          simple.dialog.message
-            content: msg
-        else
-          alert msg
+        alert msg
 
       $img = file.img
       $img.removeData 'file'

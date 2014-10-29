@@ -69,11 +69,11 @@ module.exports = (grunt) ->
         objectToExport: 'Simditor'
         globalAlias: 'Simditor'
         deps:
-          'default': ['$', 'SimpleModule']
-          amd: ['jquery', 'simple-module']
-          cjs: ['jquery', 'simple-module']
+          'default': ['$', 'SimpleModule', 'simpleUploader']
+          amd: ['jquery', 'simple-module', 'simple-uploader']
+          cjs: ['jquery', 'simple-module', 'simple-uploader']
           global:
-            items: ['jQuery', 'SimpleModule']
+            items: ['jQuery', 'SimpleModule', 'simple.uploader']
             prefix: ''
 
     copy:
