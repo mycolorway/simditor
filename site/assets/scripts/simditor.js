@@ -3735,7 +3735,7 @@ ImageButton = (function(_super) {
     this.editor.on('selectionchanged.image', (function(_this) {
       return function() {
         var $contents, $img, range;
-        range = _this.editor.selection.sel.getRangeAt(0);
+        range = _this.editor.selection.getRange();
         if (range == null) {
           return;
         }
@@ -3852,8 +3852,10 @@ ImageButton = (function(_super) {
           }
           src = img ? img.src : _this.defaultImage;
           return _this.loadImage($img, src, function() {
-            _this.popover.refresh();
-            return _this.popover.srcEl.val('正在上传...').prop('disabled', true);
+            if (_this.popover.active) {
+              _this.popover.refresh();
+              return _this.popover.srcEl.val(Simditor._t('uploading')).prop('disabled', true);
+            }
           });
         });
       };
@@ -3901,7 +3903,10 @@ ImageButton = (function(_super) {
         } else {
           $img.attr('src', result.file_path);
         }
-        _this.popover.srcEl.prop('disabled', false);
+        if (_this.popover.active) {
+          _this.popover.srcEl.prop('disabled', false);
+          _this.popover.srcEl.val(result.file_path);
+        }
         _this.editor.trigger('valuechanged');
         if (_this.editor.body.find('img.uploading').length < 1) {
           return _this.editor.uploader.trigger('uploadready', [file, result]);
@@ -3936,7 +3941,10 @@ ImageButton = (function(_super) {
         }
         $img.removeData('mask');
         $img.attr('src', _this.defaultImage);
-        _this.popover.srcEl.prop('disabled', false);
+        if (_this.popover.active) {
+          _this.popover.srcEl.prop('disabled', false);
+          _this.popover.srcEl.val(_this.defaultImage);
+        }
         _this.editor.trigger('valuechanged');
         if (_this.editor.body.find('img.uploading').length < 1) {
           return _this.editor.uploader.trigger('uploadready', [file, result]);
@@ -3969,6 +3977,9 @@ ImageButton = (function(_super) {
     img.onload = (function(_this) {
       return function() {
         var height, imgOffset, width, wrapperOffset;
+        if ($mask.hasClass('uploading') && !$img.hasClass('uploading')) {
+          return;
+        }
         width = img.width;
         height = img.height;
         $img.attr({
@@ -4019,6 +4030,7 @@ ImageButton = (function(_super) {
     }
     $img = $('<img/>').attr('alt', name);
     range.insertNode($img[0]);
+    this.editor.util.reflow($img);
     $nextBlock = $block.next('p');
     if (!($nextBlock.length > 0)) {
       $nextBlock = $('<p/>').append(this.editor.util.phBr).insertAfter($block);
@@ -4066,39 +4078,41 @@ ImagePopover = (function(_super) {
     this.srcEl = this.el.find('.image-src');
     this.srcEl.on('keydown', (function(_this) {
       return function(e) {
-        var src;
-        if (e.which === 13 || e.which === 27) {
-          e.preventDefault();
-          if (e.which === 13 && !_this.target.hasClass('uploading')) {
-            src = _this.srcEl.val();
-            if (/^data:image/.test(src) && !_this.editor.uploader) {
+        var hideAndFocus, src;
+        if (!(e.which === 13 || e.which === 27)) {
+          return;
+        }
+        e.preventDefault();
+        hideAndFocus = function() {
+          _this.button.editor.body.focus();
+          _this.button.editor.selection.setRangeAfter(_this.target);
+          return _this.hide();
+        };
+        if (e.which === 13 && !_this.target.hasClass('uploading')) {
+          src = _this.srcEl.val();
+          if (/^data:image/.test(src) && !_this.editor.uploader) {
+            hideAndFocus();
+            return;
+          }
+          return _this.button.loadImage(_this.target, src, function(success) {
+            var blob;
+            if (!success) {
               return;
             }
-            return _this.button.loadImage(_this.target, src, function(success) {
-              var blob;
-              if (!success) {
-                return;
-              }
-              if (/^data:image/.test(src)) {
-                blob = _this.editor.util.dataURLtoBlob(src);
-                blob.name = "Base64 Image.png";
-                _this.editor.uploader.upload(blob, {
-                  inline: true,
-                  img: _this.target
-                });
-                return _this.hide();
-              } else {
-                _this.button.editor.body.focus();
-                _this.button.editor.selection.setRangeAfter(_this.target);
-                _this.hide();
-                return _this.editor.trigger('valuechanged');
-              }
-            });
-          } else {
-            _this.button.editor.body.focus();
-            _this.button.editor.selection.setRangeAfter(_this.target);
-            return _this.hide();
-          }
+            if (/^data:image/.test(src)) {
+              blob = _this.editor.util.dataURLtoBlob(src);
+              blob.name = "Base64 Image.png";
+              return _this.editor.uploader.upload(blob, {
+                inline: true,
+                img: _this.target
+              });
+            } else {
+              hideAndFocus();
+              return _this.editor.trigger('valuechanged');
+            }
+          });
+        } else {
+          return hideAndFocus();
         }
       };
     })(this));
@@ -4229,9 +4243,9 @@ ImagePopover = (function(_super) {
     this.width = $img.width();
     this.height = $img.height();
     if ($img.hasClass('uploading')) {
-      return this.srcEl.val(Simditor._t('uploading'));
+      return this.srcEl.val(Simditor._t('uploading')).prop('disabled', true);
     } else {
-      this.srcEl.val($img.attr('src'));
+      this.srcEl.val($img.attr('src')).prop('disabled', false);
       this.widthEl.val(this.width);
       return this.heightEl.val(this.height);
     }
