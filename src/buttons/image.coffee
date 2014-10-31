@@ -342,12 +342,24 @@ class ImagePopover extends Popover
 
         if e.which == 13 and !@target.hasClass('uploading')
           src = @srcEl.val()
+
+          return if /^data:image/.test(src) and not @editor.uploader
+
           @button.loadImage @target, src, (success) =>
             return unless success
-            @button.editor.body.focus()
-            @button.editor.selection.setRangeAfter @target
-            @hide()
-            @editor.trigger 'valuechanged'
+
+            if /^data:image/.test(src)
+              blob = @editor.util.dataURLtoBlob src
+              blob.name = "Base64 Image.png"
+              @editor.uploader.upload blob,
+                inline: true
+                img: @target
+              @hide()
+            else
+              @button.editor.body.focus()
+              @button.editor.selection.setRangeAfter @target
+              @hide()
+              @editor.trigger 'valuechanged'
         else
           @button.editor.body.focus()
           @button.editor.selection.setRangeAfter @target
