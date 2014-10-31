@@ -51,7 +51,7 @@ class ImageButton extends Button
 
 
     @editor.on 'selectionchanged.image', =>
-      range = @editor.selection.sel.getRangeAt(0)
+      range = @editor.selection.getRange()
       return unless range?
 
       $contents = $(range.cloneContents()).contents()
@@ -138,9 +138,10 @@ class ImageButton extends Button
         src = if img then img.src else @defaultImage
 
         @loadImage $img, src, =>
-          @popover.refresh()
-          @popover.srcEl.val('正在上传...')
-            .prop('disabled', true)
+          if @popover.active
+            @popover.refresh()
+            @popover.srcEl.val(Simditor._t('uploading'))
+              .prop('disabled', true)
 
     @editor.uploader.on 'uploadprogress', (e, file, loaded, total) =>
       return unless file.inline
@@ -175,7 +176,9 @@ class ImageButton extends Button
       else
         $img.attr 'src', result.file_path
 
-      @popover.srcEl.prop('disabled', false)
+      if @popover.active
+        @popover.srcEl.prop('disabled', false)
+        @popover.srcEl.val result.file_path
 
       @editor.trigger 'valuechanged'
       if @editor.body.find('img.uploading').length < 1
@@ -204,7 +207,9 @@ class ImageButton extends Button
       $img.removeData 'mask'
 
       $img.attr 'src', @defaultImage
-      @popover.srcEl.prop('disabled', false)
+      if @popover.active
+        @popover.srcEl.prop('disabled', false)
+        @popover.srcEl.val @defaultImage
 
       @editor.trigger 'valuechanged'
       if @editor.body.find('img.uploading').length < 1
@@ -228,21 +233,15 @@ class ImageButton extends Button
     img = new Image()
 
     img.onload = =>
+      # in case upload faster than image preview (usually happens in dev)
+      return if $mask.hasClass('uploading') and !$img.hasClass('uploading')
+
       width = img.width
       height = img.height
-      #if width > @maxWidth
-        #height = @maxWidth * height / width
-        #width = @maxWidth
-      #if height > @maxHeight
-        #width = @maxHeight * width / height
-        #height = @maxHeight
 
-      $img.attr({
+      $img.attr
         src: src,
-        #width: width,
-        #height: height,
         'data-image-size': width + ',' + height
-      })
 
       if $img.hasClass 'uploading' # img being uploaded
         @editor.util.reflow @editor.body
@@ -337,21 +336,35 @@ class ImagePopover extends Popover
     @srcEl = @el.find '.image-src'
 
     @srcEl.on 'keydown', (e) =>
-      if e.which == 13 or e.which == 27
-        e.preventDefault()
+      return unless e.which == 13 or e.which == 27
+      e.preventDefault()
 
-        if e.which == 13 and !@target.hasClass('uploading')
-          src = @srcEl.val()
-          @button.loadImage @target, src, (success) =>
-            return unless success
-            @button.editor.body.focus()
-            @button.editor.selection.setRangeAfter @target
-            @hide()
+      hideAndFocus = =>
+        @button.editor.body.focus()
+        @button.editor.selection.setRangeAfter @target
+        @hide()
+
+      if e.which == 13 and !@target.hasClass('uploading')
+        src = @srcEl.val()
+
+        if /^data:image/.test(src) and not @editor.uploader
+          hideAndFocus()
+          return
+
+        @button.loadImage @target, src, (success) =>
+          return unless success
+
+          if /^data:image/.test(src)
+            blob = @editor.util.dataURLtoBlob src
+            blob.name = "Base64 Image.png"
+            @editor.uploader.upload blob,
+              inline: true
+              img: @target
+          else
+            hideAndFocus()
             @editor.trigger 'valuechanged'
-        else
-          @button.editor.body.focus()
-          @button.editor.selection.setRangeAfter @target
-          @hide()
+      else
+        hideAndFocus()
 
     @widthEl = @el.find '#image-width'
     @heightEl = @el.find '#image-height'
@@ -444,8 +457,10 @@ class ImagePopover extends Popover
 
     if $img.hasClass 'uploading'
       @srcEl.val Simditor._t('uploading')
+        .prop 'disabled', true
     else
       @srcEl.val $img.attr('src')
+        .prop 'disabled', false
       @widthEl.val @width
       @heightEl.val @height
 
