@@ -282,7 +282,6 @@ class ImageButton extends Button
 
     $img = $('<img/>').attr('alt', name)
     range.insertNode $img[0]
-    @editor.util.reflow $img
 
     $nextBlock = $block.next 'p'
     unless $nextBlock.length > 0

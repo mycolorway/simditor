@@ -4030,7 +4030,6 @@ ImageButton = (function(_super) {
     }
     $img = $('<img/>').attr('alt', name);
     range.insertNode($img[0]);
-    this.editor.util.reflow($img);
     $nextBlock = $block.next('p');
     if (!($nextBlock.length > 0)) {
       $nextBlock = $('<p/>').append(this.editor.util.phBr).insertAfter($block);
