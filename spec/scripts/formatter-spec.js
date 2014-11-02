@@ -1,5 +1,5 @@
 (function() {
-  describe('Formatter', function() {
+  describe('Simditor Formatter Module', function() {
     var editor;
     editor = null;
     beforeEach(function() {
@@ -14,130 +14,71 @@
       }
       return $('#test').remove();
     });
-    describe('_init method', function() {
-      return it('should link editor\'s instance', function() {
-        return expect(editor.formatter.editor).toBe(editor);
-      });
+    it('can convert url string to anchor element', function() {
+      var $p1, $p2, $p3;
+      $p1 = editor.formatter.autolink($('<p>http://test.com?x=1</p>'));
+      $p2 = editor.formatter.autolink($('<p>http://www.test.net?x=1&y=2</p>'));
+      $p3 = editor.formatter.autolink($('<p>http://127.0.0.1:3000/test</p>'));
+      expect($p1.html()).toBe('<a href="http://test.com?x=1" rel="nofollow">http://test.com?x=1</a>');
+      expect($p2.html()).toBe('<a href="http://www.test.net?x=1&amp;y=2" rel="nofollow">http://www.test.net?x=1&amp;y=2</a>');
+      return expect($p3.html()).toBe('<a href="http://127.0.0.1:3000/test" rel="nofollow">http://127.0.0.1:3000/test</a>');
     });
-    describe('autolink method', function() {
-      return it('should transform link text node to a tag', function() {
-        var tpl;
-        editor.body.empty();
-        tpl = '<p>http://www.test.com</p>\n<p>https://www.test.com</p>\n<p>www.test.com</p>\n<p>http://test.com</p>';
-        tpl = $(tpl);
-        tpl.appendTo('.simditor-body');
-        editor.formatter.autolink();
-        expect(editor.body).toContainHtml('<a href="http://www.test.com" rel="nofollow">http://www.test.com</a>');
-        return expect(editor.body).toContainHtml('<a href="https://www.test.com" rel="nofollow">https://www.test.com</a>');
-      });
+    it('can clean forbidden tags and attributes and modify redundancy tags', function() {
+      var $p1, $p2, $p3, $p4, $p5, $p6;
+      $p1 = $('<div><p>\r\nthis is a test</p></div>');
+      $p2 = $('<div><p id="test">this is a test</p></div>');
+      $p3 = $('<div><script>var x = 1;</script></div>');
+      $p4 = $('<div><article></article></div>');
+      $p5 = $('<div><a href=""><img src="" alt="testImage"></a></div>');
+      $p6 = $('<div><img src="" alt="" class="uploading"></div>');
+      editor.formatter.cleanNode($p1.contents(), true);
+      editor.formatter.cleanNode($p2.contents(), true);
+      editor.formatter.cleanNode($p3.contents(), true);
+      editor.formatter.cleanNode($p4.contents(), true);
+      editor.formatter.cleanNode($p5.contents(), true);
+      editor.formatter.cleanNode($p6.contents(), true);
+      expect($p1.html()).toBe('<p>this is a test</p>');
+      expect($p2.html()).toBe('<p>this is a test</p>');
+      expect($p3.html()).toBe('var x = 1;');
+      expect($p4.html()).toBe('');
+      expect($p5.html()).toBe('<img src="" alt="testImage">');
+      return expect($p6.html()).toBe('');
     });
-    describe('cleanNode', function() {
-      describe('should clean tags which\' is not allowed', function() {
-        it('should remove not allowed tags', function() {
-          var tpl;
-          tpl = '<script>var x = 1;</script>';
-          tpl = $(tpl);
-          tpl.appendTo('.simditor-body');
-          editor.formatter.cleanNode(editor.body, true);
-          return expect(editor.body.find('script')).not.toExist();
-        });
-        return it('remove replace empty node of div, artical... by br', function() {
-          var tpl;
-          tpl = '<div></div>';
-          tpl = $(tpl);
-          tpl.appendTo('.simditor-body');
-          editor.formatter.cleanNode(editor.body, true);
-          expect(editor.body.find('div')).not.toExist();
-          return expect(editor.body.find('br')).toExist();
-        });
-      });
-      it('should remove unallowed attributes', function() {
-        var tpl;
-        tpl = '<p id="test">Not empty</p>\n<a on-click="return false;">Not empty</a>';
-        tpl = $(tpl);
-        tpl.appendTo('.simditor-body');
-        editor.formatter.cleanNode(editor.body, true);
-        expect(editor.body.find('p')).not.toHaveAttr('id');
-        return expect(editor.body.find('a')).not.toHaveAttr('on-click');
-      });
-      it('should remove empty node with \\r\\n', function() {
-        var tpl;
-        tpl = '<p id="para">\ntest</p>';
-        tpl = $(tpl);
-        tpl.appendTo('.simditor-body');
-        editor.formatter.cleanNode(editor.body, true);
-        return expect(editor.body.find('p').text()).toBe('test');
-      });
-      it('should prevent img tag in a tag', function() {
-        var tpl;
-        tpl = '<a><img src="" alt="BlankImg"/></a>';
-        tpl = $(tpl);
-        tpl.appendTo('.simditor-body');
-        editor.formatter.cleanNode(editor.body, true);
-        return expect(editor.body.find('a')).not.toExist();
-      });
-      return it('shouldn\'t remove img tag being uploading', function() {
-        var tpl;
-        tpl = '<img src="" alt="BlankImg" class="uploading"/>';
-        tpl = $(tpl);
-        tpl.appendTo('.simditor-body');
-        editor.formatter.cleanNode(editor.body, true);
-        return expect(editor.body.find('img')).toExist();
-      });
+    it('can format all direct children to block node', function() {
+      var $p1, $p2, $p3, $p4;
+      $p1 = editor.formatter.format($('<div><br/></div>'));
+      $p2 = editor.formatter.format($('<div><span>test</span></div>'));
+      $p3 = editor.formatter.format($('<div><li>list-item-1</li></div>'));
+      $p4 = editor.formatter.format($('<div><li>list-item-1</li><li>list-item-2</li></div>'));
+      expect($p1.html()).toBe('');
+      expect($p2.html()).toBe('<p>test</p>');
+      expect($p3.html()).toBe('<ul><li>list-item-1</li></ul>');
+      return expect($p4.html()).toBe('<ul><li>list-item-1</li><li>list-item-2</li></ul>');
     });
-    describe('format method', function() {
-      it('clean all direct child br tag', function() {
-        var tpl;
-        editor.body.empty();
-        tpl = '<br/>';
-        tpl = $(tpl);
-        tpl.appendTo('.simditor-body');
-        editor.formatter.format();
-        return expect(editor.body.find('br').length).toBe(0);
-      });
-      it('remove inline ele to p', function() {
-        var tpl;
-        editor.body.empty();
-        tpl = '<span>Hello</span>';
-        tpl = $(tpl);
-        tpl.appendTo('.simditor-body');
-        editor.formatter.format();
-        return expect(editor.body).toContainHtml('<p>Hello</p>');
-      });
-      return it('remove li inline ele to p', function() {
-        var tpl;
-        editor.body.empty();
-        tpl = '<li>list-item-1</li>';
-        tpl = $(tpl);
-        tpl.appendTo('.simditor-body');
-        editor.formatter.format();
-        return expect(editor.body).toContainHtml('<ul><li>list-item-1</li></ul>');
-      });
+    it('can clean html tag', function() {
+      var $p1, $p2;
+      $p1 = editor.formatter.clearHtml('<p>this is</p><p>test</p>');
+      $p2 = editor.formatter.clearHtml('<p>this is </p><p>test</p>', false);
+      expect($p1).toBe('this is\ntest');
+      return expect($p2).toBe('this is test');
     });
-    describe('clearHtml method', function() {
-      it('should clean html tag with \\n when lineBreak on', function() {
-        var html;
-        html = '<p>this is</p><p>test</p>';
-        return expect(editor.formatter.clearHtml(html)).toBe('this is\ntest');
-      });
-      return it('should clean html tag without \\n when lineBreak off', function() {
-        var html;
-        html = '<p>this is </p><p>test</p>';
-        return expect(editor.formatter.clearHtml(html, false)).toBe('this is test');
-      });
+    it('can remove empty nodes and useless paragraph', function() {
+      var $p1, $p2;
+      $p1 = $('<div><p></p><p>this is test</p><p><br></p></div>');
+      $p2 = $('<div><br/><hr/><img src="" alt=""/></div>');
+      editor.formatter.beautify($p1);
+      editor.formatter.beautify($p2);
+      expect($p1.html()).toBe('<p>this is test</p><p><br></p>');
+      return expect($p2.html()).toBe('<br><hr><img src="" alt="">');
     });
-    return describe('beautify', function() {
-      return it('should remove empty nodes and useless paragraph', function() {
-        var tpl;
-        editor.body.empty();
-        tpl = '<p></p>\n<p><br/></p>\n<img src="" alt=""/>';
-        tpl = $(tpl);
-        tpl.appendTo('.simditor-body');
-        editor.body.empty();
-        editor.formatter.beautify(editor.body);
-        expect(editor.body.find('p')).not.toExist();
-        return expect(editor.body.find('img')).not.toExist();
-      });
+    return it('can trigger custom event after call decorate method', function() {
+      var spyDecorate, spyUnDecorate;
+      spyDecorate = spyOnEvent(editor, 'decorate');
+      spyUnDecorate = spyOnEvent(editor, 'undecorate');
+      editor.formatter.decorate();
+      editor.formatter.undecorate();
+      expect(spyDecorate).toHaveBeenTriggered();
+      return expect(spyUnDecorate).toHaveBeenTriggered();
     });
   });
 

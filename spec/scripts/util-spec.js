@@ -1,5 +1,5 @@
 (function() {
-  describe('Util', function() {
+  describe('Simditor Util Module', function() {
     var editor;
     editor = null;
     beforeEach(function() {
@@ -19,19 +19,19 @@
       }
       return $('#test').remove();
     });
-    describe('_init method', function() {
-      return it('should link editor\'s instance', function() {
-        return expect(editor.util.editor).toBe(editor);
-      });
+    it('can find the closet|furthest Block element', function() {
+      expect(editor.util.closestBlockEl($('#list-item-1'))[0]).toBe($('#list-item-1')[0]);
+      return expect(editor.util.furthestBlockEl($('#list-item-1'))[0]).toBe($('#list')[0]);
     });
-    describe('closestBlockEl && furthestBlockEl method', function() {
-      return it('should find the closet|furthest Block element', function() {
-        expect(editor.util.closestBlockEl($('#list-item-1'))[0]).toBe($('#list-item-1')[0]);
-        return expect(editor.util.furthestBlockEl($('#list-item-1'))[0]).toBe($('#list')[0]);
-      });
+    it('can get node\'s length', function() {
+      var $n1, n2;
+      $n1 = $('<div><p></p><br/><hr/></div>');
+      n2 = document.createTextNode('text node');
+      expect(editor.util.getNodeLength($n1[0])).toBe(3);
+      return expect(editor.util.getNodeLength(n2)).toBe(9);
     });
-    return describe('indent && outdent method', function() {
-      var setRange;
+    return it('can intent and outdent content', function() {
+      var setRange, text;
       setRange = function(ele) {
         var range;
         ele = ele[0];
@@ -41,35 +41,27 @@
         editor.focus();
         return editor.selection.selectRange(range);
       };
-      it('pre tag should indent & outdent correctly', function() {
-        var text;
-        setRange($('pre'));
-        text = $('#code').text();
-        editor.util.indent();
-        expect($('#code').text()).toBe('\u00A0\u00A0' + text);
-        editor.util.outdent();
-        return expect($('#code').text()).toBe(text);
-      });
-      it('list tag should indent & outdent correctly', function() {
-        setRange($('#list-item-1'));
-        editor.util.indent();
-        expect($('#list-item-1').parent().attr('id')).toBe('list');
-        setRange($('#list-item-2'));
-        editor.util.indent();
-        expect($('#list-item-2').parent().parent().attr('id')).toBe('list-item-1');
-        setRange($('#list-item-2'));
-        editor.util.outdent();
-        return expect($('#list-item-2').parent().attr('id')).toBe('list');
-      });
-      it('p(h1 h2..) tag should indent & outdent correctly', function() {
-        setRange($('#para'));
-        editor.util.indent();
-        expect($('#para').attr('data-indent')).toBe('3');
-        setRange($('#para'));
-        editor.util.outdent();
-        return expect($('#para').attr('data-indent')).toBe('2');
-      });
-      return it('table', function() {});
+      setRange($('pre'));
+      text = $('#code').text();
+      editor.util.indent();
+      expect($('#code').text()).toBe('\u00A0\u00A0' + text);
+      editor.util.outdent();
+      expect($('#code').text()).toBe(text);
+      setRange($('#list-item-1'));
+      editor.util.indent();
+      expect($('#list-item-1').parent().attr('id')).toBe('list');
+      setRange($('#list-item-2'));
+      editor.util.indent();
+      expect($('#list-item-2').parent().parent().attr('id')).toBe('list-item-1');
+      setRange($('#list-item-2'));
+      editor.util.outdent();
+      expect($('#list-item-2').parent().attr('id')).toBe('list');
+      setRange($('#para'));
+      editor.util.indent();
+      expect($('#para').attr('data-indent')).toBe('3');
+      setRange($('#para'));
+      editor.util.outdent();
+      return expect($('#para').attr('data-indent')).toBe('2');
     });
   });
 

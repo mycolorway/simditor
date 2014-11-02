@@ -1,4 +1,4 @@
-describe 'Formatter', ->
+describe 'Simditor Formatter Module', ->
   editor = null
   beforeEach ->
     $('<textarea id="test"></textarea>').appendTo 'body'
@@ -8,141 +8,72 @@ describe 'Formatter', ->
     editor?.destroy()
     $('#test').remove()
 
-  describe '_init method', ->
-    it 'should link editor\'s instance', ->
-      expect(editor.formatter.editor).toBe(editor)
+  it 'can convert url string to anchor element', ->
+    $p1 = editor.formatter.autolink $('<p>http://test.com?x=1</p>')
+    $p2 = editor.formatter.autolink $('<p>http://www.test.net?x=1&y=2</p>')
+    $p3 = editor.formatter.autolink $('<p>http://127.0.0.1:3000/test</p>')
 
-  describe 'autolink method', ->
-    it 'should transform link text node to a tag', ->
-      editor.body.empty()
-      tpl = '''
-          <p>http://www.test.com</p>
-          <p>https://www.test.com</p>
-          <p>www.test.com</p>
-          <p>http://test.com</p>
-        '''
-      tpl = $(tpl)
-      tpl.appendTo '.simditor-body'
+    expect($p1.html()).toBe('<a href="http://test.com?x=1" rel="nofollow">http://test.com?x=1</a>')
+    expect($p2.html()).toBe('<a href="http://www.test.net?x=1&amp;y=2" rel="nofollow">http://www.test.net?x=1&amp;y=2</a>')
+    expect($p3.html()).toBe('<a href="http://127.0.0.1:3000/test" rel="nofollow">http://127.0.0.1:3000/test</a>')
 
-      editor.formatter.autolink()
-      expect(editor.body).toContainHtml('<a href="http://www.test.com" rel="nofollow">http://www.test.com</a>')
-      expect(editor.body).toContainHtml('<a href="https://www.test.com" rel="nofollow">https://www.test.com</a>')
-      #expect(editor.body).toContainHtml('<a href="https://www.test.com" rel="nofollow">https://www.test.com</a>')
-      #expect(editor.body).toContainHtml('<a href="https://test.com" rel="nofollow">https://test.com</a>')
+  it 'can clean forbidden tags and attributes and modify redundancy tags', ->
+    $p1 = $('<div><p>\r\nthis is a test</p></div>')
+    $p2 = $('<div><p id="test">this is a test</p></div>')
+    $p3 = $('<div><script>var x = 1;</script></div>')
+    $p4 = $('<div><article></article></div>')
+    $p5 = $('<div><a href=""><img src="" alt="testImage"></a></div>')
+    $p6 = $('<div><img src="" alt="" class="uploading"></div>')
 
-  describe 'cleanNode', ->
-    describe 'should clean tags which\' is not allowed', ->
-      it 'should remove not allowed tags', ->
-        tpl = '''
-        <script>var x = 1;</script>
-        '''
-        tpl = $(tpl)
-        tpl.appendTo '.simditor-body'
-        editor.formatter.cleanNode editor.body, true
-        expect(editor.body.find('script')).not.toExist()
+    editor.formatter.cleanNode $p1.contents(), true
+    editor.formatter.cleanNode $p2.contents(), true
+    editor.formatter.cleanNode $p3.contents(), true
+    editor.formatter.cleanNode $p4.contents(), true
+    editor.formatter.cleanNode $p5.contents(), true
+    editor.formatter.cleanNode $p6.contents(), true
 
-      it 'remove replace empty node of div, artical... by br', ->
-        tpl = '''
-        <div></div>
-        '''
-        tpl = $(tpl)
-        tpl.appendTo '.simditor-body'
-        editor.formatter.cleanNode editor.body, true
-        expect(editor.body.find('div')).not.toExist()
-        expect(editor.body.find('br')).toExist()
+    expect($p1.html()).toBe('<p>this is a test</p>')
+    expect($p2.html()).toBe('<p>this is a test</p>')
+    expect($p3.html()).toBe('var x = 1;')
+    expect($p4.html()).toBe('')
+    expect($p5.html()).toBe('<img src="" alt="testImage">')
+    expect($p6.html()).toBe('')
 
-      #TODO: add table
+  it 'can format all direct children to block node', ->
+    $p1 = editor.formatter.format $('<div><br/></div>')
+    $p2 = editor.formatter.format $('<div><span>test</span></div>')
+    $p3 = editor.formatter.format $('<div><li>list-item-1</li></div>')
+    $p4 = editor.formatter.format $('<div><li>list-item-1</li><li>list-item-2</li></div>')
 
-    it 'should remove unallowed attributes', ->
-      tpl = '''
-      <p id="test">Not empty</p>
-      <a on-click="return false;">Not empty</a>
-      '''
-      tpl = $(tpl)
-      tpl.appendTo '.simditor-body'
-      editor.formatter.cleanNode editor.body, true
-      expect(editor.body.find('p')).not.toHaveAttr('id')
-      expect(editor.body.find('a')).not.toHaveAttr('on-click')
+    expect($p1.html()).toBe('')
+    expect($p2.html()).toBe('<p>test</p>')
+    expect($p3.html()).toBe('<ul><li>list-item-1</li></ul>')
+    expect($p4.html()).toBe('<ul><li>list-item-1</li><li>list-item-2</li></ul>')
 
-    it 'should remove empty node with \\r\\n', ->
-      tpl = '''
-        <p id="para">\ntest</p>
-      '''
-      tpl = $(tpl)
-      tpl.appendTo '.simditor-body'
-      editor.formatter.cleanNode editor.body, true
-      expect(editor.body.find('p').text()).toBe('test')
 
-    it 'should prevent img tag in a tag', ->
-      tpl = '''
-      <a><img src="" alt="BlankImg"/></a>
-      '''
-      tpl = $(tpl)
-      tpl.appendTo '.simditor-body'
-      editor.formatter.cleanNode editor.body, true
-      expect(editor.body.find('a')).not.toExist()
+  it 'can clean html tag', ->
+    $p1 = editor.formatter.clearHtml '<p>this is</p><p>test</p>'
+    $p2 = editor.formatter.clearHtml '<p>this is </p><p>test</p>', false
 
-    #perhaps it's a BUG
-    it 'shouldn\'t remove img tag being uploading', ->
-      tpl = '''
-      <img src="" alt="BlankImg" class="uploading"/>
-      '''
-      tpl = $(tpl)
-      tpl.appendTo '.simditor-body'
-      editor.formatter.cleanNode editor.body, true
-      expect(editor.body.find('img')).toExist()
+    expect($p1).toBe('this is\ntest')
+    expect($p2).toBe('this is test')
 
-  describe 'format method', ->
-    it 'clean all direct child br tag', ->
-      editor.body.empty()
-      tpl = '''
-      <br/>
-      '''
-      tpl = $(tpl)
-      tpl.appendTo '.simditor-body'
-      editor.formatter.format()
-      expect(editor.body.find('br').length).toBe(0)
+  it 'can remove empty nodes and useless paragraph', ->
+    $p1 = $('<div><p></p><p>this is test</p><p><br></p></div>')
+    $p2 = $('<div><br/><hr/><img src="" alt=""/></div>')
 
-    it 'remove inline ele to p', ->
-      editor.body.empty()
-      tpl = '''
-      <span>Hello</span>
-      '''
-      tpl = $(tpl)
-      tpl.appendTo '.simditor-body'
-      editor.formatter.format()
-      expect(editor.body).toContainHtml('<p>Hello</p>')
+    editor.formatter.beautify $p1
+    editor.formatter.beautify $p2
 
-    it 'remove li inline ele to p', ->
-      editor.body.empty()
-      tpl = '''
-      <li>list-item-1</li>
-      '''
-      tpl = $(tpl)
-      tpl.appendTo '.simditor-body'
-      editor.formatter.format()
-      expect(editor.body).toContainHtml('<ul><li>list-item-1</li></ul>')
+    expect($p1.html()).toBe('<p>this is test</p><p><br></p>')
+    expect($p2.html()).toBe('<br><hr><img src="" alt="">')
 
-  describe 'clearHtml method', ->
-    it 'should clean html tag with \\n when lineBreak on', ->
-      html = '<p>this is</p><p>test</p>'
-      expect(editor.formatter.clearHtml(html)).toBe('this is\ntest')
+  it 'can trigger custom event after call decorate method', ->
+    spyDecorate = spyOnEvent(editor, 'decorate')
+    spyUnDecorate = spyOnEvent(editor, 'undecorate')
 
-    it 'should clean html tag without \\n when lineBreak off', ->
-      html = '<p>this is </p><p>test</p>'
-      expect(editor.formatter.clearHtml(html, false)).toBe('this is test')
+    editor.formatter.decorate()
+    editor.formatter.undecorate()
 
-  describe 'beautify', ->
-    it 'should remove empty nodes and useless paragraph', ->
-      editor.body.empty()
-      tpl = '''
-        <p></p>
-        <p><br/></p>
-        <img src="" alt=""/>
-      '''
-      tpl = $(tpl)
-      tpl.appendTo '.simditor-body'
-      editor.body.empty()
-      editor.formatter.beautify(editor.body)
-      expect(editor.body.find('p')).not.toExist()
-      expect(editor.body.find('img')).not.toExist()
+    expect(spyDecorate).toHaveBeenTriggered()
+    expect(spyUnDecorate).toHaveBeenTriggered()

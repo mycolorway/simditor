@@ -1,5 +1,5 @@
 (function() {
-  describe('InputManager', function() {
+  describe('Simditor InputManager Module', function() {
     var editor;
     editor = null;
     beforeEach(function() {

@@ -1,5 +1,5 @@
 (function() {
-  describe('Core', function() {
+  describe('A Simditor Instance', function() {
     var editor;
     editor = null;
     beforeEach(function() {
@@ -14,41 +14,42 @@
       }
       return $('#test').remove();
     });
-    describe('_init & destroy method', function() {
-      it('should append template to DOM when constructed', function() {
-        expect($('.simditor')).toExist();
-        expect($('.simditor')).toContainElement('.simditor-wrapper .simditor-placeholder');
-        expect($('.simditor')).toContainElement('.simditor-wrapper .simditor-body');
-        expect($('.simditor')).toContainElement('textarea');
-        expect(editor.el).toHaveClass('simditor');
-        expect(editor.body).toHaveClass('simditor-body');
-        return expect(editor.wrapper).toHaveClass('simditor-wrapper');
-      });
-      return it('should reset to default when call destroy', function() {
-        editor.destroy();
-        expect($('.simditor')).not.toExist();
-        return expect($('textarea#test')).toExist();
-      });
+    it('should render specific layout', function() {
+      var $simditor;
+      $simditor = $('.simditor');
+      expect($simditor).toExist();
+      expect($simditor.find('> .simditor-wrapper > .simditor-body')).toExist();
+      expect($simditor.find('> .simditor-wrapper > .simditor-placeholder')).toExist();
+      expect($simditor.find('> textarea#test')).toExist();
+      expect(editor.el).toHaveClass('simditor');
+      expect(editor.body).toHaveClass('simditor-body');
+      return expect(editor.wrapper).toHaveClass('simditor-wrapper');
     });
-    describe('setValue && getValue method', function() {
-      it('should set correct value when call setValue', function() {
-        editor.setValue('Hello, world!');
-        return expect($('#test').val()).toBe('Hello, world!');
-      });
-      return it('should return correct value when call getValue', function() {
-        editor.setValue('Hello, world!');
-        return expect(editor.getValue()).toBe('<p>Hello, world!</p>');
-      });
+    it('should reset to default when destroyed', function() {
+      editor.destroy();
+      expect($('.simditor')).not.toExist();
+      return expect($('textarea#test')).toExist();
     });
-    describe('focus && blur method', function() {
-      return it('should focus on editor\'s body when call focus and blur when call blue', function() {
-        editor.focus();
-        expect(editor.body).toBeFocused();
-        editor.blur();
-        return expect(editor.body).not.toBeFocused();
-      });
+    it('should set formatted value to editor\'s body when call setValue', function() {
+      var $textarea, tmpHtml;
+      $textarea = $('.simditor textarea');
+      tmpHtml = '<p id="flag">test format</p>';
+      editor.setValue(tmpHtml);
+      return expect(editor.body).toContainHtml('<p>test format</p>');
     });
-    return describe('hidePopover method', function() {});
+    it('should get formatted editor\'s value when call getValue', function() {
+      var tmpHtml;
+      tmpHtml = '<p id="flag">test format</p>';
+      editor.body.empty();
+      $(tmpHtml).appendTo(editor.body);
+      return expect(editor.getValue()).toBe('<p>test format</p>');
+    });
+    return it('should focus on editor\'s body when call focus and blur when call blue', function() {
+      editor.focus();
+      expect(editor.body).toBeFocused();
+      editor.blur();
+      return expect(editor.body).not.toBeFocused();
+    });
   });
 
 }).call(this);

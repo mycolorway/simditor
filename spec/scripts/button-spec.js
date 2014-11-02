@@ -52,76 +52,56 @@
       }
       return editor.body.trigger(e);
     };
-    describe('bold button', function() {
-      it('should let content bold when clicked', function() {
-        setRange($('#para2'), 0, 1);
-        findButtonLink('bold').trigger('mousedown');
-        return expect(editor.selection.getRange().commonAncestorContainer.parentNode).toEqual('b');
-      });
-      return it('should has shortcut for ctrl + b', function() {
-        var spyEvent;
-        spyEvent = spyOnEvent(findButtonLink('bold'), 'mousedown');
-        setRange($('#para2'), 0, 1);
-        triggerShortCut(66, true);
-        return expect(spyEvent).toHaveBeenTriggered();
-      });
+    it('should let content bold when bold button clicked or by shortcut', function() {
+      var spyEvent;
+      setRange($('#para2'), 0, 1);
+      findButtonLink('bold').trigger('mousedown');
+      expect(editor.selection.getRange().commonAncestorContainer.parentNode).toEqual('b');
+      spyEvent = spyOnEvent(findButtonLink('bold'), 'mousedown');
+      setRange($('#para2'), 0, 1);
+      triggerShortCut(66, true);
+      return expect(spyEvent).toHaveBeenTriggered();
     });
-    describe('italic button', function() {
-      it('should let content italic when clicked', function() {
-        setRange($('#para2'), 0, 1);
-        findButtonLink('italic').trigger('mousedown');
-        return expect(editor.selection.getRange().commonAncestorContainer.parentNode).toEqual('i');
-      });
-      return it('should has shortcut for ctrl + i', function() {
-        var spyEvent;
-        spyEvent = spyOnEvent(findButtonLink('italic'), 'mousedown');
-        setRange($('#para2'), 0, 1);
-        triggerShortCut(73, true);
-        return expect(spyEvent).toHaveBeenTriggered();
-      });
+    it('should let content italic when italic button clicked or by shortcut', function() {
+      var spyEvent;
+      setRange($('#para2'), 0, 1);
+      findButtonLink('italic').trigger('mousedown');
+      expect(editor.selection.getRange().commonAncestorContainer.parentNode).toEqual('i');
+      spyEvent = spyOnEvent(findButtonLink('italic'), 'mousedown');
+      setRange($('#para2'), 0, 1);
+      triggerShortCut(73, true);
+      return expect(spyEvent).toHaveBeenTriggered();
     });
-    describe('underline button', function() {
-      it('should let content underline when clicked', function() {
-        setRange($('#para2'), 0, 1);
-        findButtonLink('underline').trigger('mousedown');
-        return expect(editor.selection.getRange().commonAncestorContainer.parentNode).toEqual('u');
-      });
-      return it('should has shortcut for ctrl + u', function() {
-        var spyEvent;
-        spyEvent = spyOnEvent(findButtonLink('underline'), 'mousedown');
-        setRange($('#para2'), 0, 1);
-        triggerShortCut(85, true);
-        return expect(spyEvent).toHaveBeenTriggered();
-      });
+    it('should let content underline when underline button clicked or by shortcut', function() {
+      var spyEvent;
+      setRange($('#para2'), 0, 1);
+      findButtonLink('underline').trigger('mousedown');
+      expect(editor.selection.getRange().commonAncestorContainer.parentNode).toEqual('u');
+      spyEvent = spyOnEvent(findButtonLink('underline'), 'mousedown');
+      setRange($('#para2'), 0, 1);
+      triggerShortCut(85, true);
+      return expect(spyEvent).toHaveBeenTriggered();
     });
-    describe('strikethrough button', function() {
-      return it('should let content strike when clicked', function() {
-        setRange($('#para2'), 0, 1);
-        findButtonLink('strikethrough').trigger('mousedown');
-        return expect(editor.selection.getRange().commonAncestorContainer.parentNode).toEqual('strike');
-      });
+    it('should let content strike when strikethrough button clicked', function() {
+      setRange($('#para2'), 0, 1);
+      findButtonLink('strikethrough').trigger('mousedown');
+      return expect(editor.selection.getRange().commonAncestorContainer.parentNode).toEqual('strike');
     });
-    describe('indent button', function() {
-      return it('should let content indent when clicked', function() {
-        setRange($('#para2'), 0, 1);
-        findButtonLink('indent').trigger('mousedown');
-        return expect(editor.selection.getRange().commonAncestorContainer).toHaveAttr('data-indent', '1');
-      });
+    it('should let content indent when indent button clicked', function() {
+      setRange($('#para2'), 0, 1);
+      findButtonLink('indent').trigger('mousedown');
+      return expect(editor.selection.getRange().commonAncestorContainer).toHaveAttr('data-indent', '1');
     });
-    describe('outdent button', function() {
-      return it('should let content outdent when clicked', function() {
-        setRange($('#para2'), 0, 1);
-        findButtonLink('indent').trigger('mousedown');
-        findButtonLink('outdent').trigger('mousedown');
-        return expect(editor.selection.getRange().commonAncestorContainer).toHaveAttr('data-indent', '0');
-      });
+    it('should let content outdent when  outdent button clicked', function() {
+      setRange($('#para2'), 0, 1);
+      findButtonLink('indent').trigger('mousedown');
+      findButtonLink('outdent').trigger('mousedown');
+      return expect(editor.selection.getRange().commonAncestorContainer).toHaveAttr('data-indent', '0');
     });
-    return describe('hr button', function() {
-      return it('should insert a hr when clicked', function() {
-        setRange($('#para2'), 0, 1);
-        findButtonLink('hr').trigger('mousedown');
-        return expect(editor.selection.getRange().commonAncestorContainer.nextSibling).toEqual('hr');
-      });
+    return it('should insert a hr when hr button clicked', function() {
+      setRange($('#para2'), 0, 1);
+      findButtonLink('hr').trigger('mousedown');
+      return expect(editor.selection.getRange().commonAncestorContainer.nextSibling).toEqual('hr');
     });
   });
 

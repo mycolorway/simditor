@@ -1,4 +1,4 @@
-describe 'Keystroke', ->
+describe 'Simditor Keystroke Module', ->
   editor = null
   beforeEach ->
     $('<textarea id="test"></textarea>').appendTo 'body'
@@ -29,67 +29,60 @@ describe 'Keystroke', ->
     editor?.destroy()
     $('#test').remove()
 
-  describe '_init method', ->
-    it 'should link editor\'s instance', ->
-      expect(editor.keystroke.editor).toBe(editor)
+  setRange = (ele, offsetStart, offsetEnd) ->
+    ele = ele[0]
+    range = document.createRange()
+    unless offset
+      offset = 0
+    range.setStart ele, offsetStart
+    range.setEnd ele, offsetEnd
+    editor.focus()
+    editor.selection.selectRange range
 
-  describe 'key stroke', ->
-    setRange = (ele, offsetStart, offsetEnd) ->
-      ele = ele[0]
-      range = document.createRange()
-      unless offset
-        offset = 0
-      range.setStart ele, offsetStart
-      range.setEnd ele, offsetEnd
-      editor.focus()
-      editor.selection.selectRange range
+  triggerKeyStroke = (key, shift) ->
+    e = $.Event('keydown', {keyCode: key, which: key, shiftKey: shift?})
+    editor.body.trigger e
 
-    triggerKeyStroke = (key, shift) ->
-      e = $.Event('keydown', {keyCode: key, which: key, shiftKey: shift?})
-      editor.body.trigger e
+  it 'should leave blockquote when press return on last line of blockquote', ->
+    setRange( $('#blockquote-first-line'), 0)
+    triggerKeyStroke 13
+    expect(editor.body.find('blockquote>#blockquote-first-line')).toExist()
+    setRange( $('#blockquote-last-line'), 0)
+    triggerKeyStroke 13
+    expect(editor.body.find('blockquote>#blockquote-last-line')).not.toExist()
 
-    #TODO: test safari shift+enter later
+  it 'should delete blockquote when press delete at start of blockquote', ->
+    setRange( $('blockquote'), 0)
+    triggerKeyStroke 8
+    expect(editor.body.find('blockquote')).not.toExist()
 
-    it 'should leave blockquote when press return on last line of blockquote', ->
-      setRange( $('#blockquote-first-line'), 0)
-      triggerKeyStroke 13
-      expect(editor.body.find('blockquote>#blockquote-first-line')).toExist()
-      setRange( $('#blockquote-last-line'), 0)
-      triggerKeyStroke 13
-      expect(editor.body.find('blockquote>#blockquote-last-line')).not.toExist()
+  it 'should remove hr when press delete after hr', ->
+    expect(editor.body.find('hr')).toExist()
+    setRange( $('#after-hr'), 0)
+    triggerKeyStroke 8
+    expect(editor.body.find('hr')).not.toExist()
 
-    it 'should delete blockquote when press delete at start of blockquote', ->
-      setRange( $('blockquote'), 0)
-      triggerKeyStroke 8
-      expect(editor.body.find('blockquote')).not.toExist()
+  it 'should indent content when press tab', ->
+    expect(editor.body.find('#para3')).not.toHaveAttr('data-indent')
+    setRange( $('#para3'), 0, 1)
+    e = $.Event('keydown', {keyCode: 9, which: 9});
+    triggerKeyStroke 9
+    expect(editor.body.find('#para3')).toHaveAttr('data-indent')
 
-    it 'should remove hr when press delete after hr', ->
-      expect(editor.body.find('hr')).toExist()
-      setRange( $('#after-hr'), 0)
-      triggerKeyStroke 8
-      expect(editor.body.find('hr')).not.toExist()
+  it 'should insert \\n in pre when press return', ->
+    expect(editor.body.find('#code')).not.toContainText('\\n')
+    setRange( $('#code').contents(), 1, 4)
+    triggerKeyStroke 13
+    expect(editor.body.find('#code')).toContainText('\n')
 
-    it 'should indent content when press tab', ->
-      expect(editor.body.find('#para3')).not.toHaveAttr('data-indent')
-      setRange( $('#para3'), 0, 1)
-      e = $.Event('keydown', {keyCode: 9, which: 9});
-      triggerKeyStroke 9
-      expect(editor.body.find('#para3')).toHaveAttr('data-indent')
+  it 'should leave pre when press shift + return', ->
+    setRange( $('#code').contents(), 1, 4)
+    triggerKeyStroke 13, true
+    expect(editor.selection.getRange().startContainer).not.toHaveClass('#code')
 
-    it 'should insert \\n in pre when press return', ->
-      expect(editor.body.find('#code')).not.toContainText('\\n')
-      setRange( $('#code').contents(), 1, 4)
-      triggerKeyStroke 13
-      expect(editor.body.find('#code')).toContainText('\n')
+  it 'should delete pre when press delete at start of pre', ->
+    setRange( $('#code'), 0, 0)
+    triggerKeyStroke 8
+    expect(editor.body.find('pre')).not.toExist()
 
-    it 'should leave pre when press shift + return', ->
-      setRange( $('#code').contents(), 1, 4)
-      triggerKeyStroke 13, true
-      expect(editor.selection.getRange().startContainer).not.toHaveClass('#code')
-
-    it 'should delete pre when press delete at start of pre', ->
-      setRange( $('#code'), 0, 0)
-      triggerKeyStroke 8
-      expect(editor.body.find('pre')).not.toExist()
-
-    #TODO: add li
+  #TODO: add li

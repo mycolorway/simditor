@@ -1,4 +1,4 @@
-describe 'Util', ->
+describe 'Simditor Util Module', ->
   editor = null
   beforeEach ->
     $('<textarea id="test"></textarea>').appendTo 'body'
@@ -23,16 +23,18 @@ describe 'Util', ->
     editor?.destroy()
     $('#test').remove()
 
-  describe '_init method', ->
-    it 'should link editor\'s instance', ->
-      expect(editor.util.editor).toBe(editor)
+  it 'can find the closet|furthest Block element', ->
+    expect(editor.util.closestBlockEl($('#list-item-1'))[0]).toBe($('#list-item-1')[0])
+    #text node
+    expect(editor.util.furthestBlockEl($('#list-item-1'))[0]).toBe($('#list')[0])
 
-  describe 'closestBlockEl && furthestBlockEl method', ->
-    it 'should find the closet|furthest Block element', ->
-      expect(editor.util.closestBlockEl($('#list-item-1'))[0]).toBe($('#list-item-1')[0])
-      expect(editor.util.furthestBlockEl($('#list-item-1'))[0]).toBe($('#list')[0])
+  it 'can get node\'s length', ->
+    $n1 = $('<div><p></p><br/><hr/></div>')
+    n2 = document.createTextNode('text node')
+    expect(editor.util.getNodeLength($n1[0])).toBe(3)
+    expect(editor.util.getNodeLength(n2)).toBe(9)
 
-  describe 'indent && outdent method', ->
+  it  'can intent and outdent content', ->
     setRange = (ele) ->
       ele = ele[0]
       range = document.createRange()
@@ -41,36 +43,35 @@ describe 'Util', ->
       editor.focus()
       editor.selection.selectRange range
 
-    it 'pre tag should indent & outdent correctly', ->
-      setRange $('pre')
-      text = $('#code').text()
-      editor.util.indent()
-      expect($('#code').text()).toBe('\u00A0\u00A0' + text)
+    #pre
+    setRange $('pre')
+    text = $('#code').text()
+    editor.util.indent()
+    expect($('#code').text()).toBe('\u00A0\u00A0' + text)
 
-      editor.util.outdent()
-      expect($('#code').text()).toBe(text)
+    editor.util.outdent()
+    expect($('#code').text()).toBe(text)
 
-    it 'list tag should indent & outdent correctly', ->
-      setRange $('#list-item-1')
-      editor.util.indent()
-      expect($('#list-item-1').parent().attr('id')).toBe('list')
+    #list
+    setRange $('#list-item-1')
+    editor.util.indent()
+    expect($('#list-item-1').parent().attr('id')).toBe('list')
 
-      setRange $('#list-item-2')
-      editor.util.indent()
-      expect($('#list-item-2').parent().parent().attr('id')).toBe('list-item-1')
+    setRange $('#list-item-2')
+    editor.util.indent()
+    expect($('#list-item-2').parent().parent().attr('id')).toBe('list-item-1')
 
-      setRange $('#list-item-2')
-      editor.util.outdent()
-      expect($('#list-item-2').parent().attr('id')).toBe('list')
+    setRange $('#list-item-2')
+    editor.util.outdent()
+    expect($('#list-item-2').parent().attr('id')).toBe('list')
 
-    it 'p(h1 h2..) tag should indent & outdent correctly', ->
-      setRange $('#para')
-      editor.util.indent()
-      expect($('#para').attr('data-indent')).toBe('3')
+    #para
+    setRange $('#para')
+    editor.util.indent()
+    expect($('#para').attr('data-indent')).toBe('3')
 
-      setRange $('#para')
-      editor.util.outdent()
-      expect($('#para').attr('data-indent')).toBe('2')
+    setRange $('#para')
+    editor.util.outdent()
+    expect($('#para').attr('data-indent')).toBe('2')
 
-    it 'table', ->
-      #TODO: add spec
+    #TODO: add table spec

@@ -1,4 +1,5 @@
-describe 'InputManager', ->
+#TODO: rewrite all
+describe 'Simditor InputManager Module', ->
   editor = null
   beforeEach ->
     $('<textarea id="test"></textarea>').appendTo 'body'
