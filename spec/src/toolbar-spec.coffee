@@ -14,12 +14,18 @@ describe 'Simditor Toolbar Module', ->
   compareArray = (arr1, arr2) ->
     arr1.toString() == arr2.toString()
 
+  it 'should float toolbar when scroll down', ->
+    expect(editor.toolbar.wrapper).not.toHaveClass('toolbar-floating')
+    $('body').css('height', '2000')
+    $(document).scrollTop(200)
+    $(window).trigger 'scroll.simditor-' + editor.id
+    expect(editor.toolbar.wrapper).toHaveClass('toolbar-floating')
+    $('body').css('height', 'auto')
+
   it 'should remove menu-on class on li when click toolbar', ->
     editor.toolbar.list.find('li').eq(0).addClass('menu-on')
     editor.toolbar.wrapper.trigger('mousedown')
     expect(editor.toolbar.list.find('li').eq(0)).not.toHaveClass('menu-on')
-
-  #TODO: add css spec
 
   it 'should create button\'s instance to its buttons array', ->
     expect(editor.toolbar.buttons.length).toBe(toolbar.length)
@@ -35,5 +41,3 @@ describe 'Simditor Toolbar Module', ->
     expect(editor.toolbar.findButton('bold').name).toBe('bold')
     #give incorrect button name
     expect(editor.toolbar.findButton('error')).toBeNull()
-
-  #TODO: add spec later

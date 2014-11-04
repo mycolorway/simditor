@@ -89,7 +89,7 @@
       expect(editor.undoManager._getNodeByPosition([5, 3, 1, 0])).toBe($('#test-span')[0]);
       return expect(editor.undoManager._getNodeByPosition([5, 3, 1, 1])).toBe($('#test-span')[0]);
     });
-    it('should push correct state', function() {
+    it('can push correct state when call', function() {
       var tpl;
       editor.body.empty();
       tpl = '<p>test</p>';
@@ -107,7 +107,7 @@
       editor.setValue('<p>test1test2</p>');
       return editor.undoManager._pushUndoState();
     };
-    it('can return to last state when call undo method', function() {
+    it('should return to last state when call undo method', function() {
       var spyEvent;
       prepareState();
       expect(editor.getValue()).toBe('<p>test1test2</p>');

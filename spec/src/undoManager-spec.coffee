@@ -73,10 +73,8 @@ describe 'Simditor UndoManager Module', ->
     caret =
       start: [99, 99, 99, 99]
       collapsed: true
-
     exception = ->
       editor.undoManager.caretPosition(caret)
-
     expect(exception).toThrowError()
 
   it 'should get correct offset when call _getNodeOffset method', ->
@@ -93,7 +91,7 @@ describe 'Simditor UndoManager Module', ->
     expect(editor.undoManager._getNodeByPosition([5, 3, 1, 0])).toBe($('#test-span')[0])
     expect(editor.undoManager._getNodeByPosition([5, 3, 1, 1])).toBe($('#test-span')[0])
 
-  it 'should push correct state', ->
+  it 'can push correct state when call', ->
     editor.body.empty()
     tpl = '''
       <p>test</p>
@@ -114,7 +112,7 @@ describe 'Simditor UndoManager Module', ->
     editor.setValue('<p>test1test2</p>')
     editor.undoManager._pushUndoState()
 
-  it 'can return to last state when call undo method', ->
+  it 'should return to last state when call undo method', ->
     prepareState()
     expect(editor.getValue()).toBe('<p>test1test2</p>')
     expect(editor.undoManager._index).toBe(1)
@@ -145,5 +143,3 @@ describe 'Simditor UndoManager Module', ->
     spyEvent.reset()
     editor.undoManager.redo()
     expect(spyEvent).not.toHaveBeenTriggered()
-
-    #TODO: add caret judge

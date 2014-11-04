@@ -8,7 +8,7 @@
       editor = new Simditor({
         textarea: '#test'
       });
-      tmp = '<p>Simditor 是团队协作工具 <a href="http://tower.im">Tower</a> 使用的富文本编辑器。</p>\n  <p>相比传统的编辑器它的特点是：</p>\n    <ul id="list">\n      <li id="list-item-1">功能精简，加载快速</li>\n      <li id="list-item-2">输出格式化的标准 HTML</li>\n      <li>每一个功能都有非常优秀的使用体验</li>\n    </ul>\n    <pre id="code">"this is a code snippet"</pre>\n  <p data-indent="2" id="para">兼容的浏览器：IE10+、Chrome、Firefox、Safari。</p>';
+      tmp = '<p>Simditor 是团队协作工具 <a href="http://tower.im">Tower</a> 使用的富文本编辑器。</p>\n  <p>相比传统的编辑器它的特点是：</p>\n    <ul id="list">\n      <li id="list-item-1">功能精简，加载快速</li>\n      <li id="list-item-2">输出格式化的标准 HTML</li>\n      <li>每一个功能都有非常优秀的使用体验</li>\n    </ul>\n    <pre id="code">"this is a code snippet"</pre>\n  <p data-indent="2" id="para">兼容的浏览器：IE10+、Chrome、Firefox、Safari。</p>\n  <table>\n    <tr>\n      <td id="td-1">test1</td>\n      <td id="td-2">test2</td>\n    </tr>\n  </table>';
       tmp = $(tmp);
       tmp.appendTo('.simditor-body');
       return editor.sync();
@@ -30,7 +30,7 @@
       expect(editor.util.getNodeLength($n1[0])).toBe(3);
       return expect(editor.util.getNodeLength(n2)).toBe(9);
     });
-    return it('can intent and outdent content', function() {
+    it('can intent and outdent content', function() {
       var setRange, text;
       setRange = function(ele) {
         var range;
@@ -61,7 +61,26 @@
       expect($('#para').attr('data-indent')).toBe('3');
       setRange($('#para'));
       editor.util.outdent();
-      return expect($('#para').attr('data-indent')).toBe('2');
+      expect($('#para').attr('data-indent')).toBe('2');
+      setRange($('#td-1'));
+      editor.util.indent();
+      expect(editor.selection.getRange().startContainer).toBe($('#td-2')[0]);
+      expect(editor.selection.getRange().collapsed).toBe(true);
+      setRange($('#td-2'));
+      editor.util.outdent();
+      expect(editor.selection.getRange().startContainer).toBe($('#td-1')[0]);
+      return expect(editor.selection.getRange().collapsed).toBe(true);
+    });
+    return it('can push event\'s function key to shortcut string', function() {
+      var e;
+      e = {
+        shiftKey: true,
+        ctrlKey: true,
+        altKey: true,
+        metaKey: true,
+        which: 1
+      };
+      return expect(editor.util.getShortcutKey(e)).toBe('shift+ctrl+alt+cmd+1');
     });
   });
 

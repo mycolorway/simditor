@@ -47,8 +47,8 @@ module.exports = (grunt) ->
       spec:
         expand: true
         flatten: true
-        src: 'spec/coffee/*.coffee'
-        dest: 'spec/scripts'
+        src: 'spec/src/*.coffee'
+        dest: 'spec/lib'
         ext: '.js'
 
     sass:
@@ -212,10 +212,10 @@ module.exports = (grunt) ->
             'vendor/bower/fontawesome/css/font-awesome.css'
             'styles/simditor.css'
           ]
-          specs: 'spec/scripts/*.js'
+          specs: 'spec/lib/*.js'
           vendor: [
             'vendor/bower/jquery/dist/jquery.min.js'
-            'spec/jasmine-jquery.js'
+            'vendor/bower/jasmine-jquery/lib/jasmine-jquery.js'
             'vendor/bower/simple-module/lib/module.js'
             'vendor/bower/simple-uploader/lib/uploader.js'
           ]

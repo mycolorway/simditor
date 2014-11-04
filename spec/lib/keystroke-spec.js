@@ -8,7 +8,7 @@
       editor = new Simditor({
         textarea: '#test'
       });
-      tmp = '<p>Simditor 是团队协作工具 <a href="http://tower.im">Tower</a> 使用的富文本编辑器。</p>\n<p>相比传统的编辑器它的特点是：</p>\n<ul id="list">\n  <li>功能精简，加载快速</li>\n  <li id="list-item-2">输出格式化的标准<span id="test-span"> HTML </span></li>\n  <li>每一个功能都有非常优秀的使用体验</li>\n</ul>\n<pre id="code">this is a code snippet</pre>\n<p id="para3">兼容的浏览器：IE10+、Chrome、Firefox、Safari。</p>\n<blockquote>\n    <p id="blockquote-first-line">First line</p>\n    <p id="blockquote-last-line"><br/></p>\n</blockquote>\n<hr/>\n<p id="after-hr">After hr</p>';
+      tmp = '<p>Simditor 是团队协作工具 <a href="http://tower.im">Tower</a> 使用的富文本编辑器。</p>\n<p>相比传统的编辑器它的特点是：</p>\n<pre id="code">this is a code snippet</pre>\n<p id="para3">兼容的浏览器：IE10+、Chrome、Firefox、Safari。</p>\n<blockquote>\n    <p id="blockquote-first-line">First line</p>\n    <p id="blockquote-last-line"><br/></p>\n</blockquote>\n<hr/>\n<p id="after-hr">After hr</p>\n<ol id="list">\n  <li id="list-1">list1\n    <ol>\n      <li id="list1-1">list1-1</li>\n      <li id="list1-2">list1-2</li>\n    </ol>\n  </li>\n</ol>';
       tmp = $(tmp);
       tmp.appendTo('.simditor-body');
       return editor.sync();
@@ -71,7 +71,7 @@
       return expect(editor.body.find('#para3')).toHaveAttr('data-indent');
     });
     it('should insert \\n in pre when press return', function() {
-      expect(editor.body.find('#code')).not.toContainText('\\n');
+      expect(editor.body.find('#code')).not.toContainText('\n');
       setRange($('#code').contents(), 1, 4);
       triggerKeyStroke(13);
       return expect(editor.body.find('#code')).toContainText('\n');

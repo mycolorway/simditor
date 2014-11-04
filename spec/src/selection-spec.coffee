@@ -35,8 +35,6 @@ describe 'Simditor Selection Module', ->
     ele1 = ele1[0]
     ele2 = ele2[0]
     range = document.createRange()
-    unless offset
-      offset = 0
     range.setStart ele1, offset1
     range.setEnd ele2, offset2
     editor.focus()
@@ -74,8 +72,13 @@ describe 'Simditor Selection Module', ->
     editor.selection.setRangeAtEndOf $('#list-item-2')
     expect(editor.selection.getRange().endContainer).toBe($('#list-item-2')[0])
 
-  it 'can judge range whether it\'s at start|end of a node', ->
+  it 'can judge range whether it\'s at start or end of a node', ->
     range = document.createRange()
     range.setStart($('#test-span')[0], 0)
+    range.collapse()
     expect(editor.selection.rangeAtStartOf($('#test-span')[0], range)).toBeTruthy()
-    #TODO: add spec
+
+    range = document.createRange()
+    range.setEnd($('#test-span')[0], 1)
+    range.collapse false
+    expect(editor.selection.rangeAtEndOf($('#test-span')[0], range)).toBeTruthy()

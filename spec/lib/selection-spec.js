@@ -29,13 +29,10 @@
       return true;
     };
     setRange = function(ele1, offset1, ele2, offset2) {
-      var offset, range;
+      var range;
       ele1 = ele1[0];
       ele2 = ele2[0];
       range = document.createRange();
-      if (!offset) {
-        offset = 0;
-      }
       range.setStart(ele1, offset1);
       range.setEnd(ele2, offset2);
       editor.focus();
@@ -73,11 +70,16 @@
       editor.selection.setRangeAtEndOf($('#list-item-2'));
       return expect(editor.selection.getRange().endContainer).toBe($('#list-item-2')[0]);
     });
-    return it('can judge range whether it\'s at start|end of a node', function() {
+    return it('can judge range whether it\'s at start or end of a node', function() {
       var range;
       range = document.createRange();
       range.setStart($('#test-span')[0], 0);
-      return expect(editor.selection.rangeAtStartOf($('#test-span')[0], range)).toBeTruthy();
+      range.collapse();
+      expect(editor.selection.rangeAtStartOf($('#test-span')[0], range)).toBeTruthy();
+      range = document.createRange();
+      range.setEnd($('#test-span')[0], 1);
+      range.collapse(false);
+      return expect(editor.selection.rangeAtEndOf($('#test-span')[0], range)).toBeTruthy();
     });
   });
 

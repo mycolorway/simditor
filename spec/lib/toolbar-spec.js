@@ -19,6 +19,14 @@
     compareArray = function(arr1, arr2) {
       return arr1.toString() === arr2.toString();
     };
+    it('should float toolbar when scroll down', function() {
+      expect(editor.toolbar.wrapper).not.toHaveClass('toolbar-floating');
+      $('body').css('height', '2000');
+      $(document).scrollTop(200);
+      $(window).trigger('scroll.simditor-' + editor.id);
+      expect(editor.toolbar.wrapper).toHaveClass('toolbar-floating');
+      return $('body').css('height', 'auto');
+    });
     it('should remove menu-on class on li when click toolbar', function() {
       editor.toolbar.list.find('li').eq(0).addClass('menu-on');
       editor.toolbar.wrapper.trigger('mousedown');

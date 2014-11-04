@@ -14,6 +14,12 @@ describe 'Simditor Util Module', ->
         </ul>
         <pre id="code">"this is a code snippet"</pre>
       <p data-indent="2" id="para">兼容的浏览器：IE10+、Chrome、Firefox、Safari。</p>
+      <table>
+        <tr>
+          <td id="td-1">test1</td>
+          <td id="td-2">test2</td>
+        </tr>
+      </table>
     '''
     tmp = $(tmp)
     tmp.appendTo '.simditor-body'
@@ -74,4 +80,23 @@ describe 'Simditor Util Module', ->
     editor.util.outdent()
     expect($('#para').attr('data-indent')).toBe('2')
 
-    #TODO: add table spec
+    #table
+    #it should move to next/pre table
+    setRange $('#td-1')
+    editor.util.indent()
+    expect(editor.selection.getRange().startContainer).toBe($('#td-2')[0])
+    expect(editor.selection.getRange().collapsed).toBe(true)
+
+    setRange $('#td-2')
+    editor.util.outdent()
+    expect(editor.selection.getRange().startContainer).toBe($('#td-1')[0])
+    expect(editor.selection.getRange().collapsed).toBe(true)
+
+  it 'can push event\'s function key to shortcut string', ->
+    e =
+      shiftKey: true
+      ctrlKey: true
+      altKey: true
+      metaKey: true
+      which: 1
+    expect(editor.util.getShortcutKey(e)).toBe('shift+ctrl+alt+cmd+1')

@@ -1,5 +1,5 @@
 (function() {
-  describe('Simditor Button Module', function() {
+  describe('Simditor Buttons Module', function() {
     var editor, findButtonLink, setRange, toolbar, triggerShortCut;
     editor = null;
     toolbar = ['bold', 'title', 'italic', 'underline', 'strikethrough', 'color', 'ol', 'ul', 'blockquote', 'code', 'table', 'link', 'image', 'hr', 'indent', 'outdent'];
@@ -10,7 +10,7 @@
         textarea: '#test',
         toolbar: toolbar
       });
-      tmp = '<p>Simditor 是团队协作工具 <a href="http://tower.im">Tower</a> 使用的富文本编辑器。</p>\n<p id="para2">相比传统的编辑器它的特点是：</p>\n<ul id="list">\n  <li>功能精简，加载快速</li>\n  <li id="list-item-2">输出格式化的标准<span id="test-span"> HTML </span></li>\n  <li>每一个功能都有非常优秀的使用体验</li>\n</ul>\n<pre id="code">this is a code snippet</pre>\n<p id="para3">兼容的浏览器：IE10+、Chrome、Firefox、Safari。</p>\n<blockquote>\n    <p id="blockquote-first-line">First line</p>\n    <p id="blockquote-last-line"><br/></p>\n</blockquote>\n<hr/>\n<p id="after-hr">After hr</p>';
+      tmp = '<p>Simditor 是团队协作工具 <a href="http://tower.im">Tower</a> 使用的富文本编辑器。</p>\n<p id="para2">相比传统的编辑器它的特点是：</p>\n<ul id="list">\n  <li id="list-item-1">功能精简，加载快速</li>\n  <li id="list-item-2">输出格式化的标准<span id="test-span"> HTML </span></li>\n  <li id="list-item-3">每一个功能都有非常优秀的使用体验</li>\n</ul>\n<pre id="code">this is a code snippet</pre>\n<p id="para3">兼容的浏览器：IE10+、Chrome、Firefox、Safari。</p>\n<blockquote>\n    <p id="blockquote-first-line">First line</p>\n    <p id="blockquote-last-line"><br/></p>\n</blockquote>\n<hr/>\n<p id="after-hr">After hr</p>\n<p id="link">test</p>';
       tmp = $(tmp);
       tmp.appendTo('.simditor-body');
       return editor.sync();
@@ -98,10 +98,64 @@
       findButtonLink('outdent').trigger('mousedown');
       return expect(editor.selection.getRange().commonAncestorContainer).toHaveAttr('data-indent', '0');
     });
-    return it('should insert a hr when hr button clicked', function() {
+    it('should insert a hr when hr button clicked', function() {
       setRange($('#para2'), 0, 1);
       findButtonLink('hr').trigger('mousedown');
       return expect(editor.selection.getRange().commonAncestorContainer.nextSibling).toEqual('hr');
+    });
+    it('should change content color when color button clicked', function() {
+      setRange($('#para2'), 0, 1);
+      expect(editor.toolbar.wrapper.find('.color-list')).not.toBeVisible();
+      findButtonLink('color').trigger('mousedown');
+      expect(editor.toolbar.wrapper.find('.color-list')).toBeVisible();
+      editor.toolbar.wrapper.find('.font-color-1').click();
+      return expect($(editor.selection.getRange().commonAncestorContainer.parentNode)).toEqual('font[color]');
+    });
+    it('should let content be title when title button clicked', function() {
+      setRange($('#para2'), 0, 0);
+      findButtonLink('title').trigger('mousedown');
+      editor.toolbar.wrapper.find('.menu-item-h1').click();
+      return expect($(editor.selection.getRange().commonAncestorContainer)).toEqual('h1');
+    });
+    return it('should create list when list button clicked', function() {
+      var parentNode, spyEvent, spyEvent2;
+      setRange = function(ele1, offset1, ele2, offset2) {
+        var range;
+        if (!ele2) {
+          ele2 = ele1;
+          offset2 = offset1;
+        }
+        ele1 = ele1[0];
+        ele2 = ele2[0];
+        range = document.createRange();
+        range.setStart(ele1, offset1);
+        range.setEnd(ele2, offset2);
+        editor.focus();
+        return editor.selection.selectRange(range);
+      };
+      setRange($('#para2'), 0);
+      findButtonLink('ul').trigger('mousedown');
+      parentNode = $(editor.selection.getRange().commonAncestorContainer);
+      expect(parentNode).toEqual('li');
+      expect(parentNode.parent()).toBeMatchedBy('ul');
+      findButtonLink('ul').trigger('mousedown');
+      parentNode = $(editor.selection.getRange().commonAncestorContainer);
+      expect(parentNode).toEqual('p');
+      setRange($('#list-item-1'), 0, $('#list-item-3'), 1);
+      findButtonLink('ul').trigger('mousedown');
+      parentNode = $(editor.selection.getRange().commonAncestorContainer);
+      expect(parentNode).not.toEqual('ul');
+      expect(parentNode.find('li')).not.toExist();
+      findButtonLink('ul').trigger('mousedown');
+      parentNode = $(editor.selection.getRange().commonAncestorContainer);
+      expect(parentNode).toEqual('ul');
+      expect(parentNode.find('li').length).toBe(3);
+      spyEvent = spyOnEvent(findButtonLink('ul'), 'mousedown');
+      triggerShortCut(190, true);
+      expect(spyEvent).toHaveBeenTriggered();
+      spyEvent2 = spyOnEvent(findButtonLink('ol'), 'mousedown');
+      triggerShortCut(191, true);
+      return expect(spyEvent2).toHaveBeenTriggered();
     });
   });
 

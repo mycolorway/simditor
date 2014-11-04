@@ -7,11 +7,6 @@ describe 'Simditor Keystroke Module', ->
     tmp = '''
     <p>Simditor 是团队协作工具 <a href="http://tower.im">Tower</a> 使用的富文本编辑器。</p>
     <p>相比传统的编辑器它的特点是：</p>
-    <ul id="list">
-      <li>功能精简，加载快速</li>
-      <li id="list-item-2">输出格式化的标准<span id="test-span"> HTML </span></li>
-      <li>每一个功能都有非常优秀的使用体验</li>
-    </ul>
     <pre id="code">this is a code snippet</pre>
     <p id="para3">兼容的浏览器：IE10+、Chrome、Firefox、Safari。</p>
     <blockquote>
@@ -20,6 +15,14 @@ describe 'Simditor Keystroke Module', ->
     </blockquote>
     <hr/>
     <p id="after-hr">After hr</p>
+    <ol id="list">
+      <li id="list-1">list1
+        <ol>
+          <li id="list1-1">list1-1</li>
+          <li id="list1-2">list1-2</li>
+        </ol>
+      </li>
+    </ol>
     '''
     tmp = $(tmp)
     tmp.appendTo '.simditor-body'
@@ -70,7 +73,7 @@ describe 'Simditor Keystroke Module', ->
     expect(editor.body.find('#para3')).toHaveAttr('data-indent')
 
   it 'should insert \\n in pre when press return', ->
-    expect(editor.body.find('#code')).not.toContainText('\\n')
+    expect(editor.body.find('#code')).not.toContainText('\n')
     setRange( $('#code').contents(), 1, 4)
     triggerKeyStroke 13
     expect(editor.body.find('#code')).toContainText('\n')
@@ -85,4 +88,4 @@ describe 'Simditor Keystroke Module', ->
     triggerKeyStroke 8
     expect(editor.body.find('pre')).not.toExist()
 
-  #TODO: add li
+  #TODO: fix li went strange
