@@ -111,9 +111,8 @@ class Simditor extends SimpleModule
     @formatter.format()
     @formatter.decorate()
 
-    setTimeout =>
-      @trigger 'valuechanged'
-    , 0
+    @util.reflow @body
+    @trigger 'valuechanged'
 
   getValue: () ->
     @sync()
