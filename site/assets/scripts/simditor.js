@@ -16,7 +16,7 @@
   } else {
     root['Simditor'] = factory(jQuery,
       SimpleModule,
-      simple.uploader);
+      root.simple && simple.uploader);
   }
 }(this, function ($, SimpleModule, simpleUploader) {
 

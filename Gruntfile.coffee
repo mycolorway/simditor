@@ -73,7 +73,7 @@ module.exports = (grunt) ->
           amd: ['jquery', 'simple-module', 'simple-uploader']
           cjs: ['jquery', 'simple-module', 'simple-uploader']
           global:
-            items: ['jQuery', 'SimpleModule', 'simple.uploader']
+            items: ['jQuery', 'SimpleModule', 'root.simple && simple.uploader']
             prefix: ''
 
     copy:
