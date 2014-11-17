@@ -60,8 +60,7 @@ class InputManager extends SimpleModule
       , 50
 
     @editor.on 'valuechanged', =>
-      unless @editor.util.closestBlockEl()
-        return unless @focused
+      if not @editor.util.closestBlockEl() and @focused
         @editor.selection.save()
         @editor.formatter.format()
         @editor.selection.restore()
