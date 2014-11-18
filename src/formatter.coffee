@@ -1,6 +1,8 @@
 
 class Formatter extends SimpleModule
 
+  @pluginName: 'Formatter'
+
   _init: ->
     @editor = @_module
 

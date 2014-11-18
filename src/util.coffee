@@ -1,7 +1,7 @@
 
 class Util extends SimpleModule
 
-  @className: 'Util'
+  @pluginName: 'Util'
 
   _init: ->
     @editor = @_module

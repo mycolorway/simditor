@@ -1,7 +1,7 @@
 
 class Toolbar extends SimpleModule
 
-  @className: 'Toolbar'
+  @pluginName: 'Toolbar'
 
   opts:
     toolbar: true

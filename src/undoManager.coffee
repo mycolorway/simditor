@@ -1,7 +1,7 @@
 
 class UndoManager extends SimpleModule
 
-  @className: 'UndoManager'
+  @pluginName: 'UndoManager'
 
   _index: -1
 

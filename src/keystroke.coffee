@@ -3,6 +3,8 @@
 
 class Keystroke extends SimpleModule
 
+  @pluginName: 'Keystroke'
+
   _init: ->
     @editor = @_module
 

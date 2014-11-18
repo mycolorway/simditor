@@ -1,7 +1,7 @@
 
 class Selection extends SimpleModule
 
-  @className: 'Selection'
+  @pluginName: 'Selection'
 
   _init: ->
     @editor = @_module

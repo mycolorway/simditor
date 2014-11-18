@@ -1,6 +1,8 @@
 
 class InputManager extends SimpleModule
 
+  @pluginName: 'InputManager'
+
   opts:
     pasteImage: false
 
