@@ -934,11 +934,10 @@ InputManager = (function(_super) {
               } else if ($img.is('img[src^="webkit-fake-url://"]')) {
                 return;
               }
-            } else {
-              for (_l = 0, _len3 = children.length; _l < _len3; _l++) {
-                node = children[_l];
-                _this.editor.selection.insertNode(node, range);
-              }
+            }
+            for (_l = 0, _len3 = children.length; _l < _len3; _l++) {
+              node = children[_l];
+              _this.editor.selection.insertNode(node, range);
             }
           } else if ($blockEl.is('p') && _this.editor.util.isEmptyNode($blockEl)) {
             $blockEl.replaceWith(pasteContent);

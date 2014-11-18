@@ -342,8 +342,8 @@ class InputManager extends SimpleModule
             # cannot paste image in safari
             else if $img.is('img[src^="webkit-fake-url://"]')
               return
-          else
-            @editor.selection.insertNode(node, range) for node in children
+
+          @editor.selection.insertNode(node, range) for node in children
 
         else if $blockEl.is('p') and @editor.util.isEmptyNode $blockEl
           $blockEl.replaceWith pasteContent
