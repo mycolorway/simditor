@@ -43,6 +43,7 @@ class UndoManager extends SimpleModule
 
       @_timer = setTimeout =>
         @_pushUndoState()
+        @_timer = null
       , 200
 
   _pushUndoState: ->

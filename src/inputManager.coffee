@@ -57,7 +57,7 @@ class InputManager extends SimpleModule
         @_selectionTimer = null
       @_selectionTimer = setTimeout =>
         @editor.trigger 'selectionchanged'
-      , 50
+      , 20
 
     @editor.on 'valuechanged', =>
       if not @editor.util.closestBlockEl() and @focused
@@ -229,7 +229,6 @@ class InputManager extends SimpleModule
 
     if !@editor.util.supportSelectionChange and e.which in @_arrowKeys
       @editor.trigger 'selectionchanged'
-      @editor.undoManager.update()
       return
 
     if (e.which == 8 or e.which == 46) and @editor.util.isEmptyNode(@editor.body)
