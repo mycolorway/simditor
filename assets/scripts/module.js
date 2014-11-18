@@ -50,8 +50,8 @@ Module = (function() {
     if (typeof cls !== 'function') {
       return;
     }
-    if (!cls.name) {
-      throw new Error('Widget.connect: cannot connect anonymous class');
+    if (!cls.pluginName) {
+      throw new Error('Module.connect: cannot connect plugin without pluginName');
       return;
     }
     cls.prototype._connected = true;
@@ -59,8 +59,8 @@ Module = (function() {
       this._connectedClasses = [];
     }
     this._connectedClasses.push(cls);
-    if (cls.name) {
-      return this[cls.name] = cls;
+    if (cls.pluginName) {
+      return this[cls.pluginName] = cls;
     }
   };
 
@@ -76,7 +76,7 @@ Module = (function() {
       _results = [];
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         cls = _ref[_i];
-        name = cls.name.charAt(0).toLowerCase() + cls.name.slice(1);
+        name = cls.pluginName.charAt(0).toLowerCase() + cls.pluginName.slice(1);
         if (cls.prototype._connected) {
           cls.prototype._module = this;
         }
@@ -166,22 +166,6 @@ Module = (function() {
   return Module;
 
 })();
-
-if (Function.prototype.name === void 0 && Object.defineProperty) {
-  Object.defineProperty(Function.prototype, 'name', {
-    get: function() {
-      var re, results;
-      re = /function\s+([^\s(]+)\s*\(/;
-      results = re.exec(this.toString());
-      if (results && results.length > 1) {
-        return results[1];
-      } else {
-        return "";
-      }
-    },
-    set: function(val) {}
-  });
-}
 
 
 return Module;

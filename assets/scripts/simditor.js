@@ -16,7 +16,7 @@
   } else {
     root['Simditor'] = factory(jQuery,
       SimpleModule,
-      simple.uploader);
+      root.simple && simple.uploader);
   }
 }(this, function ($, SimpleModule, simpleUploader) {
 
@@ -31,7 +31,7 @@ Selection = (function(_super) {
     return Selection.__super__.constructor.apply(this, arguments);
   }
 
-  Selection.className = 'Selection';
+  Selection.pluginName = 'Selection';
 
   Selection.prototype._init = function() {
     this.editor = this._module;
@@ -316,6 +316,8 @@ Formatter = (function(_super) {
     return Formatter.__super__.constructor.apply(this, arguments);
   }
 
+  Formatter.pluginName = 'Formatter';
+
   Formatter.prototype._init = function() {
     this.editor = this._module;
     this._allowedTags = ['br', 'a', 'img', 'b', 'strong', 'i', 'u', 'font', 'p', 'ul', 'ol', 'li', 'blockquote', 'pre', 'h1', 'h2', 'h3', 'h4', 'hr'];
@@ -572,6 +574,8 @@ InputManager = (function(_super) {
     return InputManager.__super__.constructor.apply(this, arguments);
   }
 
+  InputManager.pluginName = 'InputManager';
+
   InputManager.prototype.opts = {
     pasteImage: false
   };
@@ -620,15 +624,12 @@ InputManager = (function(_super) {
         }
         return _this._selectionTimer = setTimeout(function() {
           return _this.editor.trigger('selectionchanged');
-        }, 50);
+        }, 20);
       };
     })(this));
     this.editor.on('valuechanged', (function(_this) {
       return function() {
-        if (!_this.editor.util.closestBlockEl()) {
-          if (!_this.focused) {
-            return;
-          }
+        if (!_this.editor.util.closestBlockEl() && _this.focused) {
           _this.editor.selection.save();
           _this.editor.formatter.format();
           _this.editor.selection.restore();
@@ -815,7 +816,6 @@ InputManager = (function(_super) {
     }
     if (!this.editor.util.supportSelectionChange && (_ref = e.which, __indexOf.call(this._arrowKeys, _ref) >= 0)) {
       this.editor.trigger('selectionchanged');
-      this.editor.undoManager.update();
       return;
     }
     if ((e.which === 8 || e.which === 46) && this.editor.util.isEmptyNode(this.editor.body)) {
@@ -938,11 +938,10 @@ InputManager = (function(_super) {
               } else if ($img.is('img[src^="webkit-fake-url://"]')) {
                 return;
               }
-            } else {
-              for (_l = 0, _len3 = children.length; _l < _len3; _l++) {
-                node = children[_l];
-                _this.editor.selection.insertNode(node, range);
-              }
+            }
+            for (_l = 0, _len3 = children.length; _l < _len3; _l++) {
+              node = children[_l];
+              _this.editor.selection.insertNode(node, range);
             }
           } else if ($blockEl.is('p') && _this.editor.util.isEmptyNode($blockEl)) {
             $blockEl.replaceWith(pasteContent);
@@ -1022,6 +1021,8 @@ Keystroke = (function(_super) {
   function Keystroke() {
     return Keystroke.__super__.constructor.apply(this, arguments);
   }
+
+  Keystroke.pluginName = 'Keystroke';
 
   Keystroke.prototype._init = function() {
     var titleEnterHandler;
@@ -1263,7 +1264,7 @@ UndoManager = (function(_super) {
     return UndoManager.__super__.constructor.apply(this, arguments);
   }
 
-  UndoManager.className = 'UndoManager';
+  UndoManager.pluginName = 'UndoManager';
 
   UndoManager.prototype._index = -1;
 
@@ -1309,7 +1310,8 @@ UndoManager = (function(_super) {
           _this._timer = null;
         }
         return _this._timer = setTimeout(function() {
-          return _this._pushUndoState();
+          _this._pushUndoState();
+          return _this._timer = null;
         }, 200);
       };
     })(this));
@@ -1523,7 +1525,7 @@ Util = (function(_super) {
     return Util.__super__.constructor.apply(this, arguments);
   }
 
-  Util.className = 'Util';
+  Util.pluginName = 'Util';
 
   Util.prototype._init = function() {
     this.editor = this._module;
@@ -1907,7 +1909,7 @@ Toolbar = (function(_super) {
     return Toolbar.__super__.constructor.apply(this, arguments);
   }
 
-  Toolbar.className = 'Toolbar';
+  Toolbar.pluginName = 'Toolbar';
 
   Toolbar.prototype.opts = {
     toolbar: true,
@@ -2206,11 +2208,8 @@ Simditor = (function(_super) {
     this.body.html(val);
     this.formatter.format();
     this.formatter.decorate();
-    return setTimeout((function(_this) {
-      return function() {
-        return _this.trigger('valuechanged');
-      };
-    })(this), 0);
+    this.util.reflow(this.body);
+    return this.trigger('valuechanged');
   };
 
   Simditor.prototype.getValue = function() {
@@ -3735,7 +3734,7 @@ ImageButton = (function(_super) {
     this.editor.on('selectionchanged.image', (function(_this) {
       return function() {
         var $contents, $img, range;
-        range = _this.editor.selection.sel.getRangeAt(0);
+        range = _this.editor.selection.getRange();
         if (range == null) {
           return;
         }
@@ -3852,8 +3851,10 @@ ImageButton = (function(_super) {
           }
           src = img ? img.src : _this.defaultImage;
           return _this.loadImage($img, src, function() {
-            _this.popover.refresh();
-            return _this.popover.srcEl.val('正在上传...').prop('disabled', true);
+            if (_this.popover.active) {
+              _this.popover.refresh();
+              return _this.popover.srcEl.val(Simditor._t('uploading')).prop('disabled', true);
+            }
           });
         });
       };
@@ -3901,7 +3902,10 @@ ImageButton = (function(_super) {
         } else {
           $img.attr('src', result.file_path);
         }
-        _this.popover.srcEl.prop('disabled', false);
+        if (_this.popover.active) {
+          _this.popover.srcEl.prop('disabled', false);
+          _this.popover.srcEl.val(result.file_path);
+        }
         _this.editor.trigger('valuechanged');
         if (_this.editor.body.find('img.uploading').length < 1) {
           return _this.editor.uploader.trigger('uploadready', [file, result]);
@@ -3936,7 +3940,10 @@ ImageButton = (function(_super) {
         }
         $img.removeData('mask');
         $img.attr('src', _this.defaultImage);
-        _this.popover.srcEl.prop('disabled', false);
+        if (_this.popover.active) {
+          _this.popover.srcEl.prop('disabled', false);
+          _this.popover.srcEl.val(_this.defaultImage);
+        }
         _this.editor.trigger('valuechanged');
         if (_this.editor.body.find('img.uploading').length < 1) {
           return _this.editor.uploader.trigger('uploadready', [file, result]);
@@ -3969,6 +3976,9 @@ ImageButton = (function(_super) {
     img.onload = (function(_this) {
       return function() {
         var height, imgOffset, width, wrapperOffset;
+        if ($mask.hasClass('uploading') && !$img.hasClass('uploading')) {
+          return;
+        }
         width = img.width;
         height = img.height;
         $img.attr({
@@ -4066,25 +4076,41 @@ ImagePopover = (function(_super) {
     this.srcEl = this.el.find('.image-src');
     this.srcEl.on('keydown', (function(_this) {
       return function(e) {
-        var src;
-        if (e.which === 13 || e.which === 27) {
-          e.preventDefault();
-          if (e.which === 13 && !_this.target.hasClass('uploading')) {
-            src = _this.srcEl.val();
-            return _this.button.loadImage(_this.target, src, function(success) {
-              if (!success) {
-                return;
-              }
-              _this.button.editor.body.focus();
-              _this.button.editor.selection.setRangeAfter(_this.target);
-              _this.hide();
-              return _this.editor.trigger('valuechanged');
-            });
-          } else {
-            _this.button.editor.body.focus();
-            _this.button.editor.selection.setRangeAfter(_this.target);
-            return _this.hide();
+        var hideAndFocus, src;
+        if (!(e.which === 13 || e.which === 27)) {
+          return;
+        }
+        e.preventDefault();
+        hideAndFocus = function() {
+          _this.button.editor.body.focus();
+          _this.button.editor.selection.setRangeAfter(_this.target);
+          return _this.hide();
+        };
+        if (e.which === 13 && !_this.target.hasClass('uploading')) {
+          src = _this.srcEl.val();
+          if (/^data:image/.test(src) && !_this.editor.uploader) {
+            hideAndFocus();
+            return;
           }
+          return _this.button.loadImage(_this.target, src, function(success) {
+            var blob;
+            if (!success) {
+              return;
+            }
+            if (/^data:image/.test(src)) {
+              blob = _this.editor.util.dataURLtoBlob(src);
+              blob.name = "Base64 Image.png";
+              return _this.editor.uploader.upload(blob, {
+                inline: true,
+                img: _this.target
+              });
+            } else {
+              hideAndFocus();
+              return _this.editor.trigger('valuechanged');
+            }
+          });
+        } else {
+          return hideAndFocus();
         }
       };
     })(this));
@@ -4215,9 +4241,9 @@ ImagePopover = (function(_super) {
     this.width = $img.width();
     this.height = $img.height();
     if ($img.hasClass('uploading')) {
-      return this.srcEl.val(Simditor._t('uploading'));
+      return this.srcEl.val(Simditor._t('uploading')).prop('disabled', true);
     } else {
-      this.srcEl.val($img.attr('src'));
+      this.srcEl.val($img.attr('src')).prop('disabled', false);
       this.widthEl.val(this.width);
       return this.heightEl.val(this.height);
     }
