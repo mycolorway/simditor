@@ -98,8 +98,14 @@ class CodePopover extends Popover
       <div class="settings-field">
         <select class="select-lang">
           <option value="-1">选择程序语言</option>
+          <option value="bash">Bash</option>
           <option value="c++">C++</option>
+          <option value="cs">C#</option>
           <option value="css">CSS</option>
+          <option value="erlang">Erlang</option>
+          <option value="less">Less</option>
+          <option value="scss">Sass</option>
+          <option value="diff">Diff</option>
           <option value="coffeeScript">CoffeeScript</option>
           <option value="html">Html,XML</option>
           <option value="json">JSON</option>
