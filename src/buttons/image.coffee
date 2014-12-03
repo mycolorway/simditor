@@ -153,8 +153,9 @@ class ImageButton extends Button
       $mask = file.img.data('mask')
       if $mask
         $img = $mask.data('img')
-        if $img and $img.parent().length > 0
-          $mask.find("span").text(percent)
+        $txt = $mask.find('span')
+        if $img and $img.parent().length > 0 and percent != $txt.text()
+          $txt.text(percent)
         else
           $mask.remove()
 
