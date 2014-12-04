@@ -1,45 +1,45 @@
-describe 'A Simditor Instance', ->
+describe 'A Simditor instance', ->
   editor = null
+  $textarea = null
   beforeEach ->
-    $('<textarea id="test"></textarea>').appendTo 'body'
+    $textarea = $('<textarea id="editor"></textarea>').appendTo 'body'
     editor = new Simditor
-      textarea: '#test'
+      textarea: $textarea
+
   afterEach ->
     editor?.destroy()
-    $('#test').remove()
+    editor = null
+    $textarea.remove()
+    $textarea = null
 
   it 'should render specific layout', ->
     $simditor = $('.simditor')
     expect($simditor).toExist()
     expect($simditor.find('> .simditor-wrapper > .simditor-body')).toExist()
     expect($simditor.find('> .simditor-wrapper > .simditor-placeholder')).toExist()
-    expect($simditor.find('> textarea#test')).toExist()
+    expect($simditor.find('> textarea#editor')).toExist()
 
     expect(editor.el).toHaveClass('simditor')
     expect(editor.body).toHaveClass('simditor-body')
     expect(editor.wrapper).toHaveClass('simditor-wrapper')
 
-  it 'should reset to default when destroyed', ->
+  it 'should reset to default after destroyed', ->
     editor.destroy()
     expect($('.simditor')).not.toExist()
-    expect($('textarea#test')).toExist()
+    expect($('textarea#editor')).toExist()
 
-  it 'should set formatted value to editor\'s body when call setValue', ->
-    #formatter.format method will be called
-    $textarea = $('.simditor textarea')
+  it 'should set formatted value to editor\'s body by calling setValue', ->
     tmpHtml = '''
-    <p id="flag">test format</p>
+      <p id="flag">test format</p>
     '''
     editor.setValue(tmpHtml)
-    expect(editor.body).toContainHtml('<p>test format</p>')
-    #expect($textarea.val()).toBe('<p>test format</p>')
+    expect($.trim(editor.body.html())).toBe('<p>test format</p>')
 
-  it 'should get formatted editor\'s value when call getValue', ->
+  it 'should get formatted editor\'s value by calling getValue', ->
     tmpHtml = '''
-    <p id="flag">test format</p>
+      <p id="flag">test format</p>
     '''
-    editor.body.empty()
-    $(tmpHtml).appendTo editor.body
+    editor.body.html(tmpHtml)
     expect(editor.getValue()).toBe('<p>test format</p>')
 
   it 'should focus on editor\'s body when call focus and blur when call blue', ->

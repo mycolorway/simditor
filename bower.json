@@ -26,12 +26,13 @@
     "README.md",
     "umd.hbs"
   ],
+  "devDependencies": {
+    "jasmine-jquery": "2.x"
+  },
   "dependencies": {
     "jquery": "2.x",
     "fontawesome": "4.x",
     "simple-module": "2.x",
-    "simple-uploader": "2.x",
-    "grunt-contrib-jasmine": "~0.8.0",
-    "jasmine-jquery": "~2.0.5"
+    "simple-uploader": "2.x"
   }
 }

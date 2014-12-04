@@ -171,6 +171,7 @@ class Simditor extends SimpleModule
       .off('.simditor .simditor-' + @id)
 
     @selection.clear()
+    @inputManager.focused = false
 
     @textarea.insertBefore(@el)
       .hide()

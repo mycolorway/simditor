@@ -48,7 +48,7 @@ module.exports = (grunt) ->
         expand: true
         flatten: true
         src: 'spec/src/*.coffee'
-        dest: 'spec/lib'
+        dest: 'spec'
         ext: '.js'
 
     sass:
@@ -212,7 +212,7 @@ module.exports = (grunt) ->
             'vendor/bower/fontawesome/css/font-awesome.css'
             'styles/simditor.css'
           ]
-          specs: 'spec/lib/*.js'
+          specs: 'spec/*.js'
           vendor: [
             'vendor/bower/jquery/dist/jquery.min.js'
             'vendor/bower/jasmine-jquery/lib/jasmine-jquery.js'
@@ -235,4 +235,5 @@ module.exports = (grunt) ->
 
   grunt.registerTask 'default', ['site', 'express', 'jasmine:test:build', 'watch']
   grunt.registerTask 'site', ['sass', 'coffee', 'umd', 'copy:vendor', 'copy:scripts', 'copy:styles', 'jekyll']
+  grunt.registerTask 'test', ['sass', 'coffee', 'umd', 'jasmine']
   grunt.registerTask 'package', ['clean:package', 'copy:package', 'uglify:simditor', 'compress']

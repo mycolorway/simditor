@@ -1,18 +1,21 @@
 (function() {
-  describe('A Simditor Instance', function() {
-    var editor;
+  describe('A Simditor instance', function() {
+    var $textarea, editor;
     editor = null;
+    $textarea = null;
     beforeEach(function() {
-      $('<textarea id="test"></textarea>').appendTo('body');
+      $textarea = $('<textarea id="editor"></textarea>').appendTo('body');
       return editor = new Simditor({
-        textarea: '#test'
+        textarea: $textarea
       });
     });
     afterEach(function() {
       if (editor != null) {
         editor.destroy();
       }
-      return $('#test').remove();
+      editor = null;
+      $textarea.remove();
+      return $textarea = null;
     });
     it('should render specific layout', function() {
       var $simditor;
@@ -20,28 +23,26 @@
       expect($simditor).toExist();
       expect($simditor.find('> .simditor-wrapper > .simditor-body')).toExist();
       expect($simditor.find('> .simditor-wrapper > .simditor-placeholder')).toExist();
-      expect($simditor.find('> textarea#test')).toExist();
+      expect($simditor.find('> textarea#editor')).toExist();
       expect(editor.el).toHaveClass('simditor');
       expect(editor.body).toHaveClass('simditor-body');
       return expect(editor.wrapper).toHaveClass('simditor-wrapper');
     });
-    it('should reset to default when destroyed', function() {
+    it('should reset to default after destroyed', function() {
       editor.destroy();
       expect($('.simditor')).not.toExist();
-      return expect($('textarea#test')).toExist();
+      return expect($('textarea#editor')).toExist();
     });
-    it('should set formatted value to editor\'s body when call setValue', function() {
-      var $textarea, tmpHtml;
-      $textarea = $('.simditor textarea');
-      tmpHtml = '<p id="flag">test format</p>';
-      editor.setValue(tmpHtml);
-      return expect(editor.body).toContainHtml('<p>test format</p>');
-    });
-    it('should get formatted editor\'s value when call getValue', function() {
+    it('should set formatted value to editor\'s body by calling setValue', function() {
       var tmpHtml;
       tmpHtml = '<p id="flag">test format</p>';
-      editor.body.empty();
-      $(tmpHtml).appendTo(editor.body);
+      editor.setValue(tmpHtml);
+      return expect($.trim(editor.body.html())).toBe('<p>test format</p>');
+    });
+    it('should get formatted editor\'s value by calling getValue', function() {
+      var tmpHtml;
+      tmpHtml = '<p id="flag">test format</p>';
+      editor.body.html(tmpHtml);
       return expect(editor.getValue()).toBe('<p>test format</p>');
     });
     return it('should focus on editor\'s body when call focus and blur when call blue', function() {

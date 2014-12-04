@@ -11,6 +11,9 @@
   "bugs": {
     "url": "https://github.com/mycolorway/simditor/issues"
   },
+  "scripts": {
+    "test": "grunt test --verbose"
+  },
   "homepage": "https://github.com/mycolorway/simditor",
   "devDependencies": {
     "grunt": "0.x",

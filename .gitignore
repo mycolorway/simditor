@@ -18,6 +18,7 @@ upload
 .DS_Store
 .sass-cache
 .bundle
+.grunt
 vendor
 _site
 package
