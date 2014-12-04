@@ -200,6 +200,7 @@ class InputManager extends SimpleModule
     if @editor.util.browser.webkit and e.which == 8 and @editor.selection.rangeAtStartOf $blockEl
       # fix the span bug in webkit browsers
       setTimeout =>
+        return unless @focused
         $newBlockEl = @editor.util.closestBlockEl()
         @editor.selection.save()
         @editor.formatter.cleanNode $newBlockEl, true

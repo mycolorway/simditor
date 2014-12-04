@@ -26,6 +26,9 @@
     "README.md",
     "umd.hbs"
   ],
+  "devDependencies": {
+    "jasmine-jquery": "2.x"
+  },
   "dependencies": {
     "jquery": "2.x",
     "fontawesome": "4.x",

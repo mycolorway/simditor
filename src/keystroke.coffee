@@ -12,8 +12,10 @@ class Keystroke extends SimpleModule
     if @editor.util.browser.safari
       @editor.inputManager.addKeystrokeHandler '13', '*', (e) =>
         return unless e.shiftKey
-        $br = $('<br/>')
+        $blockEl = @editor.util.closestBlockEl()
+        return if $blockEl.is('pre')
 
+        $br = $('<br/>')
         if @editor.selection.rangeAtEndOf $blockEl
           @editor.selection.insertNode $br
           @editor.selection.insertNode $('<br/>')
@@ -142,7 +144,8 @@ class Keystroke extends SimpleModule
       $closestBlock = @editor.util.closestBlockEl()
       return unless $closestBlock.is('p') and !$closestBlock.next().length and @editor.util.isEmptyNode $closestBlock
       $node.after $closestBlock
-      @editor.selection.setRangeAtStartOf $closestBlock
+      range = document.createRange()
+      @editor.selection.setRangeAtStartOf $closestBlock, range
       true
 
 
@@ -194,7 +197,8 @@ class Keystroke extends SimpleModule
       codeStr = $node.html().replace('\n', '<br/>')
       $newNode = $('<p/>').append(codeStr || @editor.util.phBr).insertAfter $node
       $node.remove()
-      @editor.selection.setRangeAtStartOf $newNode
+      range = document.createRange()
+      @editor.selection.setRangeAtStartOf $newNode, range
       true
 
 
@@ -202,6 +206,7 @@ class Keystroke extends SimpleModule
     @editor.inputManager.addKeystrokeHandler '8', 'blockquote', (e, $node) =>
       return unless @editor.selection.rangeAtStartOf $node
       $firstChild = $node.children().first().unwrap()
-      @editor.selection.setRangeAtStartOf $firstChild
+      range = document.createRange()
+      @editor.selection.setRangeAtStartOf $firstChild, range
       true
 

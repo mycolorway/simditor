@@ -774,6 +774,9 @@ InputManager = (function(_super) {
       setTimeout((function(_this) {
         return function() {
           var $newBlockEl;
+          if (!_this.focused) {
+            return;
+          }
           $newBlockEl = _this.editor.util.closestBlockEl();
           _this.editor.selection.save();
           _this.editor.formatter.cleanNode($newBlockEl, true);
@@ -1030,8 +1033,12 @@ Keystroke = (function(_super) {
     if (this.editor.util.browser.safari) {
       this.editor.inputManager.addKeystrokeHandler('13', '*', (function(_this) {
         return function(e) {
-          var $br;
+          var $blockEl, $br;
           if (!e.shiftKey) {
+            return;
+          }
+          $blockEl = _this.editor.util.closestBlockEl();
+          if ($blockEl.is('pre')) {
             return;
           }
           $br = $('<br/>');
@@ -1165,13 +1172,14 @@ Keystroke = (function(_super) {
     })(this));
     this.editor.inputManager.addKeystrokeHandler('13', 'blockquote', (function(_this) {
       return function(e, $node) {
-        var $closestBlock;
+        var $closestBlock, range;
         $closestBlock = _this.editor.util.closestBlockEl();
         if (!($closestBlock.is('p') && !$closestBlock.next().length && _this.editor.util.isEmptyNode($closestBlock))) {
           return;
         }
         $node.after($closestBlock);
-        _this.editor.selection.setRangeAtStartOf($closestBlock);
+        range = document.createRange();
+        _this.editor.selection.setRangeAtStartOf($closestBlock, range);
         return true;
       };
     })(this));
@@ -1225,25 +1233,27 @@ Keystroke = (function(_super) {
     })(this));
     this.editor.inputManager.addKeystrokeHandler('8', 'pre', (function(_this) {
       return function(e, $node) {
-        var $newNode, codeStr;
+        var $newNode, codeStr, range;
         if (!_this.editor.selection.rangeAtStartOf($node)) {
           return;
         }
         codeStr = $node.html().replace('\n', '<br/>');
         $newNode = $('<p/>').append(codeStr || _this.editor.util.phBr).insertAfter($node);
         $node.remove();
-        _this.editor.selection.setRangeAtStartOf($newNode);
+        range = document.createRange();
+        _this.editor.selection.setRangeAtStartOf($newNode, range);
         return true;
       };
     })(this));
     return this.editor.inputManager.addKeystrokeHandler('8', 'blockquote', (function(_this) {
       return function(e, $node) {
-        var $firstChild;
+        var $firstChild, range;
         if (!_this.editor.selection.rangeAtStartOf($node)) {
           return;
         }
         $firstChild = $node.children().first().unwrap();
-        _this.editor.selection.setRangeAtStartOf($firstChild);
+        range = document.createRange();
+        _this.editor.selection.setRangeAtStartOf($firstChild, range);
         return true;
       };
     })(this));
@@ -1555,7 +1565,7 @@ Util = (function(_super) {
   })();
 
   Util.prototype.browser = (function() {
-    var chrome, firefox, ie, safari, ua;
+    var chrome, firefox, ie, safari, ua, _ref, _ref1, _ref2, _ref3;
     ua = navigator.userAgent;
     ie = /(msie|trident)/i.test(ua);
     chrome = /chrome|crios/i.test(ua);
@@ -1564,25 +1574,25 @@ Util = (function(_super) {
     if (ie) {
       return {
         msie: true,
-        version: ua.match(/(msie |rv:)(\d+(\.\d+)?)/i)[2] * 1
+        version: ((_ref = ua.match(/(msie |rv:)(\d+(\.\d+)?)/i)) != null ? _ref[2] : void 0) * 1
       };
     } else if (chrome) {
       return {
         webkit: true,
         chrome: true,
-        version: ua.match(/(?:chrome|crios)\/(\d+(\.\d+)?)/i)[1] * 1
+        version: ((_ref1 = ua.match(/(?:chrome|crios)\/(\d+(\.\d+)?)/i)) != null ? _ref1[1] : void 0) * 1
       };
     } else if (safari) {
       return {
         webkit: true,
         safari: true,
-        version: ua.match(/version\/(\d+(\.\d+)?)/i)[1] * 1
+        version: ((_ref2 = ua.match(/version\/(\d+(\.\d+)?)/i)) != null ? _ref2[1] : void 0) * 1
       };
     } else if (firefox) {
       return {
         mozilla: true,
         firefox: true,
-        version: ua.match(/firefox\/(\d+(\.\d+)?)/i)[1] * 1
+        version: ((_ref3 = ua.match(/firefox\/(\d+(\.\d+)?)/i)) != null ? _ref3[1] : void 0) * 1
       };
     } else {
       return {};
@@ -2276,6 +2286,7 @@ Simditor = (function(_super) {
     this.triggerHandler('destroy');
     this.textarea.closest('form').off('.simditor .simditor-' + this.id);
     this.selection.clear();
+    this.inputManager.focused = false;
     this.textarea.insertBefore(this.el).hide().val('').removeData('simditor');
     this.el.remove();
     $(document).off('.simditor-' + this.id);
@@ -4832,8 +4843,6 @@ StrikethroughButton = (function(_super) {
 
 Simditor.Toolbar.addButton(StrikethroughButton);
 
-
 return Simditor;
-
 
 }));
