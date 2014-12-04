@@ -1,3 +1,5 @@
+[![Build Status](https://circleci.com/gh/mycolorway/simditor.png?circle-token=6b49dca8d1a55e24957a72be3dd2e2d3bfb7de73)](https://circleci.com/gh/mycolorway/simditor)
+
 Simditor是团队协作工具 [Tower](http://tower.im) 使用的富文本编辑器。
 
 相比传统的编辑器它的特点是：
