@@ -6,7 +6,10 @@
     "farthinker <farthinker@gmail.com>"
   ],
   "description": "A simple online editor",
-  "main": "lib/simditor.js",
+  "main": [
+    "lib/simditor.js",
+    "styles/simditor.css"
+  ],
   "keywords": [
     "editor"
   ],
