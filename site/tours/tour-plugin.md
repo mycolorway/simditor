@@ -18,6 +18,8 @@ root: ../
 
 ```coffee
 class SimditorAutosave extends SimpleModule
+  @pluginName: 'Autosave'
+
   _init: ->
     @editor = @_module
 
@@ -35,6 +37,8 @@ Simditor 的扩展继承自 [Simple Module](https://github.com/mycolorway/simple
 
 ```coffee
 class SimditorAutosave extends SimpleModule
+  @pluginName: 'Autosave'
+
   opts:
     autosave: false
 
@@ -56,6 +60,8 @@ Plugin 的 opts 属性会与 Simditor 的 opts 保持同步，所以我们可以
 
 ```coffee
 class SimditorAutosave extends SimpleModule
+  @pluginName: 'Autosave'
+
   opts:
     autosave: false
 
