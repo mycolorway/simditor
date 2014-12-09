@@ -104,13 +104,13 @@ class OrderListButton extends ListButton
   name: 'ol'
   icon: 'list-ol'
   htmlTag: 'ol'
-  shortcut: 'cmd+191'
+  shortcut: 'cmd+/'
   _init: ->
     if @editor.util.os.mac
       @title = @title + ' ( Cmd + / )'
     else
       @title = @title + ' ( ctrl + / )'
-      @shortcut = 'ctrl+191'
+      @shortcut = 'ctrl+/'
     super()
 
 class UnorderListButton extends ListButton
@@ -118,13 +118,13 @@ class UnorderListButton extends ListButton
   name: 'ul'
   icon: 'list-ul'
   htmlTag: 'ul'
-  shortcut: 'cmd+190'
+  shortcut: 'cmd+.'
   _init: ->
     if @editor.util.os.mac
       @title = @title + ' ( Cmd + . )'
     else
       @title = @title + ' ( Ctrl + . )'
-      @shortcut = 'ctrl+190'
+      @shortcut = 'ctrl+.'
     super()
 
 Simditor.Toolbar.addButton OrderListButton

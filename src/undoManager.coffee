@@ -14,14 +14,14 @@ class UndoManager extends SimpleModule
     @_stack = []
 
     if @editor.util.os.mac
-      undoShortcut = 'cmd+90'
-      redoShortcut = 'shift+cmd+90'
+      undoShortcut = 'cmd+z'
+      redoShortcut = 'shift+cmd+z'
     else if @editor.util.os.win
-      undoShortcut = 'ctrl+90'
-      redoShortcut = 'ctrl+89'
+      undoShortcut = 'ctrl+z'
+      redoShortcut = 'ctrl+y'
     else
-      undoShortcut = 'ctrl+90'
-      redoShortcut = 'shift+ctrl+90'
+      undoShortcut = 'ctrl+z'
+      redoShortcut = 'shift+ctrl+z'
 
 
     @editor.inputManager.addShortcut undoShortcut, (e) =>

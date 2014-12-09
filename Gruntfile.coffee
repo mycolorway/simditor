@@ -110,6 +110,9 @@ module.exports = (grunt) ->
           src: 'vendor/bower/simple-uploader/lib/uploader.js',
           dest: 'site/assets/scripts/uploader.js'
         }, {
+          src: 'vendor/bower/simple-hotkeys/lib/hotkeys.js',
+          dest: 'site/assets/scripts/hotkeys.js'
+        }, {
           src: 'lib/simditor.js',
           dest: 'site/assets/scripts/simditor.js'
         }]
@@ -128,6 +131,9 @@ module.exports = (grunt) ->
         }, {
           src: 'vendor/bower/simple-uploader/lib/uploader.js',
           dest: 'package/scripts/uploader.js'
+        }, {
+          src: 'vendor/bower/simple-hotkeys/lib/hotkeys.js',
+          dest: 'package/scripts/hotkeys.js'
         }, {
           expand: true,
           flatten: true
@@ -186,6 +192,7 @@ module.exports = (grunt) ->
         files:
           'package/scripts/module.min.js': 'package/scripts/module.js'
           'package/scripts/uploader.min.js': 'package/scripts/uploader.js'
+          'package/scripts/hotkeys.min.js': 'package/scripts/hotkeys.js'
           'package/scripts/simditor.min.js': 'package/scripts/simditor.js'
 
     compress:
@@ -218,6 +225,7 @@ module.exports = (grunt) ->
             'vendor/bower/jasmine-jquery/lib/jasmine-jquery.js'
             'vendor/bower/simple-module/lib/module.js'
             'vendor/bower/simple-uploader/lib/uploader.js'
+            'vendor/bower/simple-hotkeys/lib/hotkeys.js'
           ]
 
 

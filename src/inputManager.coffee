@@ -18,7 +18,7 @@ class InputManager extends SimpleModule
     # handlers which will be called when specific key is pressed in specific node
     @_keystrokeHandlers = {}
 
-    @_shortcuts = {}
+    @hotkeys = simple.hotkeys el: @editor.el
 
     @_pasteArea = $('<div/>')
       .css({
@@ -108,17 +108,17 @@ class InputManager extends SimpleModule
 
     # fix firefox cmd+left/right bug
     if @editor.util.browser.firefox
-      @addShortcut 'cmd+37', (e) =>
+      @addShortcut 'cmd+left', (e) =>
         e.preventDefault()
         @editor.selection.sel.modify('move', 'backward', 'lineboundary')
         false
-      @addShortcut 'cmd+39', (e) =>
+      @addShortcut 'cmd+right', (e) =>
         e.preventDefault()
         @editor.selection.sel.modify('move', 'forward', 'lineboundary')
         false
 
     # meta + enter: submit form
-    submitKey = if @editor.util.os.mac then 'cmd+13' else 'ctrl+13'
+    submitKey = if @editor.util.os.mac then 'cmd+enter' else 'ctrl+enter'
     @addShortcut submitKey, (e) =>
       @editor.el.closest('form')
         .find('button:submit')
@@ -163,9 +163,7 @@ class InputManager extends SimpleModule
       return false
 
     # handle predefined shortcuts
-    shortcutKey = @editor.util.getShortcutKey e
-    if @_shortcuts[shortcutKey]
-      return @_shortcuts[shortcutKey].call(this, e)
+    return if @hotkeys.respondTo e
 
     # Check the condictional handlers
     if e.which of @_keystrokeHandlers
@@ -397,4 +395,4 @@ class InputManager extends SimpleModule
 
 
   addShortcut: (keys, handler) ->
-    @_shortcuts[keys] = $.proxy(handler, this)
+    @hotkeys.add keys, $.proxy(handler, @)
