@@ -883,6 +883,7 @@ InputManager = (function(_super) {
           pasteContent = _this._cleanPasteArea.val();
         } else {
           pasteContent = $('<div/>').append(_this._pasteArea.contents());
+          pasteContent.find('table colgroup').remove();
           _this.editor.formatter.format(pasteContent);
           _this.editor.formatter.decorate(pasteContent);
           _this.editor.formatter.beautify(pasteContent.children());

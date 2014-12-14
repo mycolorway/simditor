@@ -295,6 +295,7 @@ class InputManager extends SimpleModule
         pasteContent = @_cleanPasteArea.val()
       else
         pasteContent = $('<div/>').append(@_pasteArea.contents())
+        pasteContent.find('table colgroup').remove() # clear table cols width
         @editor.formatter.format pasteContent
         @editor.formatter.decorate pasteContent
         @editor.formatter.beautify pasteContent.children()
