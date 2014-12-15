@@ -2530,9 +2530,13 @@ Button = (function(_super) {
   Button.prototype.command = function(param) {};
 
   Button.prototype._t = function() {
-    var args, _ref;
+    var args, result, _ref;
     args = 1 <= arguments.length ? __slice.call(arguments, 0) : [];
-    return (_ref = this.editor)._t.apply(_ref, args);
+    result = Button.__super__._t.apply(this, args);
+    if (!result) {
+      result = (_ref = this.editor)._t.apply(_ref, args);
+    }
+    return result;
   };
 
   return Button;
