@@ -1925,7 +1925,8 @@ Toolbar = (function(_super) {
   Toolbar.prototype.opts = {
     toolbar: true,
     toolbarFloat: true,
-    toolbarHidden: false
+    toolbarHidden: false,
+    toolbarFloatOffset: 0
   };
 
   Toolbar.prototype._tpl = {
@@ -1960,6 +1961,7 @@ Toolbar = (function(_super) {
     })(this));
     if (!this.opts.toolbarHidden && this.opts.toolbarFloat) {
       this.wrapper.width(this.wrapper.outerWidth());
+      this.wrapper.css('top', this.opts.toolbarFloatOffset);
       toolbarHeight = this.wrapper.outerHeight();
       if (!this.editor.util.os.mobile) {
         $(window).on('resize.simditor-' + this.editor.id, (function(_this) {
@@ -1980,16 +1982,12 @@ Toolbar = (function(_super) {
           if (scrollTop <= topEdge || scrollTop >= bottomEdge) {
             _this.editor.wrapper.removeClass('toolbar-floating').css('padding-top', '');
             if (_this.editor.util.os.mobile) {
-              return _this.wrapper.css({
-                top: 'auto'
-              });
+              return _this.wrapper.css('top', _this.opts.toolbarFloatOffset);
             }
           } else {
             _this.editor.wrapper.addClass('toolbar-floating').css('padding-top', toolbarHeight);
             if (_this.editor.util.os.mobile) {
-              return _this.wrapper.css({
-                top: scrollTop - topEdge
-              });
+              return _this.wrapper.css('top', scrollTop - topEdge + _this.opts.toolbarFloatOffset);
             }
           }
         };

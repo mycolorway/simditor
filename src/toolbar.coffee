@@ -7,6 +7,7 @@ class Toolbar extends SimpleModule
     toolbar: true
     toolbarFloat: true
     toolbarHidden: false
+    toolbarFloatOffset: 0
 
   _tpl:
     wrapper: '<div class="simditor-toolbar"><ul></ul></div>'
@@ -32,6 +33,7 @@ class Toolbar extends SimpleModule
 
     if not @opts.toolbarHidden and @opts.toolbarFloat
       @wrapper.width @wrapper.outerWidth()
+      @wrapper.css 'top', @opts.toolbarFloatOffset
       toolbarHeight = @wrapper.outerHeight()
 
       unless @editor.util.os.mobile
@@ -51,14 +53,12 @@ class Toolbar extends SimpleModule
           @editor.wrapper.removeClass('toolbar-floating')
             .css('padding-top', '')
           if @editor.util.os.mobile
-            @wrapper.css
-              top: 'auto'
+            @wrapper.css 'top', @opts.toolbarFloatOffset
         else
           @editor.wrapper.addClass('toolbar-floating')
             .css('padding-top', toolbarHeight)
           if @editor.util.os.mobile
-            @wrapper.css
-              top: scrollTop - topEdge
+            @wrapper.css 'top', scrollTop - topEdge + @opts.toolbarFloatOffset
 
     @editor.on 'selectionchanged', =>
       @toolbarStatus()
