@@ -1979,7 +1979,7 @@ Toolbar = (function(_super) {
           var bottomEdge, scrollTop, topEdge;
           topEdge = _this.editor.wrapper.offset().top;
           bottomEdge = topEdge + _this.editor.wrapper.outerHeight() - 80;
-          scrollTop = $(document).scrollTop();
+          scrollTop = $(document).scrollTop() + _this.opts.toolbarFloatOffset;
           if (scrollTop <= topEdge || scrollTop >= bottomEdge) {
             _this.editor.wrapper.removeClass('toolbar-floating').css('padding-top', '');
             if (_this.editor.util.os.mobile) {

@@ -47,7 +47,7 @@ class Toolbar extends SimpleModule
       $(window).on 'scroll.simditor-' + @editor.id, (e) =>
         topEdge = @editor.wrapper.offset().top
         bottomEdge = topEdge + @editor.wrapper.outerHeight() - 80
-        scrollTop = $(document).scrollTop()
+        scrollTop = $(document).scrollTop() + @opts.toolbarFloatOffset
 
         if scrollTop <= topEdge or scrollTop >= bottomEdge
           @editor.wrapper.removeClass('toolbar-floating')
