@@ -591,7 +591,9 @@ InputManager = (function(_super) {
       this.opts.pasteImage = 'inline';
     }
     this._keystrokeHandlers = {};
-    this._shortcuts = {};
+    this.hotkeys = simple.hotkeys({
+      el: this.editor.el
+    });
     this._pasteArea = $('<div/>').css({
       width: '1px',
       height: '1px',
@@ -667,14 +669,14 @@ InputManager = (function(_super) {
     })(this));
     this.editor.body.on('keydown', $.proxy(this._onKeyDown, this)).on('keypress', $.proxy(this._onKeyPress, this)).on('keyup', $.proxy(this._onKeyUp, this)).on('mouseup', $.proxy(this._onMouseUp, this)).on('focus', $.proxy(this._onFocus, this)).on('blur', $.proxy(this._onBlur, this)).on('paste', $.proxy(this._onPaste, this)).on('drop', $.proxy(this._onDrop, this));
     if (this.editor.util.browser.firefox) {
-      this.addShortcut('cmd+37', (function(_this) {
+      this.addShortcut('cmd+left', (function(_this) {
         return function(e) {
           e.preventDefault();
           _this.editor.selection.sel.modify('move', 'backward', 'lineboundary');
           return false;
         };
       })(this));
-      this.addShortcut('cmd+39', (function(_this) {
+      this.addShortcut('cmd+right', (function(_this) {
         return function(e) {
           e.preventDefault();
           _this.editor.selection.sel.modify('move', 'forward', 'lineboundary');
@@ -682,7 +684,7 @@ InputManager = (function(_super) {
         };
       })(this));
     }
-    submitKey = this.editor.util.os.mac ? 'cmd+13' : 'ctrl+13';
+    submitKey = this.editor.util.os.mac ? 'cmd+enter' : 'ctrl+enter';
     this.addShortcut(submitKey, (function(_this) {
       return function(e) {
         _this.editor.el.closest('form').find('button:submit').click();
@@ -730,13 +732,12 @@ InputManager = (function(_super) {
   };
 
   InputManager.prototype._onKeyDown = function(e) {
-    var $blockEl, metaKey, result, shortcutKey, _base, _ref, _ref1;
+    var $blockEl, metaKey, result, _base, _ref, _ref1;
     if (this.editor.triggerHandler(e) === false) {
       return false;
     }
-    shortcutKey = this.editor.util.getShortcutKey(e);
-    if (this._shortcuts[shortcutKey]) {
-      return this._shortcuts[shortcutKey].call(this, e);
+    if (this.hotkeys.respondTo(e)) {
+      return;
     }
     if (e.which in this._keystrokeHandlers) {
       result = typeof (_base = this._keystrokeHandlers[e.which])['*'] === "function" ? _base['*'](e) : void 0;
@@ -1008,7 +1009,7 @@ InputManager = (function(_super) {
   };
 
   InputManager.prototype.addShortcut = function(keys, handler) {
-    return this._shortcuts[keys] = $.proxy(handler, this);
+    return this.hotkeys.add(keys, $.proxy(handler, this));
   };
 
   return InputManager;
@@ -1288,14 +1289,14 @@ UndoManager = (function(_super) {
     this.editor = this._module;
     this._stack = [];
     if (this.editor.util.os.mac) {
-      undoShortcut = 'cmd+90';
-      redoShortcut = 'shift+cmd+90';
+      undoShortcut = 'cmd+z';
+      redoShortcut = 'shift+cmd+z';
     } else if (this.editor.util.os.win) {
-      undoShortcut = 'ctrl+90';
-      redoShortcut = 'ctrl+89';
+      undoShortcut = 'ctrl+z';
+      redoShortcut = 'ctrl+y';
     } else {
-      undoShortcut = 'ctrl+90';
-      redoShortcut = 'shift+ctrl+90';
+      undoShortcut = 'ctrl+z';
+      redoShortcut = 'shift+ctrl+z';
     }
     this.editor.inputManager.addShortcut(undoShortcut, (function(_this) {
       return function(e) {
@@ -2796,14 +2797,14 @@ BoldButton = (function(_super) {
 
   BoldButton.prototype.disableTag = 'pre';
 
-  BoldButton.prototype.shortcut = 'cmd+66';
+  BoldButton.prototype.shortcut = 'cmd+b';
 
   BoldButton.prototype._init = function() {
     if (this.editor.util.os.mac) {
       this.title = this.title + ' ( Cmd + b )';
     } else {
       this.title = this.title + ' ( Ctrl + b )';
-      this.shortcut = 'ctrl+66';
+      this.shortcut = 'ctrl+b';
     }
     return BoldButton.__super__._init.call(this);
   };
@@ -2852,14 +2853,14 @@ ItalicButton = (function(_super) {
 
   ItalicButton.prototype.disableTag = 'pre';
 
-  ItalicButton.prototype.shortcut = 'cmd+73';
+  ItalicButton.prototype.shortcut = 'cmd+i';
 
   ItalicButton.prototype._init = function() {
     if (this.editor.util.os.mac) {
       this.title = this.title + ' ( Cmd + i )';
     } else {
       this.title = this.title + ' ( Ctrl + i )';
-      this.shortcut = 'ctrl+73';
+      this.shortcut = 'ctrl+i';
     }
     return ItalicButton.__super__._init.call(this);
   };
@@ -2908,14 +2909,14 @@ UnderlineButton = (function(_super) {
 
   UnderlineButton.prototype.disableTag = 'pre';
 
-  UnderlineButton.prototype.shortcut = 'cmd+85';
+  UnderlineButton.prototype.shortcut = 'cmd+u';
 
   UnderlineButton.prototype.render = function() {
     if (this.editor.util.os.mac) {
       this.title = this.title + ' ( Cmd + u )';
     } else {
       this.title = this.title + ' ( Ctrl + u )';
-      this.shortcut = 'ctrl+85';
+      this.shortcut = 'ctrl+u';
     }
     return UnderlineButton.__super__.render.call(this);
   };
@@ -3187,14 +3188,14 @@ OrderListButton = (function(_super) {
 
   OrderListButton.prototype.htmlTag = 'ol';
 
-  OrderListButton.prototype.shortcut = 'cmd+191';
+  OrderListButton.prototype.shortcut = 'cmd+/';
 
   OrderListButton.prototype._init = function() {
     if (this.editor.util.os.mac) {
       this.title = this.title + ' ( Cmd + / )';
     } else {
       this.title = this.title + ' ( ctrl + / )';
-      this.shortcut = 'ctrl+191';
+      this.shortcut = 'ctrl+/';
     }
     return OrderListButton.__super__._init.call(this);
   };
@@ -3218,14 +3219,14 @@ UnorderListButton = (function(_super) {
 
   UnorderListButton.prototype.htmlTag = 'ul';
 
-  UnorderListButton.prototype.shortcut = 'cmd+190';
+  UnorderListButton.prototype.shortcut = 'cmd+.';
 
   UnorderListButton.prototype._init = function() {
     if (this.editor.util.os.mac) {
       this.title = this.title + ' ( Cmd + . )';
     } else {
       this.title = this.title + ' ( Ctrl + . )';
-      this.shortcut = 'ctrl+190';
+      this.shortcut = 'ctrl+.';
     }
     return UnorderListButton.__super__._init.call(this);
   };
@@ -4839,6 +4840,8 @@ StrikethroughButton = (function(_super) {
 
 Simditor.Toolbar.addButton(StrikethroughButton);
 
+
 return Simditor;
+
 
 }));

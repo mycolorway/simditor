@@ -9,14 +9,14 @@ class BoldButton extends Button
 
   disableTag: 'pre'
 
-  shortcut: 'cmd+66'
+  shortcut: 'cmd+b'
 
   _init: ->
     if @editor.util.os.mac
       @title = @title + ' ( Cmd + b )'
     else
       @title = @title + ' ( Ctrl + b )'
-      @shortcut = 'ctrl+66'
+      @shortcut = 'ctrl+b'
     super()
 
   status: ($node) ->

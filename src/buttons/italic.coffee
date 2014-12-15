@@ -9,14 +9,14 @@ class ItalicButton extends Button
 
   disableTag: 'pre'
 
-  shortcut: 'cmd+73'
+  shortcut: 'cmd+i'
 
   _init: ->
     if @editor.util.os.mac
       @title = @title + ' ( Cmd + i )'
     else
       @title = @title + ' ( Ctrl + i )'
-      @shortcut = 'ctrl+73'
+      @shortcut = 'ctrl+i'
 
     super()
 
