@@ -151,7 +151,9 @@ class Button extends SimpleModule
   command: (param) ->
 
   _t: (args...) ->
-    @editor._t args...
+    result = super args...
+    result = @editor._t args... unless result
+    result
 
 
 Simditor.Button = Button
