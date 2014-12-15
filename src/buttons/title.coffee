@@ -24,6 +24,14 @@ class TitleButton extends Button
       name: 'h3',
       text: @_t('title') + ' 3',
       param: 'h3'
+    }, {
+      name: 'h4',
+      text: @_t('title') + ' 4',
+      param: 'h4'
+    }, {
+      name: 'h5',
+      text: @_t('title') + ' 5',
+      param: 'h5'
     }]
     super()
 

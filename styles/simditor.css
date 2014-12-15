@@ -259,6 +259,14 @@
   font-size: 20px;
   color: #333333;
 }
+.simditor .simditor-toolbar .toolbar-menu ul > li .menu-item.menu-item-h4 {
+  font-size: 18px;
+  color: #333333;
+}
+.simditor .simditor-toolbar .toolbar-menu ul > li .menu-item.menu-item-h5 {
+  font-size: 16px;
+  color: #333333;
+}
 .simditor .simditor-toolbar .toolbar-menu ul > li .separator {
   display: block;
   border-top: 1px solid #cccccc;
