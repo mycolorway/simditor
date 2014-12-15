@@ -18,7 +18,8 @@ class InputManager extends SimpleModule
     # handlers which will be called when specific key is pressed in specific node
     @_keystrokeHandlers = {}
 
-    @hotkeys = simple.hotkeys el: @editor.el
+    @hotkeys = simple.hotkeys
+      el: @editor.body
 
     @_pasteArea = $('<div/>')
       .css({
