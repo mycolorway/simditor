@@ -5,7 +5,9 @@ class IndentButton extends Button
 
   icon: 'indent'
 
-  title: Simditor._t('indent') + ' (Tab)'
+  _init: ->
+    @title = @_t(@name) + ' (Tab)'
+    super()
 
   status: ($node) ->
     true

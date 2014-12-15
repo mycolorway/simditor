@@ -5,15 +5,13 @@ class BoldButton extends Button
 
   icon: 'bold'
 
-  title: Simditor._t 'bold'
-
   htmlTag: 'b, strong'
 
   disableTag: 'pre'
 
   shortcut: 'cmd+66'
 
-  render: ->
+  _init: ->
     if @editor.util.os.mac
       @title = @title + ' ( Cmd + b )'
     else

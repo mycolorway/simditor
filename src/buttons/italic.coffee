@@ -5,15 +5,13 @@ class ItalicButton extends Button
 
   icon: 'italic'
 
-  title: Simditor._t 'italic'
-
   htmlTag: 'i'
 
   disableTag: 'pre'
 
   shortcut: 'cmd+73'
 
-  render: ->
+  _init: ->
     if @editor.util.os.mac
       @title = @title + ' ( Cmd + i )'
     else

@@ -5,8 +5,6 @@ class ImageButton extends Button
 
   icon: 'picture-o'
 
-  title: Simditor._t 'insertImage'
-
   htmlTag: 'img'
 
   disableTag: 'pre, table'
@@ -15,25 +13,19 @@ class ImageButton extends Button
 
   needFocus: false
 
-  #maxWidth: 0
-
-  #maxHeight: 0
-
-  menu: [{
-    name: 'upload-image',
-    text: Simditor._t 'localImage'
-  }, {
-    name: 'external-image',
-    text: Simditor._t 'externalImage'
-  }]
-
   _init: () ->
-    @menu = false unless @editor.uploader?
-    super()
+    if @editor.uploader?
+      @menu = [{
+        name: 'upload-image',
+        text: @_t 'localImage'
+      }, {
+        name: 'external-image',
+        text: @_t 'externalImage'
+      }]
+    else
+      @menu = false
 
     @defaultImage = @editor.opts.defaultImage
-    #@maxWidth = @editor.opts.maxImageWidth || @editor.body.width()
-    #@maxHeight = @editor.opts.maxImageHeight || $(window).height()
 
     @editor.body.on 'click', 'img:not([data-non-image])', (e) =>
       $img = $(e.currentTarget)
@@ -76,6 +68,7 @@ class ImageButton extends Button
               if @editor.body.find('img.uploading').length < 1
                 @editor.uploader.trigger 'uploadready', [file]
 
+    super()
 
   render: (args...) ->
     super args...
@@ -90,7 +83,7 @@ class ImageButton extends Button
 
     createInput = =>
       $input.remove() if $input
-      $input = $('<input type="file" title="' + Simditor._t('uploadImage') + '" accept="image/*">')
+      $input = $('<input type="file" title="' + @_t('uploadImage') + '" accept="image/*">')
         .appendTo($uploadItem)
 
     createInput()
@@ -140,7 +133,7 @@ class ImageButton extends Button
         @loadImage $img, src, =>
           if @popover.active
             @popover.refresh()
-            @popover.srcEl.val(Simditor._t('uploading'))
+            @popover.srcEl.val(@_t('uploading'))
               .prop('disabled', true)
 
     @editor.uploader.on 'uploadprogress', (e, file, loaded, total) =>
@@ -171,7 +164,7 @@ class ImageButton extends Button
       $img.removeData 'mask'
 
       if result.success == false
-        msg = result.msg || Simditor._t('uploadFailed')
+        msg = result.msg || @_t('uploadFailed')
         alert msg
         $img.attr 'src', @defaultImage
       else
@@ -195,7 +188,7 @@ class ImageButton extends Button
           result = $.parseJSON xhr.responseText
           msg = result.msg
         catch e
-          msg = Simditor._t('uploadError')
+          msg = @_t('uploadError')
 
         alert msg
 
@@ -306,34 +299,33 @@ class ImageButton extends Button
 
 class ImagePopover extends Popover
 
-  _tpl: """
-    <div class="link-settings">
-      <div class="settings-field">
-        <label>#{ Simditor._t 'imageUrl' }</label>
-        <input class="image-src" type="text" tabindex="1" />
-        <a class="btn-upload" href="javascript:;" title="#{ Simditor._t 'uploadImage' }" tabindex="-1">
-          <span class="fa fa-upload"></span>
-        </a>
-      </div>
-      <div class="settings-field">
-        <label>#{ Simditor._t 'imageSize' }</label>
-        <input class="image-size" id="image-width" type="text" tabindex="2" />
-        <span class="times">×</span>
-        <input class="image-size" id="image-height" type="text" tabindex="3" />
-        <a class="btn-restore" href="javascript:;" title="#{ Simditor._t 'restoreImageSize' }" tabindex="-1">
-          <span class="fa fa-reply"></span>
-        </a>
-      </div>
-    </div>
-  """
-
   offset:
     top: 6
     left: -4
 
   render: ->
+    tpl = """
+      <div class="link-settings">
+        <div class="settings-field">
+          <label>#{ @_t 'imageUrl' }</label>
+          <input class="image-src" type="text" tabindex="1" />
+          <a class="btn-upload" href="javascript:;" title="#{ @_t 'uploadImage' }" tabindex="-1">
+            <span class="fa fa-upload"></span>
+          </a>
+        </div>
+        <div class="settings-field">
+          <label>#{ @_t 'imageSize' }</label>
+          <input class="image-size" id="image-width" type="text" tabindex="2" />
+          <span class="times">×</span>
+          <input class="image-size" id="image-height" type="text" tabindex="3" />
+          <a class="btn-restore" href="javascript:;" title="#{ @_t 'restoreImageSize' }" tabindex="-1">
+            <span class="fa fa-reply"></span>
+          </a>
+        </div>
+      </div>
+    """
     @el.addClass('image-popover')
-      .append(@_tpl)
+      .append(tpl)
     @srcEl = @el.find '.image-src'
 
     @srcEl.on 'keydown', (e) =>
@@ -411,7 +403,7 @@ class ImagePopover extends Popover
 
     createInput = =>
       @input.remove() if @input
-      @input = $('<input type="file" title="' + Simditor._t('uploadImage') + '" accept="image/*">')
+      @input = $('<input type="file" title="' + @_t('uploadImage') + '" accept="image/*">')
         .appendTo($uploadBtn)
 
     createInput()
@@ -457,7 +449,7 @@ class ImagePopover extends Popover
     @height = $img.height()
 
     if $img.hasClass 'uploading'
-      @srcEl.val Simditor._t('uploading')
+      @srcEl.val @_t('uploading')
         .prop 'disabled', true
     else
       @srcEl.val $img.attr('src')

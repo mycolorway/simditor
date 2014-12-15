@@ -31,6 +31,7 @@ class Button extends SimpleModule
 
   constructor: (opts) ->
     @editor = opts.editor
+    @title = @_t(@name)
     super opts
 
   _init: ->
@@ -148,6 +149,9 @@ class Button extends SimpleModule
     @active
 
   command: (param) ->
+
+  _t: (args...) ->
+    @editor._t args...
 
 
 Simditor.Button = Button

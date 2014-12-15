@@ -5,8 +5,6 @@ class BlockquoteButton extends Button
 
   icon: 'quote-left'
 
-  title: Simditor._t 'blockquote'
-
   htmlTag: 'blockquote'
 
   disableTag: 'pre, table'

@@ -5,8 +5,6 @@ class UnderlineButton extends Button
 
   icon: 'underline'
 
-  title: Simditor._t 'underline'
-
   htmlTag: 'u'
 
   disableTag: 'pre'

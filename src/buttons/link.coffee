@@ -5,8 +5,6 @@ class LinkButton extends Button
 
   icon: 'link'
 
-  title: Simditor._t 'insertLink'
-
   htmlTag: 'a'
 
   disableTag: 'pre'
@@ -58,7 +56,7 @@ class LinkButton extends Button
       $link = $('<a/>', {
         href: 'http://www.example.com',
         target: '_blank',
-        text: linkText || Simditor._t('linkText')
+        text: linkText || @_t('linkText')
       })
 
       if $startBlock[0] == $endBlock[0]
@@ -83,23 +81,22 @@ class LinkButton extends Button
 
 class LinkPopover extends Popover
 
-  _tpl: """
-    <div class="link-settings">
-      <div class="settings-field">
-        <label>#{ Simditor._t 'text' }</label>
-        <input class="link-text" type="text"/>
-        <a class="btn-unlink" href="javascript:;" title="#{ Simditor._t 'removeLink' }" tabindex="-1"><span class="fa fa-unlink"></span></a>
-      </div>
-      <div class="settings-field">
-        <label>#{ Simditor._t 'linkUrl' }</label>
-        <input class="link-url" type="text"/>
-      </div>
-    </div>
-  """
-
   render: ->
+    tpl = """
+      <div class="link-settings">
+        <div class="settings-field">
+          <label>#{ @_t 'text' }</label>
+          <input class="link-text" type="text"/>
+          <a class="btn-unlink" href="javascript:;" title="#{ @_t 'removeLink' }" tabindex="-1"><span class="fa fa-unlink"></span></a>
+        </div>
+        <div class="settings-field">
+          <label>#{ @_t 'linkUrl' }</label>
+          <input class="link-url" type="text"/>
+        </div>
+      </div>
+    """
     @el.addClass('link-popover')
-      .append(@_tpl)
+      .append(tpl)
     @textEl = @el.find '.link-text'
     @urlEl = @el.find '.link-url'
     @unlinkEl = @el.find '.btn-unlink'

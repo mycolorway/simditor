@@ -5,8 +5,6 @@ class CodeButton extends Button
 
   icon: 'code'
 
-  title: Simditor._t 'code'
-
   htmlTag: 'pre'
 
   disableTag: 'li, table'

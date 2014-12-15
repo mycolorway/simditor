@@ -5,8 +5,6 @@ class HrButton extends Button
 
   icon: 'minus'
 
-  title: Simditor._t 'hr'
-
   htmlTag: 'hr'
 
   status: ($node) ->

@@ -102,11 +102,10 @@ class ListButton extends Button
 class OrderListButton extends ListButton
   type: 'ol'
   name: 'ol'
-  title: Simditor._t 'ol'
   icon: 'list-ol'
   htmlTag: 'ol'
   shortcut: 'cmd+191'
-  render: ->
+  _init: ->
     if @editor.util.os.mac
       @title = @title + ' ( Cmd + / )'
     else
@@ -117,11 +116,10 @@ class OrderListButton extends ListButton
 class UnorderListButton extends ListButton
   type: 'ul'
   name: 'ul'
-  title: Simditor._t 'ul'
   icon: 'list-ul'
   htmlTag: 'ul'
   shortcut: 'cmd+190'
-  render: ->
+  _init: ->
     if @editor.util.os.mac
       @title = @title + ' ( Cmd + . )'
     else

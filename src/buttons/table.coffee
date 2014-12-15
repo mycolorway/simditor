@@ -5,8 +5,6 @@ class TableButton extends Button
 
   icon: 'table'
 
-  title: Simditor._t 'table'
-
   htmlTag: 'table'
 
   disableTag: 'pre, li, blockquote'
@@ -178,15 +176,15 @@ class TableButton extends Button
       </div>
       <div class="menu-edit-table">
         <ul>
-          <li><a tabindex="-1" unselectable="on" class="menu-item" href="javascript:;" data-param="deleteRow"><span>#{ Simditor._t 'deleteRow' }</span></a></li>
-          <li><a tabindex="-1" unselectable="on" class="menu-item" href="javascript:;" data-param="insertRowAbove"><span>#{ Simditor._t 'insertRowAbove' }</span></a></li>
-          <li><a tabindex="-1" unselectable="on" class="menu-item" href="javascript:;" data-param="insertRowBelow"><span>#{ Simditor._t 'insertRowBelow' }</span></a></li>
+          <li><a tabindex="-1" unselectable="on" class="menu-item" href="javascript:;" data-param="deleteRow"><span>#{ @_t 'deleteRow' }</span></a></li>
+          <li><a tabindex="-1" unselectable="on" class="menu-item" href="javascript:;" data-param="insertRowAbove"><span>#{ @_t 'insertRowAbove' }</span></a></li>
+          <li><a tabindex="-1" unselectable="on" class="menu-item" href="javascript:;" data-param="insertRowBelow"><span>#{ @_t 'insertRowBelow' }</span></a></li>
           <li><span class="separator"></span></li>
-          <li><a tabindex="-1" unselectable="on" class="menu-item" href="javascript:;" data-param="deleteCol"><span>#{ Simditor._t 'delteColumn' }</span></a></li>
-          <li><a tabindex="-1" unselectable="on" class="menu-item" href="javascript:;" data-param="insertColLeft"><span>#{ Simditor._t 'insertColumnLeft' }</span></a></li>
-          <li><a tabindex="-1" unselectable="on" class="menu-item" href="javascript:;" data-param="insertColRight"><span>#{ Simditor._t 'insertColumnRight' }</span></a></li>
+          <li><a tabindex="-1" unselectable="on" class="menu-item" href="javascript:;" data-param="deleteCol"><span>#{ @_t 'delteColumn' }</span></a></li>
+          <li><a tabindex="-1" unselectable="on" class="menu-item" href="javascript:;" data-param="insertColLeft"><span>#{ @_t 'insertColumnLeft' }</span></a></li>
+          <li><a tabindex="-1" unselectable="on" class="menu-item" href="javascript:;" data-param="insertColRight"><span>#{ @_t 'insertColumnRight' }</span></a></li>
           <li><span class="separator"></span></li>
-          <li><a tabindex="-1" unselectable="on" class="menu-item" href="javascript:;" data-param="deleteTable"><span>#{ Simditor._t 'deleteTable' }</span></a></li>
+          <li><a tabindex="-1" unselectable="on" class="menu-item" href="javascript:;" data-param="deleteTable"><span>#{ @_t 'deleteTable' }</span></a></li>
         </ul>
       </div>
     """).appendTo(@menuWrapper)

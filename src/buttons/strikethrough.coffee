@@ -5,8 +5,6 @@ class StrikethroughButton extends Button
 
   icon: 'strikethrough'
 
-  title: Simditor._t 'strikethrough'
-
   htmlTag: 'strike'
 
   disableTag: 'pre'

@@ -2306,7 +2306,7 @@ Simditor.i18n = {
     'code': '插入代码',
     'color': '文字颜色',
     'hr': '分隔线',
-    'insertImage': '插入图片',
+    'image': '插入图片',
     'localImage': '本地图片',
     'externalImage': '外链图片',
     'uploadImage': '上传图片',
@@ -2319,7 +2319,7 @@ Simditor.i18n = {
     'indent': '向右缩进',
     'outdent': '向左缩进',
     'italic': '斜体文字',
-    'insertLink': '插入链接',
+    'link': '插入链接',
     'text': '文本',
     'linkText': '链接文字',
     'linkUrl': '地址',
@@ -2343,7 +2343,8 @@ Simditor.i18n = {
 
 var Button,
   __hasProp = {}.hasOwnProperty,
-  __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
+  __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
+  __slice = [].slice;
 
 Button = (function(_super) {
   __extends(Button, _super);
@@ -2379,6 +2380,7 @@ Button = (function(_super) {
 
   function Button(opts) {
     this.editor = opts.editor;
+    this.title = this._t(this.name);
     Button.__super__.constructor.call(this, opts);
   }
 
@@ -2528,6 +2530,12 @@ Button = (function(_super) {
 
   Button.prototype.command = function(param) {};
 
+  Button.prototype._t = function() {
+    var args, _ref;
+    args = 1 <= arguments.length ? __slice.call(arguments, 0) : [];
+    return (_ref = this.editor)._t.apply(_ref, args);
+  };
+
   return Button;
 
 })(SimpleModule);
@@ -2661,31 +2669,32 @@ TitleButton = (function(_super) {
 
   TitleButton.prototype.name = 'title';
 
-  TitleButton.prototype.title = Simditor._t('title');
-
   TitleButton.prototype.htmlTag = 'h1, h2, h3, h4';
 
   TitleButton.prototype.disableTag = 'pre, table';
 
-  TitleButton.prototype.menu = [
-    {
-      name: 'normal',
-      text: Simditor._t('normalText'),
-      param: 'p'
-    }, '|', {
-      name: 'h1',
-      text: Simditor._t('title') + ' 1',
-      param: 'h1'
-    }, {
-      name: 'h2',
-      text: Simditor._t('title') + ' 2',
-      param: 'h2'
-    }, {
-      name: 'h3',
-      text: Simditor._t('title') + ' 3',
-      param: 'h3'
-    }
-  ];
+  TitleButton.prototype._init = function() {
+    this.menu = [
+      {
+        name: 'normal',
+        text: this._t('normalText'),
+        param: 'p'
+      }, '|', {
+        name: 'h1',
+        text: this._t('title') + ' 1',
+        param: 'h1'
+      }, {
+        name: 'h2',
+        text: this._t('title') + ' 2',
+        param: 'h2'
+      }, {
+        name: 'h3',
+        text: this._t('title') + ' 3',
+        param: 'h3'
+      }
+    ];
+    return TitleButton.__super__._init.call(this);
+  };
 
   TitleButton.prototype.setActive = function(active, param) {
     TitleButton.__super__.setActive.call(this, active);
@@ -2777,22 +2786,20 @@ BoldButton = (function(_super) {
 
   BoldButton.prototype.icon = 'bold';
 
-  BoldButton.prototype.title = Simditor._t('bold');
-
   BoldButton.prototype.htmlTag = 'b, strong';
 
   BoldButton.prototype.disableTag = 'pre';
 
   BoldButton.prototype.shortcut = 'cmd+66';
 
-  BoldButton.prototype.render = function() {
+  BoldButton.prototype._init = function() {
     if (this.editor.util.os.mac) {
       this.title = this.title + ' ( Cmd + b )';
     } else {
       this.title = this.title + ' ( Ctrl + b )';
       this.shortcut = 'ctrl+66';
     }
-    return BoldButton.__super__.render.call(this);
+    return BoldButton.__super__._init.call(this);
   };
 
   BoldButton.prototype.status = function($node) {
@@ -2835,22 +2842,20 @@ ItalicButton = (function(_super) {
 
   ItalicButton.prototype.icon = 'italic';
 
-  ItalicButton.prototype.title = Simditor._t('italic');
-
   ItalicButton.prototype.htmlTag = 'i';
 
   ItalicButton.prototype.disableTag = 'pre';
 
   ItalicButton.prototype.shortcut = 'cmd+73';
 
-  ItalicButton.prototype.render = function() {
+  ItalicButton.prototype._init = function() {
     if (this.editor.util.os.mac) {
       this.title = this.title + ' ( Cmd + i )';
     } else {
       this.title = this.title + ' ( Ctrl + i )';
       this.shortcut = 'ctrl+73';
     }
-    return ItalicButton.__super__.render.call(this);
+    return ItalicButton.__super__._init.call(this);
   };
 
   ItalicButton.prototype.status = function($node) {
@@ -2892,8 +2897,6 @@ UnderlineButton = (function(_super) {
   UnderlineButton.prototype.name = 'underline';
 
   UnderlineButton.prototype.icon = 'underline';
-
-  UnderlineButton.prototype.title = Simditor._t('underline');
 
   UnderlineButton.prototype.htmlTag = 'u';
 
@@ -2951,8 +2954,6 @@ ColorButton = (function(_super) {
   ColorButton.prototype.name = 'color';
 
   ColorButton.prototype.icon = 'font';
-
-  ColorButton.prototype.title = Simditor._t('color');
 
   ColorButton.prototype.disableTag = 'pre';
 
@@ -3176,22 +3177,20 @@ OrderListButton = (function(_super) {
 
   OrderListButton.prototype.name = 'ol';
 
-  OrderListButton.prototype.title = Simditor._t('ol');
-
   OrderListButton.prototype.icon = 'list-ol';
 
   OrderListButton.prototype.htmlTag = 'ol';
 
   OrderListButton.prototype.shortcut = 'cmd+191';
 
-  OrderListButton.prototype.render = function() {
+  OrderListButton.prototype._init = function() {
     if (this.editor.util.os.mac) {
       this.title = this.title + ' ( Cmd + / )';
     } else {
       this.title = this.title + ' ( ctrl + / )';
       this.shortcut = 'ctrl+191';
     }
-    return OrderListButton.__super__.render.call(this);
+    return OrderListButton.__super__._init.call(this);
   };
 
   return OrderListButton;
@@ -3209,22 +3208,20 @@ UnorderListButton = (function(_super) {
 
   UnorderListButton.prototype.name = 'ul';
 
-  UnorderListButton.prototype.title = Simditor._t('ul');
-
   UnorderListButton.prototype.icon = 'list-ul';
 
   UnorderListButton.prototype.htmlTag = 'ul';
 
   UnorderListButton.prototype.shortcut = 'cmd+190';
 
-  UnorderListButton.prototype.render = function() {
+  UnorderListButton.prototype._init = function() {
     if (this.editor.util.os.mac) {
       this.title = this.title + ' ( Cmd + . )';
     } else {
       this.title = this.title + ' ( Ctrl + . )';
       this.shortcut = 'ctrl+190';
     }
-    return UnorderListButton.__super__.render.call(this);
+    return UnorderListButton.__super__._init.call(this);
   };
 
   return UnorderListButton;
@@ -3249,8 +3246,6 @@ BlockquoteButton = (function(_super) {
   BlockquoteButton.prototype.name = 'blockquote';
 
   BlockquoteButton.prototype.icon = 'quote-left';
-
-  BlockquoteButton.prototype.title = Simditor._t('blockquote');
 
   BlockquoteButton.prototype.htmlTag = 'blockquote';
 
@@ -3331,8 +3326,6 @@ CodeButton = (function(_super) {
   CodeButton.prototype.name = 'code';
 
   CodeButton.prototype.icon = 'code';
-
-  CodeButton.prototype.title = Simditor._t('code');
 
   CodeButton.prototype.htmlTag = 'pre';
 
@@ -3516,8 +3509,6 @@ LinkButton = (function(_super) {
 
   LinkButton.prototype.icon = 'link';
 
-  LinkButton.prototype.title = Simditor._t('insertLink');
-
   LinkButton.prototype.htmlTag = 'a';
 
   LinkButton.prototype.disableTag = 'pre';
@@ -3578,7 +3569,7 @@ LinkButton = (function(_super) {
       $link = $('<a/>', {
         href: 'http://www.example.com',
         target: '_blank',
-        text: linkText || Simditor._t('linkText')
+        text: linkText || this._t('linkText')
       });
       if ($startBlock[0] === $endBlock[0]) {
         range.insertNode($link[0]);
@@ -3614,10 +3605,10 @@ LinkPopover = (function(_super) {
     return LinkPopover.__super__.constructor.apply(this, arguments);
   }
 
-  LinkPopover.prototype._tpl = "<div class=\"link-settings\">\n  <div class=\"settings-field\">\n    <label>" + (Simditor._t('text')) + "</label>\n    <input class=\"link-text\" type=\"text\"/>\n    <a class=\"btn-unlink\" href=\"javascript:;\" title=\"" + (Simditor._t('removeLink')) + "\" tabindex=\"-1\"><span class=\"fa fa-unlink\"></span></a>\n  </div>\n  <div class=\"settings-field\">\n    <label>" + (Simditor._t('linkUrl')) + "</label>\n    <input class=\"link-url\" type=\"text\"/>\n  </div>\n</div>";
-
   LinkPopover.prototype.render = function() {
-    this.el.addClass('link-popover').append(this._tpl);
+    var tpl;
+    tpl = "<div class=\"link-settings\">\n  <div class=\"settings-field\">\n    <label>" + (this._t('text')) + "</label>\n    <input class=\"link-text\" type=\"text\"/>\n    <a class=\"btn-unlink\" href=\"javascript:;\" title=\"" + (this._t('removeLink')) + "\" tabindex=\"-1\"><span class=\"fa fa-unlink\"></span></a>\n  </div>\n  <div class=\"settings-field\">\n    <label>" + (this._t('linkUrl')) + "</label>\n    <input class=\"link-url\" type=\"text\"/>\n  </div>\n</div>";
+    this.el.addClass('link-popover').append(tpl);
     this.textEl = this.el.find('.link-text');
     this.urlEl = this.el.find('.link-url');
     this.unlinkEl = this.el.find('.btn-unlink');
@@ -3699,8 +3690,6 @@ ImageButton = (function(_super) {
 
   ImageButton.prototype.icon = 'picture-o';
 
-  ImageButton.prototype.title = Simditor._t('insertImage');
-
   ImageButton.prototype.htmlTag = 'img';
 
   ImageButton.prototype.disableTag = 'pre, table';
@@ -3709,21 +3698,20 @@ ImageButton = (function(_super) {
 
   ImageButton.prototype.needFocus = false;
 
-  ImageButton.prototype.menu = [
-    {
-      name: 'upload-image',
-      text: Simditor._t('localImage')
-    }, {
-      name: 'external-image',
-      text: Simditor._t('externalImage')
-    }
-  ];
-
   ImageButton.prototype._init = function() {
-    if (this.editor.uploader == null) {
+    if (this.editor.uploader != null) {
+      this.menu = [
+        {
+          name: 'upload-image',
+          text: this._t('localImage')
+        }, {
+          name: 'external-image',
+          text: this._t('externalImage')
+        }
+      ];
+    } else {
       this.menu = false;
     }
-    ImageButton.__super__._init.call(this);
     this.defaultImage = this.editor.opts.defaultImage;
     this.editor.body.on('click', 'img:not([data-non-image])', (function(_this) {
       return function(e) {
@@ -3759,7 +3747,7 @@ ImageButton = (function(_super) {
         }
       };
     })(this));
-    return this.editor.on('valuechanged.image', (function(_this) {
+    this.editor.on('valuechanged.image', (function(_this) {
       return function() {
         var $masks;
         $masks = _this.editor.wrapper.find('.simditor-image-loading');
@@ -3785,6 +3773,7 @@ ImageButton = (function(_super) {
         });
       };
     })(this));
+    return ImageButton.__super__._init.call(this);
   };
 
   ImageButton.prototype.render = function() {
@@ -3806,7 +3795,7 @@ ImageButton = (function(_super) {
         if ($input) {
           $input.remove();
         }
-        return $input = $('<input type="file" title="' + Simditor._t('uploadImage') + '" accept="image/*">').appendTo($uploadItem);
+        return $input = $('<input type="file" title="' + _this._t('uploadImage') + '" accept="image/*">').appendTo($uploadItem);
       };
     })(this);
     createInput();
@@ -3865,7 +3854,7 @@ ImageButton = (function(_super) {
           return _this.loadImage($img, src, function() {
             if (_this.popover.active) {
               _this.popover.refresh();
-              return _this.popover.srcEl.val(Simditor._t('uploading')).prop('disabled', true);
+              return _this.popover.srcEl.val(_this._t('uploading')).prop('disabled', true);
             }
           });
         });
@@ -3909,7 +3898,7 @@ ImageButton = (function(_super) {
         }
         $img.removeData('mask');
         if (result.success === false) {
-          msg = result.msg || Simditor._t('uploadFailed');
+          msg = result.msg || _this._t('uploadFailed');
           alert(msg);
           $img.attr('src', _this.defaultImage);
         } else {
@@ -3940,7 +3929,7 @@ ImageButton = (function(_super) {
             msg = result.msg;
           } catch (_error) {
             e = _error;
-            msg = Simditor._t('uploadError');
+            msg = _this._t('uploadError');
           }
           alert(msg);
         }
@@ -4077,15 +4066,15 @@ ImagePopover = (function(_super) {
     return ImagePopover.__super__.constructor.apply(this, arguments);
   }
 
-  ImagePopover.prototype._tpl = "<div class=\"link-settings\">\n  <div class=\"settings-field\">\n    <label>" + (Simditor._t('imageUrl')) + "</label>\n    <input class=\"image-src\" type=\"text\" tabindex=\"1\" />\n    <a class=\"btn-upload\" href=\"javascript:;\" title=\"" + (Simditor._t('uploadImage')) + "\" tabindex=\"-1\">\n      <span class=\"fa fa-upload\"></span>\n    </a>\n  </div>\n  <div class=\"settings-field\">\n    <label>" + (Simditor._t('imageSize')) + "</label>\n    <input class=\"image-size\" id=\"image-width\" type=\"text\" tabindex=\"2\" />\n    <span class=\"times\">×</span>\n    <input class=\"image-size\" id=\"image-height\" type=\"text\" tabindex=\"3\" />\n    <a class=\"btn-restore\" href=\"javascript:;\" title=\"" + (Simditor._t('restoreImageSize')) + "\" tabindex=\"-1\">\n      <span class=\"fa fa-reply\"></span>\n    </a>\n  </div>\n</div>";
-
   ImagePopover.prototype.offset = {
     top: 6,
     left: -4
   };
 
   ImagePopover.prototype.render = function() {
-    this.el.addClass('image-popover').append(this._tpl);
+    var tpl;
+    tpl = "<div class=\"link-settings\">\n  <div class=\"settings-field\">\n    <label>" + (this._t('imageUrl')) + "</label>\n    <input class=\"image-src\" type=\"text\" tabindex=\"1\" />\n    <a class=\"btn-upload\" href=\"javascript:;\" title=\"" + (this._t('uploadImage')) + "\" tabindex=\"-1\">\n      <span class=\"fa fa-upload\"></span>\n    </a>\n  </div>\n  <div class=\"settings-field\">\n    <label>" + (this._t('imageSize')) + "</label>\n    <input class=\"image-size\" id=\"image-width\" type=\"text\" tabindex=\"2\" />\n    <span class=\"times\">×</span>\n    <input class=\"image-size\" id=\"image-height\" type=\"text\" tabindex=\"3\" />\n    <a class=\"btn-restore\" href=\"javascript:;\" title=\"" + (this._t('restoreImageSize')) + "\" tabindex=\"-1\">\n      <span class=\"fa fa-reply\"></span>\n    </a>\n  </div>\n</div>";
+    this.el.addClass('image-popover').append(tpl);
     this.srcEl = this.el.find('.image-src');
     this.srcEl.on('keydown', (function(_this) {
       return function(e) {
@@ -4191,7 +4180,7 @@ ImagePopover = (function(_super) {
         if (_this.input) {
           _this.input.remove();
         }
-        return _this.input = $('<input type="file" title="' + Simditor._t('uploadImage') + '" accept="image/*">').appendTo($uploadBtn);
+        return _this.input = $('<input type="file" title="' + _this._t('uploadImage') + '" accept="image/*">').appendTo($uploadBtn);
       };
     })(this);
     createInput();
@@ -4254,7 +4243,7 @@ ImagePopover = (function(_super) {
     this.width = $img.width();
     this.height = $img.height();
     if ($img.hasClass('uploading')) {
-      return this.srcEl.val(Simditor._t('uploading')).prop('disabled', true);
+      return this.srcEl.val(this._t('uploading')).prop('disabled', true);
     } else {
       this.srcEl.val($img.attr('src')).prop('disabled', false);
       this.widthEl.val(this.width);
@@ -4283,7 +4272,10 @@ IndentButton = (function(_super) {
 
   IndentButton.prototype.icon = 'indent';
 
-  IndentButton.prototype.title = Simditor._t('indent') + ' (Tab)';
+  IndentButton.prototype._init = function() {
+    this.title = this._t(this.name) + ' (Tab)';
+    return IndentButton.__super__._init.call(this);
+  };
 
   IndentButton.prototype.status = function($node) {
     return true;
@@ -4314,7 +4306,10 @@ OutdentButton = (function(_super) {
 
   OutdentButton.prototype.icon = 'outdent';
 
-  OutdentButton.prototype.title = Simditor._t('outdent') + ' (Shift + Tab)';
+  OutdentButton.prototype._init = function() {
+    this.title = this._t(this.name) + ' (Shift + Tab)';
+    return OutdentButton.__super__._init.call(this);
+  };
 
   OutdentButton.prototype.status = function($node) {
     return true;
@@ -4344,8 +4339,6 @@ HrButton = (function(_super) {
   HrButton.prototype.name = 'hr';
 
   HrButton.prototype.icon = 'minus';
-
-  HrButton.prototype.title = Simditor._t('hr');
 
   HrButton.prototype.htmlTag = 'hr';
 
@@ -4392,8 +4385,6 @@ TableButton = (function(_super) {
   TableButton.prototype.name = 'table';
 
   TableButton.prototype.icon = 'table';
-
-  TableButton.prototype.title = Simditor._t('table');
 
   TableButton.prototype.htmlTag = 'table';
 
@@ -4582,7 +4573,7 @@ TableButton = (function(_super) {
   };
 
   TableButton.prototype.renderMenu = function() {
-    $("<div class=\"menu-create-table\">\n</div>\n<div class=\"menu-edit-table\">\n  <ul>\n    <li><a tabindex=\"-1\" unselectable=\"on\" class=\"menu-item\" href=\"javascript:;\" data-param=\"deleteRow\"><span>" + (Simditor._t('deleteRow')) + "</span></a></li>\n    <li><a tabindex=\"-1\" unselectable=\"on\" class=\"menu-item\" href=\"javascript:;\" data-param=\"insertRowAbove\"><span>" + (Simditor._t('insertRowAbove')) + "</span></a></li>\n    <li><a tabindex=\"-1\" unselectable=\"on\" class=\"menu-item\" href=\"javascript:;\" data-param=\"insertRowBelow\"><span>" + (Simditor._t('insertRowBelow')) + "</span></a></li>\n    <li><span class=\"separator\"></span></li>\n    <li><a tabindex=\"-1\" unselectable=\"on\" class=\"menu-item\" href=\"javascript:;\" data-param=\"deleteCol\"><span>" + (Simditor._t('delteColumn')) + "</span></a></li>\n    <li><a tabindex=\"-1\" unselectable=\"on\" class=\"menu-item\" href=\"javascript:;\" data-param=\"insertColLeft\"><span>" + (Simditor._t('insertColumnLeft')) + "</span></a></li>\n    <li><a tabindex=\"-1\" unselectable=\"on\" class=\"menu-item\" href=\"javascript:;\" data-param=\"insertColRight\"><span>" + (Simditor._t('insertColumnRight')) + "</span></a></li>\n    <li><span class=\"separator\"></span></li>\n    <li><a tabindex=\"-1\" unselectable=\"on\" class=\"menu-item\" href=\"javascript:;\" data-param=\"deleteTable\"><span>" + (Simditor._t('deleteTable')) + "</span></a></li>\n  </ul>\n</div>").appendTo(this.menuWrapper);
+    $("<div class=\"menu-create-table\">\n</div>\n<div class=\"menu-edit-table\">\n  <ul>\n    <li><a tabindex=\"-1\" unselectable=\"on\" class=\"menu-item\" href=\"javascript:;\" data-param=\"deleteRow\"><span>" + (this._t('deleteRow')) + "</span></a></li>\n    <li><a tabindex=\"-1\" unselectable=\"on\" class=\"menu-item\" href=\"javascript:;\" data-param=\"insertRowAbove\"><span>" + (this._t('insertRowAbove')) + "</span></a></li>\n    <li><a tabindex=\"-1\" unselectable=\"on\" class=\"menu-item\" href=\"javascript:;\" data-param=\"insertRowBelow\"><span>" + (this._t('insertRowBelow')) + "</span></a></li>\n    <li><span class=\"separator\"></span></li>\n    <li><a tabindex=\"-1\" unselectable=\"on\" class=\"menu-item\" href=\"javascript:;\" data-param=\"deleteCol\"><span>" + (this._t('delteColumn')) + "</span></a></li>\n    <li><a tabindex=\"-1\" unselectable=\"on\" class=\"menu-item\" href=\"javascript:;\" data-param=\"insertColLeft\"><span>" + (this._t('insertColumnLeft')) + "</span></a></li>\n    <li><a tabindex=\"-1\" unselectable=\"on\" class=\"menu-item\" href=\"javascript:;\" data-param=\"insertColRight\"><span>" + (this._t('insertColumnRight')) + "</span></a></li>\n    <li><span class=\"separator\"></span></li>\n    <li><a tabindex=\"-1\" unselectable=\"on\" class=\"menu-item\" href=\"javascript:;\" data-param=\"deleteTable\"><span>" + (this._t('deleteTable')) + "</span></a></li>\n  </ul>\n</div>").appendTo(this.menuWrapper);
     this.createMenu = this.menuWrapper.find('.menu-create-table');
     this.editMenu = this.menuWrapper.find('.menu-edit-table');
     this.createTable(6, 6).appendTo(this.createMenu);
@@ -4812,8 +4803,6 @@ StrikethroughButton = (function(_super) {
   StrikethroughButton.prototype.name = 'strikethrough';
 
   StrikethroughButton.prototype.icon = 'strikethrough';
-
-  StrikethroughButton.prototype.title = Simditor._t('strikethrough');
 
   StrikethroughButton.prototype.htmlTag = 'strike';
 

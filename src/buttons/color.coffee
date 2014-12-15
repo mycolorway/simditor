@@ -5,8 +5,6 @@ class ColorButton extends Button
 
   icon: 'font'
 
-  title: Simditor._t 'color'
-
   disableTag: 'pre'
 
   menu: true

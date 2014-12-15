@@ -5,7 +5,9 @@ class OutdentButton extends Button
 
   icon: 'outdent'
 
-  title: Simditor._t('outdent') + ' (Shift + Tab)'
+  _init: ->
+    @title = @_t(@name) + ' (Shift + Tab)'
+    super()
 
   status: ($node) ->
     true

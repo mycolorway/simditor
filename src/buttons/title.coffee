@@ -3,29 +3,29 @@ class TitleButton extends Button
 
   name: 'title'
 
-  title: Simditor._t 'title'
-
   htmlTag: 'h1, h2, h3, h4'
 
   disableTag: 'pre, table'
 
-  menu: [{
-    name: 'normal',
-    text: Simditor._t('normalText'),
-    param: 'p'
-  }, '|', {
-    name: 'h1',
-    text: Simditor._t('title') + ' 1',
-    param: 'h1'
-  }, {
-    name: 'h2',
-    text: Simditor._t('title') + ' 2',
-    param: 'h2'
-  }, {
-    name: 'h3',
-    text: Simditor._t('title') + ' 3',
-    param: 'h3'
-  }]
+  _init: ->
+    @menu = [{
+      name: 'normal',
+      text: @_t('normalText'),
+      param: 'p'
+    }, '|', {
+      name: 'h1',
+      text: @_t('title') + ' 1',
+      param: 'h1'
+    }, {
+      name: 'h2',
+      text: @_t('title') + ' 2',
+      param: 'h2'
+    }, {
+      name: 'h3',
+      text: @_t('title') + ' 3',
+      param: 'h3'
+    }]
+    super()
 
   setActive: (active, param) ->
     super active
