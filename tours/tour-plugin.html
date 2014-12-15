@@ -80,6 +80,8 @@
 
 <p>创建 <code>simditor-autosave.coffee</code>，输入扩展的基本结构：</p>
 <div class="highlight"><pre><code class="language-coffee" data-lang="coffee"><span class="k">class</span> <span class="nx">SimditorAutosave</span> <span class="k">extends</span> <span class="nx">SimpleModule</span>
+  <span class="vi">@pluginName: </span><span class="s">&#39;Autosave&#39;</span>
+
   <span class="nv">_init: </span><span class="nf">-&gt;</span>
     <span class="vi">@editor = </span><span class="nx">@_module</span>
 
@@ -93,6 +95,8 @@
 
 <p>我们需要给 Simditor 增加一个 autosave 选项，用来开关 autosave 功能并且构造 localStorage 的 key：</p>
 <div class="highlight"><pre><code class="language-coffee" data-lang="coffee"><span class="k">class</span> <span class="nx">SimditorAutosave</span> <span class="k">extends</span> <span class="nx">SimpleModule</span>
+  <span class="vi">@pluginName: </span><span class="s">&#39;Autosave&#39;</span>
+
   <span class="nv">opts:</span>
     <span class="nv">autosave: </span><span class="kc">false</span>
 
@@ -110,6 +114,8 @@
 
 <p>准备工作都做好之后，我们就可以添加扩展的核心逻辑了：</p>
 <div class="highlight"><pre><code class="language-coffee" data-lang="coffee"><span class="k">class</span> <span class="nx">SimditorAutosave</span> <span class="k">extends</span> <span class="nx">SimpleModule</span>
+  <span class="vi">@pluginName: </span><span class="s">&#39;Autosave&#39;</span>
+
   <span class="nv">opts:</span>
     <span class="nv">autosave: </span><span class="kc">false</span>
 
