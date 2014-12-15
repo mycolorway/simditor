@@ -19,6 +19,7 @@ editor = new Simditor
   tabIndent: true
   toolbar: true
   toolbarFloat: true
+  toolbarFloatOffset: 0
   toolbarHidden: false
   pasteImage: false
 ```

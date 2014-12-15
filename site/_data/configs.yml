@@ -43,6 +43,12 @@
   description: |
     是否让工具栏按钮在页面滚动的过程中始终可见。
 
+- name: "toolbarFloatOffset"
+  type: "Number"
+  default: 0
+  description: |
+    自定义工具栏浮动的位置。
+
 - name: "toolbarHidden"
   type: "Boolean"
   default: "false"
