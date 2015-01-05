@@ -2122,7 +2122,7 @@ Simditor = (function(_super) {
   };
 
   Simditor.prototype._init = function() {
-    var editor, form, uploadOpts;
+    var e, editor, form, uploadOpts;
     this.textarea = $(this.opts.textarea);
     this.opts.placeholder = this.opts.placeholder || this.textarea.attr('placeholder');
     if (!this.textarea.length) {
@@ -2163,8 +2163,13 @@ Simditor = (function(_super) {
       };
     })(this));
     if (this.util.browser.mozilla) {
-      document.execCommand("enableObjectResizing", false, false);
-      return document.execCommand("enableInlineTableEditing", false, false);
+      this.util.reflow();
+      try {
+        document.execCommand("enableObjectResizing", false, false);
+        return document.execCommand("enableInlineTableEditing", false, false);
+      } catch (_error) {
+        e = _error;
+      }
     }
   };
 

@@ -54,8 +54,11 @@ class Simditor extends SimpleModule
 
     # Disable the resizing of `img` and `table`
     if @util.browser.mozilla
-      document.execCommand "enableObjectResizing", false, false
-      document.execCommand "enableInlineTableEditing", false, false
+      @util.reflow()
+      try
+        document.execCommand "enableObjectResizing", false, false
+        document.execCommand "enableInlineTableEditing", false, false
+      catch e
 
   _tpl:"""
     <div class="simditor">
