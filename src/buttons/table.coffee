@@ -180,7 +180,7 @@ class TableButton extends Button
           <li><a tabindex="-1" unselectable="on" class="menu-item" href="javascript:;" data-param="insertRowAbove"><span>#{ @_t 'insertRowAbove' }</span></a></li>
           <li><a tabindex="-1" unselectable="on" class="menu-item" href="javascript:;" data-param="insertRowBelow"><span>#{ @_t 'insertRowBelow' }</span></a></li>
           <li><span class="separator"></span></li>
-          <li><a tabindex="-1" unselectable="on" class="menu-item" href="javascript:;" data-param="deleteCol"><span>#{ @_t 'delteColumn' }</span></a></li>
+          <li><a tabindex="-1" unselectable="on" class="menu-item" href="javascript:;" data-param="deleteCol"><span>#{ @_t 'deleteColumn' }</span></a></li>
           <li><a tabindex="-1" unselectable="on" class="menu-item" href="javascript:;" data-param="insertColLeft"><span>#{ @_t 'insertColumnLeft' }</span></a></li>
           <li><a tabindex="-1" unselectable="on" class="menu-item" href="javascript:;" data-param="insertColRight"><span>#{ @_t 'insertColumnRight' }</span></a></li>
           <li><span class="separator"></span></li>
