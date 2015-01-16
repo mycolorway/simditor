@@ -63,7 +63,7 @@ class InputManager extends SimpleModule
       , 20
 
     @editor.on 'valuechanged', =>
-      if not @editor.util.closestBlockEl() and @focused
+      if !@editor.util.closestBlockEl() and @focused
         @editor.selection.save()
         @editor.formatter.format()
         @editor.selection.restore()
@@ -107,8 +107,8 @@ class InputManager extends SimpleModule
       .on('paste', $.proxy(@_onPaste, @))
       .on('drop', $.proxy(@_onDrop, @))
 
-    # fix firefox cmd+left/right bug
     if @editor.util.browser.firefox
+      # fix firefox cmd+left/right bug
       @addShortcut 'cmd+left', (e) =>
         e.preventDefault()
         @editor.selection.sel.modify('move', 'backward', 'lineboundary')
@@ -116,6 +116,18 @@ class InputManager extends SimpleModule
       @addShortcut 'cmd+right', (e) =>
         e.preventDefault()
         @editor.selection.sel.modify('move', 'forward', 'lineboundary')
+        false
+
+      # override default behavior of cmd/ctrl + a in firefox(which is buggy)
+      @addShortcut 'cmd+a', (e) =>
+        $children = @editor.body.children()
+        return unless $children.length > 0
+        firstBlock = $children.first().get(0)
+        lastBlock = $children.last().get(0)
+        range = document.createRange()
+        range.setStart firstBlock, 0
+        range.setEnd lastBlock, @editor.util.getNodeLength(lastBlock)
+        @editor.selection.selectRange range
         false
 
     # meta + enter: submit form

@@ -25,6 +25,8 @@ class Selection extends SimpleModule
     # firefox won't auto focus while applying new range
     @editor.body.focus() if !@editor.inputManager.focused and (@editor.util.browser.firefox or @editor.util.browser.msie)
 
+    range
+
   rangeAtEndOf: (node, range = @getRange()) ->
     return unless range? and range.collapsed
 

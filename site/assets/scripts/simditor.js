@@ -61,8 +61,9 @@ Selection = (function(_super) {
     this.clear();
     this.sel.addRange(range);
     if (!this.editor.inputManager.focused && (this.editor.util.browser.firefox || this.editor.util.browser.msie)) {
-      return this.editor.body.focus();
+      this.editor.body.focus();
     }
+    return range;
   };
 
   Selection.prototype.rangeAtEndOf = function(node, range) {
@@ -683,6 +684,22 @@ InputManager = (function(_super) {
         return function(e) {
           e.preventDefault();
           _this.editor.selection.sel.modify('move', 'forward', 'lineboundary');
+          return false;
+        };
+      })(this));
+      this.addShortcut('cmd+a', (function(_this) {
+        return function(e) {
+          var $children, firstBlock, lastBlock, range;
+          $children = _this.editor.body.children();
+          if (!($children.length > 0)) {
+            return;
+          }
+          firstBlock = $children.first().get(0);
+          lastBlock = $children.last().get(0);
+          range = document.createRange();
+          range.setStart(firstBlock, 0);
+          range.setEnd(lastBlock, _this.editor.util.getNodeLength(lastBlock));
+          _this.editor.selection.selectRange(range);
           return false;
         };
       })(this));
@@ -1742,25 +1759,6 @@ Util = (function(_super) {
       }
     }
     return _results;
-  };
-
-  Util.prototype.getShortcutKey = function(e) {
-    var shortcutName;
-    shortcutName = [];
-    if (e.shiftKey) {
-      shortcutName.push('shift');
-    }
-    if (e.ctrlKey) {
-      shortcutName.push('ctrl');
-    }
-    if (e.altKey) {
-      shortcutName.push('alt');
-    }
-    if (e.metaKey) {
-      shortcutName.push('cmd');
-    }
-    shortcutName.push(e.which);
-    return shortcutName.join('+');
   };
 
   Util.prototype.indent = function() {

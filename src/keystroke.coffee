@@ -209,4 +209,3 @@ class Keystroke extends SimpleModule
       range = document.createRange()
       @editor.selection.setRangeAtStartOf $firstChild, range
       true
-

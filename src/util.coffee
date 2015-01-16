@@ -157,15 +157,6 @@ class Util extends SimpleModule
       result = callback n
       break if result == false
 
-  getShortcutKey: (e) ->
-    shortcutName = []
-    shortcutName.push 'shift' if e.shiftKey
-    shortcutName.push 'ctrl' if e.ctrlKey
-    shortcutName.push 'alt' if e.altKey
-    shortcutName.push 'cmd' if e.metaKey
-    shortcutName.push e.which
-    shortcutName.join '+'
-
   indent: () ->
     $blockEl = @editor.util.closestBlockEl()
     return false unless $blockEl and $blockEl.length > 0
