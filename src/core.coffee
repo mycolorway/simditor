@@ -50,7 +50,7 @@ class Simditor extends SimpleModule
         @on 'valuechanged', =>
           @_placeholder()
 
-      @setValue @textarea.val() || ''
+      @setValue @textarea.val().trim() || ''
 
     # Disable the resizing of `img` and `table`
     if @util.browser.mozilla
