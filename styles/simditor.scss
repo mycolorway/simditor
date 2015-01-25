@@ -415,6 +415,10 @@ $simditor-button-height: 40px;
 
         .menu-edit-table {
           display: none;
+
+          ul {
+            min-width: 240px;
+          }
         }
       }
 

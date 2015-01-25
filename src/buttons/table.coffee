@@ -20,6 +20,8 @@ class TableButton extends Button
       col: ['width']
     })
 
+    @_initShortcuts()
+
     @editor.on 'decorate', (e, $el) =>
       $el.find('table').each (i, table) =>
         @decorate $(table)
@@ -158,6 +160,23 @@ class TableButton extends Button
       $wrapper.addClass 'resizing'
       false
 
+  _initShortcuts: ->
+    @editor.inputManager.addShortcut 'ctrl+alt+up', (e) =>
+      @editMenu.find('.menu-item[data-param=insertRowAbove]').click()
+      false
+
+    @editor.inputManager.addShortcut 'ctrl+alt+down', (e) =>
+      @editMenu.find('.menu-item[data-param=insertRowBelow]').click()
+      false
+
+    @editor.inputManager.addShortcut 'ctrl+alt+left', (e) =>
+      @editMenu.find('.menu-item[data-param=insertColLeft]').click()
+      false
+
+    @editor.inputManager.addShortcut 'ctrl+alt+right', (e) =>
+      @editMenu.find('.menu-item[data-param=insertColRight]').click()
+      false
+
   decorate: ($table) ->
     if $table.parent('.simditor-table').length > 0
       @undecorate $table
@@ -176,13 +195,13 @@ class TableButton extends Button
       </div>
       <div class="menu-edit-table">
         <ul>
-          <li><a tabindex="-1" unselectable="on" class="menu-item" href="javascript:;" data-param="deleteRow"><span>#{ @_t 'deleteRow' }</span></a></li>
-          <li><a tabindex="-1" unselectable="on" class="menu-item" href="javascript:;" data-param="insertRowAbove"><span>#{ @_t 'insertRowAbove' }</span></a></li>
-          <li><a tabindex="-1" unselectable="on" class="menu-item" href="javascript:;" data-param="insertRowBelow"><span>#{ @_t 'insertRowBelow' }</span></a></li>
+          <li><a tabindex="-1" unselectable="on" class="menu-item" href="javascript:;" data-param="deleteRow"><span>#{ @_t 'deleteRow' } ( Ctrl + Alt + → )</span></a></li>
+          <li><a tabindex="-1" unselectable="on" class="menu-item" href="javascript:;" data-param="insertRowAbove"><span>#{ @_t 'insertRowAbove' } ( Ctrl + Alt + ↑ )</span></a></li>
+          <li><a tabindex="-1" unselectable="on" class="menu-item" href="javascript:;" data-param="insertRowBelow"><span>#{ @_t 'insertRowBelow' } ( Ctrl + Alt + ↓ )</span></a></li>
           <li><span class="separator"></span></li>
           <li><a tabindex="-1" unselectable="on" class="menu-item" href="javascript:;" data-param="deleteCol"><span>#{ @_t 'deleteColumn' }</span></a></li>
-          <li><a tabindex="-1" unselectable="on" class="menu-item" href="javascript:;" data-param="insertColLeft"><span>#{ @_t 'insertColumnLeft' }</span></a></li>
-          <li><a tabindex="-1" unselectable="on" class="menu-item" href="javascript:;" data-param="insertColRight"><span>#{ @_t 'insertColumnRight' }</span></a></li>
+          <li><a tabindex="-1" unselectable="on" class="menu-item" href="javascript:;" data-param="insertColLeft"><span>#{ @_t 'insertColumnLeft' } ( Ctrl + Alt + ← )</span></a></li>
+          <li><a tabindex="-1" unselectable="on" class="menu-item" href="javascript:;" data-param="insertColRight"><span>#{ @_t 'insertColumnRight' } ( Ctrl + Alt + → )</span></a></li>
           <li><span class="separator"></span></li>
           <li><a tabindex="-1" unselectable="on" class="menu-item" href="javascript:;" data-param="deleteTable"><span>#{ @_t 'deleteTable' }</span></a></li>
         </ul>
