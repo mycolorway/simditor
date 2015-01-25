@@ -65,7 +65,7 @@
   type: "Boolean"
   default: "true"
   description: |
-    是否在编辑器中使用 `tab` 键来缩进。
+    是否在编辑器中使用 `tab` 键来缩进（代码块里的缩进不受这个选项控制）。
 
 - name: "params"
   type: "Object"
