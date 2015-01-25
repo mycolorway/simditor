@@ -3,8 +3,9 @@
     // AMD. Register as an anonymous module.
     define('simditor', ["jquery",
       "simple-module",
-      "simple-uploader"], function ($, SimpleModule, simpleUploader) {
-      return (root.returnExportsGlobal = factory($, SimpleModule, simpleUploader));
+      "simple-hotkeys",
+      "simple-uploader"], function ($, SimpleModule, simpleHotkeys, simpleUploader) {
+      return (root.returnExportsGlobal = factory($, SimpleModule, simpleHotkeys, simpleUploader));
     });
   } else if (typeof exports === 'object') {
     // Node. Does not work with strict CommonJS, but
@@ -12,13 +13,15 @@
     // like Node.
     module.exports = factory(require("jquery"),
       require("simple-module"),
+      require("simple-hotkeys"),
       require("simple-uploader"));
   } else {
     root['Simditor'] = factory(jQuery,
       SimpleModule,
-      root.simple && simple.uploader);
+      simple.hotkeys,
+      simple.uploader);
   }
-}(this, function ($, SimpleModule, simpleUploader) {
+}(this, function ($, SimpleModule, simpleHotkeys, simpleUploader) {
 
 var Selection,
   __hasProp = {}.hasOwnProperty,
@@ -58,8 +61,9 @@ Selection = (function(_super) {
     this.clear();
     this.sel.addRange(range);
     if (!this.editor.inputManager.focused && (this.editor.util.browser.firefox || this.editor.util.browser.msie)) {
-      return this.editor.body.focus();
+      this.editor.body.focus();
     }
+    return range;
   };
 
   Selection.prototype.rangeAtEndOf = function(node, range) {
@@ -591,7 +595,7 @@ InputManager = (function(_super) {
       this.opts.pasteImage = 'inline';
     }
     this._keystrokeHandlers = {};
-    this.hotkeys = simple.hotkeys({
+    this.hotkeys = simpleHotkeys({
       el: this.editor.body
     });
     this._pasteArea = $('<div/>').css({
@@ -680,6 +684,22 @@ InputManager = (function(_super) {
         return function(e) {
           e.preventDefault();
           _this.editor.selection.sel.modify('move', 'forward', 'lineboundary');
+          return false;
+        };
+      })(this));
+      this.addShortcut('cmd+a', (function(_this) {
+        return function(e) {
+          var $children, firstBlock, lastBlock, range;
+          $children = _this.editor.body.children();
+          if (!($children.length > 0)) {
+            return;
+          }
+          firstBlock = $children.first().get(0);
+          lastBlock = $children.last().get(0);
+          range = document.createRange();
+          range.setStart(firstBlock, 0);
+          range.setEnd(lastBlock, _this.editor.util.getNodeLength(lastBlock));
+          _this.editor.selection.selectRange(range);
           return false;
         };
       })(this));
@@ -1089,7 +1109,9 @@ Keystroke = (function(_super) {
     })(this));
     this.editor.inputManager.addKeystrokeHandler('9', '*', (function(_this) {
       return function(e) {
-        if (!_this.editor.opts.tabIndent) {
+        var codeButton;
+        codeButton = _this.editor.toolbar.findButton('code');
+        if (!(_this.editor.opts.tabIndent || (codeButton && codeButton.active))) {
           return;
         }
         if (e.shiftKey) {
@@ -1741,25 +1763,6 @@ Util = (function(_super) {
     return _results;
   };
 
-  Util.prototype.getShortcutKey = function(e) {
-    var shortcutName;
-    shortcutName = [];
-    if (e.shiftKey) {
-      shortcutName.push('shift');
-    }
-    if (e.ctrlKey) {
-      shortcutName.push('ctrl');
-    }
-    if (e.altKey) {
-      shortcutName.push('alt');
-    }
-    if (e.metaKey) {
-      shortcutName.push('cmd');
-    }
-    shortcutName.push(e.which);
-    return shortcutName.join('+');
-  };
-
   Util.prototype.indent = function() {
     var $blockEl, $childList, $nextTd, $parentLi, $td, indentLevel, range, spaceNode, tagName, _ref;
     $blockEl = this.editor.util.closestBlockEl();
@@ -2122,7 +2125,7 @@ Simditor = (function(_super) {
   };
 
   Simditor.prototype._init = function() {
-    var editor, form, uploadOpts;
+    var e, editor, form, uploadOpts;
     this.textarea = $(this.opts.textarea);
     this.opts.placeholder = this.opts.placeholder || this.textarea.attr('placeholder');
     if (!this.textarea.length) {
@@ -2159,12 +2162,17 @@ Simditor = (function(_super) {
             return _this._placeholder();
           });
         }
-        return _this.setValue(_this.textarea.val() || '');
+        return _this.setValue(_this.textarea.val().trim() || '');
       };
     })(this));
     if (this.util.browser.mozilla) {
-      document.execCommand("enableObjectResizing", false, false);
-      return document.execCommand("enableInlineTableEditing", false, false);
+      this.util.reflow();
+      try {
+        document.execCommand("enableObjectResizing", false, false);
+        return document.execCommand("enableInlineTableEditing", false, false);
+      } catch (_error) {
+        e = _error;
+      }
     }
   };
 
@@ -2228,7 +2236,7 @@ Simditor = (function(_super) {
 
   Simditor.prototype.sync = function() {
     var children, cloneBody, emptyP, firstP, lastP, val;
-    this.hidePopover;
+    this.hidePopover();
     cloneBody = this.body.clone();
     this.formatter.undecorate(cloneBody);
     this.formatter.format(cloneBody);
@@ -2591,7 +2599,14 @@ Popover = (function(_super) {
     if ($target == null) {
       return;
     }
-    this.editor.hidePopover();
+    this.el.siblings('.simditor-popover').each((function(_this) {
+      return function(i, popover) {
+        popover = $(popover).data('popover');
+        if (popover.active) {
+          return popover.hide();
+        }
+      };
+    })(this));
     this.target = $target.addClass('selected');
     if (this.active) {
       this.refresh(position);
@@ -4410,6 +4425,7 @@ TableButton = (function(_super) {
       td: ['rowspan', 'colspan'],
       col: ['width']
     });
+    this._initShortcuts();
     this.editor.on('decorate', (function(_this) {
       return function(e, $el) {
         return $el.find('table').each(function(i, table) {
@@ -4567,6 +4583,33 @@ TableButton = (function(_super) {
     })(this));
   };
 
+  TableButton.prototype._initShortcuts = function() {
+    this.editor.inputManager.addShortcut('ctrl+alt+up', (function(_this) {
+      return function(e) {
+        _this.editMenu.find('.menu-item[data-param=insertRowAbove]').click();
+        return false;
+      };
+    })(this));
+    this.editor.inputManager.addShortcut('ctrl+alt+down', (function(_this) {
+      return function(e) {
+        _this.editMenu.find('.menu-item[data-param=insertRowBelow]').click();
+        return false;
+      };
+    })(this));
+    this.editor.inputManager.addShortcut('ctrl+alt+left', (function(_this) {
+      return function(e) {
+        _this.editMenu.find('.menu-item[data-param=insertColLeft]').click();
+        return false;
+      };
+    })(this));
+    return this.editor.inputManager.addShortcut('ctrl+alt+right', (function(_this) {
+      return function(e) {
+        _this.editMenu.find('.menu-item[data-param=insertColRight]').click();
+        return false;
+      };
+    })(this));
+  };
+
   TableButton.prototype.decorate = function($table) {
     if ($table.parent('.simditor-table').length > 0) {
       this.undecorate($table);
@@ -4584,7 +4627,7 @@ TableButton = (function(_super) {
   };
 
   TableButton.prototype.renderMenu = function() {
-    $("<div class=\"menu-create-table\">\n</div>\n<div class=\"menu-edit-table\">\n  <ul>\n    <li><a tabindex=\"-1\" unselectable=\"on\" class=\"menu-item\" href=\"javascript:;\" data-param=\"deleteRow\"><span>" + (this._t('deleteRow')) + "</span></a></li>\n    <li><a tabindex=\"-1\" unselectable=\"on\" class=\"menu-item\" href=\"javascript:;\" data-param=\"insertRowAbove\"><span>" + (this._t('insertRowAbove')) + "</span></a></li>\n    <li><a tabindex=\"-1\" unselectable=\"on\" class=\"menu-item\" href=\"javascript:;\" data-param=\"insertRowBelow\"><span>" + (this._t('insertRowBelow')) + "</span></a></li>\n    <li><span class=\"separator\"></span></li>\n    <li><a tabindex=\"-1\" unselectable=\"on\" class=\"menu-item\" href=\"javascript:;\" data-param=\"deleteCol\"><span>" + (this._t('delteColumn')) + "</span></a></li>\n    <li><a tabindex=\"-1\" unselectable=\"on\" class=\"menu-item\" href=\"javascript:;\" data-param=\"insertColLeft\"><span>" + (this._t('insertColumnLeft')) + "</span></a></li>\n    <li><a tabindex=\"-1\" unselectable=\"on\" class=\"menu-item\" href=\"javascript:;\" data-param=\"insertColRight\"><span>" + (this._t('insertColumnRight')) + "</span></a></li>\n    <li><span class=\"separator\"></span></li>\n    <li><a tabindex=\"-1\" unselectable=\"on\" class=\"menu-item\" href=\"javascript:;\" data-param=\"deleteTable\"><span>" + (this._t('deleteTable')) + "</span></a></li>\n  </ul>\n</div>").appendTo(this.menuWrapper);
+    $("<div class=\"menu-create-table\">\n</div>\n<div class=\"menu-edit-table\">\n  <ul>\n    <li><a tabindex=\"-1\" unselectable=\"on\" class=\"menu-item\" href=\"javascript:;\" data-param=\"deleteRow\"><span>" + (this._t('deleteRow')) + " ( Ctrl + Alt + → )</span></a></li>\n    <li><a tabindex=\"-1\" unselectable=\"on\" class=\"menu-item\" href=\"javascript:;\" data-param=\"insertRowAbove\"><span>" + (this._t('insertRowAbove')) + " ( Ctrl + Alt + ↑ )</span></a></li>\n    <li><a tabindex=\"-1\" unselectable=\"on\" class=\"menu-item\" href=\"javascript:;\" data-param=\"insertRowBelow\"><span>" + (this._t('insertRowBelow')) + " ( Ctrl + Alt + ↓ )</span></a></li>\n    <li><span class=\"separator\"></span></li>\n    <li><a tabindex=\"-1\" unselectable=\"on\" class=\"menu-item\" href=\"javascript:;\" data-param=\"deleteCol\"><span>" + (this._t('deleteColumn')) + "</span></a></li>\n    <li><a tabindex=\"-1\" unselectable=\"on\" class=\"menu-item\" href=\"javascript:;\" data-param=\"insertColLeft\"><span>" + (this._t('insertColumnLeft')) + " ( Ctrl + Alt + ← )</span></a></li>\n    <li><a tabindex=\"-1\" unselectable=\"on\" class=\"menu-item\" href=\"javascript:;\" data-param=\"insertColRight\"><span>" + (this._t('insertColumnRight')) + " ( Ctrl + Alt + → )</span></a></li>\n    <li><span class=\"separator\"></span></li>\n    <li><a tabindex=\"-1\" unselectable=\"on\" class=\"menu-item\" href=\"javascript:;\" data-param=\"deleteTable\"><span>" + (this._t('deleteTable')) + "</span></a></li>\n  </ul>\n</div>").appendTo(this.menuWrapper);
     this.createMenu = this.menuWrapper.find('.menu-create-table');
     this.editMenu = this.menuWrapper.find('.menu-edit-table');
     this.createTable(6, 6).appendTo(this.createMenu);
