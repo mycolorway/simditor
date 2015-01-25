@@ -121,7 +121,7 @@ class Simditor extends SimpleModule
     @sync()
 
   sync: ->
-    @hidePopover
+    @hidePopover()
     cloneBody = @body.clone()
     @formatter.undecorate cloneBody
     @formatter.format cloneBody
@@ -162,7 +162,7 @@ class Simditor extends SimpleModule
   blur: ->
     @body.blur()
 
-  hidePopover: ->
+  hidePopover: ()->
     @el.find('.simditor-popover').each (i, popover) =>
       popover = $(popover).data('popover')
       popover.hide() if popover.active

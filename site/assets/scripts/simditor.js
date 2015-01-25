@@ -1109,7 +1109,9 @@ Keystroke = (function(_super) {
     })(this));
     this.editor.inputManager.addKeystrokeHandler('9', '*', (function(_this) {
       return function(e) {
-        if (!_this.editor.opts.tabIndent) {
+        var codeButton;
+        codeButton = _this.editor.toolbar.findButton('code');
+        if (!(_this.editor.opts.tabIndent || (codeButton && codeButton.active))) {
           return;
         }
         if (e.shiftKey) {
@@ -2234,7 +2236,7 @@ Simditor = (function(_super) {
 
   Simditor.prototype.sync = function() {
     var children, cloneBody, emptyP, firstP, lastP, val;
-    this.hidePopover;
+    this.hidePopover();
     cloneBody = this.body.clone();
     this.formatter.undecorate(cloneBody);
     this.formatter.format(cloneBody);
@@ -2597,7 +2599,14 @@ Popover = (function(_super) {
     if ($target == null) {
       return;
     }
-    this.editor.hidePopover();
+    this.el.siblings('.simditor-popover').each((function(_this) {
+      return function(i, popover) {
+        popover = $(popover).data('popover');
+        if (popover.active) {
+          return popover.hide();
+        }
+      };
+    })(this));
     this.target = $target.addClass('selected');
     if (this.active) {
       this.refresh(position);
@@ -4850,8 +4859,6 @@ StrikethroughButton = (function(_super) {
 
 Simditor.Toolbar.addButton(StrikethroughButton);
 
-
 return Simditor;
-
 
 }));

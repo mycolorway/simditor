@@ -102,6 +102,8 @@ $simditor-button-height: 40px;
       /*min-height: 28px;*/
       box-sizing: border-box;
       -moz-box-sizing: border-box;
+      word-wrap: break-word!important;
+      white-space: pre-wrap!important;
     }
 
     img {
@@ -619,9 +621,8 @@ $simditor-button-height: 40px;
     border-radius: 3px;
     font-size:13px;
     font-family: 'monaco', 'Consolas', "Liberation Mono", Courier, monospace;
-    /*overflow-x: auto;*/
-    word-wrap: break-word;
-    white-space: pre-wrap;
+    overflow-x: auto;
+    white-space: nowrap;
   }
 
   code {

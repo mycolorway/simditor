@@ -32,7 +32,11 @@ class Popover extends SimpleModule
 
   show: ($target, position = 'bottom') ->
     return unless $target?
-    @editor.hidePopover()
+
+    #hide other popovers
+    @el.siblings('.simditor-popover').each (i, popover) =>
+      popover = $(popover).data('popover')
+      popover.hide() if popover.active
 
     @target = $target.addClass('selected')
 

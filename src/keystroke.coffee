@@ -57,7 +57,8 @@ class Keystroke extends SimpleModule
 
     # Tab to indent
     @editor.inputManager.addKeystrokeHandler '9', '*', (e) =>
-      return unless @editor.opts.tabIndent
+      codeButton = @editor.toolbar.findButton 'code'
+      return unless @editor.opts.tabIndent or (codeButton and codeButton.active)
 
       if e.shiftKey
         @editor.util.outdent()
