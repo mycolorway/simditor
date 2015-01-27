@@ -28,8 +28,6 @@ class Formatter extends SimpleModule
     @editor.body.on 'click', 'a', (e) =>
       false
 
-    console.log @_allowedAttributes, @_allowedTags, @safeFormatter, @editor
-
   decorate: ($el = @editor.body) ->
     @editor.trigger 'decorate', [$el]
 
