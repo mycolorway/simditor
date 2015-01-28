@@ -2236,7 +2236,6 @@ Simditor = (function(_super) {
 
   Simditor.prototype.sync = function() {
     var children, cloneBody, emptyP, firstP, lastP, val;
-    this.hidePopover();
     cloneBody = this.body.clone();
     this.formatter.undecorate(cloneBody);
     this.formatter.format(cloneBody);

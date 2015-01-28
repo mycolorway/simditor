@@ -121,7 +121,6 @@ class Simditor extends SimpleModule
     @sync()
 
   sync: ->
-    @hidePopover()
     cloneBody = @body.clone()
     @formatter.undecorate cloneBody
     @formatter.format cloneBody
