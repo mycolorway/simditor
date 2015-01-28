@@ -115,6 +115,7 @@ class Simditor extends SimpleModule
     @formatter.decorate()
 
     @util.reflow @body
+    @inputManager.lastCaretPosition = null
     @trigger 'valuechanged'
 
   getValue: () ->
