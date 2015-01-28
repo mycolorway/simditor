@@ -2227,6 +2227,7 @@ Simditor = (function(_super) {
     this.formatter.format();
     this.formatter.decorate();
     this.util.reflow(this.body);
+    this.inputManager.lastCaretPosition = null;
     return this.trigger('valuechanged');
   };
 
@@ -2236,7 +2237,6 @@ Simditor = (function(_super) {
 
   Simditor.prototype.sync = function() {
     var children, cloneBody, emptyP, firstP, lastP, val;
-    this.hidePopover();
     cloneBody = this.body.clone();
     this.formatter.undecorate(cloneBody);
     this.formatter.format(cloneBody);
