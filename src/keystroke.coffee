@@ -43,16 +43,24 @@ class Keystroke extends SimpleModule
       @editor.inputManager.addKeystrokeHandler '13', 'h6', titleEnterHandler
 
 
-    # Remove hr
     @editor.inputManager.addKeystrokeHandler '8', '*', (e) =>
+      # Remove hr
       $rootBlock = @editor.util.furthestBlockEl()
       $prevBlockEl = $rootBlock.prev()
+
       if $prevBlockEl.is('hr') and @editor.selection.rangeAtStartOf $rootBlock
         # TODO: need to test on IE
         @editor.selection.save()
         $prevBlockEl.remove()
         @editor.selection.restore()
         return true
+
+      # fix the span bug in webkit browsers
+      $blockEl = @editor.util.closestBlockEl()
+      if @editor.util.browser.webkit and @editor.selection.rangeAtStartOf $blockEl
+        @editor.selection.save()
+        @editor.formatter.cleanNode $blockEl, true
+        @editor.selection.restore()
 
 
     # Tab to indent

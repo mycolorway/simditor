@@ -106,6 +106,7 @@ class InputManager extends SimpleModule
       .on('blur', $.proxy(@_onBlur, @))
       .on('paste', $.proxy(@_onPaste, @))
       .on('drop', $.proxy(@_onDrop, @))
+      .on 'input', $.proxy @_onInput, @
 
     if @editor.util.browser.firefox
       # fix firefox cmd+left/right bug
@@ -186,7 +187,7 @@ class InputManager extends SimpleModule
         return false
 
       @editor.util.traverseUp (node) =>
-        return unless node.nodeType == 1
+        return unless node.nodeType == document.ELEMENT_NODE
         handler = @_keystrokeHandlers[e.which]?[node.tagName.toLowerCase()]
         result = handler?(e, $(node))
 
@@ -194,42 +195,10 @@ class InputManager extends SimpleModule
         # 1. true, has do everythings, stop browser default action and traverseUp
         # 2. false, stop traverseUp
         # 3. undefined, continue traverseUp
-        false if result == true or result == false
+        false if result isnt undefined #result == true or result == false
       if result
         @editor.trigger 'valuechanged'
         return false
-
-    if e.which in @_modifierKeys or e.which in @_arrowKeys
-      return
-
-    metaKey = @editor.util.metaKey e
-    $blockEl = @editor.util.closestBlockEl()
-
-    # paste shortcut
-    return if metaKey and e.which == 86
-
-    if @editor.util.browser.webkit and e.which == 8 and @editor.selection.rangeAtStartOf $blockEl
-      # fix the span bug in webkit browsers
-      setTimeout =>
-        return unless @focused
-        $newBlockEl = @editor.util.closestBlockEl()
-        @editor.selection.save()
-        @editor.formatter.cleanNode $newBlockEl, true
-        @editor.selection.restore()
-        @editor.trigger 'valuechanged'
-      , 10
-      @typing = true
-    else if @_typing
-      clearTimeout @_typing if @_typing != true
-      @_typing = setTimeout =>
-        @editor.trigger 'valuechanged'
-        @_typing = false
-      , 200
-    else
-      setTimeout =>
-        @editor.trigger 'valuechanged'
-      , 10
-      @_typing = true
 
     null
 
@@ -401,6 +370,18 @@ class InputManager extends SimpleModule
       @editor.trigger 'valuechanged'
     , 0
 
+  _onInput: (e) ->
+    if @_typing
+      clearTimeout @_typing if @_typing != true
+      @_typing = setTimeout =>
+        @editor.trigger 'valuechanged', ['oninput']
+        @_typing = false
+      , 200
+    else
+      setTimeout =>
+        @editor.trigger 'valuechanged', ['oninput']
+      , 10
+      @_typing = true 
 
   addKeystrokeHandler: (key, node, handler) ->
     @_keystrokeHandlers[key] = {} unless @_keystrokeHandlers[key]
