@@ -61,6 +61,7 @@ class Keystroke extends SimpleModule
         @editor.selection.save()
         @editor.formatter.cleanNode $blockEl, true
         @editor.selection.restore()
+        null
 
 
     # Tab to indent

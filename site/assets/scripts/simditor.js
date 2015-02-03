@@ -1089,7 +1089,8 @@ Keystroke = (function(_super) {
         if (_this.editor.util.browser.webkit && _this.editor.selection.rangeAtStartOf($blockEl)) {
           _this.editor.selection.save();
           _this.editor.formatter.cleanNode($blockEl, true);
-          return _this.editor.selection.restore();
+          _this.editor.selection.restore();
+          return null;
         }
       };
     })(this));
