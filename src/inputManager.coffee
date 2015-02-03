@@ -106,6 +106,8 @@ class InputManager extends SimpleModule
       .on('blur', $.proxy(@_onBlur, @))
       .on('paste', $.proxy(@_onPaste, @))
       .on('drop', $.proxy(@_onDrop, @))
+      .on 'compositionend', $.proxy @_onCompositionsend, @
+      .on 'input', $.proxy @_onInput, @
 
     if @editor.util.browser.firefox
       # fix firefox cmd+left/right bug
@@ -401,6 +403,12 @@ class InputManager extends SimpleModule
       @editor.trigger 'valuechanged'
     , 0
 
+  _onInput: (e) ->
+    if @editor.util.browser.firefox and e.originalEvent.isComposing
+      @editor.trigger 'valuechanged', ['composing']
+  _onCompositionsend: (e) ->
+    if @editor.util.browser.firefox
+      @editor.trigger 'valuechanged', ['composing']
 
   addKeystrokeHandler: (key, node, handler) ->
     @_keystrokeHandlers[key] = {} unless @_keystrokeHandlers[key]
