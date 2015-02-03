@@ -1394,7 +1394,7 @@ UndoManager = (function(_super) {
     this.caretPosition(state.caret);
     this.editor.body.find('.selected').removeClass('selected');
     this.editor.sync();
-    return this.editor.trigger('valuechanged', ['undo']);
+    return this.editor.trigger('valuechanged', ['redo']);
   };
 
   UndoManager.prototype.update = function() {
