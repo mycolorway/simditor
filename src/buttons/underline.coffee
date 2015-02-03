@@ -29,7 +29,6 @@ class UnderlineButton extends Button
 
   command: ->
     document.execCommand 'underline'
-    @editor.trigger 'valuechanged'
 
     # underline command won't trigger selectionchange event automatically
     $(document).trigger 'selectionchange'

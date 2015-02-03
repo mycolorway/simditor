@@ -381,7 +381,7 @@ class InputManager extends SimpleModule
       setTimeout =>
         @editor.trigger 'valuechanged', ['oninput']
       , 10
-      @_typing = true 
+      @_typing = true
 
   addKeystrokeHandler: (key, node, handler) ->
     @_keystrokeHandlers[key] = {} unless @_keystrokeHandlers[key]
