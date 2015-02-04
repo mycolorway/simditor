@@ -569,6 +569,7 @@ Formatter = (function(_super) {
 var InputManager,
   __hasProp = {}.hasOwnProperty,
   __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
+  __slice = [].slice,
   __indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
 
 InputManager = (function(_super) {
@@ -591,6 +592,16 @@ InputManager = (function(_super) {
   InputManager.prototype._init = function() {
     var submitKey;
     this.editor = this._module;
+    this.throttledTrigger = this.editor.util.throttle((function(_this) {
+      return function() {
+        var args;
+        args = 1 <= arguments.length ? __slice.call(arguments, 0) : [];
+        return setTimeout(function() {
+          var _ref;
+          return (_ref = _this.editor).trigger.apply(_ref, args);
+        }, 10);
+      };
+    })(this), 300);
     if (this.opts.pasteImage && typeof this.opts.pasteImage !== 'string') {
       this.opts.pasteImage = 'inline';
     }
@@ -752,7 +763,7 @@ InputManager = (function(_super) {
   };
 
   InputManager.prototype._onKeyDown = function(e) {
-    var result, _base;
+    var $blockEl, $newBlockEl, metaKey, result, _base, _ref, _ref1;
     if (this.editor.triggerHandler(e) === false) {
       return false;
     }
@@ -783,6 +794,24 @@ InputManager = (function(_super) {
         return false;
       }
     }
+    if ((_ref = e.which, __indexOf.call(this._modifierKeys, _ref) >= 0) || (_ref1 = e.which, __indexOf.call(this._arrowKeys, _ref1) >= 0)) {
+      return;
+    }
+    metaKey = this.editor.util.metaKey(e);
+    $blockEl = this.editor.util.closestBlockEl();
+    if (metaKey && e.which === 86) {
+      return;
+    }
+    if (this.editor.util.browser.webkit && e.which === 8 && this.editor.selection.rangeAtStartOf($blockEl)) {
+      if (!this.focused) {
+        return;
+      }
+      $newBlockEl = this.editor.util.closestBlockEl();
+      this.editor.selection.save();
+      this.editor.formatter.cleanNode($newBlockEl, true);
+      this.editor.selection.restore();
+    }
+    this.throttledTrigger('valuechanged', ['typing']);
     return null;
   };
 
@@ -1894,6 +1923,42 @@ Util = (function(_super) {
     bb = new BlobBuilder();
     bb.append(arrayBuffer);
     return bb.getBlob(mimeString);
+  };
+
+  Util.prototype.throttle = function(func, wait) {
+    var delayedCallTimeout, previousCallTime, stopDelayedCall;
+    delayedCallTimeout = null;
+    previousCallTime = 0;
+    stopDelayedCall = function() {
+      if (delayedCallTimeout) {
+        clearTimeout(delayedCallTimeout);
+        return delayedCallTimeout = null;
+      }
+    };
+    return function() {
+      var args, now, remaining, result;
+      now = Date.now();
+      previousCallTime || (previousCallTime = now);
+      remaining = wait - (now - previousCallTime);
+      result = null;
+      if ((0 < remaining && remaining < wait)) {
+        previousCallTime = now;
+        stopDelayedCall();
+        args = arguments;
+        delayedCallTimeout = setTimeout(function() {
+          previousCallTime = 0;
+          delayedCallTimeout = null;
+          return result = func.apply(null, args);
+        }, remaining);
+      } else {
+        stopDelayedCall();
+        if (previousCallTime !== now) {
+          previousCallTime = 0;
+        }
+        result = func.apply(null, arguments);
+      }
+      return result;
+    };
   };
 
   return Util;

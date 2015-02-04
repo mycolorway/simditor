@@ -285,3 +285,30 @@ class Util extends SimpleModule
     bb = new BlobBuilder()
     bb.append(arrayBuffer)
     bb.getBlob(mimeString)
+
+  throttle: (func, wait) ->
+    delayedCallTimeout = null
+    previousCallTime = 0
+    stopDelayedCall = ->
+      if delayedCallTimeout
+        clearTimeout delayedCallTimeout
+        delayedCallTimeout = null
+    ->
+      now = Date.now()
+      previousCallTime ||= now
+      remaining = wait - (now - previousCallTime)
+      result = null
+      if 0 < remaining < wait
+        previousCallTime = now
+        stopDelayedCall()
+        args = arguments
+        delayedCallTimeout = setTimeout ->
+          previousCallTime = 0
+          delayedCallTimeout = null
+          result = func.apply null, args
+        , remaining
+      else
+        stopDelayedCall()
+        previousCallTime = 0 if previousCallTime isnt now
+        result = func.apply null, arguments
+      result
