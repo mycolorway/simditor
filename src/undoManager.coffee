@@ -35,7 +35,7 @@ class UndoManager extends SimpleModule
       false
 
     @editor.on 'valuechanged', (e, src) =>
-      return if src == 'undo'
+      return if src == 'undo' or src == 'redo'
 
       if @_timer
         clearTimeout @_timer

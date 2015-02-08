@@ -773,7 +773,7 @@ InputManager = (function(_super) {
           }
           handler = (_ref = _this._keystrokeHandlers[e.which]) != null ? _ref[node.tagName.toLowerCase()] : void 0;
           result = typeof handler === "function" ? handler(e, $(node)) : void 0;
-          if (result !== void 0) {
+          if (result === true || result === false) {
             return false;
           }
         };
@@ -1323,7 +1323,7 @@ UndoManager = (function(_super) {
     })(this));
     return this.editor.on('valuechanged', (function(_this) {
       return function(e, src) {
-        if (src === 'undo') {
+        if (src === 'undo' || src === 'redo') {
           return;
         }
         if (_this._timer) {
@@ -4869,8 +4869,6 @@ StrikethroughButton = (function(_super) {
 
 Simditor.Toolbar.addButton(StrikethroughButton);
 
-
 return Simditor;
-
 
 }));

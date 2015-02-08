@@ -195,7 +195,7 @@ class InputManager extends SimpleModule
         # 1. true, has do everythings, stop browser default action and traverseUp
         # 2. false, stop traverseUp
         # 3. undefined, continue traverseUp
-        false if result isnt undefined #result == true or result == false
+        false if result == true or result == false
       if result
         @editor.trigger 'valuechanged'
         return false
