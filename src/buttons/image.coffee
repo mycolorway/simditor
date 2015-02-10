@@ -112,7 +112,7 @@ class ImageButton extends Button
             createInput()
           @editor.focus()
 
-        @_initUploader()
+      @_initUploader()
 
 
   renderMenu: ->
