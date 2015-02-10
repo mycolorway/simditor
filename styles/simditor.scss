@@ -248,6 +248,12 @@ $simditor-button-height: 40px;
               background: #dfdfdf;
             }
           }
+
+          &.toolbar-item-image {
+            input[type=file] {
+              opacity: 0;
+            }
+          }
         }
 
         &.menu-on {

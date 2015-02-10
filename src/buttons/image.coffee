@@ -14,16 +14,28 @@ class ImageButton extends Button
   needFocus: false
 
   _init: () ->
-    if @editor.uploader?
-      @menu = [{
-        name: 'upload-image',
-        text: @_t 'localImage'
-      }, {
-        name: 'external-image',
-        text: @_t 'externalImage'
-      }]
+    if @editor.opts.imageButton
+      if Array.isArray @editor.opts.imageButton
+        @menu = []
+        for item in @editor.opts.imageButton
+          @menu.push
+            name: item + '-image'
+            text: @_t(item + 'Image')
+      else
+        @menu = false
+        @uploadOnly = if @editor.opts.imageButton is 'upload' then true else false
     else
-      @menu = false
+      if @editor.uploader?
+        @menu = [{
+          name: 'upload-image',
+          text: @_t 'localImage'
+        }, {
+          name: 'external-image',
+          text: @_t 'externalImage'
+        }]
+      else
+        @menu = false
+        @uploadOnly = false
 
     @defaultImage = @editor.opts.defaultImage
 
@@ -74,6 +86,34 @@ class ImageButton extends Button
     super args...
     @popover = new ImagePopover
       button: @
+
+    if @uploadOnly
+      $input = null
+
+      createInput = =>
+        $input.remove() if $input
+        $input = $('<input type="file" title="' + @_t('uploadImage') + '" accept="image/*">')
+        .appendTo @el
+
+      createInput()
+
+      @el.on 'click mousedown', 'input[type=file]', (e) =>
+        e.stopPropagation()
+
+      @el.on 'change', 'input[type=file]', (e) =>
+        if @editor.inputManager.focused
+          @editor.uploader.upload $input,
+            inline: true
+          createInput()
+        else
+          @editor.one 'focus', (e) =>
+            @editor.uploader.upload $input
+              inline: true
+            createInput()
+          @editor.focus()
+
+        @_initUploader()
+
 
   renderMenu: ->
     super()
@@ -285,6 +325,10 @@ class ImageButton extends Button
     $img
 
   command: (src) ->
+    if @uploadOnly
+      @el.find('input[type=file]').trigger 'click'
+      return
+
     $img = @createImage()
 
     @loadImage $img, src or @defaultImage, =>
