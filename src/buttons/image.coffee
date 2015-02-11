@@ -15,7 +15,7 @@ class ImageButton extends Button
 
   _init: () ->
     if @editor.opts.imageButton
-      if Array.isArray @editor.opts.imageButton
+      if Array.isArray(@editor.opts.imageButton)
         @menu = []
         for item in @editor.opts.imageButton
           @menu.push
