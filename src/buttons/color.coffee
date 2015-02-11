@@ -44,6 +44,8 @@ class ColorButton extends Button
 
       return unless hex
       document.execCommand 'foreColor', false, hex
+      unless @editor.util.support.oninput
+        @editor.trigger 'valuechanged'
 
   _convertRgbToHex:(rgb) ->
     re = /rgb\((\d+),\s?(\d+),\s?(\d+)\)/g

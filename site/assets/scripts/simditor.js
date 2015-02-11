@@ -2879,6 +2879,9 @@ BoldButton = (function(_super) {
 
   BoldButton.prototype.command = function() {
     document.execCommand('bold');
+    if (!this.editor.util.support.oninput) {
+      this.editor.trigger('valuechanged');
+    }
     return $(document).trigger('selectionchange');
   };
 
@@ -2934,6 +2937,9 @@ ItalicButton = (function(_super) {
 
   ItalicButton.prototype.command = function() {
     document.execCommand('italic');
+    if (!this.editor.util.support.oninput) {
+      this.editor.trigger('valuechanged');
+    }
     return $(document).trigger('selectionchange');
   };
 
@@ -2989,6 +2995,9 @@ UnderlineButton = (function(_super) {
 
   UnderlineButton.prototype.command = function() {
     document.execCommand('underline');
+    if (!this.editor.util.support.oninput) {
+      this.editor.trigger('valuechanged');
+    }
     return $(document).trigger('selectionchange');
   };
 
@@ -3048,7 +3057,10 @@ ColorButton = (function(_super) {
         if (!hex) {
           return;
         }
-        return document.execCommand('foreColor', false, hex);
+        document.execCommand('foreColor', false, hex);
+        if (!_this.editor.util.support.oninput) {
+          return _this.editor.trigger('valuechanged');
+        }
       };
     })(this));
   };
@@ -4909,6 +4921,9 @@ StrikethroughButton = (function(_super) {
 
   StrikethroughButton.prototype.command = function() {
     document.execCommand('strikethrough');
+    if (!this.editor.util.support.oninput) {
+      this.editor.trigger('valuechanged');
+    }
     return $(document).trigger('selectionchange');
   };
 

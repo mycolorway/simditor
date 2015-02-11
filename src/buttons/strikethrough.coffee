@@ -19,6 +19,8 @@ class StrikethroughButton extends Button
 
   command: ->
     document.execCommand 'strikethrough'
+    unless @editor.util.support.oninput
+      @editor.trigger 'valuechanged'
 
     # strikethrough command won't trigger selectionchange event automatically
     $(document).trigger 'selectionchange'

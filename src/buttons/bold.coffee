@@ -29,6 +29,8 @@ class BoldButton extends Button
 
   command: ->
     document.execCommand 'bold'
+    unless @editor.util.support.oninput
+      @editor.trigger 'valuechanged'
 
     # bold command won't trigger selectionchange event automatically
     $(document).trigger 'selectionchange'

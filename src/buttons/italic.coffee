@@ -30,6 +30,8 @@ class ItalicButton extends Button
 
   command: ->
     document.execCommand 'italic'
+    unless @editor.util.support.oninput
+      @editor.trigger 'valuechanged'
 
     # italic command won't trigger selectionchange event automatically
     $(document).trigger 'selectionchange'
