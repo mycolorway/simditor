@@ -1,25 +1,16 @@
 (function (root, factory) {
   if (typeof define === 'function' && define.amd) {
-    // AMD. Register as an anonymous module.
-    define('simditor', ["jquery",
-      "simple-module",
-      "simple-hotkeys",
-      "simple-uploader"], function ($, SimpleModule, simpleHotkeys, simpleUploader) {
-      return (root.returnExportsGlobal = factory($, SimpleModule, simpleHotkeys, simpleUploader));
+    // AMD. Register as an anonymous module unless amdModuleId is set
+    define('simditor', ["jquery","simple-module","simple-hotkeys","simple-uploader"], function ($, SimpleModule, simpleHotkeys, simpleUploader) {
+      return (root['Simditor'] = factory($, SimpleModule, simpleHotkeys, simpleUploader));
     });
   } else if (typeof exports === 'object') {
     // Node. Does not work with strict CommonJS, but
-    // only CommonJS-like enviroments that support module.exports,
+    // only CommonJS-like environments that support module.exports,
     // like Node.
-    module.exports = factory(require("jquery"),
-      require("simple-module"),
-      require("simple-hotkeys"),
-      require("simple-uploader"));
+    module.exports = factory(require("jquery"),require("simple-module"),require("simple-hotkeys"),require("simple-uploader"));
   } else {
-    root['Simditor'] = factory(jQuery,
-      SimpleModule,
-      simple.hotkeys,
-      simple.uploader);
+    root['Simditor'] = factory(jQuery,SimpleModule,simple.hotkeys,simple.uploader);
   }
 }(this, function ($, SimpleModule, simpleHotkeys, simpleUploader) {
 
@@ -569,6 +560,7 @@ Formatter = (function(_super) {
 var InputManager,
   __hasProp = {}.hasOwnProperty,
   __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
+  __slice = [].slice,
   __indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
 
 InputManager = (function(_super) {
@@ -591,6 +583,16 @@ InputManager = (function(_super) {
   InputManager.prototype._init = function() {
     var submitKey;
     this.editor = this._module;
+    this.throttledTrigger = this.editor.util.throttle((function(_this) {
+      return function() {
+        var args;
+        args = 1 <= arguments.length ? __slice.call(arguments, 0) : [];
+        return setTimeout(function() {
+          var _ref;
+          return (_ref = _this.editor).trigger.apply(_ref, args);
+        }, 10);
+      };
+    })(this), 300);
     if (this.opts.pasteImage && typeof this.opts.pasteImage !== 'string') {
       this.opts.pasteImage = 'inline';
     }
@@ -661,7 +663,7 @@ InputManager = (function(_super) {
           }
         });
         _this.editor.body.find('pre:empty').append(_this.editor.util.phBr);
-        if (!_this.editor.util.supportSelectionChange && _this.focused) {
+        if (!_this.editor.util.support.onselectionchange && _this.focused) {
           return _this.editor.trigger('selectionchanged');
         }
       };
@@ -671,7 +673,7 @@ InputManager = (function(_super) {
         return _this.editor.undoManager.update();
       };
     })(this));
-    this.editor.body.on('keydown', $.proxy(this._onKeyDown, this)).on('keypress', $.proxy(this._onKeyPress, this)).on('keyup', $.proxy(this._onKeyUp, this)).on('mouseup', $.proxy(this._onMouseUp, this)).on('focus', $.proxy(this._onFocus, this)).on('blur', $.proxy(this._onBlur, this)).on('paste', $.proxy(this._onPaste, this)).on('drop', $.proxy(this._onDrop, this));
+    this.editor.body.on('keydown', $.proxy(this._onKeyDown, this)).on('keypress', $.proxy(this._onKeyPress, this)).on('keyup', $.proxy(this._onKeyUp, this)).on('mouseup', $.proxy(this._onMouseUp, this)).on('focus', $.proxy(this._onFocus, this)).on('blur', $.proxy(this._onBlur, this)).on('paste', $.proxy(this._onPaste, this)).on('drop', $.proxy(this._onDrop, this)).on('input', $.proxy(this._onInput, this));
     if (this.editor.util.browser.firefox) {
       this.addShortcut('cmd+left', (function(_this) {
         return function(e) {
@@ -742,7 +744,7 @@ InputManager = (function(_super) {
   };
 
   InputManager.prototype._onMouseUp = function(e) {
-    if (!this.editor.util.supportSelectionChange) {
+    if (!this.editor.util.support.onselectionchange) {
       return setTimeout((function(_this) {
         return function() {
           return _this.editor.trigger('selectionchanged');
@@ -752,7 +754,7 @@ InputManager = (function(_super) {
   };
 
   InputManager.prototype._onKeyDown = function(e) {
-    var $blockEl, metaKey, result, _base, _ref, _ref1;
+    var result, _base, _ref, _ref1;
     if (this.editor.triggerHandler(e) === false) {
       return false;
     }
@@ -768,7 +770,7 @@ InputManager = (function(_super) {
       this.editor.util.traverseUp((function(_this) {
         return function(node) {
           var handler, _ref;
-          if (node.nodeType !== 1) {
+          if (node.nodeType !== document.ELEMENT_NODE) {
             return;
           }
           handler = (_ref = _this._keystrokeHandlers[e.which]) != null ? _ref[node.tagName.toLowerCase()] : void 0;
@@ -786,43 +788,11 @@ InputManager = (function(_super) {
     if ((_ref = e.which, __indexOf.call(this._modifierKeys, _ref) >= 0) || (_ref1 = e.which, __indexOf.call(this._arrowKeys, _ref1) >= 0)) {
       return;
     }
-    metaKey = this.editor.util.metaKey(e);
-    $blockEl = this.editor.util.closestBlockEl();
-    if (metaKey && e.which === 86) {
+    if (this.editor.util.metaKey(e) && e.which === 86) {
       return;
     }
-    if (this.editor.util.browser.webkit && e.which === 8 && this.editor.selection.rangeAtStartOf($blockEl)) {
-      setTimeout((function(_this) {
-        return function() {
-          var $newBlockEl;
-          if (!_this.focused) {
-            return;
-          }
-          $newBlockEl = _this.editor.util.closestBlockEl();
-          _this.editor.selection.save();
-          _this.editor.formatter.cleanNode($newBlockEl, true);
-          _this.editor.selection.restore();
-          return _this.editor.trigger('valuechanged');
-        };
-      })(this), 10);
-      this.typing = true;
-    } else if (this._typing) {
-      if (this._typing !== true) {
-        clearTimeout(this._typing);
-      }
-      this._typing = setTimeout((function(_this) {
-        return function() {
-          _this.editor.trigger('valuechanged');
-          return _this._typing = false;
-        };
-      })(this), 200);
-    } else {
-      setTimeout((function(_this) {
-        return function() {
-          return _this.editor.trigger('valuechanged');
-        };
-      })(this), 10);
-      this._typing = true;
+    if (!this.editor.util.support.oninput) {
+      this.throttledTrigger('valuechanged', ['typing']);
     }
     return null;
   };
@@ -838,7 +808,7 @@ InputManager = (function(_super) {
     if (this.editor.triggerHandler(e) === false) {
       return false;
     }
-    if (!this.editor.util.supportSelectionChange && (_ref = e.which, __indexOf.call(this._arrowKeys, _ref) >= 0)) {
+    if (!this.editor.util.support.onselectionchange && (_ref = e.which, __indexOf.call(this._arrowKeys, _ref) >= 0)) {
       this.editor.trigger('selectionchanged');
       return;
     }
@@ -1021,6 +991,10 @@ InputManager = (function(_super) {
     })(this), 0);
   };
 
+  InputManager.prototype._onInput = function(e) {
+    return this.throttledTrigger('valuechanged', ['oninput']);
+  };
+
   InputManager.prototype.addKeystrokeHandler = function(key, node, handler) {
     if (!this._keystrokeHandlers[key]) {
       this._keystrokeHandlers[key] = {};
@@ -1096,7 +1070,7 @@ Keystroke = (function(_super) {
     }
     this.editor.inputManager.addKeystrokeHandler('8', '*', (function(_this) {
       return function(e) {
-        var $prevBlockEl, $rootBlock;
+        var $blockEl, $prevBlockEl, $rootBlock;
         $rootBlock = _this.editor.util.furthestBlockEl();
         $prevBlockEl = $rootBlock.prev();
         if ($prevBlockEl.is('hr') && _this.editor.selection.rangeAtStartOf($rootBlock)) {
@@ -1104,6 +1078,13 @@ Keystroke = (function(_super) {
           $prevBlockEl.remove();
           _this.editor.selection.restore();
           return true;
+        }
+        $blockEl = _this.editor.util.closestBlockEl();
+        if (_this.editor.util.browser.webkit && _this.editor.selection.rangeAtStartOf($blockEl)) {
+          _this.editor.selection.save();
+          _this.editor.formatter.cleanNode($blockEl, true);
+          _this.editor.selection.restore();
+          return null;
         }
       };
     })(this));
@@ -1336,7 +1317,7 @@ UndoManager = (function(_super) {
     })(this));
     return this.editor.on('valuechanged', (function(_this) {
       return function(e, src) {
-        if (src === 'undo') {
+        if (src === 'undo' || src === 'redo') {
           return;
         }
         if (_this._timer) {
@@ -1408,7 +1389,7 @@ UndoManager = (function(_super) {
     this.caretPosition(state.caret);
     this.editor.body.find('.selected').removeClass('selected');
     this.editor.sync();
-    return this.editor.trigger('valuechanged', ['undo']);
+    return this.editor.trigger('valuechanged', ['redo']);
   };
 
   UndoManager.prototype.update = function() {
@@ -1623,20 +1604,27 @@ Util = (function(_super) {
     }
   })();
 
-  Util.prototype.supportSelectionChange = (function() {
-    var e, onselectionchange;
-    onselectionchange = document.onselectionchange;
-    if (onselectionchange !== void 0) {
-      try {
-        document.onselectionchange = 0;
-        return document.onselectionchange === null;
-      } catch (_error) {
-        e = _error;
-      } finally {
-        document.onselectionchange = onselectionchange;
-      }
-    }
-    return false;
+  Util.prototype.support = (function() {
+    return {
+      onselectionchange: (function() {
+        var e, onselectionchange;
+        onselectionchange = document.onselectionchange;
+        if (onselectionchange !== void 0) {
+          try {
+            document.onselectionchange = 0;
+            return document.onselectionchange === null;
+          } catch (_error) {
+            e = _error;
+          } finally {
+            document.onselectionchange = onselectionchange;
+          }
+        }
+        return false;
+      })(),
+      oninput: (function() {
+        return !/(msie|trident)/i.test(navigator.userAgent);
+      })()
+    };
   })();
 
   Util.prototype.reflow = function(el) {
@@ -1907,6 +1895,42 @@ Util = (function(_super) {
     bb = new BlobBuilder();
     bb.append(arrayBuffer);
     return bb.getBlob(mimeString);
+  };
+
+  Util.prototype.throttle = function(func, wait) {
+    var delayedCallTimeout, previousCallTime, stopDelayedCall;
+    delayedCallTimeout = null;
+    previousCallTime = 0;
+    stopDelayedCall = function() {
+      if (delayedCallTimeout) {
+        clearTimeout(delayedCallTimeout);
+        return delayedCallTimeout = null;
+      }
+    };
+    return function() {
+      var args, now, remaining, result;
+      now = Date.now();
+      previousCallTime || (previousCallTime = now);
+      remaining = wait - (now - previousCallTime);
+      result = null;
+      if ((0 < remaining && remaining < wait)) {
+        previousCallTime = now;
+        stopDelayedCall();
+        args = arguments;
+        delayedCallTimeout = setTimeout(function() {
+          previousCallTime = 0;
+          delayedCallTimeout = null;
+          return result = func.apply(null, args);
+        }, wait);
+      } else {
+        stopDelayedCall();
+        if (previousCallTime !== now) {
+          previousCallTime = 0;
+        }
+        result = func.apply(null, arguments);
+      }
+      return result;
+    };
   };
 
   return Util;
@@ -2314,7 +2338,6 @@ Simditor.i18n = {
     'color': '文字颜色',
     'hr': '分隔线',
     'image': '插入图片',
-    'localImage': '本地图片',
     'externalImage': '外链图片',
     'uploadImage': '上传图片',
     'uploadFailed': '上传失败了',
@@ -2843,7 +2866,9 @@ BoldButton = (function(_super) {
 
   BoldButton.prototype.command = function() {
     document.execCommand('bold');
-    this.editor.trigger('valuechanged');
+    if (!this.editor.util.support.oninput) {
+      this.editor.trigger('valuechanged');
+    }
     return $(document).trigger('selectionchange');
   };
 
@@ -2899,7 +2924,9 @@ ItalicButton = (function(_super) {
 
   ItalicButton.prototype.command = function() {
     document.execCommand('italic');
-    this.editor.trigger('valuechanged');
+    if (!this.editor.util.support.oninput) {
+      this.editor.trigger('valuechanged');
+    }
     return $(document).trigger('selectionchange');
   };
 
@@ -2955,7 +2982,9 @@ UnderlineButton = (function(_super) {
 
   UnderlineButton.prototype.command = function() {
     document.execCommand('underline');
-    this.editor.trigger('valuechanged');
+    if (!this.editor.util.support.oninput) {
+      this.editor.trigger('valuechanged');
+    }
     return $(document).trigger('selectionchange');
   };
 
@@ -3016,7 +3045,9 @@ ColorButton = (function(_super) {
           return;
         }
         document.execCommand('foreColor', false, hex);
-        return _this.editor.trigger('valuechanged');
+        if (!_this.editor.util.support.oninput) {
+          return _this.editor.trigger('valuechanged');
+        }
       };
     })(this));
   };
@@ -3725,18 +3756,35 @@ ImageButton = (function(_super) {
   ImageButton.prototype.needFocus = false;
 
   ImageButton.prototype._init = function() {
-    if (this.editor.uploader != null) {
-      this.menu = [
-        {
-          name: 'upload-image',
-          text: this._t('localImage')
-        }, {
-          name: 'external-image',
-          text: this._t('externalImage')
+    var item, _i, _len, _ref;
+    if (this.editor.opts.imageButton) {
+      if (Array.isArray(this.editor.opts.imageButton)) {
+        this.menu = [];
+        _ref = this.editor.opts.imageButton;
+        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+          item = _ref[_i];
+          this.menu.push({
+            name: item + '-image',
+            text: this._t(item + 'Image')
+          });
         }
-      ];
+      } else {
+        this.menu = false;
+      }
     } else {
-      this.menu = false;
+      if (this.editor.uploader != null) {
+        this.menu = [
+          {
+            name: 'upload-image',
+            text: this._t('uploadImage')
+          }, {
+            name: 'external-image',
+            text: this._t('externalImage')
+          }
+        ];
+      } else {
+        this.menu = false;
+      }
     }
     this.defaultImage = this.editor.opts.defaultImage;
     this.editor.body.on('click', 'img:not([data-non-image])', (function(_this) {
@@ -3746,7 +3794,7 @@ ImageButton = (function(_super) {
         range = document.createRange();
         range.selectNode($img[0]);
         _this.editor.selection.selectRange(range);
-        if (!_this.editor.util.supportSelectionChange) {
+        if (!_this.editor.util.support.onselectionchange) {
           _this.editor.trigger('selectionchanged');
         }
         return false;
@@ -3806,15 +3854,28 @@ ImageButton = (function(_super) {
     var args;
     args = 1 <= arguments.length ? __slice.call(arguments, 0) : [];
     ImageButton.__super__.render.apply(this, args);
-    return this.popover = new ImagePopover({
+    this.popover = new ImagePopover({
       button: this
     });
+    if (this.editor.opts.imageButton === 'upload') {
+      return this._initUploader(this.el);
+    }
   };
 
   ImageButton.prototype.renderMenu = function() {
-    var $input, $uploadItem, createInput;
     ImageButton.__super__.renderMenu.call(this);
-    $uploadItem = this.menuEl.find('.menu-item-upload-image');
+    return this._initUploader();
+  };
+
+  ImageButton.prototype._initUploader = function($uploadItem) {
+    var $input, createInput;
+    if ($uploadItem == null) {
+      $uploadItem = this.menuEl.find('.menu-item-upload-image');
+    }
+    if (this.editor.uploader == null) {
+      this.el.find('.btn-upload').remove();
+      return;
+    }
     $input = null;
     createInput = (function(_this) {
       return function() {
@@ -3849,14 +3910,6 @@ ImageButton = (function(_super) {
         return _this.wrapper.removeClass('menu-on');
       };
     })(this));
-    return this._initUploader();
-  };
-
-  ImageButton.prototype._initUploader = function() {
-    if (this.editor.uploader == null) {
-      this.el.find('.btn-upload').remove();
-      return;
-    }
     this.editor.uploader.on('beforeupload', (function(_this) {
       return function(e, file) {
         var $img;
@@ -4627,7 +4680,7 @@ TableButton = (function(_super) {
   };
 
   TableButton.prototype.renderMenu = function() {
-    $("<div class=\"menu-create-table\">\n</div>\n<div class=\"menu-edit-table\">\n  <ul>\n    <li><a tabindex=\"-1\" unselectable=\"on\" class=\"menu-item\" href=\"javascript:;\" data-param=\"deleteRow\"><span>" + (this._t('deleteRow')) + " ( Ctrl + Alt + → )</span></a></li>\n    <li><a tabindex=\"-1\" unselectable=\"on\" class=\"menu-item\" href=\"javascript:;\" data-param=\"insertRowAbove\"><span>" + (this._t('insertRowAbove')) + " ( Ctrl + Alt + ↑ )</span></a></li>\n    <li><a tabindex=\"-1\" unselectable=\"on\" class=\"menu-item\" href=\"javascript:;\" data-param=\"insertRowBelow\"><span>" + (this._t('insertRowBelow')) + " ( Ctrl + Alt + ↓ )</span></a></li>\n    <li><span class=\"separator\"></span></li>\n    <li><a tabindex=\"-1\" unselectable=\"on\" class=\"menu-item\" href=\"javascript:;\" data-param=\"deleteCol\"><span>" + (this._t('deleteColumn')) + "</span></a></li>\n    <li><a tabindex=\"-1\" unselectable=\"on\" class=\"menu-item\" href=\"javascript:;\" data-param=\"insertColLeft\"><span>" + (this._t('insertColumnLeft')) + " ( Ctrl + Alt + ← )</span></a></li>\n    <li><a tabindex=\"-1\" unselectable=\"on\" class=\"menu-item\" href=\"javascript:;\" data-param=\"insertColRight\"><span>" + (this._t('insertColumnRight')) + " ( Ctrl + Alt + → )</span></a></li>\n    <li><span class=\"separator\"></span></li>\n    <li><a tabindex=\"-1\" unselectable=\"on\" class=\"menu-item\" href=\"javascript:;\" data-param=\"deleteTable\"><span>" + (this._t('deleteTable')) + "</span></a></li>\n  </ul>\n</div>").appendTo(this.menuWrapper);
+    $("<div class=\"menu-create-table\">\n</div>\n<div class=\"menu-edit-table\">\n  <ul>\n    <li><a tabindex=\"-1\" unselectable=\"on\" class=\"menu-item\" href=\"javascript:;\" data-param=\"deleteRow\"><span>" + (this._t('deleteRow')) + "</span></a></li>\n    <li><a tabindex=\"-1\" unselectable=\"on\" class=\"menu-item\" href=\"javascript:;\" data-param=\"insertRowAbove\"><span>" + (this._t('insertRowAbove')) + " ( Ctrl + Alt + ↑ )</span></a></li>\n    <li><a tabindex=\"-1\" unselectable=\"on\" class=\"menu-item\" href=\"javascript:;\" data-param=\"insertRowBelow\"><span>" + (this._t('insertRowBelow')) + " ( Ctrl + Alt + ↓ )</span></a></li>\n    <li><span class=\"separator\"></span></li>\n    <li><a tabindex=\"-1\" unselectable=\"on\" class=\"menu-item\" href=\"javascript:;\" data-param=\"deleteCol\"><span>" + (this._t('deleteColumn')) + "</span></a></li>\n    <li><a tabindex=\"-1\" unselectable=\"on\" class=\"menu-item\" href=\"javascript:;\" data-param=\"insertColLeft\"><span>" + (this._t('insertColumnLeft')) + " ( Ctrl + Alt + ← )</span></a></li>\n    <li><a tabindex=\"-1\" unselectable=\"on\" class=\"menu-item\" href=\"javascript:;\" data-param=\"insertColRight\"><span>" + (this._t('insertColumnRight')) + " ( Ctrl + Alt + → )</span></a></li>\n    <li><span class=\"separator\"></span></li>\n    <li><a tabindex=\"-1\" unselectable=\"on\" class=\"menu-item\" href=\"javascript:;\" data-param=\"deleteTable\"><span>" + (this._t('deleteTable')) + "</span></a></li>\n  </ul>\n</div>").appendTo(this.menuWrapper);
     this.createMenu = this.menuWrapper.find('.menu-create-table');
     this.editMenu = this.menuWrapper.find('.menu-edit-table');
     this.createTable(6, 6).appendTo(this.createMenu);
@@ -4877,7 +4930,9 @@ StrikethroughButton = (function(_super) {
 
   StrikethroughButton.prototype.command = function() {
     document.execCommand('strikethrough');
-    this.editor.trigger('valuechanged');
+    if (!this.editor.util.support.oninput) {
+      this.editor.trigger('valuechanged');
+    }
     return $(document).trigger('selectionchange');
   };
 

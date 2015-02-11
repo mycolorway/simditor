@@ -207,6 +207,18 @@
 .simditor .simditor-toolbar > ul > li > .toolbar-item.toolbar-item-color.disabled:after {
   background: #dfdfdf;
 }
+.simditor .simditor-toolbar > ul > li > .toolbar-item.toolbar-item-image {
+  position: relative;
+  overflow: hidden;
+}
+.simditor .simditor-toolbar > ul > li > .toolbar-item.toolbar-item-image > input[type=file] {
+  position: absolute;
+  right: 0px;
+  top: 0px;
+  opacity: 0;
+  font-size: 100px;
+  cursor: pointer;
+}
 .simditor .simditor-toolbar > ul > li.menu-on .toolbar-item {
   position: relative;
   z-index: 21;

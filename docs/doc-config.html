@@ -246,11 +246,22 @@
     <dt id="anchor-pasteImage">
       <!--<span class="icon fa fa-caret-down"></span>-->
       <span class="name">pasteImage</span>
-      <span class="type">false</span>
-      <span class="default">默认值: Boolean</span>
+      <span class="type">Boolean</span>
+      <span class="default">默认值: false</span>
     </dt>
     <dd class="expand">
       <p>是否允许粘贴上传图片，依赖 <code>upload</code> 选项，仅支持 Firefox 和 Chrome 浏览器。</p>
+
+    </dd>
+  
+    <dt id="anchor-imageButton">
+      <!--<span class="icon fa fa-caret-down"></span>-->
+      <span class="name">imageButton</span>
+      <span class="type">Array/String</span>
+      <span class="default">默认值: ['upload', 'external']</span>
+    </dt>
+    <dd class="expand">
+      <p>自定义图片按钮的功能，支持<code>upload</code>和<code>external</code>两种，分别表示本地上传和外链图片。如果提供的选项是数组，那么下拉菜单的形式支持对应的功能。</p>
 
     </dd>
   
