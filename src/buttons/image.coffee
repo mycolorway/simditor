@@ -23,19 +23,17 @@ class ImageButton extends Button
             text: @_t(item + 'Image')
       else
         @menu = false
-        @uploadOnly = if @editor.opts.imageButton is 'upload' then true else false
     else
       if @editor.uploader?
         @menu = [{
           name: 'upload-image',
-          text: @_t 'localImage'
+          text: @_t 'uploadImage'
         }, {
           name: 'external-image',
           text: @_t 'externalImage'
         }]
       else
         @menu = false
-        @uploadOnly = false
 
     @defaultImage = @editor.opts.defaultImage
 
@@ -87,40 +85,20 @@ class ImageButton extends Button
     @popover = new ImagePopover
       button: @
 
-    if @uploadOnly
-      $input = null
-
-      createInput = =>
-        $input.remove() if $input
-        $input = $('<input type="file" title="' + @_t('uploadImage') + '" accept="image/*">')
-        .appendTo @el
-
-      createInput()
-
-      @el.on 'click mousedown', 'input[type=file]', (e) =>
-        e.stopPropagation()
-
-      @el.on 'change', 'input[type=file]', (e) =>
-        if @editor.inputManager.focused
-          @editor.uploader.upload $input,
-            inline: true
-          createInput()
-        else
-          @editor.one 'focus', (e) =>
-            @editor.uploader.upload $input
-              inline: true
-            createInput()
-          @editor.focus()
-
-      @_initUploader()
-
+    if @editor.opts.imageButton == 'upload'
+      @_initUploader @el
 
   renderMenu: ->
     super()
 
-    $uploadItem = @menuEl.find('.menu-item-upload-image')
-    $input = null
+    @_initUploader()
 
+  _initUploader: ($uploadItem = @menuEl.find('.menu-item-upload-image')) ->
+    unless @editor.uploader?
+      @el.find('.btn-upload').remove()
+      return
+
+    $input = null
     createInput = =>
       $input.remove() if $input
       $input = $('<input type="file" title="' + @_t('uploadImage') + '" accept="image/*">')
@@ -146,12 +124,6 @@ class ImageButton extends Button
         @editor.focus()
       @wrapper.removeClass('menu-on')
 
-    @_initUploader()
-
-  _initUploader: ->
-    unless @editor.uploader?
-      @el.find('.btn-upload').remove()
-      return
 
     @editor.uploader.on 'beforeupload', (e, file) =>
       return unless file.inline
@@ -325,9 +297,9 @@ class ImageButton extends Button
     $img
 
   command: (src) ->
-    if @uploadOnly
-      @el.find('input[type=file]').trigger 'click'
-      return
+    #if @uploadOnly
+      #@el.find('input[type=file]').trigger 'click'
+      #return
 
     $img = @createImage()
 

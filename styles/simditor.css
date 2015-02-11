@@ -207,8 +207,13 @@
 .simditor .simditor-toolbar > ul > li > .toolbar-item.toolbar-item-color.disabled:after {
   background: #dfdfdf;
 }
-.simditor .simditor-toolbar > ul > li > .toolbar-item.toolbar-item-image input[type=file] {
+.simditor .simditor-toolbar > ul > li > .toolbar-item.toolbar-item-image > input[type=file] {
+  position: absolute;
+  right: 0px;
+  top: 0px;
   opacity: 0;
+  height: 100%;
+  width: 28px;
 }
 .simditor .simditor-toolbar > ul > li.menu-on .toolbar-item {
   position: relative;
@@ -426,8 +431,8 @@
   right: 0px;
   top: 0px;
   opacity: 0;
-  height: 100%;
-  width: 28px;
+  font-size: 100px;
+  cursor: pointer;
 }
 .simditor.simditor-mobile .simditor-toolbar > ul > li > .toolbar-item {
   width: 46px;

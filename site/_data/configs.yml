@@ -113,7 +113,13 @@
     ```
 
 - name: "pasteImage"
-  type: "false"
-  default: "Boolean"
+  type: "Boolean"
+  default: "false"
   description: |
     是否允许粘贴上传图片，依赖 `upload` 选项，仅支持 Firefox 和 Chrome 浏览器。
+
+- name: "imageButton"
+  type: "Array/String"
+  default: "['upload', 'external']"
+  description: |
+    自定义图片按钮的功能，支持`upload`和`external`两种，分别表示本地上传和外链图片。如果提供的选项是数组，那么下拉菜单的形式支持对应的功能。
