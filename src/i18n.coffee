@@ -7,7 +7,6 @@ Simditor.i18n =
     'color': '文字颜色'
     'hr': '分隔线'
     'image': '插入图片'
-    'localImage': '本地图片'
     'externalImage': '外链图片'
     'uploadImage': '上传图片'
     'uploadFailed': '上传失败了'

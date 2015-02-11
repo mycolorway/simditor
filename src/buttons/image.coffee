@@ -14,16 +14,26 @@ class ImageButton extends Button
   needFocus: false
 
   _init: () ->
-    if @editor.uploader?
-      @menu = [{
-        name: 'upload-image',
-        text: @_t 'localImage'
-      }, {
-        name: 'external-image',
-        text: @_t 'externalImage'
-      }]
+    if @editor.opts.imageButton
+      if Array.isArray(@editor.opts.imageButton)
+        @menu = []
+        for item in @editor.opts.imageButton
+          @menu.push
+            name: item + '-image'
+            text: @_t(item + 'Image')
+      else
+        @menu = false
     else
-      @menu = false
+      if @editor.uploader?
+        @menu = [{
+          name: 'upload-image',
+          text: @_t 'uploadImage'
+        }, {
+          name: 'external-image',
+          text: @_t 'externalImage'
+        }]
+      else
+        @menu = false
 
     @defaultImage = @editor.opts.defaultImage
 
@@ -75,12 +85,19 @@ class ImageButton extends Button
     @popover = new ImagePopover
       button: @
 
+    if @editor.opts.imageButton == 'upload'
+      @_initUploader @el
+
   renderMenu: ->
     super()
+    @_initUploader()
 
-    $uploadItem = @menuEl.find('.menu-item-upload-image')
+  _initUploader: ($uploadItem = @menuEl.find('.menu-item-upload-image')) ->
+    unless @editor.uploader?
+      @el.find('.btn-upload').remove()
+      return
+
     $input = null
-
     createInput = =>
       $input.remove() if $input
       $input = $('<input type="file" title="' + @_t('uploadImage') + '" accept="image/*">')
@@ -106,12 +123,6 @@ class ImageButton extends Button
         @editor.focus()
       @wrapper.removeClass('menu-on')
 
-    @_initUploader()
-
-  _initUploader: ->
-    unless @editor.uploader?
-      @el.find('.btn-upload').remove()
-      return
 
     @editor.uploader.on 'beforeupload', (e, file) =>
       return unless file.inline

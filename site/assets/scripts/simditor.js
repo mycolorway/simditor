@@ -2314,7 +2314,6 @@ Simditor.i18n = {
     'color': '文字颜色',
     'hr': '分隔线',
     'image': '插入图片',
-    'localImage': '本地图片',
     'externalImage': '外链图片',
     'uploadImage': '上传图片',
     'uploadFailed': '上传失败了',
@@ -3725,18 +3724,35 @@ ImageButton = (function(_super) {
   ImageButton.prototype.needFocus = false;
 
   ImageButton.prototype._init = function() {
-    if (this.editor.uploader != null) {
-      this.menu = [
-        {
-          name: 'upload-image',
-          text: this._t('localImage')
-        }, {
-          name: 'external-image',
-          text: this._t('externalImage')
+    var item, _i, _len, _ref;
+    if (this.editor.opts.imageButton) {
+      if (Array.isArray(this.editor.opts.imageButton)) {
+        this.menu = [];
+        _ref = this.editor.opts.imageButton;
+        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+          item = _ref[_i];
+          this.menu.push({
+            name: item + '-image',
+            text: this._t(item + 'Image')
+          });
         }
-      ];
+      } else {
+        this.menu = false;
+      }
     } else {
-      this.menu = false;
+      if (this.editor.uploader != null) {
+        this.menu = [
+          {
+            name: 'upload-image',
+            text: this._t('uploadImage')
+          }, {
+            name: 'external-image',
+            text: this._t('externalImage')
+          }
+        ];
+      } else {
+        this.menu = false;
+      }
     }
     this.defaultImage = this.editor.opts.defaultImage;
     this.editor.body.on('click', 'img:not([data-non-image])', (function(_this) {
@@ -3806,15 +3822,28 @@ ImageButton = (function(_super) {
     var args;
     args = 1 <= arguments.length ? __slice.call(arguments, 0) : [];
     ImageButton.__super__.render.apply(this, args);
-    return this.popover = new ImagePopover({
+    this.popover = new ImagePopover({
       button: this
     });
+    if (this.editor.opts.imageButton === 'upload') {
+      return this._initUploader(this.el);
+    }
   };
 
   ImageButton.prototype.renderMenu = function() {
-    var $input, $uploadItem, createInput;
     ImageButton.__super__.renderMenu.call(this);
-    $uploadItem = this.menuEl.find('.menu-item-upload-image');
+    return this._initUploader();
+  };
+
+  ImageButton.prototype._initUploader = function($uploadItem) {
+    var $input, createInput;
+    if ($uploadItem == null) {
+      $uploadItem = this.menuEl.find('.menu-item-upload-image');
+    }
+    if (this.editor.uploader == null) {
+      this.el.find('.btn-upload').remove();
+      return;
+    }
     $input = null;
     createInput = (function(_this) {
       return function() {
@@ -3849,14 +3878,6 @@ ImageButton = (function(_super) {
         return _this.wrapper.removeClass('menu-on');
       };
     })(this));
-    return this._initUploader();
-  };
-
-  ImageButton.prototype._initUploader = function() {
-    if (this.editor.uploader == null) {
-      this.el.find('.btn-upload').remove();
-      return;
-    }
     this.editor.uploader.on('beforeupload', (function(_this) {
       return function(e, file) {
         var $img;
