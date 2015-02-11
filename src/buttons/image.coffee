@@ -34,7 +34,7 @@ class ImageButton extends Button
       range = document.createRange()
       range.selectNode $img[0]
       @editor.selection.selectRange range
-      @editor.trigger 'selectionchanged' unless @editor.util.supportSelectionChange
+      @editor.trigger 'selectionchanged' unless @editor.util.support.onselectionchange
 
       false
 

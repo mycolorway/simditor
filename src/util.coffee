@@ -52,18 +52,21 @@ class Util extends SimpleModule
       {}
   )()
 
-  # check whether the browser supports selectionchange event
-  supportSelectionChange: (->
-    onselectionchange = document.onselectionchange
-    if onselectionchange != undefined
-      try
-        document.onselectionchange = 0
-        return document.onselectionchange == null
-      catch e
-      finally
-        document.onselectionchange = onselectionchange
-    false
-  )()
+  support: do ->
+    check = (featureName) ->
+      feature = document[featureName]
+      if feature != undefined
+        try
+          document[featureName] = 0
+          return document[featureName] == null
+        catch e
+        finally
+          document["featureName"] = feature
+      false
+    list = {}
+    list[feature] = check feature for feature in ["onselectionchange", "oninput"]
+    list
+
 
   # force element to reflow, about relow: 
   # http://blog.letitialew.com/post/30425074101/repaints-and-reflows-manipulating-the-dom-responsibly

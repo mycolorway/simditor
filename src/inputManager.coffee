@@ -97,7 +97,7 @@ class InputManager extends SimpleModule
 
       @editor.body.find('pre:empty').append(@editor.util.phBr)
 
-      if !@editor.util.supportSelectionChange and @focused
+      if !@editor.util.support.onselectionchange and @focused
         @editor.trigger 'selectionchanged'
 
     @editor.on 'selectionchanged', (e) =>
@@ -173,7 +173,7 @@ class InputManager extends SimpleModule
     @editor.triggerHandler 'blur'
 
   _onMouseUp: (e) ->
-    unless @editor.util.supportSelectionChange
+    unless @editor.util.support.onselectionchange
       setTimeout =>
         @editor.trigger 'selectionchanged'
       , 0
@@ -223,7 +223,9 @@ class InputManager extends SimpleModule
       @editor.formatter.cleanNode $newBlockEl, true
       @editor.selection.restore()
 
-    @throttledTrigger 'valuechanged', ['typing']
+    if @editor.util.support.oninput
+      @throttledTrigger 'valuechanged', ['typing']
+
     null
 
   _onKeyPress: (e) ->
@@ -234,7 +236,7 @@ class InputManager extends SimpleModule
     if @editor.triggerHandler(e) == false
       return false
 
-    if !@editor.util.supportSelectionChange and e.which in @_arrowKeys
+    if !@editor.util.support.onselectionchange and e.which in @_arrowKeys
       @editor.trigger 'selectionchanged'
       return
 
@@ -395,17 +397,7 @@ class InputManager extends SimpleModule
     , 0
 
   _onInput: (e) ->
-    if @_typing
-      clearTimeout @_typing if @_typing != true
-      @_typing = setTimeout =>
-        @editor.trigger 'valuechanged', ['oninput']
-        @_typing = false
-      , 200
-    else
-      setTimeout =>
-        @editor.trigger 'valuechanged', ['oninput']
-      , 10
-      @_typing = true
+    @throttledTrigger 'valuechanged', ['composing']
 
   addKeystrokeHandler: (key, node, handler) ->
     @_keystrokeHandlers[key] = {} unless @_keystrokeHandlers[key]
