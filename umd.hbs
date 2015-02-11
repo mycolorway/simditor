@@ -1,0 +1,22 @@
+(function (root, factory) {
+  if (typeof define === 'function' && define.amd) {
+    // AMD. Register as an anonymous module unless amdModuleId is set
+    define({{#if amdModuleId}}'{{amdModuleId}}', {{/if}}[{{{amdDependencies.wrapped}}}], function ({{{dependencies}}}) {
+      return ({{#if objectToExport}}root['{{{objectToExport}}}'] = {{/if}}factory({{dependencies}}));
+    });
+  } else if (typeof exports === 'object') {
+    // Node. Does not work with strict CommonJS, but
+    // only CommonJS-like environments that support module.exports,
+    // like Node.
+    module.exports = factory({{{cjsDependencies.wrapped}}});
+  } else {
+    {{#if globalAlias}}root['{{{globalAlias}}}'] = {{else}}{{#if objectToExport}}root['{{{objectToExport}}}'] = {{/if}}{{/if}}factory({{{globalDependencies.normal}}});
+  }
+}(this, function ({{dependencies}}) {
+
+{{{code}}}
+{{#if objectToExport}}
+return {{{objectToExport}}};
+{{/if}}
+
+}));

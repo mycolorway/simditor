@@ -71,7 +71,7 @@ module.exports = (grunt) ->
     umd:
       all:
         src: 'lib/simditor.js'
-        template: 'umd'
+        template: 'umd.hbs'
         amdModuleId: 'simditor'
         objectToExport: 'Simditor'
         globalAlias: 'Simditor'

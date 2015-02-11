@@ -14,8 +14,7 @@
       defaultImage: 'assets/images/image.png',
       upload: location.search === '?upload' ? {
         url: '/upload'
-      } : false,
-      imageButton: 'upload'
+      } : false
     });
   });
 
