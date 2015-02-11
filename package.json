@@ -1,12 +1,13 @@
 {
   "name": "simditor",
-  "version": "2.0.6",
+  "version": "2.0.7",
   "description": "A simple online editor",
+  "keywords": "editor simditor",
   "repository": {
     "type": "git",
     "url": "git@github.com:mycolorway/simditor.git"
   },
-  "author": "farthinker",
+  "author": "farthinker <farthinker@gmail.com>",
   "license": "MIT",
   "bugs": {
     "url": "https://github.com/mycolorway/simditor/issues"
@@ -14,7 +15,8 @@
   "scripts": {
     "test": "grunt test --verbose"
   },
-  "homepage": "https://github.com/mycolorway/simditor",
+  "main": "lib/simditor.js",
+  "homepage": "http://simditor.tower.im",
   "devDependencies": {
     "grunt": "0.x",
     "grunt-contrib-sass": "0.x",
