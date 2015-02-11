@@ -299,6 +299,7 @@ class Util extends SimpleModule
       if delayedCallTimeout
         clearTimeout delayedCallTimeout
         delayedCallTimeout = null
+
     ->
       now = Date.now()
       previousCallTime ||= now
@@ -312,7 +313,7 @@ class Util extends SimpleModule
           previousCallTime = 0
           delayedCallTimeout = null
           result = func.apply null, args
-        , remaining
+        , wait
       else
         stopDelayedCall()
         previousCallTime = 0 if previousCallTime isnt now
