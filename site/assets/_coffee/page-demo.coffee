@@ -11,3 +11,4 @@ $ ->
     pasteImage: true
     defaultImage: 'assets/images/image.png'
     upload: if location.search == '?upload' then {url: '/upload'} else false
+    imageButton: 'upload'

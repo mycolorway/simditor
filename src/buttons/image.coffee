@@ -90,7 +90,6 @@ class ImageButton extends Button
 
   renderMenu: ->
     super()
-
     @_initUploader()
 
   _initUploader: ($uploadItem = @menuEl.find('.menu-item-upload-image')) ->
@@ -297,10 +296,6 @@ class ImageButton extends Button
     $img
 
   command: (src) ->
-    #if @uploadOnly
-      #@el.find('input[type=file]').trigger 'click'
-      #return
-
     $img = @createImage()
 
     @loadImage $img, src or @defaultImage, =>

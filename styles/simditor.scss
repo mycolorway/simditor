@@ -250,13 +250,16 @@ $simditor-button-height: 40px;
           }
 
           &.toolbar-item-image {
+            position: relative;
+            overflow: hidden;
+
             & > input[type=file] {
               position: absolute;
               right: 0px;
               top: 0px;
               opacity: 0;
-              height: 100%;
-              width: 28px;
+              font-size: 100px;
+              cursor: pointer;
             }
           }
         }
@@ -518,8 +521,8 @@ $simditor-button-height: 40px;
         right: 0px;
         top: 0px;
         opacity: 0;
-        font-size: 100px;
-        cursor: pointer;
+        height: 100%;
+        width: 28px;
       }
     }
   }
