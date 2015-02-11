@@ -208,22 +208,10 @@ class InputManager extends SimpleModule
 
     if e.which in @_modifierKeys or e.which in @_arrowKeys
       return
-
-    metaKey = @editor.util.metaKey e
-    $blockEl = @editor.util.closestBlockEl()
-
     # paste shortcut
-    return if metaKey and e.which == 86
+    return if @editor.util.metaKey(e) and e.which == 86
 
-    if @editor.util.browser.webkit and e.which == 8 and @editor.selection.rangeAtStartOf $blockEl
-      # fix the span bug in webkit browsers
-      return unless @focused
-      $newBlockEl = @editor.util.closestBlockEl()
-      @editor.selection.save()
-      @editor.formatter.cleanNode $newBlockEl, true
-      @editor.selection.restore()
-
-    if @editor.util.support.oninput
+    unless @editor.util.support.oninput
       @throttledTrigger 'valuechanged', ['typing']
 
     null

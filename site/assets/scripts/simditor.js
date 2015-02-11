@@ -763,7 +763,7 @@ InputManager = (function(_super) {
   };
 
   InputManager.prototype._onKeyDown = function(e) {
-    var $blockEl, $newBlockEl, metaKey, result, _base, _ref, _ref1;
+    var result, _base, _ref, _ref1;
     if (this.editor.triggerHandler(e) === false) {
       return false;
     }
@@ -797,21 +797,10 @@ InputManager = (function(_super) {
     if ((_ref = e.which, __indexOf.call(this._modifierKeys, _ref) >= 0) || (_ref1 = e.which, __indexOf.call(this._arrowKeys, _ref1) >= 0)) {
       return;
     }
-    metaKey = this.editor.util.metaKey(e);
-    $blockEl = this.editor.util.closestBlockEl();
-    if (metaKey && e.which === 86) {
+    if (this.editor.util.metaKey(e) && e.which === 86) {
       return;
     }
-    if (this.editor.util.browser.webkit && e.which === 8 && this.editor.selection.rangeAtStartOf($blockEl)) {
-      if (!this.focused) {
-        return;
-      }
-      $newBlockEl = this.editor.util.closestBlockEl();
-      this.editor.selection.save();
-      this.editor.formatter.cleanNode($newBlockEl, true);
-      this.editor.selection.restore();
-    }
-    if (this.editor.util.support.oninput) {
+    if (!this.editor.util.support.oninput) {
       this.throttledTrigger('valuechanged', ['typing']);
     }
     return null;
