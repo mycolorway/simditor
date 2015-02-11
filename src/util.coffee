@@ -52,18 +52,24 @@ class Util extends SimpleModule
       {}
   )()
 
-  # check whether the browser supports selectionchange event
-  supportSelectionChange: (->
-    onselectionchange = document.onselectionchange
-    if onselectionchange != undefined
-      try
-        document.onselectionchange = 0
-        return document.onselectionchange == null
-      catch e
-      finally
-        document.onselectionchange = onselectionchange
-    false
-  )()
+  support: do ->
+    onselectionchange: do ->
+      # NOTE: not working on firefox
+      onselectionchange = document.onselectionchange
+      if onselectionchange != undefined
+        try
+          document.onselectionchange = 0
+          return document.onselectionchange == null
+        catch e
+        finally
+          document.onselectionchange = onselectionchange
+      false
+    oninput: do ->
+      # NOTE: `oninput` event not working on contenteditable on IE
+      # `document` wouldn't return undefined of this event, for it's exists but not for contenteditable.
+      # So we have to block the whole browser for Simditor.
+      not /(msie|trident)/i.test(navigator.userAgent)
+
 
   # force element to reflow, about relow: 
   # http://blog.letitialew.com/post/30425074101/repaints-and-reflows-manipulating-the-dom-responsibly
@@ -285,3 +291,31 @@ class Util extends SimpleModule
     bb = new BlobBuilder()
     bb.append(arrayBuffer)
     bb.getBlob(mimeString)
+
+  throttle: (func, wait) ->
+    delayedCallTimeout = null
+    previousCallTime = 0
+    stopDelayedCall = ->
+      if delayedCallTimeout
+        clearTimeout delayedCallTimeout
+        delayedCallTimeout = null
+
+    ->
+      now = Date.now()
+      previousCallTime ||= now
+      remaining = wait - (now - previousCallTime)
+      result = null
+      if 0 < remaining < wait
+        previousCallTime = now
+        stopDelayedCall()
+        args = arguments
+        delayedCallTimeout = setTimeout ->
+          previousCallTime = 0
+          delayedCallTimeout = null
+          result = func.apply null, args
+        , wait
+      else
+        stopDelayedCall()
+        previousCallTime = 0 if previousCallTime isnt now
+        result = func.apply null, arguments
+      result

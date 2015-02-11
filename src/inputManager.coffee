@@ -13,6 +13,12 @@ class InputManager extends SimpleModule
   _init: ->
     @editor = @_module
 
+    @throttledTrigger = @editor.util.throttle (args...) =>
+      setTimeout =>
+        @editor.trigger args...
+      , 10
+    , 300
+
     @opts.pasteImage = 'inline' if @opts.pasteImage and typeof @opts.pasteImage != 'string'
 
     # handlers which will be called when specific key is pressed in specific node
@@ -91,7 +97,7 @@ class InputManager extends SimpleModule
 
       @editor.body.find('pre:empty').append(@editor.util.phBr)
 
-      if !@editor.util.supportSelectionChange and @focused
+      if !@editor.util.support.onselectionchange and @focused
         @editor.trigger 'selectionchanged'
 
     @editor.on 'selectionchanged', (e) =>
@@ -106,6 +112,7 @@ class InputManager extends SimpleModule
       .on('blur', $.proxy(@_onBlur, @))
       .on('paste', $.proxy(@_onPaste, @))
       .on('drop', $.proxy(@_onDrop, @))
+      .on 'input', $.proxy @_onInput, @
 
     if @editor.util.browser.firefox
       # fix firefox cmd+left/right bug
@@ -166,7 +173,7 @@ class InputManager extends SimpleModule
     @editor.triggerHandler 'blur'
 
   _onMouseUp: (e) ->
-    unless @editor.util.supportSelectionChange
+    unless @editor.util.support.onselectionchange
       setTimeout =>
         @editor.trigger 'selectionchanged'
       , 0
@@ -186,7 +193,7 @@ class InputManager extends SimpleModule
         return false
 
       @editor.util.traverseUp (node) =>
-        return unless node.nodeType == 1
+        return unless node.nodeType == document.ELEMENT_NODE
         handler = @_keystrokeHandlers[e.which]?[node.tagName.toLowerCase()]
         result = handler?(e, $(node))
 
@@ -201,35 +208,11 @@ class InputManager extends SimpleModule
 
     if e.which in @_modifierKeys or e.which in @_arrowKeys
       return
-
-    metaKey = @editor.util.metaKey e
-    $blockEl = @editor.util.closestBlockEl()
-
     # paste shortcut
-    return if metaKey and e.which == 86
+    return if @editor.util.metaKey(e) and e.which == 86
 
-    if @editor.util.browser.webkit and e.which == 8 and @editor.selection.rangeAtStartOf $blockEl
-      # fix the span bug in webkit browsers
-      setTimeout =>
-        return unless @focused
-        $newBlockEl = @editor.util.closestBlockEl()
-        @editor.selection.save()
-        @editor.formatter.cleanNode $newBlockEl, true
-        @editor.selection.restore()
-        @editor.trigger 'valuechanged'
-      , 10
-      @typing = true
-    else if @_typing
-      clearTimeout @_typing if @_typing != true
-      @_typing = setTimeout =>
-        @editor.trigger 'valuechanged'
-        @_typing = false
-      , 200
-    else
-      setTimeout =>
-        @editor.trigger 'valuechanged'
-      , 10
-      @_typing = true
+    unless @editor.util.support.oninput
+      @throttledTrigger 'valuechanged', ['typing']
 
     null
 
@@ -241,7 +224,7 @@ class InputManager extends SimpleModule
     if @editor.triggerHandler(e) == false
       return false
 
-    if !@editor.util.supportSelectionChange and e.which in @_arrowKeys
+    if !@editor.util.support.onselectionchange and e.which in @_arrowKeys
       @editor.trigger 'selectionchanged'
       return
 
@@ -401,6 +384,8 @@ class InputManager extends SimpleModule
       @editor.trigger 'valuechanged'
     , 0
 
+  _onInput: (e) ->
+    @throttledTrigger 'valuechanged', ['oninput']
 
   addKeystrokeHandler: (key, node, handler) ->
     @_keystrokeHandlers[key] = {} unless @_keystrokeHandlers[key]
