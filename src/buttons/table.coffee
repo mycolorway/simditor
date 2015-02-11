@@ -195,7 +195,7 @@ class TableButton extends Button
       </div>
       <div class="menu-edit-table">
         <ul>
-          <li><a tabindex="-1" unselectable="on" class="menu-item" href="javascript:;" data-param="deleteRow"><span>#{ @_t 'deleteRow' } ( Ctrl + Alt + → )</span></a></li>
+          <li><a tabindex="-1" unselectable="on" class="menu-item" href="javascript:;" data-param="deleteRow"><span>#{ @_t 'deleteRow' }</span></a></li>
           <li><a tabindex="-1" unselectable="on" class="menu-item" href="javascript:;" data-param="insertRowAbove"><span>#{ @_t 'insertRowAbove' } ( Ctrl + Alt + ↑ )</span></a></li>
           <li><a tabindex="-1" unselectable="on" class="menu-item" href="javascript:;" data-param="insertRowBelow"><span>#{ @_t 'insertRowBelow' } ( Ctrl + Alt + ↓ )</span></a></li>
           <li><span class="separator"></span></li>
