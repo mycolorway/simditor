@@ -53,19 +53,22 @@ class Util extends SimpleModule
   )()
 
   support: do ->
-    check = (featureName) ->
-      feature = document[featureName]
-      if feature != undefined
+    onselectionchange: do ->
+      # NOTE: not working on firefox
+      onselectionchange = document.onselectionchange
+      if onselectionchange != undefined
         try
-          document[featureName] = 0
-          return document[featureName] == null
+          document.onselectionchange = 0
+          return document.onselectionchange == null
         catch e
         finally
-          document["featureName"] = feature
+          document.onselectionchange = onselectionchange
       false
-    list = {}
-    list[feature] = check feature for feature in ["onselectionchange", "oninput"]
-    list
+    oninput: do ->
+      # NOTE: `oninput` event not working on contenteditable on IE
+      # `document` wouldn't return undefined of this event, for it's exists but not for contenteditable.
+      # So we have to block the whole browser for Simditor.
+      not /(msie|trident)/i.test(navigator.userAgent)
 
 
   # force element to reflow, about relow: 

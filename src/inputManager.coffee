@@ -385,7 +385,7 @@ class InputManager extends SimpleModule
     , 0
 
   _onInput: (e) ->
-    @throttledTrigger 'valuechanged', ['composing']
+    @throttledTrigger 'valuechanged', ['oninput']
 
   addKeystrokeHandler: (key, node, handler) ->
     @_keystrokeHandlers[key] = {} unless @_keystrokeHandlers[key]
