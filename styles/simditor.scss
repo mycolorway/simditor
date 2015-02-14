@@ -640,7 +640,7 @@ $simditor-button-height: 40px;
     font-size:13px;
     font-family: 'monaco', 'Consolas', "Liberation Mono", Courier, monospace;
     overflow-x: auto;
-    white-space: nowrap;
+    white-space: pre-wrap;
   }
 
   code {
