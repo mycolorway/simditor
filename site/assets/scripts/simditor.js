@@ -2294,7 +2294,7 @@ Simditor = (function(_super) {
         return;
       }
       range = document.createRange();
-      this.selection.setRangeAtStartOf($blockEl, range);
+      this.selection.setRangeAtEndOf($blockEl, range);
       return this.body.focus();
     }
   };

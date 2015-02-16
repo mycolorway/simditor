@@ -156,7 +156,7 @@ class Simditor extends SimpleModule
       $blockEl = @body.find('p, li, pre, h1, h2, h3, h4, td').first()
       return unless $blockEl.length > 0
       range = document.createRange()
-      @selection.setRangeAtStartOf $blockEl, range
+      @selection.setRangeAtEndOf $blockEl, range
       @body.focus()
 
   blur: ->
