@@ -181,7 +181,6 @@ class ImageButton extends Button
         catch e
           result =
             success: false
-            msg: @_t('uploadError')
 
       if result.success == false
         msg = result.msg || @_t('uploadFailed')
