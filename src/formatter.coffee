@@ -18,6 +18,13 @@ class Formatter extends SimpleModule
       h3: ['data-indent']
       h4: ['data-indent']
 
+    @_allowedTags = @editor.opts.formatter.allowedTags if @editor.opts.formatter and @editor.opts.formatter.allowedTags
+    $.extend(@_allowedAttributes, @editor.opts.formatter._allowedAttributes || {}) if @editor.opts.formatter
+
+
+
+    @safeFormatter = if typeof @editor.opts.safeFormatter == 'undefined' then true else @editor.opts.safeFormatter
+
     @editor.body.on 'click', 'a', (e) =>
       false
 
@@ -106,7 +113,7 @@ class Formatter extends SimpleModule
     contents = $node.contents()
     isDecoration = $node.is('[class^="simditor-"]')
 
-    if $node.is(@_allowedTags.join(',')) or isDecoration
+    if $node.is(@_allowedTags.join(',')) or isDecoration or !@safeFormatter
       # img inside a is not allowed
       if $node.is('a') and ($childImg = $node.find('img')).length > 0
         $node.replaceWith $childImg
@@ -118,10 +125,10 @@ class Formatter extends SimpleModule
         $node.remove()
 
       # Clean attributes except `src` `alt` on `img` tag and `href` `target` on `a` tag
-      unless isDecoration
+      unless isDecoration or !@safeFormatter
         allowedAttributes = @_allowedAttributes[$node[0].tagName.toLowerCase()]
         for attr in $.makeArray($node[0].attributes)
-            $node.removeAttr(attr.name) unless allowedAttributes? and attr.name in allowedAttributes
+            $node.removeAttr(attr.name) unless allowedAttributes? and attr.name in allowedAttributes or !@safeFormatter
     else if $node[0].nodeType == 1 and !$node.is ':empty'
       if $node.is('div, article, dl, header, footer, tr')
         $node.append('<br/>')
@@ -159,7 +166,7 @@ class Formatter extends SimpleModule
         $node = $(node)
         children = $node.contents()
         result += @clearHtml children if children.length > 0
-        if lineBreak and i < contents.length - 1 and $node.is 'br, p, div, li, tr, pre, address, artticle, aside, dl, figcaption, footer, h1, h2, h3, h4, header'
+        if lineBreak and i < contents.length - 1 and $node.is 'br, p, div, li, tr, pre, address, artticle, aside, dl, figcaption, footer, h1, h2, h3, h4, h5, h6, section, header'
           result += '\n'
 
     result
