@@ -2289,9 +2289,9 @@ Simditor = (function(_super) {
     if (this.inputManager.lastCaretPosition) {
       return this.undoManager.caretPosition(this.inputManager.lastCaretPosition);
     } else {
-      $blockEl = this.body.find('p, li, pre, h1, h2, h3, h4, td').first();
+      $blockEl = this.body.find('p').last();
       if (!($blockEl.length > 0)) {
-        return;
+        $blockEl = $('<p/>').append(this.util.phBr).appendTo(this.body);
       }
       range = document.createRange();
       this.selection.setRangeAtEndOf($blockEl, range);
