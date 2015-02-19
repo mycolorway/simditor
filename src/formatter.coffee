@@ -3,11 +3,15 @@ class Formatter extends SimpleModule
 
   @pluginName: 'Formatter'
 
+  opts:
+    allowedTags: null
+    allowedAttributes: null
+
   _init: ->
     @editor = @_module
 
-    @_allowedTags = ['br', 'a', 'img', 'b', 'strong', 'i', 'u', 'font', 'p', 'ul', 'ol', 'li', 'blockquote', 'pre', 'h1', 'h2', 'h3', 'h4', 'hr']
-    @_allowedAttributes =
+    @_allowedTags = @opts.allowedTags || ['br', 'a', 'img', 'b', 'strong', 'i', 'u', 'font', 'p', 'ul', 'ol', 'li', 'blockquote', 'pre', 'h1', 'h2', 'h3', 'h4', 'hr']
+    @_allowedAttributes = @opts.allowedAttributes ||
       img: ['src', 'alt', 'width', 'height', 'data-image-src', 'data-image-size', 'data-image-name', 'data-non-image']
       a: ['href', 'target']
       font: ['color']

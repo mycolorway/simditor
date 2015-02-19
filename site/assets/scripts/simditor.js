@@ -313,10 +313,15 @@ Formatter = (function(_super) {
 
   Formatter.pluginName = 'Formatter';
 
+  Formatter.prototype.opts = {
+    allowedTags: null,
+    allowedAttributes: null
+  };
+
   Formatter.prototype._init = function() {
     this.editor = this._module;
-    this._allowedTags = ['br', 'a', 'img', 'b', 'strong', 'i', 'u', 'font', 'p', 'ul', 'ol', 'li', 'blockquote', 'pre', 'h1', 'h2', 'h3', 'h4', 'hr'];
-    this._allowedAttributes = {
+    this._allowedTags = this.opts.allowedTags || ['br', 'a', 'img', 'b', 'strong', 'i', 'u', 'font', 'p', 'ul', 'ol', 'li', 'blockquote', 'pre', 'h1', 'h2', 'h3', 'h4', 'hr'];
+    this._allowedAttributes = this.opts.allowedAttributes || {
       img: ['src', 'alt', 'width', 'height', 'data-image-src', 'data-image-size', 'data-image-name', 'data-non-image'],
       a: ['href', 'target'],
       font: ['color'],
