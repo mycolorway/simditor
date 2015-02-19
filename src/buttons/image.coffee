@@ -174,6 +174,15 @@ class ImageButton extends Button
       $mask.remove() if $mask
       $img.removeData 'mask'
 
+      # in case mime type of response isnt correct
+      if typeof result != 'object'
+        try
+          result = $.parseJSON result
+        catch e
+          result =
+            success: false
+            msg: @_t('uploadError')
+
       if result.success == false
         msg = result.msg || @_t('uploadFailed')
         alert msg

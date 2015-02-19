@@ -3976,6 +3976,17 @@ ImageButton = (function(_super) {
           $mask.remove();
         }
         $img.removeData('mask');
+        if (typeof result !== 'object') {
+          try {
+            result = $.parseJSON(result);
+          } catch (_error) {
+            e = _error;
+            result = {
+              success: false,
+              msg: _this._t('uploadError')
+            };
+          }
+        }
         if (result.success === false) {
           msg = result.msg || _this._t('uploadFailed');
           alert(msg);
