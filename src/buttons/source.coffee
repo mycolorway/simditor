@@ -30,6 +30,7 @@ class SourceButton extends Button
     @editor.sourceMode = @editor.el.hasClass 'simditor-source-mode'
 
     if @editor.sourceMode
+      @editor.hidePopover()
       @editor.textarea.val @editor.util.formatHTML(@editor.textarea.val())
       @_resizeTextarea()
 

@@ -335,17 +335,16 @@ class Util extends SimpleModule
       match.isBlockNode = $.inArray(match[2], @blockNodes) > -1
       match.isStartTag = match[1] != '/' and match[3] != '/'
       match.isEndTag = match[1] == '/' or match[3] == '/'
-      cursor = if lastMatch then lastMatch.index + lastMatch[0].length else 0
 
-      if lastMatch and lastMatch.isStartTag and (str = html.substring(cursor, match.index)).length > 0
-        #result += if lastMatch and lastMatch.isBlockNode and lastMatch.isEndTag then repeatString(indentString, level) else ''
-        result += str
-        result +=  if match.isBlockNode and match.isStartTag then '\n' else ''
+      cursor = if lastMatch then lastMatch.index + lastMatch[0].length else 0
+      result += str if (str = html.substring(cursor, match.index)).length > 0 and $.trim(str)
 
       level -= 1 if match.isEndTag and !match.isStartTag
-      result += if match.isBlockNode and match.isStartTag then repeatString(indentString, level) else ''
+      if match.isBlockNode and match.isStartTag
+        result += '\n' if !(lastMatch and lastMatch.isBlockNode and lastMatch.isEndTag)
+        result += repeatString(indentString, level)
       result += match[0]
-      result +=  if match.isBlockNode and match.isEndTag then '\n' else ''
+      result += '\n' if match.isBlockNode and match.isEndTag
       level += 1 if match.isStartTag
 
       lastMatch = match
