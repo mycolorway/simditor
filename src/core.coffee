@@ -76,11 +76,9 @@ class Simditor extends SimpleModule
     @body = @wrapper.find '.simditor-body'
     @placeholderEl = @wrapper.find('.simditor-placeholder').append(@opts.placeholder)
 
-    @el.append(@textarea)
-      .data 'simditor', @
-    @textarea.data('simditor', @)
-      .hide()
-      .blur()
+    @el.data 'simditor', @
+    @wrapper.append(@textarea)
+    @textarea.data('simditor', @).blur()
     @body.attr 'tabindex', @textarea.attr('tabindex')
 
     if @util.os.mac
@@ -150,6 +148,10 @@ class Simditor extends SimpleModule
     val
 
   focus: ->
+    if @sourceMode
+      @textarea.focus()
+      return
+
     if @inputManager.lastCaretPosition
       @undoManager.caretPosition @inputManager.lastCaretPosition
     else
@@ -160,7 +162,10 @@ class Simditor extends SimpleModule
       @body.focus()
 
   blur: ->
-    @body.blur()
+    if @sourceMode
+      @textarea.blur()
+    else
+      @body.blur()
 
   hidePopover: ()->
     @el.find('.simditor-popover').each (i, popover) =>

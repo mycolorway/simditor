@@ -178,6 +178,3 @@ class Formatter extends SimpleModule
       $el.remove() if $el.is(':not(img, br, col, td, hr, [class^="simditor-"]):empty')
       $el.remove() if uselessP($el) #and uselessP($el.prev())
       $el.find(':not(img, br, col, td, hr, [class^="simditor-"]):empty').remove()
-
-
-

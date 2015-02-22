@@ -78,6 +78,7 @@ class Button extends SimpleModule
       false
 
     @editor.on 'blur', =>
+      return if @editor.sourceMode
       @setActive false
       @setDisabled false
 

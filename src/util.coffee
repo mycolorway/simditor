@@ -84,12 +84,14 @@ class Util extends SimpleModule
     $node = $(node)
     $node.is(':empty') or (!$node.text() and !$node.find(':not(br, span, div)').length)
 
+  blockNodes: ["div","p","ul","ol","li","blockquote","hr","pre","h1","h2","h3","h4","table"]
+
   isBlockNode: (node) ->
     node = $(node)[0]
     if !node or node.nodeType == 3
       return false
 
-    /^(div|p|ul|ol|li|blockquote|hr|pre|h1|h2|h3|h4|table)$/.test node.nodeName.toLowerCase()
+    new RegExp("^(#{@blockNodes.join('|')})$").test node.nodeName.toLowerCase()
 
   closestBlockEl: (node) ->
     unless node?
@@ -319,3 +321,33 @@ class Util extends SimpleModule
         previousCallTime = 0 if previousCallTime isnt now
         result = func.apply null, arguments
       result
+
+  formatHTML: (html) ->
+    re = /<(\/?)(.+?)(\/?)>/g
+    result = ''
+    level = 0
+    lastMatch = null
+    indentString = '  '
+    repeatString = (str, n) ->
+      new Array(n + 1).join(str)
+
+    while (match = re.exec(html)) != null
+      match.isBlockNode = $.inArray(match[2], @blockNodes) > -1
+      match.isStartTag = match[1] != '/' and match[3] != '/'
+      match.isEndTag = match[1] == '/' or match[3] == '/'
+
+      cursor = if lastMatch then lastMatch.index + lastMatch[0].length else 0
+      result += str if (str = html.substring(cursor, match.index)).length > 0 and $.trim(str)
+
+      level -= 1 if match.isEndTag and !match.isStartTag
+      if match.isBlockNode and match.isStartTag
+        result += '\n' if !(lastMatch and lastMatch.isBlockNode and lastMatch.isEndTag)
+        result += repeatString(indentString, level)
+      result += match[0]
+      result += '\n' if match.isBlockNode and match.isEndTag
+      level += 1 if match.isStartTag
+
+      lastMatch = match
+
+    $.trim result
+

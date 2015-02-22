@@ -478,9 +478,6 @@ a:hover, a:active {
 section#page-demo {
   border-top: none;
 }
-section#page-demo #txt-content {
-  display: none;
-}
 section#page-demo .simditor {
   box-shadow: 0 8px 40px rgba(0, 0, 0, 0.15);
 }

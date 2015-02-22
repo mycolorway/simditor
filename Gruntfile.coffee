@@ -21,6 +21,7 @@ module.exports = (grunt) ->
             'src/i18n.coffee',
             'src/buttons/button.coffee',
             'src/buttons/popover.coffee',
+            'src/buttons/source.coffee',
             'src/buttons/title.coffee',
             'src/buttons/bold.coffee',
             'src/buttons/italic.coffee',
@@ -164,7 +165,7 @@ module.exports = (grunt) ->
         tasks: ['coffee:simditor', 'umd', 'copy:scripts', 'jekyll']
       siteStyles:
         files: ['site/assets/_sass/*.scss']
-        tasks: ['sass:site', 'shell']
+        tasks: ['sass:site', 'jekyll']
       siteScripts:
         files: ['site/assets/_coffee/*.coffee']
         tasks: ['coffee:site', 'jekyll']
