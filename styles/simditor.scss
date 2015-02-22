@@ -6,6 +6,31 @@ $simditor-button-height: 40px;
   position: relative;
   border: 1px solid #c9d8db;
 
+  textarea {
+    display: none;
+    width: 100%;
+    box-sizing: border-box;
+    font-family: monaco;
+    font-size: 16px;
+    line-height: 1.6;
+    border: none;
+    padding: 22px 15px 40px;
+    min-height: 300px;
+    outline: none;
+    background: transparent;
+    resize: none;
+  }
+
+  &.simditor-source-mode {
+    textarea {
+      display: block;
+    }
+
+    .simditor-body {
+      display: none;
+    }
+  }
+
   .simditor-wrapper {
     position: relative;
     background: #ffffff;
@@ -157,7 +182,7 @@ $simditor-button-height: 40px;
         & > .toolbar-item {
           display: block;
           float: left;
-          width: 50px;
+          width: 46px;
           height: $simditor-button-height;
           outline: none;
           color: #333333;
@@ -197,7 +222,7 @@ $simditor-button-height: 40px;
 
           &.toolbar-item-title {
             span:before {
-              content: "T";
+              content: "H";
               font-size: 19px;
               font-weight: bold;
               font-family: 'Times New Roman';

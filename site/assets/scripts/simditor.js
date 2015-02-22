@@ -1650,12 +1650,14 @@ Util = (function(_super) {
     return $node.is(':empty') || (!$node.text() && !$node.find(':not(br, span, div)').length);
   };
 
+  Util.prototype.blockNodes = ["div", "p", "ul", "ol", "li", "blockquote", "hr", "pre", "h1", "h2", "h3", "h4", "table"];
+
   Util.prototype.isBlockNode = function(node) {
     node = $(node)[0];
     if (!node || node.nodeType === 3) {
       return false;
     }
-    return /^(div|p|ul|ol|li|blockquote|hr|pre|h1|h2|h3|h4|table)$/.test(node.nodeName.toLowerCase());
+    return new RegExp("^(" + (this.blockNodes.join('|')) + ")$").test(node.nodeName.toLowerCase());
   };
 
   Util.prototype.closestBlockEl = function(node) {
@@ -1933,6 +1935,39 @@ Util = (function(_super) {
     };
   };
 
+  Util.prototype.formatHTML = function(html) {
+    var cursor, indentString, lastMatch, level, match, re, repeatString, result, str;
+    re = /<(\/?)(.+?)(\/?)>/g;
+    result = '';
+    level = 0;
+    lastMatch = null;
+    indentString = '  ';
+    repeatString = function(str, n) {
+      return new Array(n + 1).join(str);
+    };
+    while ((match = re.exec(html)) !== null) {
+      match.isBlockNode = $.inArray(match[2], this.blockNodes) > -1;
+      match.isStartTag = match[1] !== '/' && match[3] !== '/';
+      match.isEndTag = match[1] === '/' || match[3] === '/';
+      cursor = lastMatch ? lastMatch.index + lastMatch[0].length : 0;
+      if (lastMatch && lastMatch.isStartTag && (str = html.substring(cursor, match.index)).length > 0) {
+        result += str;
+        result += match.isBlockNode && match.isStartTag ? '\n' : '';
+      }
+      if (match.isEndTag && !match.isStartTag) {
+        level -= 1;
+      }
+      result += match.isBlockNode && match.isStartTag ? repeatString(indentString, level) : '';
+      result += match[0];
+      result += match.isBlockNode && match.isEndTag ? '\n' : '';
+      if (match.isStartTag) {
+        level += 1;
+      }
+      lastMatch = match;
+    }
+    return $.trim(result);
+  };
+
   return Util;
 
 })(SimpleModule);
@@ -2208,8 +2243,9 @@ Simditor = (function(_super) {
     this.wrapper = this.el.find('.simditor-wrapper');
     this.body = this.wrapper.find('.simditor-body');
     this.placeholderEl = this.wrapper.find('.simditor-placeholder').append(this.opts.placeholder);
-    this.el.append(this.textarea).data('simditor', this);
-    this.textarea.data('simditor', this).hide().blur();
+    this.el.data('simditor', this);
+    this.wrapper.append(this.textarea);
+    this.textarea.data('simditor', this).blur();
     this.body.attr('tabindex', this.textarea.attr('tabindex'));
     if (this.util.os.mac) {
       this.el.addClass('simditor-mac');
@@ -2286,6 +2322,10 @@ Simditor = (function(_super) {
 
   Simditor.prototype.focus = function() {
     var $blockEl, range;
+    if (this.sourceMode) {
+      this.textarea.focus();
+      return;
+    }
     if (this.inputManager.lastCaretPosition) {
       return this.undoManager.caretPosition(this.inputManager.lastCaretPosition);
     } else {
@@ -2300,7 +2340,11 @@ Simditor = (function(_super) {
   };
 
   Simditor.prototype.blur = function() {
-    return this.body.blur();
+    if (this.sourceMode) {
+      return this.textarea.blur();
+    } else {
+      return this.body.blur();
+    }
   };
 
   Simditor.prototype.hidePopover = function() {
@@ -2366,6 +2410,7 @@ Simditor.i18n = {
     'insertColumnRight': '在右边插入列',
     'deleteTable': '删除表格',
     'title': '标题',
+    'source': 'HTML源代码',
     'normalText': '普通文本',
     'underline': '下划线文字'
   }
@@ -2465,6 +2510,9 @@ Button = (function(_super) {
     })(this));
     this.editor.on('blur', (function(_this) {
       return function() {
+        if (_this.editor.sourceMode) {
+          return;
+        }
         _this.setActive(false);
         return _this.setDisabled(false);
       };
@@ -2696,6 +2744,79 @@ Popover = (function(_super) {
 })(SimpleModule);
 
 Simditor.Popover = Popover;
+
+var SourceButton,
+  __hasProp = {}.hasOwnProperty,
+  __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
+
+SourceButton = (function(_super) {
+  __extends(SourceButton, _super);
+
+  function SourceButton() {
+    return SourceButton.__super__.constructor.apply(this, arguments);
+  }
+
+  SourceButton.prototype.name = 'source';
+
+  SourceButton.prototype.icon = 'html5';
+
+  SourceButton.prototype.needFocus = false;
+
+  SourceButton.prototype._init = function() {
+    this.title = SourceButton.__super__._init.call(this);
+    this.editor.textarea.on('focus', (function(_this) {
+      return function(e) {
+        return _this.editor.el.addClass('focus').removeClass('error');
+      };
+    })(this));
+    this.editor.textarea.on('blur', (function(_this) {
+      return function(e) {
+        _this.editor.el.removeClass('focus');
+        return _this.editor.setValue(_this.editor.textarea.val());
+      };
+    })(this));
+    return this.editor.textarea.on('input', (function(_this) {
+      return function(e) {
+        return _this._resizeTextarea();
+      };
+    })(this));
+  };
+
+  SourceButton.prototype.status = function($node) {
+    return true;
+  };
+
+  SourceButton.prototype.command = function() {
+    var button, _i, _len, _ref;
+    this.editor.blur();
+    this.editor.el.toggleClass('simditor-source-mode');
+    this.editor.sourceMode = this.editor.el.hasClass('simditor-source-mode');
+    if (this.editor.sourceMode) {
+      this.editor.textarea.val(this.editor.util.formatHTML(this.editor.textarea.val()));
+      this._resizeTextarea();
+    }
+    _ref = this.editor.toolbar.buttons;
+    for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+      button = _ref[_i];
+      if (button.name === 'source') {
+        button.setActive(this.editor.sourceMode);
+      } else {
+        button.setDisabled(this.editor.sourceMode);
+      }
+    }
+    return null;
+  };
+
+  SourceButton.prototype._resizeTextarea = function() {
+    this._textareaPadding || (this._textareaPadding = this.editor.textarea.innerHeight() - this.editor.textarea.height());
+    return this.editor.textarea.height(0).height(this.editor.textarea[0].scrollHeight - this._textareaPadding);
+  };
+
+  return SourceButton;
+
+})(Button);
+
+Simditor.Toolbar.addButton(SourceButton);
 
 var TitleButton,
   __hasProp = {}.hasOwnProperty,
@@ -3982,8 +4103,7 @@ ImageButton = (function(_super) {
           } catch (_error) {
             e = _error;
             result = {
-              success: false,
-              msg: _this._t('uploadError')
+              success: false
             };
           }
         }
