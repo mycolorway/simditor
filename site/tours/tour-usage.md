@@ -27,6 +27,7 @@ root: ../
 * [hotkeys.js](https://github.com/mycolorway/simple-hotkeys) 用于绑定快捷键，Simditor 依赖此库。
 * [uploader.js](https://github.com/mycolorway/simple-uploader) 是一个与 UI 无关的上传逻辑，如果你的项目不需要上传附件，那么可以不引用这个文件。
 
+另外，还需要将fonts文件夹里面的web font文件（simditor.eot和simditor.woff）拷贝到跟样式文件夹同级的`fonts`文件夹（font文件的引用路径定义在fonticon.scss里面），保证编辑器的按钮图标能正确显示。
 
 ###第二步，初始化配置
 
