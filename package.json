@@ -17,6 +17,12 @@
   },
   "main": "lib/simditor.js",
   "homepage": "http://simditor.tower.im",
+  "dependencies": {
+    "jquery": "2.x",
+    "simplemodule": "2.x",
+    "simple-uploader": "2.x",
+    "simple-hotkeys": "1.x"
+  },
   "devDependencies": {
     "grunt": "0.x",
     "grunt-contrib-sass": "0.x",
