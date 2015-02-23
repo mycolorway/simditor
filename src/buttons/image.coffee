@@ -147,28 +147,32 @@ class ImageButton extends Button
             @popover.srcEl.val(@_t('uploading'))
               .prop('disabled', true)
 
-    @editor.uploader.on 'uploadprogress', (e, file, loaded, total) =>
+    @editor.uploader.on 'uploadprogress', $.proxy @editor.util.throttle((e, file, loaded, total) ->
       return unless file.inline
+
+      $mask = file.img.data('mask')
+      return unless $mask
+
+      $img = $mask.data('img')
+      unless $img.hasClass('uploading') and $img.parent().length > 0
+        $mask.remove()
+        return
 
       percent = loaded / total
       percent = (percent * 100).toFixed(0)
       percent = 99 if percent > 99
-
-      $mask = file.img.data('mask')
-      if $mask
-        $img = $mask.data('img')
-        $txt = $mask.find('span')
-        if $img and $img.parent().length > 0 and percent != $txt.text()
-          $txt.text(percent)
-        else
-          $mask.remove()
+      $mask.find('.progress').height "#{100 - percent}%"
+    , 500), @
 
     @editor.uploader.on 'uploadsuccess', (e, file, result) =>
       return unless file.inline
 
       $img = file.img
+      return unless $img.hasClass('uploading') and $img.parent().length > 0
+
       $img.removeData 'file'
       $img.removeClass 'uploading'
+        .removeClass 'loading'
 
       $mask = $img.data('mask')
       $mask.remove() if $mask
@@ -212,8 +216,11 @@ class ImageButton extends Button
         alert msg
 
       $img = file.img
+      return unless $img.hasClass('uploading') and $img.parent().length > 0
+
       $img.removeData 'file'
       $img.removeClass 'uploading'
+        .removeClass 'loading'
 
       $mask = $img.data('mask')
       $mask.remove() if $mask
@@ -234,20 +241,30 @@ class ImageButton extends Button
     return true if @disabled
 
   loadImage: ($img, src, callback) ->
+    positionMask = =>
+      imgOffset = $img.offset()
+      wrapperOffset = @editor.wrapper.offset()
+      $mask.css({
+        top: imgOffset.top - wrapperOffset.top
+        left: imgOffset.left - wrapperOffset.left
+        width: $img.width(),
+        height: $img.height()
+      }).show()
+
+    $img.addClass('loading')
     $mask = $img.data('mask')
     if !$mask
-      $mask = $('<div class="simditor-image-loading"><span></span></div>')
+      $mask = $('<div class="simditor-image-loading"><div class="progress"></div></div>')
         .hide()
         .appendTo(@editor.wrapper)
-      $mask.addClass('uploading') if $img.hasClass('uploading')
+      positionMask()
       $img.data('mask', $mask)
       $mask.data('img', $img)
 
     img = new Image()
 
     img.onload = =>
-      # in case upload faster than image preview (usually happens in dev)
-      return if $mask.hasClass('uploading') and !$img.hasClass('uploading')
+      return if !$img.hasClass('loading') and !$img.hasClass('uploading')
 
       width = img.width
       height = img.height
@@ -255,17 +272,11 @@ class ImageButton extends Button
       $img.attr
         src: src,
         'data-image-size': width + ',' + height
+      .removeClass('loading')
 
-      if $img.hasClass 'uploading' # img being uploaded
+      if $img.hasClass('uploading') # img being uploaded
         @editor.util.reflow @editor.body
-        wrapperOffset = @editor.wrapper.offset()
-        imgOffset = $img.offset()
-        $mask.css({
-          top: imgOffset.top - wrapperOffset.top,
-          left: imgOffset.left - wrapperOffset.left,
-          width: $img.width(),
-          height: $img.height()
-        }).show()
+        positionMask()
       else
         $mask.remove()
         $img.removeData('mask')
@@ -276,6 +287,7 @@ class ImageButton extends Button
       callback(false)
       $mask.remove()
       $img.removeData('mask')
+        .removeClass('loading')
 
     img.src = src
 
@@ -306,7 +318,7 @@ class ImageButton extends Button
   command: (src) ->
     $img = @createImage()
 
-    @loadImage $img, src or @defaultImage, =>
+    @loadImage $img, src || @defaultImage, =>
       @editor.trigger 'valuechanged'
       @editor.util.reflow $img
       $img.click()
@@ -329,7 +341,7 @@ class ImagePopover extends Popover
           <label>#{ @_t 'imageUrl' }</label>
           <input class="image-src" type="text" tabindex="1" />
           <a class="btn-upload" href="javascript:;" title="#{ @_t 'uploadImage' }" tabindex="-1">
-            <span class="fa fa-upload"></span>
+            <span class="simditor-icon simditor-icon-upload"></span>
           </a>
         </div>
         <div class="settings-field">
@@ -338,7 +350,7 @@ class ImagePopover extends Popover
           <span class="times">×</span>
           <input class="image-size" id="image-height" type="text" tabindex="3" />
           <a class="btn-restore" href="javascript:;" title="#{ @_t 'restoreImageSize' }" tabindex="-1">
-            <span class="fa fa-reply"></span>
+            <span class="simditor-icon simditor-icon-undo"></span>
           </a>
         </div>
       </div>

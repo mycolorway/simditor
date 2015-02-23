@@ -1,5 +1,7 @@
 @charset "UTF-8";
 
+@import 'fonticon';
+
 $simditor-button-height: 40px;
 
 .simditor {
@@ -61,30 +63,18 @@ $simditor-button-height: 40px;
     .simditor-image-loading {
       width: 100%;
       height: 100%;
-      background: rgba(0,0,0,0.4);
       position: absolute;
       top: 0;
       left: 0;
       z-index: 2;
 
-      span {
-        width: 30px;
-        height: 30px;
-        background: #ffffff url(../images/loading-upload.gif) no-repeat center center;
-        border-radius: 30px;
+      .progress {
+        width: 100%;
+        height: 100%;
+        background: rgba(0,0,0,0.4);
         position: absolute;
-        top: 50%;
-        left: 50%;
-        margin: -15px 0 0 -15px;
-        box-shadow: 0 0 8px rgba(0,0,0,0.4);
-      }
-
-      &.uploading span {
-        background: #ffffff;
-        color: #333333;
-        font-size: 14px;
-        line-height: 30px;
-        text-align: center;
+        bottom: 0;
+        left: 0;
       }
     }
   }
@@ -724,5 +714,3 @@ $simditor-button-height: 40px;
     }
   }
 }
-
-

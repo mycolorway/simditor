@@ -1,3 +1,108 @@
+@font-face {
+  font-family: 'Simditor';
+  src: url("../fonts/simditor.eot");
+  src: url("../fonts/simditor.eot?#iefix") format("embedded-opentype"), url("../fonts/simditor.woff") format("woff");
+  font-weight: normal;
+  font-style: normal;
+}
+.simditor-icon {
+  display: inline-block;
+  font: normal normal normal 14px/1 'Simditor';
+  font-size: inherit;
+  text-rendering: auto;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  transform: translate(0, 0);
+}
+
+.simditor-icon-code:before {
+  content: '\f000';
+}
+
+.simditor-icon-bold:before {
+  content: '\f001';
+}
+
+.simditor-icon-italic:before {
+  content: '\f002';
+}
+
+.simditor-icon-underline:before {
+  content: '\f003';
+}
+
+.simditor-icon-font:before {
+  content: '\f004';
+}
+
+.simditor-icon-times:before {
+  content: '\f005';
+}
+
+.simditor-icon-strikethrough:before {
+  content: '\f006';
+}
+
+.simditor-icon-list-ol:before {
+  content: '\f007';
+}
+
+.simditor-icon-list-ul:before {
+  content: '\f008';
+}
+
+.simditor-icon-quote-left:before {
+  content: '\f009';
+}
+
+.simditor-icon-table:before {
+  content: '\f00a';
+}
+
+.simditor-icon-link:before {
+  content: '\f00b';
+}
+
+.simditor-icon-picture-o:before {
+  content: '\f00c';
+}
+
+.simditor-icon-minus:before {
+  content: '\f00d';
+}
+
+.simditor-icon-indent:before {
+  content: '\f00e';
+}
+
+.simditor-icon-outdent:before {
+  content: '\f00f';
+}
+
+.simditor-icon-html5:before {
+  content: '\f010';
+}
+
+.simditor-icon-chain-broken:before {
+  content: '\f011';
+}
+
+.simditor-icon-caret-down:before {
+  content: '\f012';
+}
+
+.simditor-icon-caret-right:before {
+  content: '\f013';
+}
+
+.simditor-icon-upload:before {
+  content: '\f014';
+}
+
+.simditor-icon-undo:before {
+  content: '\f015';
+}
+
 .simditor {
   position: relative;
   border: 1px solid #c9d8db;
@@ -48,29 +153,18 @@
 .simditor .simditor-wrapper .simditor-image-loading {
   width: 100%;
   height: 100%;
-  background: rgba(0, 0, 0, 0.4);
   position: absolute;
   top: 0;
   left: 0;
   z-index: 2;
 }
-.simditor .simditor-wrapper .simditor-image-loading span {
-  width: 30px;
-  height: 30px;
-  background: #ffffff url(../images/loading-upload.gif) no-repeat center center;
-  border-radius: 30px;
+.simditor .simditor-wrapper .simditor-image-loading .progress {
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.4);
   position: absolute;
-  top: 50%;
-  left: 50%;
-  margin: -15px 0 0 -15px;
-  box-shadow: 0 0 8px rgba(0, 0, 0, 0.4);
-}
-.simditor .simditor-wrapper .simditor-image-loading.uploading span {
-  background: #ffffff;
-  color: #333333;
-  font-size: 14px;
-  line-height: 30px;
-  text-align: center;
+  bottom: 0;
+  left: 0;
 }
 .simditor .simditor-body {
   padding: 22px 15px 40px;

@@ -23,11 +23,11 @@ root: ../
 其中，
 
 * Simditor基于 [jQuery](http://jquery.com) 开发，`jquery.js` 是必需的；
-* [font-awesome.css](http://fontawesome.io/) 是一个图片字体 icon 库，Simditor 基于它来定义工具栏的按钮样式。为了让 icon 能够正常显示，需要将 font 文件（fontawesome-webfont.xxx）放到正确的路径里：`../fonts/`（如果把 font-awsome.css 放在 `styles` 文件夹，那么就应该把 font 文件放在跟 `styles` 同级的 `fonts` 文件夹）。另外，如果想自定义工具栏按钮的样式就可以不必引用 `font-awesome.css`；
 * [module.js](https://github.com/mycolorway/simple-module) 是彩程内部使用的 CoffeeScript 组件抽象类，Simditor 基于这个类开发；
 * [hotkeys.js](https://github.com/mycolorway/simple-hotkeys) 用于绑定快捷键，Simditor 依赖此库。
 * [uploader.js](https://github.com/mycolorway/simple-uploader) 是一个与 UI 无关的上传逻辑，如果你的项目不需要上传附件，那么可以不引用这个文件。
 
+另外，还需要将fonts文件夹里面的web font文件（simditor.eot和simditor.woff）拷贝到跟样式文件夹同级的`fonts`文件夹（font文件的引用路径定义在fonticon.scss里面），保证编辑器的按钮图标能正确显示。
 
 ###第二步，初始化配置
 
@@ -65,7 +65,7 @@ var editor = new Simditor({
 
 `simditor.css` 是通过 [Sass](http://sass-lang.com/) 自动生成的代码，所以推荐大家修改 `simditor.scss`，然后再重新生成css代码。
 
-`.editor-style` 选择符下面的样式，是 Simditor 输出 HTML 的中文排版样式，大家可以根据自己项目的情况进行调整。另外，如果不想使用 [font-awesome.css](http://fontawesome.io/) 来实现工具栏按钮的 icon，可以将 `font-awesome.css` 去掉，然后增加 `.toolbar-item-[button name]` 选择符来自定义按钮样式。
+`.editor-style` 选择符下面的样式，是 Simditor 输出 HTML 的中文排版样式，大家可以根据自己项目的情况进行调整。
 
 有的项目有一些特殊的交互需求，例如自动保存功能或者 @ 人的功能，我们可以基于 [Simple Module](https://github.com/mycolorway/simple-module) 来给 Simditor 编写扩展。关于编写扩展更详细的介绍请参考教程[《编写扩展》]({{ page.root }}tours/tour-plugin.html)。
 

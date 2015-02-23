@@ -7,6 +7,7 @@ module.exports = (grunt) ->
     coffee:
       simditor:
         options:
+          join: true
           bare: true
         files:
           'lib/simditor.js': [
@@ -89,19 +90,16 @@ module.exports = (grunt) ->
         files: [{
           src: 'vendor/bower/jquery/dist/jquery.min.js',
           dest: 'site/assets/scripts/jquery.min.js'
-        }, {
-          src: 'vendor/bower/fontawesome/css/font-awesome.css',
-          dest: 'site/assets/styles/font-awesome.css'
-        },{
-          expand: true,
-          flatten: true,
-          src: 'vendor/bower/fontawesome/fonts/*',
-          dest: 'site/assets/fonts/'
         }]
       styles:
         files: [{
           src: 'styles/simditor.css',
           dest: 'site/assets/styles/simditor.css'
+        }, {
+          expand: true,
+          flatten: true,
+          src: 'fonts/*',
+          dest: 'site/assets/fonts/'
         }]
       scripts:
         files: [{
@@ -141,19 +139,13 @@ module.exports = (grunt) ->
           src: 'styles/*',
           dest: 'package/styles/'
         }, {
-          src: 'vendor/bower/fontawesome/css/font-awesome.css',
-          dest: 'package/styles/font-awesome.css'
-        }, {
           expand: true,
           flatten: true
-          src: 'vendor/bower/fontawesome/fonts/*',
+          src: 'fonts/*',
           dest: 'package/fonts/'
         }, {
           src: 'site/assets/images/image.png',
           dest: 'package/images/image.png'
-        }, {
-          src: 'site/assets/images/loading-upload.gif',
-          dest: 'package/images/loading-upload.gif'
         }]
 
     watch:
@@ -217,7 +209,6 @@ module.exports = (grunt) ->
         options:
           outfile: 'spec/index.html'
           styles: [
-            'vendor/bower/fontawesome/css/font-awesome.css'
             'styles/simditor.css'
           ]
           specs: 'spec/*.js'

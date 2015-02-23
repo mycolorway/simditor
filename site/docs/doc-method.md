@@ -21,7 +21,7 @@ editor.setValue 'hello world'
 <dl class="doc-methods">
   {% for item in site.data.methods %}
     <dt id="anchor-{{ item.name }}">
-      <!--<span class="icon fa fa-caret-down"></span>-->
+      <!--<span class="icon simditor-icon simditor-icon-caret-down"></span>-->
       <span class="name">{{ item.name }}</span>
       <span class="params">
         {% for param in item.params %}

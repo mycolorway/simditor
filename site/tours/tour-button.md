@@ -29,7 +29,7 @@ Simditor 的按钮都继承自 [Button 类](https://github.com/mycolorway/simdit
 Button 类有这些可以设置的属性：
 
 * `name` 按钮的名称，用于识别按钮，构造按钮的 class `toolbar-item-[name]`；
-* `icon` 按钮icon的名称，对应FontAwesome的class名称 `fa-[icon]`；
+* `icon` 按钮icon的名称，对应fonticon的class名称 `icon-[icon]`；
 * `title` 按钮的title，鼠标悬停会显示的提示文本；
 * `htmlTag` 按钮对应的 html 标签名称，用于识别按钮的激活状态（例如加粗按钮）；
 * `disableTag` 在指定的 html 标签中禁用按钮（例如在代码标签中禁用链接按钮）；

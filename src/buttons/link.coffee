@@ -87,7 +87,7 @@ class LinkPopover extends Popover
         <div class="settings-field">
           <label>#{ @_t 'text' }</label>
           <input class="link-text" type="text"/>
-          <a class="btn-unlink" href="javascript:;" title="#{ @_t 'removeLink' }" tabindex="-1"><span class="fa fa-unlink"></span></a>
+          <a class="btn-unlink" href="javascript:;" title="#{ @_t 'removeLink' }" tabindex="-1"><span class="simditor-icon simditor-icon-unlink"></span></a>
         </div>
         <div class="settings-field">
           <label>#{ @_t 'linkUrl' }</label>

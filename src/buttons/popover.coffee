@@ -87,5 +87,10 @@ class Popover extends SimpleModule
     @editor.off('.linkpopover')
     @el.remove()
 
+  _t: (args...) ->
+    result = super args...
+    result = @button._t args... unless result
+    result
+
 
 Simditor.Popover = Popover
