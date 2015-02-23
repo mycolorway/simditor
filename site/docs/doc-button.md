@@ -34,7 +34,7 @@ Simditor.Toolbar.addButton(TitleButton)
 <dl class="doc-button-properties">
   {% for item in site.data.button.properties %}
     <dt id="anchor-{{ item.name }}">
-      <!--<span class="icon fa fa-caret-down"></span>-->
+      <!--<span class="icon simditor-icon simditor-icon-caret-down"></span>-->
       <span class="name">{{ item.name }}</span>
       <span class="type">{{ item.type }}</span>
       <span class="default">默认值: {{ item.default}}</span>
@@ -50,7 +50,7 @@ Simditor.Toolbar.addButton(TitleButton)
 <dl class="doc-button-methods">
   {% for item in site.data.button.methods %}
     <dt id="anchor-{{ item.name }}">
-      <!--<span class="icon fa fa-caret-down"></span>-->
+      <!--<span class="icon simditor-icon simditor-icon-caret-down"></span>-->
       <span class="name">{{ item.name }}</span>
       <span class="params">
         {% for param in item.params %}

@@ -29,7 +29,7 @@ editor = new Simditor
 <dl class="doc-configs">
   {% for item in site.data.configs %}
     <dt id="anchor-{{ item.name }}">
-      <!--<span class="icon fa fa-caret-down"></span>-->
+      <!--<span class="icon simditor-icon simditor-icon-caret-down"></span>-->
       <span class="name">{{ item.name }}</span>
       <span class="type">{{ item.type }}</span>
       <span class="default">默认值: {{ item.default }}</span>

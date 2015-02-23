@@ -129,20 +129,7 @@ class Util extends SimpleModule
 
 
   furthestBlockEl: (node) ->
-    @furthestNode(node, @isBlockNode)
-    #unless node?
-      #range = @editor.selection.getRange()
-      #node = range?.commonAncestorContainer
-
-    #$node = $(node)
-
-    #return null unless $node.length
-
-    #blockEl = $node.parentsUntil(@editor.body).addBack()
-    #blockEl = blockEl.filter (i) =>
-      #@isBlockNode blockEl.eq(i)
-
-    #if blockEl.length then blockEl.first() else null
+    @furthestNode(node, $.proxy(@isBlockNode, @))
 
   getNodeLength: (node) ->
     switch node.nodeType

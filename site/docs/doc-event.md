@@ -22,7 +22,7 @@ editor.on 'valuechanged', (e, src) ->
 <dl class="doc-events">
   {% for item in site.data.events %}
     <dt id="anchor-{{ item.name }}">
-      <!--<span class="icon fa fa-caret-down"></span>-->
+      <!--<span class="icon simditor-icon simditor-icon-caret-down"></span>-->
       <span class="name">{{ item.name }}</span>
       <span class="params">
         {% for param in item.params %}

@@ -17,13 +17,13 @@ properties:
     type: "String"
     default: "''"
     description: |
-      按钮显示的图标，Simditor 使用 [Font Awesome](http://fontawesome.io/) 来渲染按钮图标，将会使用 `fa-[icon]` 作为按钮的图标，如果该属性为空则显示按钮的 **text** 属性。
+      按钮显示的图标，Simditor 使用 [Fonticons](http://www.fonticons.com/) 的服务来管理按钮图标，如果该属性为空则显示按钮的 **text** 属性。
 
       ```coffee
-      # 按钮图标为 .fa-bell
+      # 按钮图标为 .icon-bold
       class HelloButton extends SimditorButton
         name: 'hello'
-        icon: 'bell'
+        icon: 'bold'
       ```
 
   - name: "title"

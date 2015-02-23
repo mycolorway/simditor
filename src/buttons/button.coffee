@@ -98,17 +98,17 @@ class Button extends SimpleModule
     @el = @wrapper.find 'a.toolbar-item'
 
     @el.attr('title', @title)
-      .addClass('toolbar-item-' + @name)
+      .addClass("toolbar-item-#{@name}")
       .data('button', @)
 
     @el.find('span')
-      .addClass(if @icon then 'fa fa-' + @icon else '')
+      .addClass(if @icon then "simditor-icon simditor-icon-#{@icon}" else '')
       .text(@text)
 
     return unless @menu
 
     @menuWrapper = $(@_tpl.menuWrapper).appendTo(@wrapper)
-    @menuWrapper.addClass 'toolbar-menu-' + @name
+    @menuWrapper.addClass "toolbar-menu-#{@name}"
     @renderMenu()
 
   renderMenu: ->
