@@ -7,7 +7,7 @@
       $versionEl = $(this).closest('.version');
       expanded = $versionEl.hasClass('expand');
       $versionEl.toggleClass('expand', !expanded);
-      return $versionEl.find('.icon').toggleClass('fa-caret-down', !expanded).toggleClass('fa-caret-right', expanded);
+      return $versionEl.find('.icon').toggleClass('simditor-icon-caret-down', !expanded).toggleClass('simditor-icon-caret-right', expanded);
     });
     return $page.on('mousedown', '.btn-download', function(e) {
       return e.stopPropagation();

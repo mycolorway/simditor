@@ -12,7 +12,6 @@
     <link rel="icon" href="../favicon.ico" sizes="128x128" />
 
     <link media="all" rel="stylesheet" type="text/css" href="../assets/styles/app.css" />
-    <link media="all" rel="stylesheet" type="text/css" href="../assets/styles/font-awesome.css" />
     <link media="all" rel="stylesheet" type="text/css" href="../assets/styles/simditor.css" />
 
     <script type="text/javascript" src="../assets/scripts/jquery.min.js"></script>
@@ -48,19 +47,19 @@
 	<aside>
 	<ul>
 		<li>
-			<i class="icon fa fa-caret-right"></i>
+			<i class="icon simditor-icon simditor-icon-caret-right"></i>
 			<a href="../docs/doc-config.html">配置</a>
 		</li>
 		<li>
-			<i class="icon fa fa-caret-right"></i>
+			<i class="icon simditor-icon simditor-icon-caret-right"></i>
 			<a href="../docs/doc-method.html">方法</a>
 		</li>
 		<li>
-			<i class="icon fa fa-caret-right"></i>
+			<i class="icon simditor-icon simditor-icon-caret-right"></i>
 			<a href="../docs/doc-event.html">事件</a>
 		</li>
 		<li class="active">
-			<i class="icon fa fa-caret-right"></i>
+			<i class="icon simditor-icon simditor-icon-caret-right"></i>
 			<a href="../docs/doc-button.html">Button</a>
 		</li>
 	</ul>
@@ -95,7 +94,7 @@
 <dl class="doc-button-properties">
   
     <dt id="anchor-name">
-      <!--<span class="icon fa fa-caret-down"></span>-->
+      <!--<span class="icon simditor-icon simditor-icon-caret-down"></span>-->
       <span class="name">name</span>
       <span class="type">String</span>
       <span class="default">默认值: ''</span>
@@ -111,22 +110,22 @@
     </dd>
   
     <dt id="anchor-icon">
-      <!--<span class="icon fa fa-caret-down"></span>-->
+      <!--<span class="icon simditor-icon simditor-icon-caret-down"></span>-->
       <span class="name">icon</span>
       <span class="type">String</span>
       <span class="default">默认值: ''</span>
     </dt>
     <dd class="expand">
-      <p>按钮显示的图标，Simditor 使用 <a href="http://fontawesome.io/">Font Awesome</a> 来渲染按钮图标，将会使用 <code>fa-[icon]</code> 作为按钮的图标，如果该属性为空则显示按钮的 <strong>text</strong> 属性。</p>
-<div class="highlight"><pre><code class="language-coffee" data-lang="coffee"><span class="c1"># 按钮图标为 .fa-bell</span>
+      <p>按钮显示的图标，Simditor 使用 <a href="http://www.fonticons.com/">Fonticons</a> 的服务来管理按钮图标，如果该属性为空则显示按钮的 <strong>text</strong> 属性。</p>
+<div class="highlight"><pre><code class="language-coffee" data-lang="coffee"><span class="c1"># 按钮图标为 .icon-bold</span>
 <span class="k">class</span> <span class="nx">HelloButton</span> <span class="k">extends</span> <span class="nx">SimditorButton</span>
   <span class="nv">name: </span><span class="s">&#39;hello&#39;</span>
-  <span class="nv">icon: </span><span class="s">&#39;bell&#39;</span>
+  <span class="nv">icon: </span><span class="s">&#39;bold&#39;</span>
 </code></pre></div>
     </dd>
   
     <dt id="anchor-title">
-      <!--<span class="icon fa fa-caret-down"></span>-->
+      <!--<span class="icon simditor-icon simditor-icon-caret-down"></span>-->
       <span class="name">title</span>
       <span class="type">String</span>
       <span class="default">默认值: ''</span>
@@ -137,7 +136,7 @@
     </dd>
   
     <dt id="anchor-text">
-      <!--<span class="icon fa fa-caret-down"></span>-->
+      <!--<span class="icon simditor-icon simditor-icon-caret-down"></span>-->
       <span class="name">text</span>
       <span class="type">String</span>
       <span class="default">默认值: ''</span>
@@ -148,7 +147,7 @@
     </dd>
   
     <dt id="anchor-htmlTag">
-      <!--<span class="icon fa fa-caret-down"></span>-->
+      <!--<span class="icon simditor-icon simditor-icon-caret-down"></span>-->
       <span class="name">htmlTag</span>
       <span class="type">String</span>
       <span class="default">默认值: ''</span>
@@ -163,7 +162,7 @@
     </dd>
   
     <dt id="anchor-disableTag">
-      <!--<span class="icon fa fa-caret-down"></span>-->
+      <!--<span class="icon simditor-icon simditor-icon-caret-down"></span>-->
       <span class="name">disableTag</span>
       <span class="type">String</span>
       <span class="default">默认值: ''</span>
@@ -179,7 +178,7 @@
     </dd>
   
     <dt id="anchor-menu">
-      <!--<span class="icon fa fa-caret-down"></span>-->
+      <!--<span class="icon simditor-icon simditor-icon-caret-down"></span>-->
       <span class="name">menu</span>
       <span class="type">Boolean / Array</span>
       <span class="default">默认值: false</span>
@@ -208,7 +207,7 @@
     </dd>
   
     <dt id="anchor-active">
-      <!--<span class="icon fa fa-caret-down"></span>-->
+      <!--<span class="icon simditor-icon simditor-icon-caret-down"></span>-->
       <span class="name">active</span>
       <span class="type">Boolean</span>
       <span class="default">默认值: false</span>
@@ -219,7 +218,7 @@
     </dd>
   
     <dt id="anchor-disabled">
-      <!--<span class="icon fa fa-caret-down"></span>-->
+      <!--<span class="icon simditor-icon simditor-icon-caret-down"></span>-->
       <span class="name">disabled</span>
       <span class="type">Boolean</span>
       <span class="default">默认值: false</span>
@@ -230,7 +229,7 @@
     </dd>
   
     <dt id="anchor-needFocus">
-      <!--<span class="icon fa fa-caret-down"></span>-->
+      <!--<span class="icon simditor-icon simditor-icon-caret-down"></span>-->
       <span class="name">needFocus</span>
       <span class="type">Boolean</span>
       <span class="default">默认值: true</span>
@@ -241,7 +240,7 @@
     </dd>
   
     <dt id="anchor-shortcut">
-      <!--<span class="icon fa fa-caret-down"></span>-->
+      <!--<span class="icon simditor-icon simditor-icon-caret-down"></span>-->
       <span class="name">shortcut</span>
       <span class="type">null / String</span>
       <span class="default">默认值: null</span>
@@ -266,7 +265,7 @@
 <dl class="doc-button-methods">
   
     <dt id="anchor-setActive">
-      <!--<span class="icon fa fa-caret-down"></span>-->
+      <!--<span class="icon simditor-icon simditor-icon-caret-down"></span>-->
       <span class="name">setActive</span>
       <span class="params">
         
@@ -287,7 +286,7 @@
     </dd>
   
     <dt id="anchor-setDisabled">
-      <!--<span class="icon fa fa-caret-down"></span>-->
+      <!--<span class="icon simditor-icon simditor-icon-caret-down"></span>-->
       <span class="name">setDisabled</span>
       <span class="params">
         
@@ -308,7 +307,7 @@
     </dd>
   
     <dt id="anchor-status">
-      <!--<span class="icon fa fa-caret-down"></span>-->
+      <!--<span class="icon simditor-icon simditor-icon-caret-down"></span>-->
       <span class="name">status</span>
       <span class="params">
         
@@ -337,7 +336,7 @@
     </dd>
   
     <dt id="anchor-command">
-      <!--<span class="icon fa fa-caret-down"></span>-->
+      <!--<span class="icon simditor-icon simditor-icon-caret-down"></span>-->
       <span class="name">command</span>
       <span class="params">
         
@@ -369,7 +368,6 @@
 	</article>
 </section>
 
-<script type="text/javascript" src="../assets/scripts/page-doc.js"></script>
 
     
 <footer>
