@@ -1,10 +1,4 @@
-@font-face {
-  font-family: 'Simditor';
-  src: url('../fonts/simditor.eot');
-  src: url('../fonts/simditor.eot?#iefix') format('embedded-opentype'),url('../fonts/simditor.woff') format('woff');
-  font-weight: normal;
-  font-style: normal;
-}
+@charset "UTF-8";
 
 .simditor-icon {
   display: inline-block;
@@ -102,4 +96,8 @@
 
 .simditor-icon-undo:before {
   content: '\f015';
+}
+
+.simditor-icon-smile-o:before {
+  content: '\f016';
 }

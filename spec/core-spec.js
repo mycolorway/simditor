@@ -23,7 +23,7 @@
       expect($simditor).toExist();
       expect($simditor.find('> .simditor-wrapper > .simditor-body')).toExist();
       expect($simditor.find('> .simditor-wrapper > .simditor-placeholder')).toExist();
-      expect($simditor.find('> textarea#editor')).toExist();
+      expect($simditor.find('> .simditor-wrapper > textarea#editor')).toExist();
       expect(editor.el).toHaveClass('simditor');
       expect(editor.body).toHaveClass('simditor-body');
       return expect(editor.wrapper).toHaveClass('simditor-wrapper');
