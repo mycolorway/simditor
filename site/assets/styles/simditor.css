@@ -112,7 +112,7 @@
   border: 1px solid #c9d8db;
 }
 .simditor textarea {
-  display: none;
+  display: none !important;
   width: 100%;
   box-sizing: border-box;
   font-family: monaco;
@@ -126,7 +126,7 @@
   resize: none;
 }
 .simditor.simditor-source-mode textarea {
-  display: block;
+  display: block !important;
 }
 .simditor.simditor-source-mode .simditor-body {
   display: none;

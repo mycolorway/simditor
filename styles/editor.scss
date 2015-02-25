@@ -7,7 +7,7 @@ $simditor-button-height: 40px;
   border: 1px solid #c9d8db;
 
   textarea {
-    display: none;
+    display: none !important;
     width: 100%;
     box-sizing: border-box;
     font-family: monaco;
@@ -23,7 +23,7 @@ $simditor-button-height: 40px;
 
   &.simditor-source-mode {
     textarea {
-      display: block;
+      display: block !important;
     }
 
     .simditor-body {

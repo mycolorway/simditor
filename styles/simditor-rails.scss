@@ -2,13 +2,12 @@
 
 @font-face {
   font-family: 'Simditor';
-  src: url("<%= font_path('simditor.eot') %>");
-  src: url("<%= font_path('simditor.eot') %>?#iefix") format("embedded-opentype"), url("<%= font_path('simditor.woff') %>") format("woff");
+  src: font-url('simditor/fonts/simditor.eot');
+  src: font-url('simditor/fonts/simditor.eot?#iefix') format("embedded-opentype"), font-url('simditor/fonts/simditor.woff') format("woff");
   font-weight: normal;
   font-style: normal;
 }
 
 @import 'fonticon';
 @import 'editor';
-
 
