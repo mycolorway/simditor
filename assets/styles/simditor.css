@@ -103,6 +103,10 @@
   content: '\f015';
 }
 
+.simditor-icon-smile-o:before {
+  content: '\f016';
+}
+
 .simditor {
   position: relative;
   border: 1px solid #c9d8db;
