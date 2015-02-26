@@ -276,7 +276,7 @@
 .simditor .simditor-toolbar > ul > li > .toolbar-item span {
   opacity: 0.6;
 }
-.simditor .simditor-toolbar > ul > li > .toolbar-item span.fa {
+.simditor .simditor-toolbar > ul > li > .toolbar-item span.simditor-icon {
   display: inline;
   line-height: normal;
 }
@@ -313,31 +313,6 @@
   content: 'H3';
   font-size: 18px;
 }
-.simditor .simditor-toolbar > ul > li > .toolbar-item.toolbar-item-color {
-  font-size: 14px;
-  position: relative;
-}
-.simditor .simditor-toolbar > ul > li > .toolbar-item.toolbar-item-color span:before {
-  position: relative;
-  top: -2px;
-}
-.simditor .simditor-toolbar > ul > li > .toolbar-item.toolbar-item-color:after {
-  content: '';
-  display: block;
-  width: 14px;
-  height: 4px;
-  background: #cccccc;
-  position: absolute;
-  top: 26px;
-  left: 50%;
-  margin: 0 0 0 -7px;
-}
-.simditor .simditor-toolbar > ul > li > .toolbar-item.toolbar-item-color:hover:after {
-  background: #999999;
-}
-.simditor .simditor-toolbar > ul > li > .toolbar-item.toolbar-item-color.disabled:after {
-  background: #dfdfdf;
-}
 .simditor .simditor-toolbar > ul > li > .toolbar-item.toolbar-item-image {
   position: relative;
   overflow: hidden;
@@ -358,9 +333,6 @@
 }
 .simditor .simditor-toolbar > ul > li.menu-on .toolbar-item span {
   opacity: 1;
-}
-.simditor .simditor-toolbar > ul > li.menu-on .toolbar-item.toolbar-item-color:after {
-  background: #999999;
 }
 .simditor .simditor-toolbar > ul > li.menu-on .toolbar-menu {
   display: block;

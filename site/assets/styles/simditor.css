@@ -271,7 +271,7 @@
 .simditor .simditor-toolbar > ul > li > .toolbar-item span {
   opacity: 0.6;
 }
-.simditor .simditor-toolbar > ul > li > .toolbar-item span.fa {
+.simditor .simditor-toolbar > ul > li > .toolbar-item span.simditor-icon {
   display: inline;
   line-height: normal;
 }
@@ -308,6 +308,7 @@
   content: 'H3';
   font-size: 18px;
 }
+<<<<<<< HEAD
 .simditor .simditor-toolbar > ul > li > .toolbar-item.toolbar-item-color {
   font-size: 14px;
   position: relative;
@@ -333,6 +334,8 @@
 .simditor .simditor-toolbar > ul > li > .toolbar-item.toolbar-item-color.disabled:after {
   background: #dfdfdf;
 }
+=======
+>>>>>>> RM: styles of old color icon
 .simditor .simditor-toolbar > ul > li > .toolbar-item.toolbar-item-image {
   position: relative;
   overflow: hidden;
@@ -345,6 +348,12 @@
   font-size: 100px;
   cursor: pointer;
 }
+<<<<<<< HEAD
+=======
+.simditor .simditor-toolbar > ul > li > .toolbar-item.toolbar-item-source {
+  font-size: 25px;
+}
+>>>>>>> RM: styles of old color icon
 .simditor .simditor-toolbar > ul > li.menu-on .toolbar-item {
   position: relative;
   z-index: 21;
@@ -353,9 +362,6 @@
 }
 .simditor .simditor-toolbar > ul > li.menu-on .toolbar-item span {
   opacity: 1;
-}
-.simditor .simditor-toolbar > ul > li.menu-on .toolbar-item.toolbar-item-color:after {
-  background: #999999;
 }
 .simditor .simditor-toolbar > ul > li.menu-on .toolbar-menu {
   display: block;

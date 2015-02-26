@@ -182,7 +182,7 @@ $simditor-button-height: 40px;
           span {
             opacity: 0.6;
 
-            &.fa {
+            &.simditor-icon {
               display: inline;
               line-height: normal;
             }
@@ -232,36 +232,6 @@ $simditor-button-height: 40px;
             }
           }
 
-          &.toolbar-item-color {
-            font-size: 14px;
-            position: relative;
-
-            span:before {
-              position: relative;
-              top: -2px;
-            }
-
-            &:after {
-              content: '';
-              display: block;
-              width: 14px;
-              height: 4px;
-              background: #cccccc;
-              position: absolute;
-              top: 26px;
-              left: 50%;
-              margin: 0 0 0 -7px;
-            }
-
-            &:hover:after {
-              background: #999999;
-            }
-
-            &.disabled:after {
-              background: #dfdfdf;
-            }
-          }
-
           &.toolbar-item-image {
             position: relative;
             overflow: hidden;
@@ -286,10 +256,6 @@ $simditor-button-height: 40px;
 
             span {
               opacity: 1;
-            }
-
-            &.toolbar-item-color:after {
-              background: #999999;
             }
           }
 
