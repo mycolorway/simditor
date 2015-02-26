@@ -236,7 +236,7 @@ module.exports = (grunt) ->
     curl:
       fonticons:
         src: "http://use.fonticons.com/kits/d7611efe/d7611efe.css"
-        dest: "tmp/fonticon.scss"
+        dest: "styles/fonticon.scss"
     "curl-dir":
       fonticons:
         src: [
