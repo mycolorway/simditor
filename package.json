@@ -18,10 +18,11 @@
   "main": "lib/simditor.js",
   "homepage": "http://simditor.tower.im",
   "dependencies": {
+    "grunt-curl": "^2.1.0",
     "jquery": "2.x",
-    "simplemodule": "2.x",
+    "simple-hotkeys": "1.x",
     "simple-uploader": "2.x",
-    "simple-hotkeys": "1.x"
+    "simplemodule": "2.x"
   },
   "devDependencies": {
     "grunt": "0.x",

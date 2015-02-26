@@ -233,6 +233,20 @@ module.exports = (grunt) ->
             'vendor/bower/simple-hotkeys/lib/hotkeys.js'
           ]
 
+    curl:
+      fonticons:
+        src: "http://use.fonticons.com/kits/d7611efe/d7611efe.css"
+        dest: "tmp/fonticon.scss"
+    "curl-dir":
+      fonticons:
+        src: [
+          "http://use.fonticons.com/kits/d7611efe/d7611efe.eot",
+          "http://use.fonticons.com/kits/d7611efe/d7611efe.woff" 
+        ],
+        dest: "fonts",
+        router: (url) ->
+          url.replace "http://use.fonticons.com/kits/d7611efe/d7611efe.", 'simditor.';
+
 
   grunt.loadNpmTasks 'grunt-contrib-sass'
   grunt.loadNpmTasks 'grunt-contrib-coffee'
@@ -246,8 +260,11 @@ module.exports = (grunt) ->
   grunt.loadNpmTasks 'grunt-jekyll'
   grunt.loadNpmTasks 'grunt-contrib-jasmine'
   grunt.loadNpmTasks 'grunt-banner'
+  grunt.loadNpmTasks 'grunt-curl'
 
   grunt.registerTask 'default', ['site', 'express', 'jasmine:test:build', 'watch']
   grunt.registerTask 'site', ['sass', 'coffee', 'umd', 'copy:vendor', 'copy:scripts', 'copy:styles', 'usebanner', 'jekyll']
   grunt.registerTask 'test', ['sass', 'coffee', 'umd', 'jasmine']
   grunt.registerTask 'package', ['clean:package', 'copy:package', 'uglify:simditor', 'compress']
+
+  grunt.registerTask 'fonticons', ['curl', 'curl-dir']
