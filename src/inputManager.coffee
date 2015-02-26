@@ -43,20 +43,20 @@ class InputManager extends SimpleModule
       .addClass('simditor-paste-area')
       .appendTo(@editor.el)
 
-    @_cleanPasteArea = $('<textarea/>')
-      .css({
-        width: '1px',
-        height: '1px',
-        overflow: 'hidden',
-        position: 'fixed',
-        right: '0',
-        bottom: '101px'
-      })
-      .attr({
-        tabIndex: '-1'
-      })
-      .addClass('simditor-clean-paste-area')
-      .appendTo(@editor.el)
+    #@_cleanPasteArea = $('<textarea/>')
+      #.css({
+        #width: '1px',
+        #height: '1px',
+        #overflow: 'hidden',
+        #position: 'fixed',
+        #right: '0',
+        #bottom: '101px'
+      #})
+      #.attr({
+        #tabIndex: '-1'
+      #})
+      #.addClass('simditor-clean-paste-area')
+      #.appendTo(@editor.el)
 
     $(document).on 'selectionchange.simditor' + @editor.id, (e) =>
       return unless @focused
@@ -262,43 +262,7 @@ class InputManager extends SimpleModule
 
     @editor.selection.save range
 
-    if cleanPaste
-      @_cleanPasteArea.focus()
-
-      # firefox cannot set focus on textarea before pasting
-      if @editor.util.browser.firefox
-        e.preventDefault()
-        @_cleanPasteArea.val e.originalEvent.clipboardData.getData('text/plain')
-
-      # IE10 cannot set focus on textarea or editable div before pasting
-      else if @editor.util.browser.msie and @editor.util.browser.version == 10
-        e.preventDefault()
-        @_cleanPasteArea.val window.clipboardData.getData('Text')
-    else
-      @_pasteArea.focus()
-
-      # IE10 cannot set focus on textarea or editable div before pasting
-      if @editor.util.browser.msie and @editor.util.browser.version == 10
-        e.preventDefault()
-        @_pasteArea.html window.clipboardData.getData('Text')
-
-    setTimeout =>
-      if @_pasteArea.is(':empty') and !@_cleanPasteArea.val()
-        pasteContent = null
-      else if cleanPaste
-        pasteContent = @_cleanPasteArea.val()
-      else
-        pasteContent = $('<div/>').append(@_pasteArea.contents())
-        pasteContent.find('table colgroup').remove() # clear table cols width
-        @editor.formatter.format pasteContent
-        @editor.formatter.decorate pasteContent
-        @editor.formatter.beautify pasteContent.children()
-        pasteContent = pasteContent.contents()
-
-      @_pasteArea.empty()
-      @_cleanPasteArea.val('')
-      range = @editor.selection.restore()
-
+    processPasteContent = (pasteContent) =>
       if @editor.triggerHandler('pasting', [pasteContent]) == false
         return
 
@@ -374,7 +338,37 @@ class InputManager extends SimpleModule
         @editor.selection.setRangeAtEndOf(pasteContent.last(), range)
 
       @editor.trigger 'valuechanged'
-    , 10
+
+    if cleanPaste
+      e.preventDefault()
+      if @editor.util.browser.msie
+        pasteContent = window.clipboardData.getData('Text')
+      else
+        pasteContent = e.originalEvent.clipboardData.getData('text/plain')
+      processPasteContent pasteContent
+    else
+      @_pasteArea.focus()
+
+      # IE10 cannot set focus on textarea or editable div before pasting
+      if @editor.util.browser.msie and @editor.util.browser.version == 10
+        e.preventDefault()
+        @_pasteArea.html window.clipboardData.getData('Text')
+
+      setTimeout =>
+        if @_pasteArea.is(':empty')
+          pasteContent = null
+        else
+          pasteContent = $('<div/>').append(@_pasteArea.contents())
+          pasteContent.find('table colgroup').remove() # clear table cols width
+          @editor.formatter.format pasteContent
+          @editor.formatter.decorate pasteContent
+          @editor.formatter.beautify pasteContent.children()
+          pasteContent = pasteContent.contents()
+
+        @_pasteArea.empty()
+        range = @editor.selection.restore()
+        processPasteContent pasteContent
+      , 10
 
   _onDrop: (e) ->
     if @editor.triggerHandler(e) == false
