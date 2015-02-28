@@ -260,8 +260,6 @@ class InputManager extends SimpleModule
         @editor.uploader?.upload(imageFile, uploadOpt)
         return false
 
-    @editor.selection.save range
-
     processPasteContent = (pasteContent) =>
       if @editor.triggerHandler('pasting', [pasteContent]) == false
         return
@@ -347,6 +345,7 @@ class InputManager extends SimpleModule
         pasteContent = e.originalEvent.clipboardData.getData('text/plain')
       processPasteContent pasteContent
     else
+      @editor.selection.save range
       @_pasteArea.focus()
 
       # IE10 cannot set focus on textarea or editable div before pasting
