@@ -678,7 +678,8 @@
   border-radius: 3px;
   font-size: 13px;
   font-family: 'monaco', 'Consolas', "Liberation Mono", Courier, monospace;
-  white-space: nowrap;
+  white-space: pre;
+  word-wrap: normal;
 }
 .simditor .simditor-body code, .editor-style code {
   display: inline-block;
