@@ -326,13 +326,13 @@ class Util extends SimpleModule
       cursor = if lastMatch then lastMatch.index + lastMatch[0].length else 0
       result += str if (str = html.substring(cursor, match.index)).length > 0 and $.trim(str)
 
-      level -= 1 if match.isEndTag and !match.isStartTag
+      level -= 1 if match.isBlockNode and match.isEndTag and !match.isStartTag
       if match.isBlockNode and match.isStartTag
         result += '\n' if !(lastMatch and lastMatch.isBlockNode and lastMatch.isEndTag)
         result += repeatString(indentString, level)
       result += match[0]
       result += '\n' if match.isBlockNode and match.isEndTag
-      level += 1 if match.isStartTag
+      level += 1 if match.isBlockNode and match.isStartTag
 
       lastMatch = match
 

@@ -1928,7 +1928,7 @@ Util = (function(superClass) {
       if ((str = html.substring(cursor, match.index)).length > 0 && $.trim(str)) {
         result += str;
       }
-      if (match.isEndTag && !match.isStartTag) {
+      if (match.isBlockNode && match.isEndTag && !match.isStartTag) {
         level -= 1;
       }
       if (match.isBlockNode && match.isStartTag) {
@@ -1941,7 +1941,7 @@ Util = (function(superClass) {
       if (match.isBlockNode && match.isEndTag) {
         result += '\n';
       }
-      if (match.isStartTag) {
+      if (match.isBlockNode && match.isStartTag) {
         level += 1;
       }
       lastMatch = match;
