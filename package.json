@@ -1,6 +1,6 @@
 {
   "name": "simditor",
-  "version": "2.1.3",
+  "version": "2.1.4",
   "description": "A simple online editor",
   "keywords": "editor simditor",
   "repository": {
@@ -36,6 +36,7 @@
     "grunt-jekyll": "0.x",
     "grunt-umd": "2.3.x",
     "grunt-express": "1.4.0",
+    "grunt-banner": "0.3.x",
     "express": "~3.3.4"
   }
 }

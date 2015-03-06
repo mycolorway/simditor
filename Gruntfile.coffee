@@ -182,11 +182,24 @@ module.exports = (grunt) ->
 
     uglify:
       simditor:
+        options:
+          preserveComments: 'some'
         files:
           'package/scripts/module.min.js': 'package/scripts/module.js'
           'package/scripts/uploader.min.js': 'package/scripts/uploader.js'
           'package/scripts/hotkeys.min.js': 'package/scripts/hotkeys.js'
           'package/scripts/simditor.min.js': 'package/scripts/simditor.js'
+
+    usebanner:
+      simditor:
+        options:
+          banner: '''/*!
+ * Simditor v<%= pkg.version %>
+ * http://simditor.tower.im/
+ * <%= grunt.template.today("yyyy-dd-mm") %>
+ */'''
+        files:
+          src: ['lib/simditor.js', 'styles/simditor.css']
 
     compress:
       package:
@@ -232,8 +245,9 @@ module.exports = (grunt) ->
   grunt.loadNpmTasks 'grunt-express'
   grunt.loadNpmTasks 'grunt-jekyll'
   grunt.loadNpmTasks 'grunt-contrib-jasmine'
+  grunt.loadNpmTasks 'grunt-banner'
 
   grunt.registerTask 'default', ['site', 'express', 'jasmine:test:build', 'watch']
-  grunt.registerTask 'site', ['sass', 'coffee', 'umd', 'copy:vendor', 'copy:scripts', 'copy:styles', 'jekyll']
+  grunt.registerTask 'site', ['sass', 'coffee', 'umd', 'copy:vendor', 'copy:scripts', 'copy:styles', 'usebanner', 'jekyll']
   grunt.registerTask 'test', ['sass', 'coffee', 'umd', 'jasmine']
   grunt.registerTask 'package', ['clean:package', 'copy:package', 'uglify:simditor', 'compress']
