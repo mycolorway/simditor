@@ -18,7 +18,6 @@
   "main": "lib/simditor.js",
   "homepage": "http://simditor.tower.im",
   "dependencies": {
-    "grunt-curl": "^2.1.0",
     "jquery": "2.x",
     "simple-hotkeys": "1.x",
     "simple-uploader": "2.x",
@@ -38,6 +37,7 @@
     "grunt-umd": "2.3.x",
     "grunt-express": "1.4.0",
     "grunt-banner": "0.3.x",
+    "grunt-curl": "2.1.x",
     "express": "~3.3.4"
   }
 }
