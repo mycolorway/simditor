@@ -3079,7 +3079,7 @@ ColorButton = (function(superClass) {
 
   ColorButton.prototype.name = 'color';
 
-  ColorButton.prototype.icon = 'font';
+  ColorButton.prototype.icon = 'tint';
 
   ColorButton.prototype.disableTag = 'pre';
 
