@@ -10,7 +10,6 @@ root: ../
 在[这里]({{ page.root }}download.html)下载并解压最新版的 Simditor 文件，然后在页面中引入这些文件：
 
 ```html
-<link rel="stylesheet" type="text/css" href="[style path]/font-awesome.css" />
 <link rel="stylesheet" type="text/css" href="[style path]/simditor.css" />
 
 <script type="text/javascript" src="[script path]/jquery.min.js"></script>
@@ -26,8 +25,6 @@ root: ../
 * [module.js](https://github.com/mycolorway/simple-module) 是彩程内部使用的 CoffeeScript 组件抽象类，Simditor 基于这个类开发；
 * [hotkeys.js](https://github.com/mycolorway/simple-hotkeys) 用于绑定快捷键，Simditor 依赖此库。
 * [uploader.js](https://github.com/mycolorway/simple-uploader) 是一个与 UI 无关的上传逻辑，如果你的项目不需要上传附件，那么可以不引用这个文件。
-
-另外，还需要将fonts文件夹里面的web font文件（simditor.eot和simditor.woff）拷贝到跟样式文件夹同级的`fonts`文件夹（font文件的引用路径定义在fonticon.scss里面），保证编辑器的按钮图标能正确显示。
 
 ###第二步，初始化配置
 
