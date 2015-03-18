@@ -358,40 +358,18 @@ class ImagePopover extends Popover
     @el.addClass('image-popover')
       .append(tpl)
     @srcEl = @el.find '.image-src'
-
-    @srcEl.on 'keydown', (e) =>
-      return unless e.which == 13 or e.which == 27
-      e.preventDefault()
-
-      hideAndFocus = =>
-        @button.editor.body.focus()
-        @button.editor.selection.setRangeAfter @target
-        @hide()
-
-      if e.which == 13 and !@target.hasClass('uploading')
-        src = @srcEl.val()
-
-        if /^data:image/.test(src) and not @editor.uploader
-          hideAndFocus()
-          return
-
-        @button.loadImage @target, src, (success) =>
-          return unless success
-
-          if /^data:image/.test(src)
-            blob = @editor.util.dataURLtoBlob src
-            blob.name = "Base64 Image.png"
-            @editor.uploader.upload blob,
-              inline: true
-              img: @target
-          else
-            hideAndFocus()
-            @editor.trigger 'valuechanged'
-      else
-        hideAndFocus()
-
     @widthEl = @el.find '#image-width'
     @heightEl = @el.find '#image-height'
+
+    @srcEl.on 'keydown', (e) =>
+      return unless e.which == 13 and !@target.hasClass('uploading')
+      e.preventDefault()
+      @button.editor.body.focus()
+      @button.editor.selection.setRangeAfter @target
+      @hide()
+
+    @srcEl.on 'blur', (e) =>
+      @_loadImage @srcEl.val()
 
     @el.find('.image-size').on 'blur', (e) =>
       @_resizeImg $(e.currentTarget)
@@ -472,6 +450,35 @@ class ImagePopover extends Popover
       height: size[1] * 1
     @widthEl.val(size[0])
     @heightEl.val(size[1])
+
+  _loadImage: (src, callback) ->
+    if /^data:image/.test(src) and not @editor.uploader
+      callback(false) if callback
+      return
+
+    @button.loadImage @target, src, (img) =>
+      return unless img
+
+      if @active
+        @width = img.width
+        @height = img.height
+
+        @widthEl.val @width
+        @heightEl.val @height
+
+        @target.removeAttr('width')
+          .removeAttr('height')
+
+      if /^data:image/.test(src)
+        blob = @editor.util.dataURLtoBlob src
+        blob.name = "Base64 Image.png"
+        @editor.uploader.upload blob,
+          inline: true
+          img: @target
+      else
+        @editor.trigger 'valuechanged'
+
+      callback(img) if callback
 
   show: (args...) ->
     super args...

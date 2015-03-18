@@ -4229,48 +4229,24 @@ ImagePopover = (function(superClass) {
     tpl = "<div class=\"link-settings\">\n  <div class=\"settings-field\">\n    <label>" + (this._t('imageUrl')) + "</label>\n    <input class=\"image-src\" type=\"text\" tabindex=\"1\" />\n    <a class=\"btn-upload\" href=\"javascript:;\" title=\"" + (this._t('uploadImage')) + "\" tabindex=\"-1\">\n      <span class=\"simditor-icon simditor-icon-upload\"></span>\n    </a>\n  </div>\n  <div class=\"settings-field\">\n    <label>" + (this._t('imageSize')) + "</label>\n    <input class=\"image-size\" id=\"image-width\" type=\"text\" tabindex=\"2\" />\n    <span class=\"times\">×</span>\n    <input class=\"image-size\" id=\"image-height\" type=\"text\" tabindex=\"3\" />\n    <a class=\"btn-restore\" href=\"javascript:;\" title=\"" + (this._t('restoreImageSize')) + "\" tabindex=\"-1\">\n      <span class=\"simditor-icon simditor-icon-undo\"></span>\n    </a>\n  </div>\n</div>";
     this.el.addClass('image-popover').append(tpl);
     this.srcEl = this.el.find('.image-src');
+    this.widthEl = this.el.find('#image-width');
+    this.heightEl = this.el.find('#image-height');
     this.srcEl.on('keydown', (function(_this) {
       return function(e) {
-        var hideAndFocus, src;
-        if (!(e.which === 13 || e.which === 27)) {
+        if (!(e.which === 13 && !_this.target.hasClass('uploading'))) {
           return;
         }
         e.preventDefault();
-        hideAndFocus = function() {
-          _this.button.editor.body.focus();
-          _this.button.editor.selection.setRangeAfter(_this.target);
-          return _this.hide();
-        };
-        if (e.which === 13 && !_this.target.hasClass('uploading')) {
-          src = _this.srcEl.val();
-          if (/^data:image/.test(src) && !_this.editor.uploader) {
-            hideAndFocus();
-            return;
-          }
-          return _this.button.loadImage(_this.target, src, function(success) {
-            var blob;
-            if (!success) {
-              return;
-            }
-            if (/^data:image/.test(src)) {
-              blob = _this.editor.util.dataURLtoBlob(src);
-              blob.name = "Base64 Image.png";
-              return _this.editor.uploader.upload(blob, {
-                inline: true,
-                img: _this.target
-              });
-            } else {
-              hideAndFocus();
-              return _this.editor.trigger('valuechanged');
-            }
-          });
-        } else {
-          return hideAndFocus();
-        }
+        _this.button.editor.body.focus();
+        _this.button.editor.selection.setRangeAfter(_this.target);
+        return _this.hide();
       };
     })(this));
-    this.widthEl = this.el.find('#image-width');
-    this.heightEl = this.el.find('#image-height');
+    this.srcEl.on('blur', (function(_this) {
+      return function(e) {
+        return _this._loadImage(_this.srcEl.val());
+      };
+    })(this));
     this.el.find('.image-size').on('blur', (function(_this) {
       return function(e) {
         _this._resizeImg($(e.currentTarget));
@@ -4386,6 +4362,43 @@ ImagePopover = (function(superClass) {
     });
     this.widthEl.val(size[0]);
     return this.heightEl.val(size[1]);
+  };
+
+  ImagePopover.prototype._loadImage = function(src, callback) {
+    if (/^data:image/.test(src) && !this.editor.uploader) {
+      if (callback) {
+        callback(false);
+      }
+      return;
+    }
+    return this.button.loadImage(this.target, src, (function(_this) {
+      return function(img) {
+        var blob;
+        if (!img) {
+          return;
+        }
+        if (_this.active) {
+          _this.width = img.width;
+          _this.height = img.height;
+          _this.widthEl.val(_this.width);
+          _this.heightEl.val(_this.height);
+          _this.target.removeAttr('width').removeAttr('height');
+        }
+        if (/^data:image/.test(src)) {
+          blob = _this.editor.util.dataURLtoBlob(src);
+          blob.name = "Base64 Image.png";
+          _this.editor.uploader.upload(blob, {
+            inline: true,
+            img: _this.target
+          });
+        } else {
+          _this.editor.trigger('valuechanged');
+        }
+        if (callback) {
+          return callback(img);
+        }
+      };
+    })(this));
   };
 
   ImagePopover.prototype.show = function() {
