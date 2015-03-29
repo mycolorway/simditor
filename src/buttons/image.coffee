@@ -344,6 +344,10 @@ class ImagePopover extends Popover
             <span class="simditor-icon simditor-icon-upload"></span>
           </a>
         </div>
+        <div class='settings-field'>
+          <label>#{ @_t 'imageAlt' }</label>
+          <input class="image-alt" id="image-alt" type="text" tabindex="1" />
+        </div>
         <div class="settings-field">
           <label>#{ @_t 'imageSize' }</label>
           <input class="image-size" id="image-width" type="text" tabindex="2" />
@@ -360,6 +364,7 @@ class ImagePopover extends Popover
     @srcEl = @el.find '.image-src'
     @widthEl = @el.find '#image-width'
     @heightEl = @el.find '#image-height'
+    @altEl = @el.find '#image-alt'
 
     @srcEl.on 'keydown', (e) =>
       return unless e.which == 13 and !@target.hasClass('uploading')
@@ -394,6 +399,19 @@ class ImagePopover extends Popover
         @hide()
       else if e.which == 9
         @el.data('popover').refresh()
+
+    @altEl.on 'keydown', (e) =>
+      if e.which == 13
+        e.preventDefault()
+
+        @button.editor.body.focus()
+        @button.editor.selection.setRangeAfter @target
+        @hide()
+
+    @altEl.on 'keyup', (e) =>
+      return if e.which == 13 or e.which == 27 or e.which == 9
+      @alt = @altEl.val()
+      @target.attr 'alt', @alt
 
     @el.find('.btn-restore').on 'click', (e) =>
       @_restoreImg()
@@ -485,6 +503,7 @@ class ImagePopover extends Popover
     $img = @target
     @width = $img.width()
     @height = $img.height()
+    @alt = $img.attr 'alt'
 
     if $img.hasClass 'uploading'
       @srcEl.val @_t('uploading')
@@ -494,6 +513,7 @@ class ImagePopover extends Popover
         .prop 'disabled', false
       @widthEl.val @width
       @heightEl.val @height
+      @altEl.val @alt
 
 
 Simditor.Toolbar.addButton ImageButton

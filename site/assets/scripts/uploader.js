@@ -259,7 +259,9 @@ uploader = function(opts) {
   return new Uploader(opts);
 };
 
+
 return uploader;
+
 
 }));
 
