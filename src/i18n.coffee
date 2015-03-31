@@ -13,6 +13,7 @@ Simditor.i18n =
     'uploadError': '上传出错了'
     'imageUrl': '图片地址'
     'imageSize': '图片尺寸'
+    'imageAlt': '图片描述'
     'restoreImageSize': '还原图片尺寸'
     'uploading': '正在上传'
     'indent': '向右缩进'
