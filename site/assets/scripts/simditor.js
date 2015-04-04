@@ -4367,11 +4367,12 @@ ImagePopover = (function(superClass) {
       this.widthEl.val(width);
     }
     if (!onlySetVal) {
-      return this.target.attr({
+      this.target.attr({
         width: width || value,
         height: height || value
       });
     }
+    return this.editor.trigger('valuechanged');
   };
 
   ImagePopover.prototype._restoreImg = function() {
@@ -4382,7 +4383,8 @@ ImagePopover = (function(superClass) {
       height: size[1] * 1
     });
     this.widthEl.val(size[0]);
-    return this.heightEl.val(size[1]);
+    this.heightEl.val(size[1]);
+    return this.editor.trigger('valuechanged');
   };
 
   ImagePopover.prototype._loadImage = function(src, callback) {

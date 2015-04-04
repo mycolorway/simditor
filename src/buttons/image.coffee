@@ -461,6 +461,8 @@ class ImagePopover extends Popover
         width: width || value
         height: height || value
 
+    @editor.trigger 'valuechanged'
+
   _restoreImg: ->
     size = @target.data('image-size')?.split(",") || [@width, @height]
     @target.attr
@@ -468,6 +470,8 @@ class ImagePopover extends Popover
       height: size[1] * 1
     @widthEl.val(size[0])
     @heightEl.val(size[1])
+
+    @editor.trigger 'valuechanged'
 
   _loadImage: (src, callback) ->
     if /^data:image/.test(src) and not @editor.uploader
