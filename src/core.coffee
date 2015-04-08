@@ -7,6 +7,7 @@ class Simditor extends SimpleModule
   @connect Formatter
   @connect Selection
   @connect Toolbar
+  @connect Indentation
 
   @count: 0
 
@@ -16,7 +17,6 @@ class Simditor extends SimpleModule
     defaultImage: 'images/image.png'
     params: {}
     upload: false
-    tabIndent: true
 
   _init: ->
     @textarea = $(@opts.textarea)
@@ -190,4 +190,3 @@ class Simditor extends SimpleModule
     $(document).off '.simditor-' + @id
     $(window).off '.simditor-' + @id
     @off()
-

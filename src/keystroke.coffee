@@ -63,19 +63,6 @@ class Keystroke extends SimpleModule
         @editor.selection.restore()
         null
 
-
-    # Tab to indent
-    @editor.inputManager.addKeystrokeHandler '9', '*', (e) =>
-      codeButton = @editor.toolbar.findButton 'code'
-      return unless @editor.opts.tabIndent or (codeButton and codeButton.active)
-
-      if e.shiftKey
-        @editor.util.outdent()
-      else
-        @editor.util.indent()
-      true
-
-
     # press enter in a empty list item
     @editor.inputManager.addKeystrokeHandler '13', 'li', (e, $node) =>
       $cloneNode = $node.clone()

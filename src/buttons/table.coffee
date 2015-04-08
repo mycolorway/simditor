@@ -50,16 +50,6 @@ class TableButton extends Button
     @editor.on 'blur.table', (e) =>
       @editor.body.find('.simditor-table td').removeClass('active')
 
-    # press left arrow in td
-    #@editor.inputManager.addKeystrokeHandler '37', 'td', (e, $node) =>
-      #@editor.util.outdent()
-      #true
-
-    # press right arrow in td
-    #@editor.inputManager.addKeystrokeHandler '39', 'td', (e, $node) =>
-      #@editor.util.indent()
-      #true
-
     # press up arrow in td
     @editor.inputManager.addKeystrokeHandler '38', 'td', (e, $node) =>
       $tr = $node.parent 'tr'
@@ -369,4 +359,3 @@ class TableButton extends Button
 
 
 Simditor.Toolbar.addButton TableButton
-
