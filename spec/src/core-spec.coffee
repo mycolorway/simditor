@@ -1,16 +1,11 @@
 describe 'A Simditor instance', ->
   editor = null
-  $textarea = null
   beforeEach ->
-    $textarea = $('<textarea id="editor"></textarea>').appendTo 'body'
-    editor = new Simditor
-      textarea: $textarea
+    editor = spec.generateSimditor()
 
   afterEach ->
-    editor?.destroy()
+    spec.destroySimditor()
     editor = null
-    $textarea.remove()
-    $textarea = null
 
   it 'should render specific layout', ->
     $simditor = $('.simditor')
@@ -24,7 +19,7 @@ describe 'A Simditor instance', ->
     expect(editor.wrapper).toHaveClass('simditor-wrapper')
 
   it 'should reset to default after destroyed', ->
-    editor.destroy()
+    editor?.destroy()
     expect($('.simditor')).not.toExist()
     expect($('textarea#editor')).toExist()
 
@@ -47,5 +42,3 @@ describe 'A Simditor instance', ->
     expect(editor.body).toBeFocused()
     editor.blur()
     expect(editor.body).not.toBeFocused()
-
-

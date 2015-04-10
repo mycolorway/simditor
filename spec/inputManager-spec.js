@@ -1,27 +1,18 @@
 (function() {
-  describe('A Simditor instance', function() {
-    var $textarea, editor;
+  describe('A Simditor instance with inputManager', function() {
+    var editor;
     editor = null;
-    $textarea = null;
     beforeEach(function() {
       jasmine.clock().install();
-      $textarea = $('<textarea id="editor"></textarea>').appendTo('body');
-      return editor = new Simditor({
-        textarea: $textarea
-      });
+      return editor = spec.generateSimditor();
     });
     afterEach(function() {
       jasmine.clock().uninstall();
-      if (editor != null) {
-        editor.destroy();
-      }
-      editor = null;
-      $textarea.remove();
-      return $textarea = null;
+      spec.destroySimditor();
+      return editor = null;
     });
     it('should render specific layout', function() {
-      expect(editor.el.find('.simditor-paste-area')).toExist();
-      return expect(editor.el.find('.simditor-clean-paste-area')).toExist();
+      return expect(editor.el.find('.simditor-paste-area')).toExist();
     });
     return it('should ensure editor\'s body has content', function() {
       var e;

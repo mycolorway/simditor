@@ -157,7 +157,7 @@ module.exports = (grunt) ->
         tasks: ['jekyll']
       spec:
         files: ['spec/**/*.coffee']
-        tasks: ['coffee']
+        tasks: ['coffee:spec']
 
     jekyll:
       site:

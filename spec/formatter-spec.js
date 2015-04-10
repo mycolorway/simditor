@@ -1,21 +1,13 @@
 (function() {
   describe('Simditor Formatter Module', function() {
-    var $textarea, editor;
+    var editor;
     editor = null;
-    $textarea = null;
     beforeEach(function() {
-      $textarea = $('<textarea id="editor"></textarea>').appendTo('body');
-      return editor = new Simditor({
-        textarea: $textarea
-      });
+      return editor = spec.generateSimditor();
     });
     afterEach(function() {
-      if (editor != null) {
-        editor.destroy();
-      }
-      editor = null;
-      $textarea.remove();
-      return $textarea = null;
+      spec.destroySimditor();
+      return editor = null;
     });
     it('can convert url string to anchor element', function() {
       var $p1, $p2, $p3;

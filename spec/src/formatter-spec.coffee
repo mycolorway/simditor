@@ -1,16 +1,11 @@
 describe 'Simditor Formatter Module', ->
   editor = null
-  $textarea = null
   beforeEach ->
-    $textarea = $('<textarea id="editor"></textarea>').appendTo 'body'
-    editor = new Simditor
-      textarea: $textarea
+    editor = spec.generateSimditor()
 
   afterEach ->
-    editor?.destroy()
+    spec.destroySimditor()
     editor = null
-    $textarea.remove()
-    $textarea = null
 
   it 'can convert url string to anchor element', ->
     $p1 = editor.formatter.autolink $('<p>http://test.com?x=1</p>')

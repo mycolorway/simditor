@@ -43,21 +43,6 @@ class InputManager extends SimpleModule
       .addClass('simditor-paste-area')
       .appendTo(@editor.el)
 
-    #@_cleanPasteArea = $('<textarea/>')
-      #.css({
-        #width: '1px',
-        #height: '1px',
-        #overflow: 'hidden',
-        #position: 'fixed',
-        #right: '0',
-        #bottom: '101px'
-      #})
-      #.attr({
-        #tabIndex: '-1'
-      #})
-      #.addClass('simditor-clean-paste-area')
-      #.appendTo(@editor.el)
-
     $(document).on 'selectionchange.simditor' + @editor.id, (e) =>
       return unless @focused
 

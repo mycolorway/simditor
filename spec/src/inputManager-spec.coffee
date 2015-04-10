@@ -1,22 +1,16 @@
-describe 'A Simditor instance', ->
+describe 'A Simditor instance with inputManager', ->
   editor = null
-  $textarea = null
   beforeEach ->
     jasmine.clock().install()
-    $textarea = $('<textarea id="editor"></textarea>').appendTo 'body'
-    editor = new Simditor
-      textarea: $textarea
+    editor = spec.generateSimditor()
 
   afterEach ->
     jasmine.clock().uninstall()
-    editor?.destroy()
+    spec.destroySimditor()
     editor = null
-    $textarea.remove()
-    $textarea = null
 
   it 'should render specific layout', ->
     expect(editor.el.find('.simditor-paste-area')).toExist()
-    expect(editor.el.find('.simditor-clean-paste-area')).toExist()
 
   it 'should ensure editor\'s body has content', ->
     editor.body.empty()
@@ -26,4 +20,3 @@ describe 'A Simditor instance', ->
     e = $.Event('keyup', {which: 8, keyCode:8})
     editor.body.trigger e
     expect(editor.body.find('p>br')).toExist()
-
