@@ -14,7 +14,7 @@
   }
 }(this, function ($, SimpleModule, simpleHotkeys, simpleUploader) {
 
-var BlockquoteButton, BoldButton, Button, CodeButton, CodePopover, ColorButton, Formatter, HrButton, ImageButton, ImagePopover, IndentButton, InputManager, ItalicButton, Keystroke, LinkButton, LinkPopover, ListButton, OrderListButton, OutdentButton, Popover, Selection, Simditor, SourceButton, StrikethroughButton, TableButton, TitleButton, Toolbar, UnderlineButton, UndoManager, UnorderListButton, Util,
+var BlockquoteButton, BoldButton, Button, CodeButton, CodePopover, ColorButton, Formatter, HrButton, ImageButton, ImagePopover, IndentButton, Indentation, InputManager, ItalicButton, Keystroke, LinkButton, LinkPopover, ListButton, OrderListButton, OutdentButton, Popover, Selection, Simditor, SourceButton, StrikethroughButton, TableButton, TitleButton, Toolbar, UnderlineButton, UndoManager, UnorderListButton, Util,
   extend = function(child, parent) { for (var key in parent) { if (hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
   hasProp = {}.hasOwnProperty,
   indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; },
@@ -1071,21 +1071,6 @@ Keystroke = (function(superClass) {
         }
       };
     })(this));
-    this.editor.inputManager.addKeystrokeHandler('9', '*', (function(_this) {
-      return function(e) {
-        var codeButton;
-        codeButton = _this.editor.toolbar.findButton('code');
-        if (!(_this.editor.opts.tabIndent || (codeButton && codeButton.active))) {
-          return;
-        }
-        if (e.shiftKey) {
-          _this.editor.util.outdent();
-        } else {
-          _this.editor.util.indent();
-        }
-        return true;
-      };
-    })(this));
     this.editor.inputManager.addKeystrokeHandler('13', 'li', (function(_this) {
       return function(e, $node) {
         var $cloneNode, listEl, newBlockEl, newListEl;
@@ -1728,107 +1713,6 @@ Util = (function(superClass) {
     return results1;
   };
 
-  Util.prototype.indent = function() {
-    var $blockEl, $childList, $nextTd, $parentLi, $td, indentLevel, range, ref, spaceNode, tagName;
-    $blockEl = this.editor.util.closestBlockEl();
-    if (!($blockEl && $blockEl.length > 0)) {
-      return false;
-    }
-    if ($blockEl.is('pre')) {
-      spaceNode = document.createTextNode('\u00A0\u00A0');
-      this.editor.selection.insertNode(spaceNode);
-    } else if ($blockEl.is('li')) {
-      $parentLi = $blockEl.prev('li');
-      if ($parentLi.length < 1) {
-        return false;
-      }
-      this.editor.selection.save();
-      tagName = $blockEl.parent()[0].tagName;
-      $childList = $parentLi.children('ul, ol');
-      if ($childList.length > 0) {
-        $childList.append($blockEl);
-      } else {
-        $('<' + tagName + '/>').append($blockEl).appendTo($parentLi);
-      }
-      this.editor.selection.restore();
-    } else if ($blockEl.is('p, h1, h2, h3, h4')) {
-      indentLevel = (ref = $blockEl.attr('data-indent')) != null ? ref : 0;
-      indentLevel = indentLevel * 1 + 1;
-      if (indentLevel > 10) {
-        indentLevel = 10;
-      }
-      $blockEl.attr('data-indent', indentLevel);
-    } else if ($blockEl.is('table')) {
-      range = this.editor.selection.getRange();
-      $td = $(range.commonAncestorContainer).closest('td');
-      $nextTd = $td.next('td');
-      if (!($nextTd.length > 0)) {
-        $nextTd = $td.parent('tr').next('tr').find('td:first');
-      }
-      if (!($td.length > 0 && $nextTd.length > 0)) {
-        return false;
-      }
-      this.editor.selection.setRangeAtEndOf($nextTd);
-    } else {
-      spaceNode = document.createTextNode('\u00A0\u00A0\u00A0\u00A0');
-      this.editor.selection.insertNode(spaceNode);
-    }
-    this.editor.trigger('valuechanged');
-    return true;
-  };
-
-  Util.prototype.outdent = function() {
-    var $blockEl, $parent, $parentLi, $prevTd, $td, button, indentLevel, range, ref;
-    $blockEl = this.editor.util.closestBlockEl();
-    if (!($blockEl && $blockEl.length > 0)) {
-      return false;
-    }
-    if ($blockEl.is('pre')) {
-      return false;
-    } else if ($blockEl.is('li')) {
-      $parent = $blockEl.parent();
-      $parentLi = $parent.parent('li');
-      if ($parentLi.length < 1) {
-        button = this.editor.toolbar.findButton($parent[0].tagName.toLowerCase());
-        if (button != null) {
-          button.command();
-        }
-        return false;
-      }
-      this.editor.selection.save();
-      if ($blockEl.next('li').length > 0) {
-        $('<' + $parent[0].tagName + '/>').append($blockEl.nextAll('li')).appendTo($blockEl);
-      }
-      $blockEl.insertAfter($parentLi);
-      if ($parent.children('li').length < 1) {
-        $parent.remove();
-      }
-      this.editor.selection.restore();
-    } else if ($blockEl.is('p, h1, h2, h3, h4')) {
-      indentLevel = (ref = $blockEl.attr('data-indent')) != null ? ref : 0;
-      indentLevel = indentLevel * 1 - 1;
-      if (indentLevel < 0) {
-        indentLevel = 0;
-      }
-      $blockEl.attr('data-indent', indentLevel);
-    } else if ($blockEl.is('table')) {
-      range = this.editor.selection.getRange();
-      $td = $(range.commonAncestorContainer).closest('td');
-      $prevTd = $td.prev('td');
-      if (!($prevTd.length > 0)) {
-        $prevTd = $td.parent('tr').prev('tr').find('td:last');
-      }
-      if (!($td.length > 0 && $prevTd.length > 0)) {
-        return false;
-      }
-      this.editor.selection.setRangeAtEndOf($prevTd);
-    } else {
-      return false;
-    }
-    this.editor.trigger('valuechanged');
-    return true;
-  };
-
   Util.prototype.dataURLtoBlob = function(dataURL) {
     var BlobBuilder, arrayBuffer, bb, byteString, hasArrayBufferViewSupport, hasBlobConstructor, i, intArray, j, mimeString, ref;
     hasBlobConstructor = window.Blob && (function() {
@@ -2124,6 +2008,179 @@ Toolbar = (function(superClass) {
 
 })(SimpleModule);
 
+Indentation = (function(superClass) {
+  extend(Indentation, superClass);
+
+  function Indentation() {
+    return Indentation.__super__.constructor.apply(this, arguments);
+  }
+
+  Indentation.pluginName = 'Indentation';
+
+  Indentation.prototype.opts = {
+    tabIndent: true
+  };
+
+  Indentation.prototype._init = function() {
+    this.editor = this._module;
+    return this.editor.inputManager.addKeystrokeHandler('9', '*', (function(_this) {
+      return function(e) {
+        var codeButton;
+        codeButton = _this.editor.toolbar.findButton('code');
+        if (!(_this.opts.tabIndent || (codeButton && codeButton.active))) {
+          return;
+        }
+        return _this.indent(e.shiftKey);
+      };
+    })(this));
+  };
+
+  Indentation.prototype.indent = function(isBackward) {
+    var $blockEls, $endBlock, $startBlock, range, result;
+    range = this.editor.selection.getRange();
+    if (!range) {
+      return;
+    }
+    $startBlock = this.editor.util.closestBlockEl(range.startContainer);
+    $endBlock = this.editor.util.closestBlockEl(range.endContainer);
+    if (!($startBlock.is('li') && $endBlock.is('li') && $startBlock.parent().is($endBlock.parent()))) {
+      $startBlock = this.editor.util.furthestBlockEl($startBlock);
+      $endBlock = this.editor.util.furthestBlockEl($endBlock);
+    }
+    if ($startBlock.is($endBlock)) {
+      $blockEls = $startBlock;
+    } else {
+      $blockEls = $startBlock.nextUntil($endBlock).add($startBlock).add($endBlock);
+    }
+    result = false;
+    $blockEls.each((function(_this) {
+      return function(i, blockEl) {
+        return result = isBackward ? _this.outdentBlock(blockEl) : _this.indentBlock(blockEl);
+      };
+    })(this));
+    return result;
+  };
+
+  Indentation.prototype.indentBlock = function(blockEl) {
+    var $blockEl, $childList, $nextTd, $parentLi, $pre, $td, indentLevel, range, tagName;
+    $blockEl = $(blockEl);
+    if (!$blockEl.length) {
+      return;
+    }
+    if ($blockEl.is('pre')) {
+      range = this.editor.selection.getRange();
+      $pre = $(range.commonAncestorContainer);
+      if (!($pre.is($blockEl) || $pre.closest('pre').is($blockEl))) {
+        return;
+      }
+      this.indentText(range);
+    } else if ($blockEl.is('li')) {
+      $parentLi = $blockEl.prev('li');
+      if ($parentLi.length < 1) {
+        return;
+      }
+      this.editor.selection.save();
+      tagName = $blockEl.parent()[0].tagName;
+      $childList = $parentLi.children('ul, ol');
+      if ($childList.length > 0) {
+        $childList.append($blockEl);
+      } else {
+        $('<' + tagName + '/>').append($blockEl).appendTo($parentLi);
+      }
+      this.editor.selection.restore();
+    } else if ($blockEl.is('p, h1, h2, h3, h4')) {
+      indentLevel = $blockEl.attr('data-indent') || 0;
+      indentLevel = Math.min(indentLevel * 1 + 1, 10);
+      $blockEl.attr('data-indent', indentLevel);
+    } else if ($blockEl.is('table')) {
+      range = this.editor.selection.getRange();
+      $td = $(range.commonAncestorContainer).closest('td');
+      $nextTd = $td.next('td');
+      if (!($nextTd.length > 0)) {
+        $nextTd = $td.parent('tr').next('tr').find('td:first');
+      }
+      if (!($td.length > 0 && $nextTd.length > 0)) {
+        return false;
+      }
+      this.editor.selection.setRangeAtEndOf($nextTd);
+    }
+    return true;
+  };
+
+  Indentation.prototype.indentText = function(range) {
+    var text, textNode;
+    text = range.toString().replace(/^(?=.+)/mg, '\u00A0\u00A0');
+    textNode = document.createTextNode(text || '\u00A0\u00A0');
+    range.deleteContents();
+    range.insertNode(textNode);
+    if (text) {
+      range.selectNode(textNode);
+      return this.editor.selection.selectRange(range);
+    } else {
+      return this.editor.selection.setRangeAfter(textNode);
+    }
+  };
+
+  Indentation.prototype.outdentBlock = function(blockEl) {
+    var $blockEl, $parent, $parentLi, $pre, $prevTd, $td, button, indentLevel, range, ref;
+    $blockEl = $(blockEl);
+    if (!($blockEl && $blockEl.length > 0)) {
+      return;
+    }
+    if ($blockEl.is('pre')) {
+      range = this.editor.selection.getRange();
+      $pre = $(range.commonAncestorContainer);
+      if (!($pre.is($blockEl) || $pre.closest('pre').is($blockEl))) {
+        return;
+      }
+      this.outdentText(range);
+    } else if ($blockEl.is('li')) {
+      $parent = $blockEl.parent();
+      $parentLi = $parent.parent('li');
+      if ($parentLi.length < 1) {
+        button = this.editor.toolbar.findButton($parent[0].tagName.toLowerCase());
+        if (button != null) {
+          button.command();
+        }
+        return;
+      }
+      this.editor.selection.save();
+      if ($blockEl.next('li').length > 0) {
+        $('<' + $parent[0].tagName + '/>').append($blockEl.nextAll('li')).appendTo($blockEl);
+      }
+      $blockEl.insertAfter($parentLi);
+      if ($parent.children('li').length < 1) {
+        $parent.remove();
+      }
+      this.editor.selection.restore();
+    } else if ($blockEl.is('p, h1, h2, h3, h4')) {
+      indentLevel = (ref = $blockEl.attr('data-indent')) != null ? ref : 0;
+      indentLevel = indentLevel * 1 - 1;
+      if (indentLevel < 0) {
+        indentLevel = 0;
+      }
+      $blockEl.attr('data-indent', indentLevel);
+    } else if ($blockEl.is('table')) {
+      range = this.editor.selection.getRange();
+      $td = $(range.commonAncestorContainer).closest('td');
+      $prevTd = $td.prev('td');
+      if (!($prevTd.length > 0)) {
+        $prevTd = $td.parent('tr').prev('tr').find('td:last');
+      }
+      if (!($td.length > 0 && $prevTd.length > 0)) {
+        return;
+      }
+      this.editor.selection.setRangeAtEndOf($prevTd);
+    }
+    return true;
+  };
+
+  Indentation.prototype.outdentText = function(range) {};
+
+  return Indentation;
+
+})(SimpleModule);
+
 Simditor = (function(superClass) {
   extend(Simditor, superClass);
 
@@ -2145,6 +2202,8 @@ Simditor = (function(superClass) {
 
   Simditor.connect(Toolbar);
 
+  Simditor.connect(Indentation);
+
   Simditor.count = 0;
 
   Simditor.prototype.opts = {
@@ -2152,8 +2211,7 @@ Simditor = (function(superClass) {
     placeholder: '',
     defaultImage: 'images/image.png',
     params: {},
-    upload: false,
-    tabIndent: true
+    upload: false
   };
 
   Simditor.prototype._init = function() {
@@ -2361,6 +2419,7 @@ Simditor.i18n = {
     'uploadError': '上传出错了',
     'imageUrl': '图片地址',
     'imageSize': '图片尺寸',
+    'imageAlt': '图片描述',
     'restoreImageSize': '还原图片尺寸',
     'uploading': '正在上传',
     'indent': '向右缩进',
@@ -4226,51 +4285,28 @@ ImagePopover = (function(superClass) {
 
   ImagePopover.prototype.render = function() {
     var tpl;
-    tpl = "<div class=\"link-settings\">\n  <div class=\"settings-field\">\n    <label>" + (this._t('imageUrl')) + "</label>\n    <input class=\"image-src\" type=\"text\" tabindex=\"1\" />\n    <a class=\"btn-upload\" href=\"javascript:;\" title=\"" + (this._t('uploadImage')) + "\" tabindex=\"-1\">\n      <span class=\"simditor-icon simditor-icon-upload\"></span>\n    </a>\n  </div>\n  <div class=\"settings-field\">\n    <label>" + (this._t('imageSize')) + "</label>\n    <input class=\"image-size\" id=\"image-width\" type=\"text\" tabindex=\"2\" />\n    <span class=\"times\">×</span>\n    <input class=\"image-size\" id=\"image-height\" type=\"text\" tabindex=\"3\" />\n    <a class=\"btn-restore\" href=\"javascript:;\" title=\"" + (this._t('restoreImageSize')) + "\" tabindex=\"-1\">\n      <span class=\"simditor-icon simditor-icon-undo\"></span>\n    </a>\n  </div>\n</div>";
+    tpl = "<div class=\"link-settings\">\n  <div class=\"settings-field\">\n    <label>" + (this._t('imageUrl')) + "</label>\n    <input class=\"image-src\" type=\"text\" tabindex=\"1\" />\n    <a class=\"btn-upload\" href=\"javascript:;\" title=\"" + (this._t('uploadImage')) + "\" tabindex=\"-1\">\n      <span class=\"simditor-icon simditor-icon-upload\"></span>\n    </a>\n  </div>\n  <div class='settings-field'>\n    <label>" + (this._t('imageAlt')) + "</label>\n    <input class=\"image-alt\" id=\"image-alt\" type=\"text\" tabindex=\"1\" />\n  </div>\n  <div class=\"settings-field\">\n    <label>" + (this._t('imageSize')) + "</label>\n    <input class=\"image-size\" id=\"image-width\" type=\"text\" tabindex=\"2\" />\n    <span class=\"times\">×</span>\n    <input class=\"image-size\" id=\"image-height\" type=\"text\" tabindex=\"3\" />\n    <a class=\"btn-restore\" href=\"javascript:;\" title=\"" + (this._t('restoreImageSize')) + "\" tabindex=\"-1\">\n      <span class=\"simditor-icon simditor-icon-undo\"></span>\n    </a>\n  </div>\n</div>";
     this.el.addClass('image-popover').append(tpl);
     this.srcEl = this.el.find('.image-src');
+    this.widthEl = this.el.find('#image-width');
+    this.heightEl = this.el.find('#image-height');
+    this.altEl = this.el.find('#image-alt');
     this.srcEl.on('keydown', (function(_this) {
       return function(e) {
-        var hideAndFocus, src;
-        if (!(e.which === 13 || e.which === 27)) {
+        if (!(e.which === 13 && !_this.target.hasClass('uploading'))) {
           return;
         }
         e.preventDefault();
-        hideAndFocus = function() {
-          _this.button.editor.body.focus();
-          _this.button.editor.selection.setRangeAfter(_this.target);
-          return _this.hide();
-        };
-        if (e.which === 13 && !_this.target.hasClass('uploading')) {
-          src = _this.srcEl.val();
-          if (/^data:image/.test(src) && !_this.editor.uploader) {
-            hideAndFocus();
-            return;
-          }
-          return _this.button.loadImage(_this.target, src, function(success) {
-            var blob;
-            if (!success) {
-              return;
-            }
-            if (/^data:image/.test(src)) {
-              blob = _this.editor.util.dataURLtoBlob(src);
-              blob.name = "Base64 Image.png";
-              return _this.editor.uploader.upload(blob, {
-                inline: true,
-                img: _this.target
-              });
-            } else {
-              hideAndFocus();
-              return _this.editor.trigger('valuechanged');
-            }
-          });
-        } else {
-          return hideAndFocus();
-        }
+        _this.button.editor.body.focus();
+        _this.button.editor.selection.setRangeAfter(_this.target);
+        return _this.hide();
       };
     })(this));
-    this.widthEl = this.el.find('#image-width');
-    this.heightEl = this.el.find('#image-height');
+    this.srcEl.on('blur', (function(_this) {
+      return function(e) {
+        return _this._loadImage(_this.srcEl.val());
+      };
+    })(this));
     this.el.find('.image-size').on('blur', (function(_this) {
       return function(e) {
         _this._resizeImg($(e.currentTarget));
@@ -4303,6 +4339,25 @@ ImagePopover = (function(superClass) {
         } else if (e.which === 9) {
           return _this.el.data('popover').refresh();
         }
+      };
+    })(this));
+    this.altEl.on('keydown', (function(_this) {
+      return function(e) {
+        if (e.which === 13) {
+          e.preventDefault();
+          _this.button.editor.body.focus();
+          _this.button.editor.selection.setRangeAfter(_this.target);
+          return _this.hide();
+        }
+      };
+    })(this));
+    this.altEl.on('keyup', (function(_this) {
+      return function(e) {
+        if (e.which === 13 || e.which === 27 || e.which === 9) {
+          return;
+        }
+        _this.alt = _this.altEl.val();
+        return _this.target.attr('alt', _this.alt);
       };
     })(this));
     this.el.find('.btn-restore').on('click', (function(_this) {
@@ -4370,11 +4425,12 @@ ImagePopover = (function(superClass) {
       this.widthEl.val(width);
     }
     if (!onlySetVal) {
-      return this.target.attr({
+      this.target.attr({
         width: width || value,
         height: height || value
       });
     }
+    return this.editor.trigger('valuechanged');
   };
 
   ImagePopover.prototype._restoreImg = function() {
@@ -4385,7 +4441,45 @@ ImagePopover = (function(superClass) {
       height: size[1] * 1
     });
     this.widthEl.val(size[0]);
-    return this.heightEl.val(size[1]);
+    this.heightEl.val(size[1]);
+    return this.editor.trigger('valuechanged');
+  };
+
+  ImagePopover.prototype._loadImage = function(src, callback) {
+    if (/^data:image/.test(src) && !this.editor.uploader) {
+      if (callback) {
+        callback(false);
+      }
+      return;
+    }
+    return this.button.loadImage(this.target, src, (function(_this) {
+      return function(img) {
+        var blob;
+        if (!img) {
+          return;
+        }
+        if (_this.active) {
+          _this.width = img.width;
+          _this.height = img.height;
+          _this.widthEl.val(_this.width);
+          _this.heightEl.val(_this.height);
+          _this.target.removeAttr('width').removeAttr('height');
+        }
+        if (/^data:image/.test(src)) {
+          blob = _this.editor.util.dataURLtoBlob(src);
+          blob.name = "Base64 Image.png";
+          _this.editor.uploader.upload(blob, {
+            inline: true,
+            img: _this.target
+          });
+        } else {
+          _this.editor.trigger('valuechanged');
+        }
+        if (callback) {
+          return callback(img);
+        }
+      };
+    })(this));
   };
 
   ImagePopover.prototype.show = function() {
@@ -4395,12 +4489,14 @@ ImagePopover = (function(superClass) {
     $img = this.target;
     this.width = $img.width();
     this.height = $img.height();
+    this.alt = $img.attr('alt');
     if ($img.hasClass('uploading')) {
       return this.srcEl.val(this._t('uploading')).prop('disabled', true);
     } else {
       this.srcEl.val($img.attr('src')).prop('disabled', false);
       this.widthEl.val(this.width);
-      return this.heightEl.val(this.height);
+      this.heightEl.val(this.height);
+      return this.altEl.val(this.alt);
     }
   };
 
