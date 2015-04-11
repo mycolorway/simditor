@@ -4527,7 +4527,7 @@ IndentButton = (function(superClass) {
   };
 
   IndentButton.prototype.command = function() {
-    return this.editor.util.indent();
+    return this.editor.indentation.indent();
   };
 
   return IndentButton;
@@ -4557,7 +4557,7 @@ OutdentButton = (function(superClass) {
   };
 
   OutdentButton.prototype.command = function() {
-    return this.editor.util.outdent();
+    return this.editor.indentation.indent(true);
   };
 
   return OutdentButton;
