@@ -1,7 +1,7 @@
 /*!
 * Simditor v2.1.7
 * http://simditor.tower.im/
-* 2015-11-04
+* 2015-15-04
 */
 @font-face {
   font-family: 'Simditor';
@@ -136,8 +136,8 @@
 .simditor.simditor-source-mode textarea {
   display: block !important;
 }
-.simditor.simditor-source-mode .simditor-body {
-  display: none;
+.simditor.simditor-source-mode .simditor-body, .simditor.simditor-source-mode .simditor-placeholder {
+  display: none !important;
 }
 .simditor .simditor-wrapper {
   position: relative;

@@ -131,8 +131,8 @@
 .simditor.simditor-source-mode textarea {
   display: block !important;
 }
-.simditor.simditor-source-mode .simditor-body {
-  display: none;
+.simditor.simditor-source-mode .simditor-body, .simditor.simditor-source-mode .simditor-placeholder {
+  display: none !important;
 }
 .simditor .simditor-wrapper {
   position: relative;

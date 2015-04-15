@@ -26,8 +26,8 @@ $simditor-button-height: 40px;
       display: block !important;
     }
 
-    .simditor-body {
-      display: none;
+    .simditor-body, .simditor-placeholder {
+      display: none !important;
     }
   }
 
