@@ -72,7 +72,7 @@ class Indentation extends SimpleModule
       indentLevel = $blockEl.attr('data-indent') || 0
       indentLevel = Math.min(indentLevel * 1 + 1, 10)
       $blockEl.attr 'data-indent', indentLevel
-    else if $blockEl.is 'table'
+    else if $blockEl.is('table') or $blockEl.is('.simditor-table')
       range = @editor.selection.getRange()
       $td = $(range.commonAncestorContainer).closest('td')
       $nextTd = $td.next('td')
@@ -127,7 +127,7 @@ class Indentation extends SimpleModule
       indentLevel = indentLevel * 1 - 1
       indentLevel = 0 if indentLevel < 0
       $blockEl.attr 'data-indent', indentLevel
-    else if $blockEl.is 'table'
+    else if $blockEl.is('table') or $blockEl.is('.simditor-table')
       range = @editor.selection.getRange()
       $td = $(range.commonAncestorContainer).closest('td')
       $prevTd = $td.prev('td')
