@@ -2092,7 +2092,7 @@ Indentation = (function(superClass) {
       indentLevel = $blockEl.attr('data-indent') || 0;
       indentLevel = Math.min(indentLevel * 1 + 1, 10);
       $blockEl.attr('data-indent', indentLevel);
-    } else if ($blockEl.is('table')) {
+    } else if ($blockEl.is('table') || $blockEl.is('.simditor-table')) {
       range = this.editor.selection.getRange();
       $td = $(range.commonAncestorContainer).closest('td');
       $nextTd = $td.next('td');
@@ -2160,7 +2160,7 @@ Indentation = (function(superClass) {
         indentLevel = 0;
       }
       $blockEl.attr('data-indent', indentLevel);
-    } else if ($blockEl.is('table')) {
+    } else if ($blockEl.is('table') || $blockEl.is('.simditor-table')) {
       range = this.editor.selection.getRange();
       $td = $(range.commonAncestorContainer).closest('td');
       $prevTd = $td.prev('td');
