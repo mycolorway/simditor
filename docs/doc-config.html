@@ -261,7 +261,43 @@
       <span class="default">默认值: ['upload', 'external']</span>
     </dt>
     <dd class="expand">
-      <p>自定义图片按钮的功能，支持<code>upload</code>和<code>external</code>两种，分别表示本地上传和外链图片。如果提供的选项是数组，那么下拉菜单的形式支持对应的功能。</p>
+      <p>自定义图片按钮的功能，支持<code>upload</code>和<code>external</code>两种，分别表示本地上传和外链图片。如果提供的选项是数组，那么会以下拉菜单的形式支持对应的功能。</p>
+
+    </dd>
+  
+    <dt id="anchor-allowedTags">
+      <!--<span class="icon simditor-icon simditor-icon-caret-down"></span>-->
+      <span class="name">allowedTags</span>
+      <span class="type">Array</span>
+      <span class="default">默认值: null</span>
+    </dt>
+    <dd class="expand">
+      <p>自定义编辑器支持的标签白名单。为了保证输出HTML的干净和标准，Simditor采用白名单的机制来过滤内容，默认的白名单是：</p>
+<div class="highlight"><pre><code class="language-coffee" data-lang="coffee"><span class="p">[</span><span class="s">&#39;br&#39;</span><span class="p">,</span> <span class="s">&#39;a&#39;</span><span class="p">,</span> <span class="s">&#39;img&#39;</span><span class="p">,</span> <span class="s">&#39;b&#39;</span><span class="p">,</span> <span class="s">&#39;strong&#39;</span><span class="p">,</span> <span class="s">&#39;i&#39;</span><span class="p">,</span> <span class="s">&#39;u&#39;</span><span class="p">,</span> <span class="s">&#39;font&#39;</span><span class="p">,</span> <span class="s">&#39;p&#39;</span><span class="p">,</span> <span class="s">&#39;ul&#39;</span><span class="p">,</span> <span class="s">&#39;ol&#39;</span><span class="p">,</span> <span class="s">&#39;li&#39;</span><span class="p">,</span> <span class="s">&#39;blockquote&#39;</span><span class="p">,</span> <span class="s">&#39;pre&#39;</span><span class="p">,</span> <span class="s">&#39;h1&#39;</span><span class="p">,</span> <span class="s">&#39;h2&#39;</span><span class="p">,</span> <span class="s">&#39;h3&#39;</span><span class="p">,</span> <span class="s">&#39;h4&#39;</span><span class="p">,</span> <span class="s">&#39;hr&#39;</span><span class="p">]</span>
+</code></pre></div>
+<p>自定义的白名单列表会覆盖编辑器默认的白名单列表。</p>
+
+    </dd>
+  
+    <dt id="anchor-allowedAttributes">
+      <!--<span class="icon simditor-icon simditor-icon-caret-down"></span>-->
+      <span class="name">allowedAttributes</span>
+      <span class="type">Array</span>
+      <span class="default">默认值: null</span>
+    </dt>
+    <dd class="expand">
+      <p>自定义编辑器支持的标签属性白名单。默认的白名单是：</p>
+<div class="highlight"><pre><code class="language-coffee" data-lang="coffee"><span class="nv">img: </span><span class="p">[</span><span class="s">&#39;src&#39;</span><span class="p">,</span> <span class="s">&#39;alt&#39;</span><span class="p">,</span> <span class="s">&#39;width&#39;</span><span class="p">,</span> <span class="s">&#39;height&#39;</span><span class="p">,</span> <span class="s">&#39;data-image-src&#39;</span><span class="p">,</span> <span class="s">&#39;data-image-size&#39;</span><span class="p">,</span> <span class="s">&#39;data-image-name&#39;</span><span class="p">,</span> <span class="s">&#39;data-non-image&#39;</span><span class="p">]</span>
+<span class="nv">a: </span><span class="p">[</span><span class="s">&#39;href&#39;</span><span class="p">,</span> <span class="s">&#39;target&#39;</span><span class="p">]</span>
+<span class="nv">font: </span><span class="p">[</span><span class="s">&#39;color&#39;</span><span class="p">]</span>
+<span class="nv">pre: </span><span class="p">[</span><span class="s">&#39;data-lang&#39;</span><span class="p">,</span> <span class="s">&#39;class&#39;</span><span class="p">]</span>
+<span class="nv">p: </span><span class="p">[</span><span class="s">&#39;data-indent&#39;</span><span class="p">]</span>
+<span class="nv">h1: </span><span class="p">[</span><span class="s">&#39;data-indent&#39;</span><span class="p">]</span>
+<span class="nv">h2: </span><span class="p">[</span><span class="s">&#39;data-indent&#39;</span><span class="p">]</span>
+<span class="nv">h3: </span><span class="p">[</span><span class="s">&#39;data-indent&#39;</span><span class="p">]</span>
+<span class="nv">h4: </span><span class="p">[</span><span class="s">&#39;data-indent&#39;</span><span class="p">]</span>
+</code></pre></div>
+<p>自定义的白名单列表会覆盖编辑器默认的白名单列表。</p>
 
     </dd>
   
