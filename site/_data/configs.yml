@@ -123,4 +123,36 @@
   type: "Array/String"
   default: "['upload', 'external']"
   description: |
-    自定义图片按钮的功能，支持`upload`和`external`两种，分别表示本地上传和外链图片。如果提供的选项是数组，那么下拉菜单的形式支持对应的功能。
+    自定义图片按钮的功能，支持`upload`和`external`两种，分别表示本地上传和外链图片。如果提供的选项是数组，那么会以下拉菜单的形式支持对应的功能。
+
+- name: "allowedTags"
+  type: "Array"
+  default: "null"
+  description: |
+    自定义编辑器支持的标签白名单。为了保证输出HTML的干净和标准，Simditor采用白名单的机制来过滤内容，默认的白名单是：
+
+    ```coffee
+    ['br', 'a', 'img', 'b', 'strong', 'i', 'u', 'font', 'p', 'ul', 'ol', 'li', 'blockquote', 'pre', 'h1', 'h2', 'h3', 'h4', 'hr']
+    ```
+
+    自定义的白名单列表会覆盖编辑器默认的白名单列表。
+
+- name: "allowedAttributes"
+  type: "Array"
+  default: "null"
+  description: |
+    自定义编辑器支持的标签属性白名单。默认的白名单是：
+
+    ```coffee
+    img: ['src', 'alt', 'width', 'height', 'data-image-src', 'data-image-size', 'data-image-name', 'data-non-image']
+    a: ['href', 'target']
+    font: ['color']
+    pre: ['data-lang', 'class']
+    p: ['data-indent']
+    h1: ['data-indent']
+    h2: ['data-indent']
+    h3: ['data-indent']
+    h4: ['data-indent']
+    ```
+    
+    自定义的白名单列表会覆盖编辑器默认的白名单列表。

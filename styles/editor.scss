@@ -620,6 +620,7 @@ $simditor-button-height: 40px;
     font-family: 'monaco', 'Consolas', "Liberation Mono", Courier, monospace;
     white-space: pre;
     word-wrap: normal;
+    overflow-x: auto;
   }
 
   code {
@@ -678,4 +679,3 @@ $simditor-button-height: 40px;
     }
   }
 }
-

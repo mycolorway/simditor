@@ -651,6 +651,7 @@
   font-family: 'monaco', 'Consolas', "Liberation Mono", Courier, monospace;
   white-space: pre;
   word-wrap: normal;
+  overflow-x: auto;
 }
 .simditor .simditor-body code, .editor-style code {
   display: inline-block;

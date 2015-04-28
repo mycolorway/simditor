@@ -1,5 +1,5 @@
 /*!
-* Simditor v2.1.8
+* Simditor v2.1.9
 * http://simditor.tower.im/
 * 2015-28-04
 */
@@ -656,6 +656,7 @@
   font-family: 'monaco', 'Consolas', "Liberation Mono", Courier, monospace;
   white-space: pre;
   word-wrap: normal;
+  overflow-x: auto;
 }
 .simditor .simditor-body code, .editor-style code {
   display: inline-block;
