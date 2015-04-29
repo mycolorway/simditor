@@ -1884,14 +1884,15 @@ Toolbar = (function(superClass) {
       };
     })(this));
     if (!this.opts.toolbarHidden && this.opts.toolbarFloat) {
-      this.wrapper.width(this.wrapper.outerWidth());
       this.wrapper.css('top', this.opts.toolbarFloatOffset);
       toolbarHeight = this.wrapper.outerHeight();
       if (!this.editor.util.os.mobile) {
         $(window).on('resize.simditor-' + this.editor.id, (function(_this) {
           return function(e) {
             _this.wrapper.css('position', 'static');
+            _this.wrapper.width('auto');
             _this.editor.util.reflow(_this.wrapper);
+            _this.wrapper.width(_this.wrapper.outerWidth());
             _this.wrapper.css('left', _this.wrapper.offset().left);
             return _this.wrapper.css('position', '');
           };

@@ -32,14 +32,15 @@ class Toolbar extends SimpleModule
       @list.find('.menu-on').removeClass('.menu-on')
 
     if not @opts.toolbarHidden and @opts.toolbarFloat
-      @wrapper.width @wrapper.outerWidth()
       @wrapper.css 'top', @opts.toolbarFloatOffset
       toolbarHeight = @wrapper.outerHeight()
 
       unless @editor.util.os.mobile
         $(window).on 'resize.simditor-' + @editor.id, (e) =>
           @wrapper.css 'position', 'static'
+          @wrapper.width 'auto'
           @editor.util.reflow @wrapper
+          @wrapper.width @wrapper.outerWidth()
           @wrapper.css 'left', @wrapper.offset().left
           @wrapper.css 'position', ''
         .resize()
@@ -116,5 +117,3 @@ class Toolbar extends SimpleModule
     @buttons[btn::name] = btn
 
   @buttons: {}
-
-
