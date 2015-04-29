@@ -33,17 +33,19 @@ class Toolbar extends SimpleModule
 
     if not @opts.toolbarHidden and @opts.toolbarFloat
       @wrapper.css 'top', @opts.toolbarFloatOffset
-      toolbarHeight = @wrapper.outerHeight()
+      toolbarHeight = 0
 
-      unless @editor.util.os.mobile
-        $(window).on 'resize.simditor-' + @editor.id, (e) =>
-          @wrapper.css 'position', 'static'
-          @wrapper.width 'auto'
-          @editor.util.reflow @wrapper
-          @wrapper.width @wrapper.outerWidth()
-          @wrapper.css 'left', @wrapper.offset().left
-          @wrapper.css 'position', ''
-        .resize()
+      # unless @editor.util.os.mobile
+      $(window).on 'resize.simditor-' + @editor.id, (e) =>
+        @wrapper.css 'position', 'static'
+        @wrapper.width 'auto'
+        @editor.util.reflow @wrapper
+        @wrapper.width @wrapper.outerWidth()
+        @wrapper.css 'left', @wrapper.offset().left
+        @wrapper.css 'position', ''
+        toolbarHeight = @wrapper.outerHeight()
+        @editor.placeholderEl.css 'top', toolbarHeight
+      .resize()
 
       $(window).on 'scroll.simditor-' + @editor.id, (e) =>
         topEdge = @editor.wrapper.offset().top
@@ -87,10 +89,7 @@ class Toolbar extends SimpleModule
       @buttons.push new @constructor.buttons[name]
         editor: @editor
 
-    if @opts.toolbarHidden
-      @wrapper.hide()
-    else
-      @editor.placeholderEl.css 'top', @wrapper.outerHeight()
+    @wrapper.hide() if @opts.toolbarHidden
 
   toolbarStatus: (name) ->
     return unless @editor.inputManager.focused

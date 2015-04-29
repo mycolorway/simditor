@@ -1885,19 +1885,19 @@ Toolbar = (function(superClass) {
     })(this));
     if (!this.opts.toolbarHidden && this.opts.toolbarFloat) {
       this.wrapper.css('top', this.opts.toolbarFloatOffset);
-      toolbarHeight = this.wrapper.outerHeight();
-      if (!this.editor.util.os.mobile) {
-        $(window).on('resize.simditor-' + this.editor.id, (function(_this) {
-          return function(e) {
-            _this.wrapper.css('position', 'static');
-            _this.wrapper.width('auto');
-            _this.editor.util.reflow(_this.wrapper);
-            _this.wrapper.width(_this.wrapper.outerWidth());
-            _this.wrapper.css('left', _this.wrapper.offset().left);
-            return _this.wrapper.css('position', '');
-          };
-        })(this)).resize();
-      }
+      toolbarHeight = 0;
+      $(window).on('resize.simditor-' + this.editor.id, (function(_this) {
+        return function(e) {
+          _this.wrapper.css('position', 'static');
+          _this.wrapper.width('auto');
+          _this.editor.util.reflow(_this.wrapper);
+          _this.wrapper.width(_this.wrapper.outerWidth());
+          _this.wrapper.css('left', _this.wrapper.offset().left);
+          _this.wrapper.css('position', '');
+          toolbarHeight = _this.wrapper.outerHeight();
+          return _this.editor.placeholderEl.css('top', toolbarHeight);
+        };
+      })(this)).resize();
       $(window).on('scroll.simditor-' + this.editor.id, (function(_this) {
         return function(e) {
           var bottomEdge, scrollTop, topEdge;
@@ -1957,8 +1957,6 @@ Toolbar = (function(superClass) {
     }
     if (this.opts.toolbarHidden) {
       return this.wrapper.hide();
-    } else {
-      return this.editor.placeholderEl.css('top', this.wrapper.outerHeight());
     }
   };
 
