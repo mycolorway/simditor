@@ -39,3 +39,6 @@ Simditor.i18n =
     'source': 'HTML源代码'
     'normalText': '普通文本'
     'underline': '下划线文字'
+    'aligncenter': '居中'
+    'alignleft': '居左'
+    'alignright': '居右'
