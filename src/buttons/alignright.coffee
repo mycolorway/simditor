@@ -1,23 +1,13 @@
-class AlignrightButton extends Button
+class AlignrightButton extends AlignButton
 
   name: 'alignright'
 
   icon: 'align-right'
 
-  htmlTag: 'p, h1, h2, h3, h4'
-
   shortcut: 'Cmd + Shift + R'
 
-  status: ($node) ->
-    return true unless $node?
-    return unless @editor.util.isBlockNode $node
-
-    @setDisabled !$node.is(@htmlTag)
-    @setActive !@disabled
-    return true if @disabled
-
-    @setActive $node.data("align") == "right"
-    @active
+  _status: ($node) ->
+    $node.data("align") == "right"
 
   command: (param) ->
     @editor.alignment.right @htmlTag

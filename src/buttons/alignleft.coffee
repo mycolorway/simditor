@@ -1,24 +1,14 @@
-class AlignleftButton extends Button
+class AlignleftButton extends AlignButton
 
   name: 'alignleft'
 
   icon: 'align-left'
 
-  htmlTag: 'p, h1, h2, h3, h4'
-
   shortcut: 'Cmd + Shift + L'
 
-  status: ($node) ->
-    return true unless $node?
-    return unless @editor.util.isBlockNode $node
-
-    @setDisabled !$node.is(@htmlTag)
-    @setActive !@disabled
-    return true if @disabled
-
+  _status: ($node) ->
     aligment = $node.data("align")
-    @setActive aligment == undefined or aligment == "left"
-    @active
+    aligment == undefined or aligment == "left"
 
   command: (param) ->
     @editor.alignment.left @htmlTag
