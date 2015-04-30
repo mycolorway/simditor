@@ -13,6 +13,7 @@ class AligncenterButton extends Button
     return unless @editor.util.isBlockNode $node
 
     @setDisabled !$node.is(@htmlTag)
+    @setActive !@disabled
     return true if @disabled
 
     @setActive $node.data("align") == "center"

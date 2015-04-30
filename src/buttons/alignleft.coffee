@@ -13,6 +13,7 @@ class AlignleftButton extends Button
     return unless @editor.util.isBlockNode $node
 
     @setDisabled !$node.is(@htmlTag)
+    @setActive !@disabled
     return true if @disabled
 
     aligment = $node.data("align")
