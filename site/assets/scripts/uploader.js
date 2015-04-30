@@ -79,7 +79,7 @@ Uploader = (function(_super) {
     if (file == null) {
       return;
     }
-    if ($.isArray(file) || file instanceof FileList) {
+    if ($.isArray(file)) {
       for (_i = 0, _len = file.length; _i < _len; _i++) {
         f = file[_i];
         this.upload(f, opts);
@@ -143,6 +143,7 @@ Uploader = (function(_super) {
     return file.xhr = $.ajax({
       url: file.url,
       data: formData,
+      dataType: 'json',
       processData: false,
       contentType: false,
       type: 'POST',
@@ -177,8 +178,7 @@ Uploader = (function(_super) {
       success: (function(_this) {
         return function(result) {
           _this.trigger('uploadprogress', [file, file.size, file.size]);
-          _this.trigger('uploadsuccess', [file, result]);
-          return $(document).trigger('uploadsuccess', [file, result, _this]);
+          return _this.trigger('uploadsuccess', [file, result]);
         };
       })(this),
       complete: (function(_this) {
@@ -259,7 +259,9 @@ uploader = function(opts) {
   return new Uploader(opts);
 };
 
+
 return uploader;
+
 
 }));
 

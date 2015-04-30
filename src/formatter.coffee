@@ -16,7 +16,7 @@ class Formatter extends SimpleModule
       a: ['href', 'target']
       font: ['color']
       pre: ['data-lang', 'class']
-      p: ['data-indent']
+      p: ['data-indent', 'data-align']
       h1: ['data-indent']
       h2: ['data-indent']
       h3: ['data-indent']

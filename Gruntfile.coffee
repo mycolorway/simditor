@@ -19,6 +19,7 @@ module.exports = (grunt) ->
             'src/util.coffee'
             'src/toolbar.coffee'
             'src/indentation.coffee'
+            'src/alignment.coffee'
             'src/core.coffee'
             'src/i18n.coffee'
             'src/buttons/button.coffee'
@@ -39,6 +40,10 @@ module.exports = (grunt) ->
             'src/buttons/hr.coffee'
             'src/buttons/table.coffee'
             'src/buttons/strikethrough.coffee'
+            'src/buttons/align.coffee'
+            'src/buttons/aligncenter.coffee'
+            'src/buttons/alignleft.coffee'
+            'src/buttons/alignright.coffee'
           ]
       site:
         expand: true
