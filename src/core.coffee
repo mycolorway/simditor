@@ -8,7 +8,6 @@ class Simditor extends SimpleModule
   @connect Selection
   @connect Toolbar
   @connect Indentation
-  @connect Alignment
 
   @count: 0
 

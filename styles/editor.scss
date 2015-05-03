@@ -430,6 +430,16 @@ $simditor-button-height: 40px;
           }
         }
       }
+
+      &.toolbar-menu-alignment {
+        width: 100%;
+        ul {
+          min-width: 100%;
+        }
+        .menu-item {
+          text-align: center;
+        }
+      }
     }
   }
 

@@ -14,7 +14,7 @@
   }
 }(this, function ($, SimpleModule, simpleHotkeys, simpleUploader) {
 
-var AlignButton, AligncenterButton, AlignleftButton, Alignment, AlignrightButton, BlockquoteButton, BoldButton, Button, CodeButton, CodePopover, ColorButton, Formatter, HrButton, ImageButton, ImagePopover, IndentButton, Indentation, InputManager, ItalicButton, Keystroke, LinkButton, LinkPopover, ListButton, OrderListButton, OutdentButton, Popover, Selection, Simditor, SourceButton, StrikethroughButton, TableButton, TitleButton, Toolbar, UnderlineButton, UndoManager, UnorderListButton, Util,
+var AlignmentButton, BlockquoteButton, BoldButton, Button, CodeButton, CodePopover, ColorButton, Formatter, HrButton, ImageButton, ImagePopover, IndentButton, Indentation, InputManager, ItalicButton, Keystroke, LinkButton, LinkPopover, ListButton, OrderListButton, OutdentButton, Popover, Selection, Simditor, SourceButton, StrikethroughButton, TableButton, TitleButton, Toolbar, UnderlineButton, UndoManager, UnorderListButton, Util,
   __hasProp = {}.hasOwnProperty,
   __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
   __indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; },
@@ -2180,56 +2180,6 @@ Indentation = (function(_super) {
 
 })(SimpleModule);
 
-Alignment = (function(_super) {
-  __extends(Alignment, _super);
-
-  function Alignment() {
-    return Alignment.__super__.constructor.apply(this, arguments);
-  }
-
-  Alignment.pluginName = 'Alignment';
-
-  Alignment.prototype._init = function() {
-    return this.editor = this._module;
-  };
-
-  Alignment.prototype._command = function(position, targetTag) {
-    var $blockEls, $endBlock, $startBlock, block, endNode, range, startNode, _i, _len, _ref;
-    if (targetTag == null) {
-      targetTag = "p";
-    }
-    range = this.editor.selection.getRange();
-    startNode = range.startContainer;
-    endNode = range.endContainer;
-    $startBlock = this.editor.util.closestBlockEl(startNode);
-    $endBlock = this.editor.util.closestBlockEl(endNode);
-    this.editor.selection.save();
-    $blockEls = $startBlock.is($endBlock) ? $startBlock : $startBlock.nextUntil($endBlock).addBack().add($endBlock);
-    _ref = $blockEls.filter(targetTag);
-    for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-      block = _ref[_i];
-      $(block).attr('data-align', position).data('align', position);
-    }
-    this.editor.selection.restore();
-    return this.editor.trigger('valuechanged');
-  };
-
-  Alignment.prototype.center = function(targetTag) {
-    return this._command("center", targetTag);
-  };
-
-  Alignment.prototype.left = function(targetTag) {
-    return this._command("left", targetTag);
-  };
-
-  Alignment.prototype.right = function(targetTag) {
-    return this._command("right", targetTag);
-  };
-
-  return Alignment;
-
-})(SimpleModule);
-
 Simditor = (function(_super) {
   __extends(Simditor, _super);
 
@@ -2252,8 +2202,6 @@ Simditor = (function(_super) {
   Simditor.connect(Toolbar);
 
   Simditor.connect(Indentation);
-
-  Simditor.connect(Alignment);
 
   Simditor.count = 0;
 
@@ -2496,9 +2444,10 @@ Simditor.i18n = {
     'source': 'HTML源代码',
     'normalText': '普通文本',
     'underline': '下划线文字',
-    'aligncenter': '居中',
-    'alignleft': '居左',
-    'alignright': '居右'
+    'alignment': '排版',
+    'alignCenter': '居中',
+    'alignLeft': '居左',
+    'alignRight': '居右'
   }
 };
 
@@ -2620,11 +2569,23 @@ Button = (function(_super) {
     return _results;
   };
 
+  Button.prototype.iconClassOf = function(icon) {
+    if (icon) {
+      return "simditor-icon simditor-icon-" + icon;
+    } else {
+      return '';
+    }
+  };
+
+  Button.prototype.setIcon = function(icon) {
+    return this.el.find('span').removeClass().addClass(this.iconClassOf(icon)).text(this.text);
+  };
+
   Button.prototype.render = function() {
     this.wrapper = $(this._tpl.item).appendTo(this.editor.toolbar.list);
     this.el = this.wrapper.find('a.toolbar-item');
     this.el.attr('title', this.title).addClass("toolbar-item-" + this.name).data('button', this);
-    this.el.find('span').addClass(this.icon ? "simditor-icon simditor-icon-" + this.icon : '').text(this.text);
+    this.setIcon(this.icon);
     if (!this.menu) {
       return;
     }
@@ -2634,7 +2595,7 @@ Button = (function(_super) {
   };
 
   Button.prototype.renderMenu = function() {
-    var $menuBtntnEl, $menuItemEl, menuItem, _i, _len, _ref, _ref1, _results;
+    var $menuBtnEl, $menuItemEl, menuItem, _i, _len, _ref, _ref1, _results;
     if (!$.isArray(this.menu)) {
       return;
     }
@@ -2648,10 +2609,15 @@ Button = (function(_super) {
         continue;
       }
       $menuItemEl = $(this._tpl.menuItem).appendTo(this.menuEl);
-      _results.push($menuBtntnEl = $menuItemEl.find('a.menu-item').attr({
+      $menuBtnEl = $menuItemEl.find('a.menu-item').attr({
         'title': (_ref1 = menuItem.title) != null ? _ref1 : menuItem.text,
         'data-param': menuItem.param
-      }).addClass('menu-item-' + menuItem.name).find('span').text(menuItem.text));
+      }).addClass('menu-item-' + menuItem.name);
+      if (menuItem.icon) {
+        _results.push($menuBtnEl.find('span').addClass(this.iconClassOf(menuItem.icon)));
+      } else {
+        _results.push($menuBtnEl.find('span').text(menuItem.text));
+      }
     }
     return _results;
   };
@@ -5146,24 +5112,55 @@ StrikethroughButton = (function(_super) {
 
 Simditor.Toolbar.addButton(StrikethroughButton);
 
-AlignButton = (function(_super) {
-  __extends(AlignButton, _super);
+AlignmentButton = (function(_super) {
+  __extends(AlignmentButton, _super);
 
-  function AlignButton() {
-    return AlignButton.__super__.constructor.apply(this, arguments);
+  function AlignmentButton() {
+    return AlignmentButton.__super__.constructor.apply(this, arguments);
   }
 
-  AlignButton.prototype.htmlTag = 'p, h1, h2, h3, h4';
+  AlignmentButton.prototype.name = "alignment";
 
-  AlignButton.prototype._init = function() {
-    if (!this.editor.util.os.mac) {
-      this.shortcut = this.shortcut.replace("Cmd", "Ctrl");
-    }
-    this.title = this.title + (" ( " + this.shortcut + " )");
-    return AlignButton.__super__._init.call(this);
+  AlignmentButton.prototype.icon = 'align-left';
+
+  AlignmentButton.prototype.htmlTag = 'p, h1, h2, h3, h4';
+
+  AlignmentButton.prototype._init = function() {
+    this.menu = [
+      {
+        name: 'left',
+        text: this._t('alignLeft'),
+        icon: 'align-left',
+        param: 'left'
+      }, {
+        name: 'center',
+        text: this._t('alignCenter'),
+        icon: 'align-center',
+        param: 'center'
+      }, {
+        name: 'right',
+        text: this._t('alignRight'),
+        icon: 'align-right',
+        param: 'right'
+      }
+    ];
+    return AlignmentButton.__super__._init.call(this);
   };
 
-  AlignButton.prototype.status = function($node) {
+  AlignmentButton.prototype.setActive = function(active, align) {
+    if (align == null) {
+      align = "left";
+    }
+    AlignmentButton.__super__.setActive.call(this, active);
+    this.el.removeClass('align-left align-center align-right');
+    if (active) {
+      this.el.addClass('active align-' + align);
+    }
+    this.setIcon('align-' + align);
+    return this.menuEl.find('.menu-item').show().end().find('.menu-item-' + align).hide();
+  };
+
+  AlignmentButton.prototype.status = function($node) {
     if ($node == null) {
       return true;
     }
@@ -5171,100 +5168,40 @@ AlignButton = (function(_super) {
       return;
     }
     this.setDisabled(!$node.is(this.htmlTag));
-    this.setActive(!this.disabled);
     if (this.disabled) {
+      this.setActive(false);
       return true;
     }
-    this.setActive(this._status($node));
+    this.setActive(true, $node.data("align"));
     return this.active;
   };
 
-  return AlignButton;
+  AlignmentButton.prototype.command = function(align) {
+    var $blockEls, $endBlock, $startBlock, block, endNode, range, startNode, _i, _len, _ref;
+    if (['left', 'center', 'right'].indexOf(align) < 0) {
+      throw "invalid " + align;
+    }
+    range = this.editor.selection.getRange();
+    startNode = range.startContainer;
+    endNode = range.endContainer;
+    $startBlock = this.editor.util.closestBlockEl(startNode);
+    $endBlock = this.editor.util.closestBlockEl(endNode);
+    this.editor.selection.save();
+    $blockEls = $startBlock.is($endBlock) ? $startBlock : $startBlock.nextUntil($endBlock).addBack().add($endBlock);
+    _ref = $blockEls.filter(this.htmlTag);
+    for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+      block = _ref[_i];
+      $(block).attr('data-align', align).data('align', align);
+    }
+    this.editor.selection.restore();
+    return this.editor.trigger('valuechanged');
+  };
+
+  return AlignmentButton;
 
 })(Button);
 
-AligncenterButton = (function(_super) {
-  __extends(AligncenterButton, _super);
-
-  function AligncenterButton() {
-    return AligncenterButton.__super__.constructor.apply(this, arguments);
-  }
-
-  AligncenterButton.prototype.name = 'aligncenter';
-
-  AligncenterButton.prototype.icon = 'align-center';
-
-  AligncenterButton.prototype.shortcut = 'Cmd + Shift + E';
-
-  AligncenterButton.prototype._status = function($node) {
-    return $node.data("align") === "center";
-  };
-
-  AligncenterButton.prototype.command = function(param) {
-    return this.editor.alignment.center(this.htmlTag);
-  };
-
-  return AligncenterButton;
-
-})(AlignButton);
-
-Simditor.Toolbar.addButton(AligncenterButton);
-
-AlignleftButton = (function(_super) {
-  __extends(AlignleftButton, _super);
-
-  function AlignleftButton() {
-    return AlignleftButton.__super__.constructor.apply(this, arguments);
-  }
-
-  AlignleftButton.prototype.name = 'alignleft';
-
-  AlignleftButton.prototype.icon = 'align-left';
-
-  AlignleftButton.prototype.shortcut = 'Cmd + Shift + L';
-
-  AlignleftButton.prototype._status = function($node) {
-    var aligment;
-    aligment = $node.data("align");
-    return aligment === void 0 || aligment === "left";
-  };
-
-  AlignleftButton.prototype.command = function(param) {
-    return this.editor.alignment.left(this.htmlTag);
-  };
-
-  return AlignleftButton;
-
-})(AlignButton);
-
-Simditor.Toolbar.addButton(AlignleftButton);
-
-AlignrightButton = (function(_super) {
-  __extends(AlignrightButton, _super);
-
-  function AlignrightButton() {
-    return AlignrightButton.__super__.constructor.apply(this, arguments);
-  }
-
-  AlignrightButton.prototype.name = 'alignright';
-
-  AlignrightButton.prototype.icon = 'align-right';
-
-  AlignrightButton.prototype.shortcut = 'Cmd + Shift + R';
-
-  AlignrightButton.prototype._status = function($node) {
-    return $node.data("align") === "right";
-  };
-
-  AlignrightButton.prototype.command = function(param) {
-    return this.editor.alignment.right(this.htmlTag);
-  };
-
-  return AlignrightButton;
-
-})(AlignButton);
-
-Simditor.Toolbar.addButton(AlignrightButton);
+Simditor.Toolbar.addButton(AlignmentButton);
 
 return Simditor;
 

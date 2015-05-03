@@ -487,6 +487,15 @@
   font-size: 100px;
   cursor: pointer;
 }
+.simditor .simditor-toolbar .toolbar-menu.toolbar-menu-alignment {
+  width: 100%;
+}
+.simditor .simditor-toolbar .toolbar-menu.toolbar-menu-alignment ul {
+  min-width: 100%;
+}
+.simditor .simditor-toolbar .toolbar-menu.toolbar-menu-alignment .menu-item {
+  text-align: center;
+}
 .simditor .simditor-popover {
   display: none;
   padding: 5px 8px 0;
