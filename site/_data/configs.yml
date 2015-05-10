@@ -35,6 +35,7 @@
       'indent'         # 向右缩进
       'outdent'        # 向左缩进
       'source'         # HTML源代码
+      'alignment'      # 水平对齐
     ]
     ```
 
@@ -154,5 +155,5 @@
     h3: ['data-indent']
     h4: ['data-indent']
     ```
-    
+
     自定义的白名单列表会覆盖编辑器默认的白名单列表。
