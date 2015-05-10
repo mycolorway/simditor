@@ -25,11 +25,14 @@ class AlignmentButton extends Button
     }]
     super()
 
-  setActive: (active, align="left") ->
-    super active
+  setActive: (active, align = 'left') ->
+    if align == 'left'
+      super false
+    else
+      super active
 
     @el.removeClass 'align-left align-center align-right'
-    @el.addClass('active align-' + align) if active
+    @el.addClass('align-' + align) if active
     @setIcon 'align-' + align
     @menuEl.find('.menu-item').show().end()
         .find('.menu-item-' + align).hide()
@@ -41,7 +44,7 @@ class AlignmentButton extends Button
     @setDisabled !$node.is(@htmlTag)
     if @disabled
       @setActive false
-      return true 
+      return true
 
     @setActive true, $node.data("align")
     @active
@@ -58,7 +61,7 @@ class AlignmentButton extends Button
     @editor.selection.save()
 
     $blockEls =
-      if $startBlock.is $endBlock 
+      if $startBlock.is $endBlock
         $startBlock
       else
         $startBlock.nextUntil($endBlock).addBack().add $endBlock

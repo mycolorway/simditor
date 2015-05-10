@@ -1,7 +1,7 @@
 
 $ ->
 
-  toolbar= ['title', 'bold', 'italic', 'underline', 'strikethrough', 'color', '|', 'ol', 'ul', 'blockquote', 'code', 'table', '|', 'link', 'image', 'hr', '|', 'indent', 'outdent', '|', 'source']
+  toolbar= ['title', 'bold', 'italic', 'underline', 'strikethrough', 'color', '|', 'ol', 'ul', 'blockquote', 'code', 'table', '|', 'link', 'image', 'hr', '|', 'indent', 'outdent', 'alignment']
   mobileToolbar=["bold","underline","strikethrough","color","ul","ol"]
   toolbar = mobileToolbar if mobilecheck()
   editor = new Simditor
