@@ -430,6 +430,16 @@ $simditor-button-height: 40px;
           }
         }
       }
+
+      &.toolbar-menu-alignment {
+        width: 100%;
+        ul {
+          min-width: 100%;
+        }
+        .menu-item {
+          text-align: center;
+        }
+      }
     }
   }
 
@@ -678,4 +688,13 @@ $simditor-button-height: 40px;
       margin-left: 40px * $i;
     }
   }
+
+  @each $align in center, left, right {
+    p, h1, h2, h3, h4 {
+      &[data-align="#{$align}"] {
+        text-align: $align;
+      }
+    }
+  }
+
 }

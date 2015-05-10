@@ -21,6 +21,9 @@ window.spec =
       .appendTo 'body'
     new Simditor
       textarea: $textarea
+      toolbar: [
+        'bold', 'alignment'
+      ]
 
   destroySimditor: ->
     $textarea = $('#editor')

@@ -93,6 +93,15 @@ class Button extends SimpleModule
       if tag && $.inArray(tag, @editor.formatter._allowedTags) < 0
         @editor.formatter._allowedTags.push tag
 
+  iconClassOf: (icon) ->
+    if icon then "simditor-icon simditor-icon-#{icon}" else ''
+
+  setIcon: (icon) ->
+    @el.find('span')
+      .removeClass()
+      .addClass(@iconClassOf icon)
+      .text(@text)   
+
   render: ->
     @wrapper = $(@_tpl.item).appendTo @editor.toolbar.list
     @el = @wrapper.find 'a.toolbar-item'
@@ -101,9 +110,7 @@ class Button extends SimpleModule
       .addClass("toolbar-item-#{@name}")
       .data('button', @)
 
-    @el.find('span')
-      .addClass(if @icon then "simditor-icon simditor-icon-#{@icon}" else '')
-      .text(@text)
+    @setIcon @icon
 
     return unless @menu
 
@@ -121,14 +128,16 @@ class Button extends SimpleModule
         continue
 
       $menuItemEl = $(@_tpl.menuItem).appendTo @menuEl
-      $menuBtntnEl = $menuItemEl.find('a.menu-item')
+      $menuBtnEl = $menuItemEl.find('a.menu-item')
         .attr(
           'title': menuItem.title ? menuItem.text,
           'data-param': menuItem.param
         )
         .addClass('menu-item-' + menuItem.name)
-        .find('span')
-        .text(menuItem.text)
+      if menuItem.icon
+        $menuBtnEl.find('span').addClass @iconClassOf menuItem.icon
+      else
+        $menuBtnEl.find('span').text(menuItem.text)
 
   setActive: (active) ->
     return if active == @active
