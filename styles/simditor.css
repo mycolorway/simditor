@@ -143,7 +143,18 @@
   position: relative;
   border: 1px solid #c9d8db;
 }
-.simditor textarea {
+.simditor.simditor-source-mode textarea {
+  display: block !important;
+}
+.simditor.simditor-source-mode .simditor-body, .simditor.simditor-source-mode .simditor-placeholder {
+  display: none !important;
+}
+.simditor .simditor-wrapper {
+  position: relative;
+  background: #ffffff;
+  overflow: hidden;
+}
+.simditor .simditor-wrapper > textarea {
   display: none !important;
   width: 100%;
   box-sizing: border-box;
@@ -156,17 +167,6 @@
   outline: none;
   background: transparent;
   resize: none;
-}
-.simditor.simditor-source-mode textarea {
-  display: block !important;
-}
-.simditor.simditor-source-mode .simditor-body, .simditor.simditor-source-mode .simditor-placeholder {
-  display: none !important;
-}
-.simditor .simditor-wrapper {
-  position: relative;
-  background: #ffffff;
-  overflow: hidden;
 }
 .simditor .simditor-wrapper .simditor-placeholder {
   display: none;
