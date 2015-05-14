@@ -6,21 +6,6 @@ $simditor-button-height: 40px;
   position: relative;
   border: 1px solid #c9d8db;
 
-  textarea {
-    display: none !important;
-    width: 100%;
-    box-sizing: border-box;
-    font-family: monaco;
-    font-size: 16px;
-    line-height: 1.6;
-    border: none;
-    padding: 22px 15px 40px;
-    min-height: 300px;
-    outline: none;
-    background: transparent;
-    resize: none;
-  }
-
   &.simditor-source-mode {
     textarea {
       display: block !important;
@@ -35,6 +20,21 @@ $simditor-button-height: 40px;
     position: relative;
     background: #ffffff;
     overflow: hidden;
+
+    & > textarea {
+      display: none !important;
+      width: 100%;
+      box-sizing: border-box;
+      font-family: monaco;
+      font-size: 16px;
+      line-height: 1.6;
+      border: none;
+      padding: 22px 15px 40px;
+      min-height: 300px;
+      outline: none;
+      background: transparent;
+      resize: none;
+    }
 
     .simditor-placeholder {
       display: none;
