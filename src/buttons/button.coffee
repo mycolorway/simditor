@@ -78,7 +78,7 @@ class Button extends SimpleModule
       false
 
     @editor.on 'blur', =>
-      return if @editor.sourceMode
+      return unless @editor.body.is(':visible') and @editor.body.is('[contenteditable]')
       @setActive false
       @setDisabled false
 
@@ -100,7 +100,7 @@ class Button extends SimpleModule
     @el.find('span')
       .removeClass()
       .addClass(@iconClassOf icon)
-      .text(@text)   
+      .text(@text)
 
   render: ->
     @wrapper = $(@_tpl.item).appendTo @editor.toolbar.list

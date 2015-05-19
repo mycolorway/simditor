@@ -1,5 +1,5 @@
 
-Simditor.i18n = 
+Simditor.i18n =
   'zh-CN':
     'blockquote': '引用'
     'bold': '加粗文字'
@@ -36,7 +36,6 @@ Simditor.i18n =
     'insertColumnRight': '在右边插入列'
     'deleteTable': '删除表格'
     'title': '标题'
-    'source': 'HTML源代码'
     'normalText': '普通文本'
     'underline': '下划线文字'
     'alignment': '排版'
