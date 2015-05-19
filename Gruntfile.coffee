@@ -23,7 +23,6 @@ module.exports = (grunt) ->
             'src/i18n.coffee'
             'src/buttons/button.coffee'
             'src/buttons/popover.coffee'
-            'src/buttons/source.coffee'
             'src/buttons/title.coffee'
             'src/buttons/bold.coffee'
             'src/buttons/italic.coffee'

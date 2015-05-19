@@ -34,7 +34,6 @@
       'hr'             # 分割线
       'indent'         # 向右缩进
       'outdent'        # 向左缩进
-      'source'         # HTML源代码
       'alignment'      # 水平对齐
     ]
     ```

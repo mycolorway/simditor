@@ -6,16 +6,6 @@ $simditor-button-height: 40px;
   position: relative;
   border: 1px solid #c9d8db;
 
-  &.simditor-source-mode {
-    textarea {
-      display: block !important;
-    }
-
-    .simditor-body, .simditor-placeholder {
-      display: none !important;
-    }
-  }
-
   .simditor-wrapper {
     position: relative;
     background: #ffffff;

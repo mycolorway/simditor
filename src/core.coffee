@@ -148,8 +148,8 @@ class Simditor extends SimpleModule
     val
 
   focus: ->
-    if @sourceMode
-      @textarea.focus()
+    unless @body.is(':visible') and @body.is('[contenteditable]')
+      @el.find('textarea:visible').focus()
       return
 
     if @inputManager.lastCaretPosition
@@ -162,10 +162,10 @@ class Simditor extends SimpleModule
       @body.focus()
 
   blur: ->
-    if @sourceMode
-      @textarea.blur()
-    else
+    if @body.is(':visible') and @body.is('[contenteditable]')
       @body.blur()
+    else
+      @body.find('textarea:visible').blur()
 
   hidePopover: ()->
     @el.find('.simditor-popover').each (i, popover) =>

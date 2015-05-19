@@ -138,12 +138,6 @@
   position: relative;
   border: 1px solid #c9d8db;
 }
-.simditor.simditor-source-mode textarea {
-  display: block !important;
-}
-.simditor.simditor-source-mode .simditor-body, .simditor.simditor-source-mode .simditor-placeholder {
-  display: none !important;
-}
 .simditor .simditor-wrapper {
   position: relative;
   background: #ffffff;
