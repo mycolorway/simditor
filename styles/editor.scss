@@ -609,6 +609,16 @@ $simditor-button-height: 40px;
     }
   }
 
+  code {
+    display: inline-block;
+    padding: 0 4px;
+    margin: 0 5px;
+    background: #eeeeee;
+    border-radius: 3px;
+    font-size: 13px;
+    font-family: 'monaco', 'Consolas', "Liberation Mono", Courier, monospace;
+  }
+
   pre {
     padding: 10px 5px 10px 10px;
     margin: 15px 0;
@@ -621,16 +631,14 @@ $simditor-button-height: 40px;
     white-space: pre;
     word-wrap: normal;
     overflow-x: auto;
-  }
 
-  code {
-    display: inline-block;
-    padding: 0 4px;
-    margin: 0 5px;
-    background: #eeeeee;
-    border-radius: 3px;
-    font-size:13px;
-    font-family: 'monaco', 'Consolas', "Liberation Mono", Courier, monospace;
+    code {
+      display: block;
+      padding: 0;
+      margin: 0;
+      background: none;
+      border-radius: 0;
+    }
   }
 
   hr {

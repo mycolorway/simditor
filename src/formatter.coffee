@@ -10,12 +10,13 @@ class Formatter extends SimpleModule
   _init: ->
     @editor = @_module
 
-    @_allowedTags = @opts.allowedTags || ['br', 'a', 'img', 'b', 'strong', 'i', 'u', 'font', 'p', 'ul', 'ol', 'li', 'blockquote', 'pre', 'h1', 'h2', 'h3', 'h4', 'hr']
+    @_allowedTags = @opts.allowedTags || ['br', 'a', 'img', 'b', 'strong', 'i', 'u', 'font', 'p', 'ul', 'ol', 'li', 'blockquote', 'pre', 'code', 'h1', 'h2', 'h3', 'h4', 'hr']
     @_allowedAttributes = @opts.allowedAttributes ||
       img: ['src', 'alt', 'width', 'height', 'data-image-src', 'data-image-size', 'data-image-name', 'data-non-image']
       a: ['href', 'target']
       font: ['color']
-      pre: ['data-lang', 'class']
+      pre: ['data-lang']
+      code: ['class']
       p: ['data-indent', 'data-align']
       h1: ['data-indent']
       h2: ['data-indent']

@@ -6,7 +6,7 @@
       $textarea = $('<textarea id="editor"></textarea>').val(content).appendTo('body');
       return new Simditor({
         textarea: $textarea,
-        toolbar: ['bold', 'alignment']
+        toolbar: ['bold', 'alignment', 'code']
       });
     },
     destroySimditor: function() {

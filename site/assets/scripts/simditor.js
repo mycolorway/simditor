@@ -317,12 +317,13 @@ Formatter = (function(superClass) {
 
   Formatter.prototype._init = function() {
     this.editor = this._module;
-    this._allowedTags = this.opts.allowedTags || ['br', 'a', 'img', 'b', 'strong', 'i', 'u', 'font', 'p', 'ul', 'ol', 'li', 'blockquote', 'pre', 'h1', 'h2', 'h3', 'h4', 'hr'];
+    this._allowedTags = this.opts.allowedTags || ['br', 'a', 'img', 'b', 'strong', 'i', 'u', 'font', 'p', 'ul', 'ol', 'li', 'blockquote', 'pre', 'code', 'h1', 'h2', 'h3', 'h4', 'hr'];
     this._allowedAttributes = this.opts.allowedAttributes || {
       img: ['src', 'alt', 'width', 'height', 'data-image-src', 'data-image-size', 'data-image-name', 'data-non-image'],
       a: ['href', 'target'],
       font: ['color'],
-      pre: ['data-lang', 'class'],
+      pre: ['data-lang'],
+      code: ['class'],
       p: ['data-indent', 'data-align'],
       h1: ['data-indent'],
       h2: ['data-indent'],
@@ -2443,10 +2444,11 @@ Simditor.i18n = {
     'title': '标题',
     'normalText': '普通文本',
     'underline': '下划线文字',
-    'alignment': '排版',
+    'alignment': '水平对齐',
     'alignCenter': '居中',
     'alignLeft': '居左',
-    'alignRight': '居右'
+    'alignRight': '居右',
+    'selectLanguage': '选择程序语言'
   }
 };
 
@@ -3493,21 +3495,25 @@ CodeButton = (function(superClass) {
   };
 
   CodeButton.prototype.decorate = function($pre) {
-    var lang;
-    lang = $pre.attr('data-lang');
-    $pre.removeClass();
-    if (lang && lang !== -1) {
-      return $pre.addClass('lang-' + lang);
+    var $code, lang, ref;
+    $code = $pre.find('> code');
+    if ($code.length > 0) {
+      lang = (ref = $code.attr('class').match(/lang-(\S+)/)) != null ? ref[1] : void 0;
+      $code.contents().unwrap();
+      if (lang) {
+        return $pre.attr('data-lang', lang);
+      }
     }
   };
 
   CodeButton.prototype.undecorate = function($pre) {
-    var lang;
+    var $code, lang;
     lang = $pre.attr('data-lang');
-    $pre.removeClass();
+    $code = $('<code/>');
     if (lang && lang !== -1) {
-      return $pre.addClass('lang-' + lang);
+      $code.addClass('lang-' + lang);
     }
+    return $pre.wrapInner($code).removeAttr('data-lang');
   };
 
   CodeButton.prototype.command = function() {
@@ -3576,9 +3582,8 @@ CodePopover = (function(superClass) {
     return CodePopover.__super__.constructor.apply(this, arguments);
   }
 
-  CodePopover.prototype._tpl = "<div class=\"code-settings\">\n  <div class=\"settings-field\">\n    <select class=\"select-lang\">\n      <option value=\"-1\">选择程序语言</option>\n      <option value=\"bash\">Bash</option>\n      <option value=\"c++\">C++</option>\n      <option value=\"cs\">C#</option>\n      <option value=\"css\">CSS</option>\n      <option value=\"erlang\">Erlang</option>\n      <option value=\"less\">Less</option>\n      <option value=\"scss\">Sass</option>\n      <option value=\"diff\">Diff</option>\n      <option value=\"coffeeScript\">CoffeeScript</option>\n      <option value=\"html\">Html,XML</option>\n      <option value=\"json\">JSON</option>\n      <option value=\"java\">Java</option>\n      <option value=\"js\">JavaScript</option>\n      <option value=\"markdown\">Markdown</option>\n      <option value=\"oc\">Objective C</option>\n      <option value=\"php\">PHP</option>\n      <option value=\"perl\">Perl</option>\n      <option value=\"python\">Python</option>\n      <option value=\"ruby\">Ruby</option>\n      <option value=\"sql\">SQL</option>\n    </select>\n  </div>\n</div>";
-
   CodePopover.prototype.render = function() {
+    this._tpl = "<div class=\"code-settings\">\n  <div class=\"settings-field\">\n    <select class=\"select-lang\">\n      <option value=\"-1\">" + (this._t('selectLanguage')) + "</option>\n      <option value=\"bash\">Bash</option>\n      <option value=\"c++\">C++</option>\n      <option value=\"cs\">C#</option>\n      <option value=\"css\">CSS</option>\n      <option value=\"erlang\">Erlang</option>\n      <option value=\"less\">Less</option>\n      <option value=\"scss\">Sass</option>\n      <option value=\"diff\">Diff</option>\n      <option value=\"coffeeScript\">CoffeeScript</option>\n      <option value=\"html\">Html,XML</option>\n      <option value=\"json\">JSON</option>\n      <option value=\"java\">Java</option>\n      <option value=\"js\">JavaScript</option>\n      <option value=\"markdown\">Markdown</option>\n      <option value=\"oc\">Objective C</option>\n      <option value=\"php\">PHP</option>\n      <option value=\"perl\">Perl</option>\n      <option value=\"python\">Python</option>\n      <option value=\"ruby\">Ruby</option>\n      <option value=\"sql\">SQL</option>\n    </select>\n  </div>\n</div>";
     this.el.addClass('code-popover').append(this._tpl);
     this.selectEl = this.el.find('.select-lang');
     this.selectEl.on('change', (function(_this) {
@@ -3588,7 +3593,6 @@ CodePopover = (function(superClass) {
         selected = _this.target.hasClass('selected');
         _this.target.removeClass().removeAttr('data-lang');
         if (_this.lang !== -1) {
-          _this.target.addClass('lang-' + _this.lang);
           _this.target.attr('data-lang', _this.lang);
         }
         if (selected) {

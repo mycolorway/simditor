@@ -667,6 +667,15 @@
 .simditor .simditor-body blockquote > :first-child, .editor-style blockquote > :first-child {
   margin-top: 0;
 }
+.simditor .simditor-body code, .editor-style code {
+  display: inline-block;
+  padding: 0 4px;
+  margin: 0 5px;
+  background: #eeeeee;
+  border-radius: 3px;
+  font-size: 13px;
+  font-family: 'monaco', 'Consolas', "Liberation Mono", Courier, monospace;
+}
 .simditor .simditor-body pre, .editor-style pre {
   padding: 10px 5px 10px 10px;
   margin: 15px 0;
@@ -680,14 +689,12 @@
   word-wrap: normal;
   overflow-x: auto;
 }
-.simditor .simditor-body code, .editor-style code {
-  display: inline-block;
-  padding: 0 4px;
-  margin: 0 5px;
-  background: #eeeeee;
-  border-radius: 3px;
-  font-size: 13px;
-  font-family: 'monaco', 'Consolas', "Liberation Mono", Courier, monospace;
+.simditor .simditor-body pre code, .editor-style pre code {
+  display: block;
+  padding: 0;
+  margin: 0;
+  background: none;
+  border-radius: 0;
 }
 .simditor .simditor-body hr, .editor-style hr {
   display: block;

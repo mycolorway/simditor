@@ -22,7 +22,7 @@ window.spec =
     new Simditor
       textarea: $textarea
       toolbar: [
-        'bold', 'alignment'
+        'bold', 'alignment', 'code'
       ]
 
   destroySimditor: ->
