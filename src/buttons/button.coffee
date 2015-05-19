@@ -78,7 +78,7 @@ class Button extends SimpleModule
       false
 
     @editor.on 'blur', =>
-      return unless @body.is(':visible') and @body.is('[contenteditable]')
+      return unless @editor.body.is(':visible') and @editor.body.is('[contenteditable]')
       @setActive false
       @setDisabled false
 
