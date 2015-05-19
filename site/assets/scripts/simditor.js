@@ -2539,7 +2539,7 @@ Button = (function(superClass) {
     })(this));
     this.editor.on('blur', (function(_this) {
       return function() {
-        if (!(_this.body.is(':visible') && _this.body.is('[contenteditable]'))) {
+        if (!(_this.editor.body.is(':visible') && _this.editor.body.is('[contenteditable]'))) {
           return;
         }
         _this.setActive(false);
