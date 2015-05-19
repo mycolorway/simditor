@@ -21,7 +21,7 @@
     "jquery": "2.x",
     "simple-hotkeys": "1.x",
     "simple-uploader": "2.x",
-    "simplemodule": "2.x"
+    "simple-module": "~2.0.5"
   },
   "devDependencies": {
     "grunt": "0.x",
