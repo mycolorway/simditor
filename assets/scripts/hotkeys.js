@@ -1,29 +1,26 @@
 (function (root, factory) {
   if (typeof define === 'function' && define.amd) {
-    // AMD. Register as an anonymous module.
-    define('simple-hotkeys', ["jquery",
-      "simple-module"], function ($, SimpleModule) {
-      return (root.returnExportsGlobal = factory($, SimpleModule));
+    // AMD. Register as an anonymous module unless amdModuleId is set
+    define('simple-hotkeys', ["jquery","simple-module"], function ($, SimpleModule) {
+      return (root['hotkeys'] = factory($, SimpleModule));
     });
   } else if (typeof exports === 'object') {
     // Node. Does not work with strict CommonJS, but
-    // only CommonJS-like enviroments that support module.exports,
+    // only CommonJS-like environments that support module.exports,
     // like Node.
-    module.exports = factory(require("jquery"),
-      require("simple-module"));
+    module.exports = factory(require("jquery"),require("simplemodule"));
   } else {
     root.simple = root.simple || {};
-    root.simple['hotkeys'] = factory(jQuery,
-      SimpleModule);
+    root.simple['hotkeys'] = factory(jQuery,SimpleModule);
   }
 }(this, function ($, SimpleModule) {
 
 var Hotkeys, hotkeys,
-  __hasProp = {}.hasOwnProperty,
-  __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
+  extend = function(child, parent) { for (var key in parent) { if (hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
+  hasProp = {}.hasOwnProperty;
 
-Hotkeys = (function(_super) {
-  __extends(Hotkeys, _super);
+Hotkeys = (function(superClass) {
+  extend(Hotkeys, superClass);
 
   function Hotkeys() {
     return Hotkeys.__super__.constructor.apply(this, arguments);
@@ -157,9 +154,9 @@ Hotkeys = (function(_super) {
   };
 
   Hotkeys.normalize = function(shortcut) {
-    var i, key, keyname, keys, _i, _len;
+    var i, j, key, keyname, keys, len;
     keys = shortcut.toLowerCase().replace(/\s+/gi, "").split("+");
-    for (i = _i = 0, _len = keys.length; _i < _len; i = ++_i) {
+    for (i = j = 0, len = keys.length; j < len; i = ++j) {
       key = keys[i];
       keys[i] = this.aliases[key] || key;
     }
@@ -178,8 +175,8 @@ Hotkeys = (function(_super) {
     this._delegate = typeof this.opts.el === "string" ? document : this.opts.el;
     return $(this._delegate).on("keydown.simple-hotkeys-" + this.id, this.opts.el, (function(_this) {
       return function(e) {
-        var _ref;
-        return (_ref = _this._getHander(e)) != null ? _ref.call(_this, e) : void 0;
+        var ref;
+        return (ref = _this._getHander(e)) != null ? ref.call(_this, e) : void 0;
       };
     })(this));
   };
@@ -238,9 +235,7 @@ hotkeys = function(opts) {
   return new Hotkeys(opts);
 };
 
-
 return hotkeys;
-
 
 }));
 

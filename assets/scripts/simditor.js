@@ -14,7 +14,7 @@
   }
 }(this, function ($, SimpleModule, simpleHotkeys, simpleUploader) {
 
-var BlockquoteButton, BoldButton, Button, CodeButton, CodePopover, ColorButton, Formatter, HrButton, ImageButton, ImagePopover, IndentButton, Indentation, InputManager, ItalicButton, Keystroke, LinkButton, LinkPopover, ListButton, OrderListButton, OutdentButton, Popover, Selection, Simditor, SourceButton, StrikethroughButton, TableButton, TitleButton, Toolbar, UnderlineButton, UndoManager, UnorderListButton, Util,
+var AlignmentButton, BlockquoteButton, BoldButton, Button, CodeButton, CodePopover, ColorButton, Formatter, HrButton, ImageButton, ImagePopover, IndentButton, Indentation, InputManager, ItalicButton, Keystroke, LinkButton, LinkPopover, ListButton, OrderListButton, OutdentButton, Popover, Selection, Simditor, StrikethroughButton, TableButton, TitleButton, Toolbar, UnderlineButton, UndoManager, UnorderListButton, Util,
   extend = function(child, parent) { for (var key in parent) { if (hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
   hasProp = {}.hasOwnProperty,
   indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; },
@@ -323,7 +323,7 @@ Formatter = (function(superClass) {
       a: ['href', 'target'],
       font: ['color'],
       pre: ['data-lang', 'class'],
-      p: ['data-indent'],
+      p: ['data-indent', 'data-align'],
       h1: ['data-indent'],
       h2: ['data-indent'],
       h3: ['data-indent'],
@@ -1884,19 +1884,20 @@ Toolbar = (function(superClass) {
       };
     })(this));
     if (!this.opts.toolbarHidden && this.opts.toolbarFloat) {
-      this.wrapper.width(this.wrapper.outerWidth());
       this.wrapper.css('top', this.opts.toolbarFloatOffset);
-      toolbarHeight = this.wrapper.outerHeight();
-      if (!this.editor.util.os.mobile) {
-        $(window).on('resize.simditor-' + this.editor.id, (function(_this) {
-          return function(e) {
-            _this.wrapper.css('position', 'static');
-            _this.editor.util.reflow(_this.wrapper);
-            _this.wrapper.css('left', _this.wrapper.offset().left);
-            return _this.wrapper.css('position', '');
-          };
-        })(this)).resize();
-      }
+      toolbarHeight = 0;
+      $(window).on('resize.simditor-' + this.editor.id, (function(_this) {
+        return function(e) {
+          _this.wrapper.css('position', 'static');
+          _this.wrapper.width('auto');
+          _this.editor.util.reflow(_this.wrapper);
+          _this.wrapper.width(_this.wrapper.outerWidth());
+          _this.wrapper.css('left', _this.wrapper.offset().left);
+          _this.wrapper.css('position', '');
+          toolbarHeight = _this.wrapper.outerHeight();
+          return _this.editor.placeholderEl.css('top', toolbarHeight);
+        };
+      })(this)).resize();
       $(window).on('scroll.simditor-' + this.editor.id, (function(_this) {
         return function(e) {
           var bottomEdge, scrollTop, topEdge;
@@ -1956,8 +1957,6 @@ Toolbar = (function(superClass) {
     }
     if (this.opts.toolbarHidden) {
       return this.wrapper.hide();
-    } else {
-      return this.editor.placeholderEl.css('top', this.wrapper.outerHeight());
     }
   };
 
@@ -2353,8 +2352,8 @@ Simditor = (function(superClass) {
 
   Simditor.prototype.focus = function() {
     var $blockEl, range;
-    if (this.sourceMode) {
-      this.textarea.focus();
+    if (!(this.body.is(':visible') && this.body.is('[contenteditable]'))) {
+      this.el.find('textarea:visible').focus();
       return;
     }
     if (this.inputManager.lastCaretPosition) {
@@ -2371,10 +2370,10 @@ Simditor = (function(superClass) {
   };
 
   Simditor.prototype.blur = function() {
-    if (this.sourceMode) {
-      return this.textarea.blur();
-    } else {
+    if (this.body.is(':visible') && this.body.is('[contenteditable]')) {
       return this.body.blur();
+    } else {
+      return this.body.find('textarea:visible').blur();
     }
   };
 
@@ -2442,9 +2441,12 @@ Simditor.i18n = {
     'insertColumnRight': '在右边插入列',
     'deleteTable': '删除表格',
     'title': '标题',
-    'source': 'HTML源代码',
     'normalText': '普通文本',
-    'underline': '下划线文字'
+    'underline': '下划线文字',
+    'alignment': '排版',
+    'alignCenter': '居中',
+    'alignLeft': '居左',
+    'alignRight': '居右'
   }
 };
 
@@ -2537,7 +2539,7 @@ Button = (function(superClass) {
     })(this));
     this.editor.on('blur', (function(_this) {
       return function() {
-        if (_this.editor.sourceMode) {
+        if (!(_this.editor.body.is(':visible') && _this.editor.body.is('[contenteditable]'))) {
           return;
         }
         _this.setActive(false);
@@ -2566,11 +2568,23 @@ Button = (function(superClass) {
     return results1;
   };
 
+  Button.prototype.iconClassOf = function(icon) {
+    if (icon) {
+      return "simditor-icon simditor-icon-" + icon;
+    } else {
+      return '';
+    }
+  };
+
+  Button.prototype.setIcon = function(icon) {
+    return this.el.find('span').removeClass().addClass(this.iconClassOf(icon)).text(this.text);
+  };
+
   Button.prototype.render = function() {
     this.wrapper = $(this._tpl.item).appendTo(this.editor.toolbar.list);
     this.el = this.wrapper.find('a.toolbar-item');
     this.el.attr('title', this.title).addClass("toolbar-item-" + this.name).data('button', this);
-    this.el.find('span').addClass(this.icon ? "simditor-icon simditor-icon-" + this.icon : '').text(this.text);
+    this.setIcon(this.icon);
     if (!this.menu) {
       return;
     }
@@ -2580,7 +2594,7 @@ Button = (function(superClass) {
   };
 
   Button.prototype.renderMenu = function() {
-    var $menuBtntnEl, $menuItemEl, j, len, menuItem, ref, ref1, results1;
+    var $menuBtnEl, $menuItemEl, j, len, menuItem, ref, ref1, results1;
     if (!$.isArray(this.menu)) {
       return;
     }
@@ -2594,10 +2608,15 @@ Button = (function(superClass) {
         continue;
       }
       $menuItemEl = $(this._tpl.menuItem).appendTo(this.menuEl);
-      results1.push($menuBtntnEl = $menuItemEl.find('a.menu-item').attr({
+      $menuBtnEl = $menuItemEl.find('a.menu-item').attr({
         'title': (ref1 = menuItem.title) != null ? ref1 : menuItem.text,
         'data-param': menuItem.param
-      }).addClass('menu-item-' + menuItem.name).find('span').text(menuItem.text));
+      }).addClass('menu-item-' + menuItem.name);
+      if (menuItem.icon) {
+        results1.push($menuBtnEl.find('span').addClass(this.iconClassOf(menuItem.icon)));
+      } else {
+        results1.push($menuBtnEl.find('span').text(menuItem.text));
+      }
     }
     return results1;
   };
@@ -2777,76 +2796,6 @@ Popover = (function(superClass) {
 })(SimpleModule);
 
 Simditor.Popover = Popover;
-
-SourceButton = (function(superClass) {
-  extend(SourceButton, superClass);
-
-  function SourceButton() {
-    return SourceButton.__super__.constructor.apply(this, arguments);
-  }
-
-  SourceButton.prototype.name = 'source';
-
-  SourceButton.prototype.icon = 'html5';
-
-  SourceButton.prototype.needFocus = false;
-
-  SourceButton.prototype._init = function() {
-    SourceButton.__super__._init.call(this);
-    this.editor.textarea.on('focus', (function(_this) {
-      return function(e) {
-        return _this.editor.el.addClass('focus').removeClass('error');
-      };
-    })(this));
-    this.editor.textarea.on('blur', (function(_this) {
-      return function(e) {
-        _this.editor.el.removeClass('focus');
-        return _this.editor.setValue(_this.editor.textarea.val());
-      };
-    })(this));
-    return this.editor.textarea.on('input', (function(_this) {
-      return function(e) {
-        return _this._resizeTextarea();
-      };
-    })(this));
-  };
-
-  SourceButton.prototype.status = function($node) {
-    return true;
-  };
-
-  SourceButton.prototype.command = function() {
-    var button, j, len, ref;
-    this.editor.blur();
-    this.editor.el.toggleClass('simditor-source-mode');
-    this.editor.sourceMode = this.editor.el.hasClass('simditor-source-mode');
-    if (this.editor.sourceMode) {
-      this.editor.hidePopover();
-      this.editor.textarea.val(this.editor.util.formatHTML(this.editor.textarea.val()));
-      this._resizeTextarea();
-    }
-    ref = this.editor.toolbar.buttons;
-    for (j = 0, len = ref.length; j < len; j++) {
-      button = ref[j];
-      if (button.name === 'source') {
-        button.setActive(this.editor.sourceMode);
-      } else {
-        button.setDisabled(this.editor.sourceMode);
-      }
-    }
-    return null;
-  };
-
-  SourceButton.prototype._resizeTextarea = function() {
-    this._textareaPadding || (this._textareaPadding = this.editor.textarea.innerHeight() - this.editor.textarea.height());
-    return this.editor.textarea.height(0).height(this.editor.textarea[0].scrollHeight - this._textareaPadding);
-  };
-
-  return SourceButton;
-
-})(Button);
-
-Simditor.Toolbar.addButton(SourceButton);
 
 TitleButton = (function(superClass) {
   extend(TitleButton, superClass);
@@ -5091,6 +5040,101 @@ StrikethroughButton = (function(superClass) {
 })(Button);
 
 Simditor.Toolbar.addButton(StrikethroughButton);
+
+AlignmentButton = (function(superClass) {
+  extend(AlignmentButton, superClass);
+
+  function AlignmentButton() {
+    return AlignmentButton.__super__.constructor.apply(this, arguments);
+  }
+
+  AlignmentButton.prototype.name = "alignment";
+
+  AlignmentButton.prototype.icon = 'align-left';
+
+  AlignmentButton.prototype.htmlTag = 'p, h1, h2, h3, h4';
+
+  AlignmentButton.prototype._init = function() {
+    this.menu = [
+      {
+        name: 'left',
+        text: this._t('alignLeft'),
+        icon: 'align-left',
+        param: 'left'
+      }, {
+        name: 'center',
+        text: this._t('alignCenter'),
+        icon: 'align-center',
+        param: 'center'
+      }, {
+        name: 'right',
+        text: this._t('alignRight'),
+        icon: 'align-right',
+        param: 'right'
+      }
+    ];
+    return AlignmentButton.__super__._init.call(this);
+  };
+
+  AlignmentButton.prototype.setActive = function(active, align) {
+    if (align == null) {
+      align = 'left';
+    }
+    if (align === 'left') {
+      AlignmentButton.__super__.setActive.call(this, false);
+    } else {
+      AlignmentButton.__super__.setActive.call(this, active);
+    }
+    this.el.removeClass('align-left align-center align-right');
+    if (active) {
+      this.el.addClass('align-' + align);
+    }
+    this.setIcon('align-' + align);
+    return this.menuEl.find('.menu-item').show().end().find('.menu-item-' + align).hide();
+  };
+
+  AlignmentButton.prototype.status = function($node) {
+    if ($node == null) {
+      return true;
+    }
+    if (!this.editor.util.isBlockNode($node)) {
+      return;
+    }
+    this.setDisabled(!$node.is(this.htmlTag));
+    if (this.disabled) {
+      this.setActive(false);
+      return true;
+    }
+    this.setActive(true, $node.data("align"));
+    return this.active;
+  };
+
+  AlignmentButton.prototype.command = function(align) {
+    var $blockEls, $endBlock, $startBlock, block, endNode, j, len, range, ref, startNode;
+    if (['left', 'center', 'right'].indexOf(align) < 0) {
+      throw "invalid " + align;
+    }
+    range = this.editor.selection.getRange();
+    startNode = range.startContainer;
+    endNode = range.endContainer;
+    $startBlock = this.editor.util.closestBlockEl(startNode);
+    $endBlock = this.editor.util.closestBlockEl(endNode);
+    this.editor.selection.save();
+    $blockEls = $startBlock.is($endBlock) ? $startBlock : $startBlock.nextUntil($endBlock).addBack().add($endBlock);
+    ref = $blockEls.filter(this.htmlTag);
+    for (j = 0, len = ref.length; j < len; j++) {
+      block = ref[j];
+      $(block).attr('data-align', align).data('align', align);
+    }
+    this.editor.selection.restore();
+    return this.editor.trigger('valuechanged');
+  };
+
+  return AlignmentButton;
+
+})(Button);
+
+Simditor.Toolbar.addButton(AlignmentButton);
 
 return Simditor;
 
