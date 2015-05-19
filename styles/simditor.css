@@ -1,5 +1,5 @@
 /*!
-* Simditor v2.1.9
+* Simditor v2.1.10
 * http://simditor.tower.im/
 * 2015-19-05
 */
@@ -137,6 +137,10 @@
 
 .simditor-icon-markdown:before {
   content: '\f01d';
+}
+
+.simditor-icon-checklist:before {
+  content: '\f01e';
 }
 
 .simditor {
