@@ -1,6 +1,6 @@
 {
   "name": "simditor",
-  "version": "2.1.10",
+  "version": "2.1.11",
   "description": "A simple online editor",
   "keywords": "editor simditor",
   "repository": {
@@ -19,8 +19,8 @@
   "homepage": "http://simditor.tower.im",
   "dependencies": {
     "jquery": "~2.1.4",
-    "simple-hotkeys": "~1.0.2",
-    "simple-uploader": "~2.0.6",
+    "simple-hotkeys": "~1.0.3",
+    "simple-uploader": "~2.0.7",
     "simple-module": "~2.0.6"
   },
   "devDependencies": {
