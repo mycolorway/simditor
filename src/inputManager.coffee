@@ -111,7 +111,7 @@ class InputManager extends SimpleModule
         false
 
       # override default behavior of cmd/ctrl + a in firefox(which is buggy)
-      @addShortcut 'cmd+a', (e) =>
+      @addShortcut (if @editor.util.os.mac then 'cmd+a' else 'ctrl+a'), (e) =>
         $children = @editor.body.children()
         return unless $children.length > 0
         firstBlock = $children.first().get(0)

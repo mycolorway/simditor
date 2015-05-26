@@ -675,7 +675,7 @@ InputManager = (function(superClass) {
           return false;
         };
       })(this));
-      this.addShortcut('cmd+a', (function(_this) {
+      this.addShortcut((this.editor.util.os.mac ? 'cmd+a' : 'ctrl+a'), (function(_this) {
         return function(e) {
           var $children, firstBlock, lastBlock, range;
           $children = _this.editor.body.children();
