@@ -184,15 +184,10 @@ class Selection extends SimpleModule
     if startCaret.length and endCaret.length
       startContainer = startCaret.parent()
       startOffset = startContainer.contents().index(startCaret)
-      endContainer = endCaret.parent()
-      endOffset = endContainer.contents().index(endCaret)
-
-      if startContainer[0] == endContainer[0]
-        endOffset -= 1
-
+      
       range = document.createRange()
       range.setStart(startContainer.get(0), startOffset)
-      range.setEnd(endContainer.get(0), endOffset)
+      range.setEnd(endCaret.get(0), 0)
 
       startCaret.remove()
       endCaret.remove()
@@ -203,5 +198,3 @@ class Selection extends SimpleModule
 
     @_selectionSaved = false
     range
-
-
