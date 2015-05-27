@@ -46,6 +46,23 @@ describe 'A Simditor instance with buttons', ->
     editor.el.find('.code-popover .select-lang').val('js').change()
     expect(editor.getValue()).toBe('<pre><code class="lang-js">var test = 1;</code></pre>')
 
+  describe 'table button', ->
+
+    it 'should create a new table after clicking table button and selecting table size', ->
+      editor.focus()
+      jasmine.clock().tick(100)
+
+      $button = editor.toolbar.list.find('.toolbar-item-table')
+      expect(editor.body.find('table')).not.toExist()
+
+      $button.mousedown()
+      $('.menu-create-table td').eq(2).mousedown()
+      $table = editor.body.find('table')
+      expect($table).toExist()
+      expect($table.find('tr').length).toBe(2)
+      expect($table.find('th, td').length).toBe(6)
+
+
   describe 'aligning paragraph', ->
     $p1 = null
     $p2 = null

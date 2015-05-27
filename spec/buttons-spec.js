@@ -45,6 +45,21 @@
       editor.el.find('.code-popover .select-lang').val('js').change();
       return expect(editor.getValue()).toBe('<pre><code class="lang-js">var test = 1;</code></pre>');
     });
+    describe('table button', function() {
+      return it('should create a new table after clicking table button and selecting table size', function() {
+        var $button, $table;
+        editor.focus();
+        jasmine.clock().tick(100);
+        $button = editor.toolbar.list.find('.toolbar-item-table');
+        expect(editor.body.find('table')).not.toExist();
+        $button.mousedown();
+        $('.menu-create-table td').eq(2).mousedown();
+        $table = editor.body.find('table');
+        expect($table).toExist();
+        expect($table.find('tr').length).toBe(2);
+        return expect($table.find('th, td').length).toBe(6);
+      });
+    });
     return describe('aligning paragraph', function() {
       var $p1, $p2;
       $p1 = null;
