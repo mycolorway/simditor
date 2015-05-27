@@ -14,7 +14,7 @@ class TableButton extends Button
   _init: ->
     super()
 
-    $.merge @editor.formatter._allowedTags, ['tbody', 'tr', 'td', 'colgroup', 'col']
+    $.merge @editor.formatter._allowedTags, ['thead', 'th', 'tbody', 'tr', 'td', 'colgroup', 'col']
     $.extend(@editor.formatter._allowedAttributes, {
       td: ['rowspan', 'colspan'],
       col: ['width']
@@ -31,42 +31,62 @@ class TableButton extends Button
         @undecorate $(table)
 
     @editor.on 'selectionchanged.table', (e) =>
-      @editor.body.find('.simditor-table td').removeClass('active')
+      @editor.body.find('.simditor-table td, .simditor-table th').removeClass('active')
       range = @editor.selection.getRange()
       return unless range?
       $container = $(range.commonAncestorContainer)
 
       if range.collapsed and $container.is('.simditor-table')
         if @editor.selection.rangeAtStartOf $container
-          $container = $container.find('td:first')
+          $container = $container.find('th:first')
         else
           $container = $container.find('td:last')
         @editor.selection.setRangeAtEndOf $container
 
-      $container.closest('td', @editor.body)
+      $container.closest('td, th', @editor.body)
         .addClass('active')
 
 
     @editor.on 'blur.table', (e) =>
-      @editor.body.find('.simditor-table td').removeClass('active')
+      @editor.body.find('.simditor-table td, .simditor-table th')
+        .removeClass('active')
 
     # press up arrow in td
     @editor.inputManager.addKeystrokeHandler '38', 'td', (e, $node) =>
-      $tr = $node.parent 'tr'
-      $prevTr = $tr.prev 'tr'
-      return true unless $prevTr.length > 0
-      index = $tr.find('td').index($node)
-      @editor.selection.setRangeAtEndOf $prevTr.find('td').eq(index)
+      @_tdNav($node, 'up')
+      true
+    @editor.inputManager.addKeystrokeHandler '38', 'th', (e, $node) =>
+      @_tdNav($node, 'up')
       true
 
     # press down arrow in td
     @editor.inputManager.addKeystrokeHandler '40', 'td', (e, $node) =>
-      $tr = $node.parent 'tr'
-      $nextTr = $tr.next 'tr'
-      return true unless $nextTr.length > 0
-      index = $tr.find('td').index($node)
-      @editor.selection.setRangeAtEndOf $nextTr.find('td').eq(index)
+      @_tdNav($node, 'down')
       true
+    @editor.inputManager.addKeystrokeHandler '40', 'th', (e, $node) =>
+      @_tdNav($node, 'down')
+      true
+
+  _tdNav: ($td, direction = 'up') ->
+    action = if direction == 'up' then 'prev' else 'next'
+    [parentTag, anotherTag] = if direction == 'up' then ['tbody', 'thead'] else ['thead', 'tbody']
+    $tr = $td.parent 'tr'
+    $anotherTr = @["_#{action}Row"]($tr)
+    return true unless $anotherTr.length > 0
+    index = $tr.find('td, th').index($td)
+    @editor.selection.setRangeAtEndOf $anotherTr.find('td, th').eq(index)
+
+  _nextRow: ($tr) ->
+    $nextTr = $tr.next 'tr'
+    if $nextTr.length < 1 and $tr.parent('thead').length > 0
+      $nextTr = $tr.parent('thead').next('tbody').find('tr:first')
+    $nextTr
+
+  _prevRow: ($tr) ->
+    $prevTr = $tr.prev 'tr'
+    if $prevTr.length < 1 and $tr.parent('tbody').length > 0
+      $prevTr = $tr.parent('tbody').prev('thead').find('tr')
+    $prevTr
 
   initResize: ($table) ->
     $wrapper = $table.parent '.simditor-table'
@@ -74,7 +94,7 @@ class TableButton extends Button
     $colgroup = $table.find 'colgroup'
     if $colgroup.length < 1
       $colgroup = $('<colgroup/>').prependTo $table
-      $table.find('tr:first td').each (i, td) =>
+      $table.find('thead tr th').each (i, td) =>
         $col = $('<col/>').appendTo $colgroup
 
       @refreshTableWidth $table
@@ -83,13 +103,13 @@ class TableButton extends Button
     $resizeHandle = $('<div class="simditor-resize-handle" contenteditable="false"></div>')
       .appendTo($wrapper)
 
-    $wrapper.on 'mousemove', 'td', (e) =>
+    $wrapper.on 'mousemove', 'td, th', (e) =>
       return if $wrapper.hasClass('resizing')
       $td = $(e.currentTarget)
       x = e.pageX - $(e.currentTarget).offset().left
       $td = $td.prev() if x < 5 and $td.prev().length > 0
 
-      if $td.next('td').length < 1
+      if $td.next('td, th').length < 1
         $resizeHandle.hide()
         return
 
@@ -97,7 +117,7 @@ class TableButton extends Button
         $resizeHandle.show()
         return
 
-      index = $td.parent().find('td').index($td)
+      index = $td.parent().find('td, th').index($td)
       $col = $colgroup.find('col').eq(index)
 
       if $resizeHandle.data('col')?.is($col)
@@ -117,7 +137,7 @@ class TableButton extends Button
       $handle = $(e.currentTarget)
       $leftTd = $handle.data 'td'
       $leftCol = $handle.data 'col'
-      $rightTd = $leftTd.next('td')
+      $rightTd = $leftTd.next('td, th')
       $rightCol = $leftCol.next('col')
       startX = e.pageX
       startLeftWidth = $leftTd.outerWidth() * 1
@@ -200,20 +220,22 @@ class TableButton extends Button
 
     @createMenu = @menuWrapper.find('.menu-create-table')
     @editMenu = @menuWrapper.find('.menu-edit-table')
-    @createTable(6, 6).appendTo @createMenu
+    $table = @createTable(6, 6).appendTo @createMenu
 
-    @createMenu.on 'mouseenter', 'td', (e) =>
-      @createMenu.find('td').removeClass('selected')
+    @createMenu.on 'mouseenter', 'td, th', (e) =>
+      @createMenu.find('td, th').removeClass('selected')
 
       $td = $(e.currentTarget)
       $tr = $td.parent()
-      num = $tr.find('td').index($td) + 1
-      $tr.prevAll('tr').addBack().find('td:lt(' + num + ')').addClass('selected')
+      num = $tr.find('td, th').index($td) + 1
+      $trs = $tr.prevAll('tr').addBack()
+      $trs = $trs.add($table.find('thead tr')) if $tr.parent().is('tbody')
+      $trs.find("td:lt(#{num}), th:lt(#{num})").addClass('selected')
 
     @createMenu.on 'mouseleave', (e) =>
-      $(e.currentTarget).find('td').removeClass('selected')
+      $(e.currentTarget).find('td, th').removeClass('selected')
 
-    @createMenu.on 'mousedown', 'td', (e) =>
+    @createMenu.on 'mousedown', 'td, th', (e) =>
       @wrapper.removeClass('menu-on')
       return unless @editor.inputManager.focused
 
@@ -221,6 +243,7 @@ class TableButton extends Button
       $tr = $td.parent()
       colNum = $tr.find('td').index($td) + 1
       rowNum = $tr.prevAll('tr').length + 1
+      rowNum += 1 if $tr.parent().is('tbody')
       $table = @createTable(rowNum, colNum, true)
 
       $closestBlock = @editor.util.closestBlockEl()
@@ -230,24 +253,26 @@ class TableButton extends Button
         $closestBlock.after $table
 
       @decorate $table
-      @editor.selection.setRangeAtStartOf $table.find('td:first')
+      @editor.selection.setRangeAtStartOf $table.find('th:first')
       @editor.trigger 'valuechanged'
       false
 
   createTable: (row, col, phBr) ->
     $table = $('<table/>')
+    $thead = $('<thead/>').appendTo $table
     $tbody = $('<tbody/>').appendTo $table
     for r in [0...row]
-      $tr = $('<tr/>').appendTo $tbody
+      $tr = $('<tr/>')
+      $tr.appendTo(if r == 0 then $thead else $tbody)
       for c in [0...col]
-        $td = $('<td/>').appendTo $tr
+        $td = $(if r == 0 then '<th/>' else '<td/>').appendTo $tr
         $td.append(@editor.util.phBr) if phBr
     $table
 
   refreshTableWidth: ($table)->
     tableWidth = $table.width()
     cols = $table.find('col')
-    $table.find('tr:first td').each (i, td) =>
+    $table.find('thead tr th').each (i, td) =>
       $col = cols.eq(i)
       $col.attr 'width', ($(td).outerWidth() / tableWidth * 100) + '%'
 
@@ -261,16 +286,26 @@ class TableButton extends Button
       @createMenu.show()
       @editMenu.hide()
 
+  _changeCellTag: ($tr, tagName) ->
+    $tr.find('td, th').each (i, cell) =>
+      $cell = $(cell)
+      $cell.replaceWith("<#{tagName}>#{$cell.html()}</#{tagName}>")
+
   deleteRow: ($td) ->
     $tr = $td.parent 'tr'
-    if $tr.siblings('tr').length < 1
+    if $tr.closest('table').find('tr').length < 1
       @deleteTable $td
     else
-      $newTr = $tr.next 'tr'
-      $newTr = $tr.prev 'tr' unless $newTr.length > 0
-      index = $tr.find('td').index($td)
+      $newTr = @_nextRow $tr
+      $newTr = @_prevRow($tr) unless $newTr.length > 0
+      index = $tr.find('td, th').index($td)
+
+      if $tr.parent().is('thead')
+        $newTr.appendTo $tr.parent()
+        @_changeCellTag $newTr, 'th'
       $tr.remove()
-      @editor.selection.setRangeAtEndOf $newTr.find('td').eq(index)
+
+      @editor.selection.setRangeAtEndOf $newTr.find('td, th').eq(index)
 
   insertRow: ($td, direction = 'after') ->
     $tr = $td.parent 'tr'
@@ -280,40 +315,52 @@ class TableButton extends Button
     $table.find('tr').each (i, tr) =>
       colNum = Math.max colNum, $(tr).find('td').length
 
+    index = $tr.find('td, th').index($td)
     $newTr = $('<tr/>')
-    for i in [1..colNum]
-      $('<td/>').append(@editor.util.phBr).appendTo($newTr)
+    cellTag = 'td'
 
-    $tr[direction] $newTr
-    index = $tr.find('td').index($td)
-    @editor.selection.setRangeAtStartOf $newTr.find('td').eq(index)
+    if direction == 'after' and $tr.parent().is('thead')
+      $tr.parent().next('tbody').prepend($newTr)
+    else if direction == 'before' and $tr.parent().is('thead')
+      $tr.before $newTr
+      $tr.parent().next('tbody').prepend($tr)
+      @_changeCellTag $tr, 'td'
+      cellTag = 'th'
+    else
+      $tr[direction] $newTr
+
+    for i in [1..colNum]
+      $("<#{cellTag}/>").append(@editor.util.phBr).appendTo($newTr)
+
+    @editor.selection.setRangeAtStartOf $newTr.find('td, th').eq(index)
 
   deleteCol: ($td) ->
     $tr = $td.parent 'tr'
-    if $tr.siblings('tr').length < 1 and $td.siblings('td').length < 1
+    if $tr.closest('table').find('tr').length < 1 and $td.siblings('td, th').length < 1
       @deleteTable $td
     else
-      index = $tr.find('td').index($td)
-      $newTd = $td.next 'td'
-      $newTd = $tr.prev 'td' unless $newTd.length > 0
+      index = $tr.find('td, th').index($td)
+      $newTd = $td.next 'td, th'
+      $newTd = $tr.prev 'td, th' unless $newTd.length > 0
       $table = $tr.closest 'table'
 
       $table.find('col').eq(index).remove()
       $table.find('tr').each (i, tr) =>
-        $(tr).find('td').eq(index).remove()
+        $(tr).find('td, th').eq(index).remove()
       @refreshTableWidth $table
 
       @editor.selection.setRangeAtEndOf $newTd
 
   insertCol: ($td, direction = 'after') ->
     $tr = $td.parent 'tr'
-    index = $tr.find('td').index($td)
+    index = $tr.find('td, th').index($td)
     $table = $td.closest 'table'
     $col = $table.find('col').eq(index)
 
     $table.find('tr').each (i, tr) =>
-      $newTd = $('<td/>').append(@editor.util.phBr)
-      $(tr).find('td').eq(index)[direction] $newTd
+      cellTag = if $(tr).parent().is('thead') then 'th' else 'td'
+      $newTd = $("<#{cellTag}/>").append(@editor.util.phBr)
+      $(tr).find('td, th').eq(index)[direction] $newTd
 
     $newCol = $('<col/>')
     $col[direction] $newCol
@@ -324,7 +371,7 @@ class TableButton extends Button
     $newCol.attr 'width', width + '%'
     @refreshTableWidth $table
 
-    $newTd = if direction == 'after' then $td.next('td') else $td.prev('td')
+    $newTd = if direction == 'after' then $td.next('td, th') else $td.prev('td, th')
     @editor.selection.setRangeAtStartOf $newTd
 
   deleteTable: ($td) ->
@@ -335,7 +382,7 @@ class TableButton extends Button
 
   command: (param) ->
     range = @editor.selection.getRange()
-    $td = $(range.commonAncestorContainer).closest('td')
+    $td = $(range.commonAncestorContainer).closest('td, th')
     return unless $td.length > 0
 
     if param == 'deleteRow'
