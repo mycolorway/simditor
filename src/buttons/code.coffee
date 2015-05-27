@@ -36,14 +36,18 @@ class CodeButton extends Button
     result
 
   decorate: ($pre) ->
-    lang = $pre.attr('data-lang')
-    $pre.removeClass()
-    $pre.addClass('lang-' + lang) if lang and lang != -1
+    $code = $pre.find('> code')
+    if $code.length > 0
+      lang = $code.attr('class').match(/lang-(\S+)/)?[1]
+      $code.contents().unwrap()
+      $pre.attr('data-lang', lang) if lang
 
   undecorate: ($pre) ->
     lang = $pre.attr('data-lang')
-    $pre.removeClass()
-    $pre.addClass('lang-' + lang) if lang and lang != -1
+    $code = $('<code/>')
+    $code.addClass('lang-' + lang) if lang and lang != -1
+    $pre.wrapInner($code)
+      .removeAttr('data-lang')
 
   command: ->
     range = @editor.selection.getRange()
@@ -91,37 +95,37 @@ class CodeButton extends Button
 
 class CodePopover extends Popover
 
-  _tpl: """
-    <div class="code-settings">
-      <div class="settings-field">
-        <select class="select-lang">
-          <option value="-1">选择程序语言</option>
-          <option value="bash">Bash</option>
-          <option value="c++">C++</option>
-          <option value="cs">C#</option>
-          <option value="css">CSS</option>
-          <option value="erlang">Erlang</option>
-          <option value="less">Less</option>
-          <option value="scss">Sass</option>
-          <option value="diff">Diff</option>
-          <option value="coffeeScript">CoffeeScript</option>
-          <option value="html">Html,XML</option>
-          <option value="json">JSON</option>
-          <option value="java">Java</option>
-          <option value="js">JavaScript</option>
-          <option value="markdown">Markdown</option>
-          <option value="oc">Objective C</option>
-          <option value="php">PHP</option>
-          <option value="perl">Perl</option>
-          <option value="python">Python</option>
-          <option value="ruby">Ruby</option>
-          <option value="sql">SQL</option>
-        </select>
-      </div>
-    </div>
-  """
-
   render: ->
+    @_tpl = """
+      <div class="code-settings">
+        <div class="settings-field">
+          <select class="select-lang">
+            <option value="-1">#{@_t 'selectLanguage'}</option>
+            <option value="bash">Bash</option>
+            <option value="c++">C++</option>
+            <option value="cs">C#</option>
+            <option value="css">CSS</option>
+            <option value="erlang">Erlang</option>
+            <option value="less">Less</option>
+            <option value="scss">Sass</option>
+            <option value="diff">Diff</option>
+            <option value="coffeeScript">CoffeeScript</option>
+            <option value="html">Html,XML</option>
+            <option value="json">JSON</option>
+            <option value="java">Java</option>
+            <option value="js">JavaScript</option>
+            <option value="markdown">Markdown</option>
+            <option value="oc">Objective C</option>
+            <option value="php">PHP</option>
+            <option value="perl">Perl</option>
+            <option value="python">Python</option>
+            <option value="ruby">Ruby</option>
+            <option value="sql">SQL</option>
+          </select>
+        </div>
+      </div>
+    """
+
     @el.addClass('code-popover')
       .append(@_tpl)
     @selectEl = @el.find '.select-lang'
@@ -133,7 +137,6 @@ class CodePopover extends Popover
         .removeAttr('data-lang')
 
       if @lang isnt -1
-        @target.addClass('lang-' + @lang)
         @target.attr('data-lang', @lang)
 
       @target.addClass('selected') if selected
@@ -148,5 +151,3 @@ class CodePopover extends Popover
 
 
 Simditor.Toolbar.addButton CodeButton
-
-

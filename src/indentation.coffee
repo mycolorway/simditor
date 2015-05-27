@@ -74,9 +74,14 @@ class Indentation extends SimpleModule
       $blockEl.attr 'data-indent', indentLevel
     else if $blockEl.is('table') or $blockEl.is('.simditor-table')
       range = @editor.selection.getRange()
-      $td = $(range.commonAncestorContainer).closest('td')
-      $nextTd = $td.next('td')
-      $nextTd = $td.parent('tr').next('tr').find('td:first') unless $nextTd.length > 0
+      $td = $(range.commonAncestorContainer).closest('td, th')
+      $nextTd = $td.next('td, th')
+      unless $nextTd.length > 0
+        $tr = $td.parent('tr')
+        $nextTr = $tr.next('tr')
+        if $nextTr.length < 1 and $tr.parent().is('thead')
+          $nextTr = $tr.parent('thead').next('tbody').find('tr:first')
+        $nextTd = $nextTr.find('td:first, th:first')
       return false unless $td.length > 0 and $nextTd.length > 0
       @editor.selection.setRangeAtEndOf $nextTd
 
@@ -129,9 +134,14 @@ class Indentation extends SimpleModule
       $blockEl.attr 'data-indent', indentLevel
     else if $blockEl.is('table') or $blockEl.is('.simditor-table')
       range = @editor.selection.getRange()
-      $td = $(range.commonAncestorContainer).closest('td')
-      $prevTd = $td.prev('td')
-      $prevTd = $td.parent('tr').prev('tr').find('td:last') unless $prevTd.length > 0
+      $td = $(range.commonAncestorContainer).closest('td, th')
+      $prevTd = $td.prev('td, th')
+      unless $prevTd.length > 0
+        $tr = $td.parent('tr')
+        $prevTr = $tr.prev('tr')
+        if $prevTr.length < 1 and $tr.parent().is('tbody')
+          $prevTr = $tr.parent('tbody').prev('thead').find('tr:first')
+        $prevTd = $prevTr.find('td:last, th:last')
       return unless $td.length > 0 and $prevTd.length > 0
       @editor.selection.setRangeAtEndOf $prevTd
 
