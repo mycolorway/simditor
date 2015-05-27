@@ -269,7 +269,7 @@ Selection = (function(superClass) {
   };
 
   Selection.prototype.restore = function() {
-    var endCaret, endContainer, endOffset, range, startCaret, startContainer, startOffset;
+    var endCaret, range, startCaret, startContainer, startOffset;
     if (!this._selectionSaved) {
       return false;
     }
@@ -278,14 +278,9 @@ Selection = (function(superClass) {
     if (startCaret.length && endCaret.length) {
       startContainer = startCaret.parent();
       startOffset = startContainer.contents().index(startCaret);
-      endContainer = endCaret.parent();
-      endOffset = endContainer.contents().index(endCaret);
-      if (startContainer[0] === endContainer[0]) {
-        endOffset -= 1;
-      }
       range = document.createRange();
       range.setStart(startContainer.get(0), startOffset);
-      range.setEnd(endContainer.get(0), endOffset);
+      range.setEnd(endCaret.get(0), 0);
       startCaret.remove();
       endCaret.remove();
       this.selectRange(range);
