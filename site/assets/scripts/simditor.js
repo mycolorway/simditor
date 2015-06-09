@@ -3505,10 +3505,10 @@ CodeButton = (function(superClass) {
   };
 
   CodeButton.prototype.decorate = function($pre) {
-    var $code, lang, ref;
+    var $code, lang, ref, ref1;
     $code = $pre.find('> code');
     if ($code.length > 0) {
-      lang = (ref = $code.attr('class').match(/lang-(\S+)/)) != null ? ref[1] : void 0;
+      lang = (ref = $code.attr('class')) != null ? (ref1 = ref.match(/lang-(\S+)/)) != null ? ref1[1] : void 0 : void 0;
       $code.contents().unwrap();
       if (lang) {
         return $pre.attr('data-lang', lang);

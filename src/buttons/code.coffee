@@ -38,7 +38,7 @@ class CodeButton extends Button
   decorate: ($pre) ->
     $code = $pre.find('> code')
     if $code.length > 0
-      lang = $code.attr('class').match(/lang-(\S+)/)?[1]
+      lang = $code.attr('class')?.match(/lang-(\S+)/)?[1]
       $code.contents().unwrap()
       $pre.attr('data-lang', lang) if lang
 
