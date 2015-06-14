@@ -38,6 +38,7 @@ class Popover extends SimpleModule
       popover = $(popover).data('popover')
       popover.hide() if popover.active
 
+    @target.removeClass('selected') if @active and @target
     @target = $target.addClass('selected')
 
     if @active

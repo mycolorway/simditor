@@ -2732,6 +2732,9 @@ Popover = (function(superClass) {
         }
       };
     })(this));
+    if (this.active && this.target) {
+      this.target.removeClass('selected');
+    }
     this.target = $target.addClass('selected');
     if (this.active) {
       this.refresh(position);
