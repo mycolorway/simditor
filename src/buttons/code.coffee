@@ -149,6 +149,7 @@ class CodePopover extends Popover
         @target.attr('data-lang', @lang)
 
       @target.addClass('selected') if selected
+      @editor.trigger 'valuechanged'
 
     @editor.on 'valuechanged', (e) =>
       @refresh() if @active

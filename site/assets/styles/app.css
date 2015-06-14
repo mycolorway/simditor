@@ -481,6 +481,12 @@ section#page-demo {
 section#page-demo .simditor {
   box-shadow: 0 8px 40px rgba(0, 0, 0, 0.15);
 }
+section#page-demo #preview {
+  min-height: 100px;
+  padding: 15px;
+  margin: 60px 0 0 0;
+  border: 1px solid #dfdfdf;
+}
 
 /* Sidebar Page */
 section.page-sidebar {

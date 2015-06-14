@@ -1,12 +1,12 @@
 (function() {
   $(function() {
-    var editor, mobileToolbar, toolbar;
+    var $preview, editor, mobileToolbar, toolbar;
     toolbar = ['title', 'bold', 'italic', 'underline', 'strikethrough', 'color', '|', 'ol', 'ul', 'blockquote', 'code', 'table', '|', 'link', 'image', 'hr', '|', 'indent', 'outdent', 'alignment'];
     mobileToolbar = ["bold", "underline", "strikethrough", "color", "ul", "ol"];
     if (mobilecheck()) {
       toolbar = mobileToolbar;
     }
-    return editor = new Simditor({
+    editor = new Simditor({
       textarea: $('#txt-content'),
       placeholder: '这里输入文字...',
       toolbar: toolbar,
@@ -16,6 +16,12 @@
         url: '/upload'
       } : false
     });
+    $preview = $('#preview');
+    if ($preview.length > 0) {
+      return editor.on('valuechanged', function(e) {
+        return $preview.html(editor.getValue());
+      });
+    }
   });
 
 }).call(this);

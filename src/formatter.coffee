@@ -12,16 +12,16 @@ class Formatter extends SimpleModule
 
     @_allowedTags = @opts.allowedTags || ['br', 'a', 'img', 'b', 'strong', 'i', 'u', 'font', 'p', 'ul', 'ol', 'li', 'blockquote', 'pre', 'code', 'h1', 'h2', 'h3', 'h4', 'hr']
     @_allowedAttributes = @opts.allowedAttributes ||
-      img: ['src', 'alt', 'width', 'height', 'data-image-src', 'data-image-size', 'data-image-name', 'data-non-image']
+      img: ['src', 'alt', 'width', 'height', 'data-non-image']
       a: ['href', 'target']
       font: ['color']
-      pre: ['data-lang']
       code: ['class']
-      p: ['data-indent', 'data-align']
-      h1: ['data-indent']
-      h2: ['data-indent']
-      h3: ['data-indent']
-      h4: ['data-indent']
+    @_allowedStyles = @opts.allowedStyles ||
+      p: ['margin-left', 'text-align']
+      h1: ['margin-left']
+      h2: ['margin-left']
+      h3: ['margin-left']
+      h4: ['margin-left']
 
     @editor.body.on 'click', 'a', (e) =>
       false
@@ -126,7 +126,9 @@ class Formatter extends SimpleModule
       unless isDecoration
         allowedAttributes = @_allowedAttributes[$node[0].tagName.toLowerCase()]
         for attr in $.makeArray($node[0].attributes)
-            $node.removeAttr(attr.name) unless allowedAttributes? and attr.name in allowedAttributes
+          continue if attr.name == 'style'
+          $node.removeAttr(attr.name) unless allowedAttributes? and (attr.name in allowedAttributes)
+          @_cleanNodeStyles $node
     else if $node[0].nodeType == 1 and !$node.is ':empty'
       if $node.is('div, article, dl, header, footer, tr')
         $node.append('<br/>')
@@ -151,6 +153,24 @@ class Formatter extends SimpleModule
 
     @cleanNode(n, true) for n in contents if recursive and contents? and !$node.is('pre')
     null
+
+  _cleanNodeStyles: ($node) ->
+    styleStr = $node.attr 'style'
+    return unless styleStr
+
+    $node.removeAttr 'style'
+    allowedStyles = @_allowedStyles[$node[0].tagName.toLowerCase()]
+    return $node unless allowedStyles and allowedStyles.length > 0
+
+    styles = {}
+    for style in styleStr.split(';')
+      style = $.trim style
+      pair = style.split(':')
+      continue unless pair.length = 2
+      styles[pair[0]] = paire[1] if pair[0] in allowedStyles
+
+    $node.css styles if Object.keys(styles).length > 0
+    $node
 
   clearHtml: (html, lineBreak = true) ->
     container = $('<div/>').append(html)
