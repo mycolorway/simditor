@@ -101,34 +101,43 @@ class CodePopover extends Popover
         <div class="settings-field">
           <select class="select-lang">
             <option value="-1">#{@_t 'selectLanguage'}</option>
-            <option value="bash">Bash</option>
-            <option value="c++">C++</option>
-            <option value="cs">C#</option>
-            <option value="css">CSS</option>
-            <option value="erlang">Erlang</option>
-            <option value="less">Less</option>
-            <option value="scss">Sass</option>
-            <option value="diff">Diff</option>
-            <option value="coffeeScript">CoffeeScript</option>
-            <option value="html">Html,XML</option>
-            <option value="json">JSON</option>
-            <option value="java">Java</option>
-            <option value="js">JavaScript</option>
-            <option value="markdown">Markdown</option>
-            <option value="oc">Objective C</option>
-            <option value="php">PHP</option>
-            <option value="perl">Perl</option>
-            <option value="python">Python</option>
-            <option value="ruby">Ruby</option>
-            <option value="sql">SQL</option>
           </select>
         </div>
       </div>
     """
 
+    @langs = @editor.opts.codeLanguages || [
+      { name: 'Bash', value: 'bash' }
+      { name: 'C++', value: 'c++' }
+      { name: 'C#', value: 'cs' }
+      { name: 'CSS', value: 'css' }
+      { name: 'Erlang', value: 'erlang' }
+      { name: 'Less', value: 'less' }
+      { name: 'Sass', value: 'sass' }
+      { name: 'Diff', value: 'diff' }
+      { name: 'CoffeeScript', value: 'coffeescript' }
+      { name: 'HTML,XML', value: 'html' }
+      { name: 'JSON', value: 'json' }
+      { name: 'Java', value: 'java' }
+      { name: 'JavaScript', value: 'js' }
+      { name: 'Markdown', value: 'markdown' }
+      { name: 'Objective C', value: 'oc' }
+      { name: 'PHP', value: 'php' }
+      { name: 'Perl', value: 'parl' }
+      { name: 'Python', value: 'python' }
+      { name: 'Ruby', value: 'ruby' }
+      { name: 'SQL', value: 'sql'}
+    ]
+
     @el.addClass('code-popover')
       .append(@_tpl)
     @selectEl = @el.find '.select-lang'
+
+    for lang in @langs
+      $option = $ '<option/>',
+        text: lang.name
+        value: lang.value
+      .appendTo @selectEl
 
     @selectEl.on 'change', (e) =>
       @lang = @selectEl.val()

@@ -3593,9 +3593,81 @@ CodePopover = (function(superClass) {
   }
 
   CodePopover.prototype.render = function() {
-    this._tpl = "<div class=\"code-settings\">\n  <div class=\"settings-field\">\n    <select class=\"select-lang\">\n      <option value=\"-1\">" + (this._t('selectLanguage')) + "</option>\n      <option value=\"bash\">Bash</option>\n      <option value=\"c++\">C++</option>\n      <option value=\"cs\">C#</option>\n      <option value=\"css\">CSS</option>\n      <option value=\"erlang\">Erlang</option>\n      <option value=\"less\">Less</option>\n      <option value=\"scss\">Sass</option>\n      <option value=\"diff\">Diff</option>\n      <option value=\"coffeeScript\">CoffeeScript</option>\n      <option value=\"html\">Html,XML</option>\n      <option value=\"json\">JSON</option>\n      <option value=\"java\">Java</option>\n      <option value=\"js\">JavaScript</option>\n      <option value=\"markdown\">Markdown</option>\n      <option value=\"oc\">Objective C</option>\n      <option value=\"php\">PHP</option>\n      <option value=\"perl\">Perl</option>\n      <option value=\"python\">Python</option>\n      <option value=\"ruby\">Ruby</option>\n      <option value=\"sql\">SQL</option>\n    </select>\n  </div>\n</div>";
+    var $option, j, lang, len, ref;
+    this._tpl = "<div class=\"code-settings\">\n  <div class=\"settings-field\">\n    <select class=\"select-lang\">\n      <option value=\"-1\">" + (this._t('selectLanguage')) + "</option>\n    </select>\n  </div>\n</div>";
+    this.langs = this.editor.opts.codeLanguages || [
+      {
+        name: 'Bash',
+        value: 'bash'
+      }, {
+        name: 'C++',
+        value: 'c++'
+      }, {
+        name: 'C#',
+        value: 'cs'
+      }, {
+        name: 'CSS',
+        value: 'css'
+      }, {
+        name: 'Erlang',
+        value: 'erlang'
+      }, {
+        name: 'Less',
+        value: 'less'
+      }, {
+        name: 'Sass',
+        value: 'sass'
+      }, {
+        name: 'Diff',
+        value: 'diff'
+      }, {
+        name: 'CoffeeScript',
+        value: 'coffeescript'
+      }, {
+        name: 'HTML,XML',
+        value: 'html'
+      }, {
+        name: 'JSON',
+        value: 'json'
+      }, {
+        name: 'Java',
+        value: 'java'
+      }, {
+        name: 'JavaScript',
+        value: 'js'
+      }, {
+        name: 'Markdown',
+        value: 'markdown'
+      }, {
+        name: 'Objective C',
+        value: 'oc'
+      }, {
+        name: 'PHP',
+        value: 'php'
+      }, {
+        name: 'Perl',
+        value: 'parl'
+      }, {
+        name: 'Python',
+        value: 'python'
+      }, {
+        name: 'Ruby',
+        value: 'ruby'
+      }, {
+        name: 'SQL',
+        value: 'sql'
+      }
+    ];
     this.el.addClass('code-popover').append(this._tpl);
     this.selectEl = this.el.find('.select-lang');
+    ref = this.langs;
+    for (j = 0, len = ref.length; j < len; j++) {
+      lang = ref[j];
+      $option = $('<option/>', {
+        text: lang.name,
+        value: lang.value
+      }).appendTo(this.selectEl);
+    }
     this.selectEl.on('change', (function(_this) {
       return function(e) {
         var selected;

@@ -156,3 +156,34 @@
     ```
 
     自定义的白名单列表会覆盖编辑器默认的白名单列表。
+
+- name: 'codeLanguages'
+  type: 'Array'
+  default: 'null'
+  description: |
+    自定义代码（code）按钮的支持的语言列表，默认的语言列表是：
+
+    ```coffee
+    [
+      { name: 'Bash', value: 'bash' }
+      { name: 'C++', value: 'c++' }
+      { name: 'C#', value: 'cs' }
+      { name: 'CSS', value: 'css' }
+      { name: 'Erlang', value: 'erlang' }
+      { name: 'Less', value: 'less' }
+      { name: 'Sass', value: 'sass' }
+      { name: 'Diff', value: 'diff' }
+      { name: 'CoffeeScript', value: 'coffeescript' }
+      { name: 'HTML,XML', value: 'html' }
+      { name: 'JSON', value: 'json' }
+      { name: 'Java', value: 'java' }
+      { name: 'JavaScript', value: 'js' }
+      { name: 'Markdown', value: 'markdown' }
+      { name: 'Objective C', value: 'oc' }
+      { name: 'PHP', value: 'php' }
+      { name: 'Perl', value: 'parl' }
+      { name: 'Python', value: 'python' }
+      { name: 'Ruby', value: 'ruby' }
+      { name: 'SQL', value: 'sql'}
+    ]
+    ```
