@@ -83,7 +83,7 @@ module.exports = (grunt) ->
           amd: ['jquery', 'simple-module', 'simple-hotkeys', 'simple-uploader']
           cjs: ['jquery', 'simple-module', 'simple-hotkeys', 'simple-uploader']
           global:
-            items: ['jQuery', 'SimpleModule', 'simple.hotkeys', 'simple.uploader' ]
+            items: ['jQuery', 'SimpleModule', 'simple.hotkeys', 'simple.uploader']
             prefix: ''
 
     copy:
@@ -187,7 +187,7 @@ module.exports = (grunt) ->
           banner: '''/*!
  * Simditor v<%= pkg.version %>
  * http://simditor.tower.im/
- * <%= grunt.template.today("yyyy-dd-mm") %>
+ * <%= grunt.template.today("yyyy-mm-dd") %>
  */'''
         files:
           src: ['lib/simditor.js', 'styles/simditor.css']
