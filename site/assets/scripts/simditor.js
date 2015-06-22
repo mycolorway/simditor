@@ -331,11 +331,9 @@ Formatter = (function(superClass) {
       h3: ['margin-left'],
       h4: ['margin-left']
     };
-    return this.editor.body.on('click', 'a', (function(_this) {
-      return function(e) {
-        return false;
-      };
-    })(this));
+    return this.editor.body.on('click', 'a', function(e) {
+      return false;
+    });
   };
 
   Formatter.prototype.decorate = function($el) {
@@ -354,7 +352,7 @@ Formatter = (function(superClass) {
   };
 
   Formatter.prototype.autolink = function($el) {
-    var $node, findLinkNode, j, lastIndex, len, linkNodes, match, re, replaceEls, text, uri;
+    var $link, $node, findLinkNode, j, lastIndex, len, linkNodes, match, re, replaceEls, subStr, text, uri;
     if ($el == null) {
       $el = this.editor.body;
     }
@@ -382,10 +380,12 @@ Formatter = (function(superClass) {
       match = null;
       lastIndex = 0;
       while ((match = re.exec(text)) !== null) {
-        replaceEls.push(document.createTextNode(text.substring(lastIndex, match.index)));
+        subStr = text.substring(lastIndex, match.index);
+        replaceEls.push(document.createTextNode(subStr));
         lastIndex = re.lastIndex;
         uri = /^(http(s)?:\/\/|\/)/.test(match[0]) ? match[0] : 'http://' + match[0];
-        replaceEls.push($('<a href="' + uri + '" rel="nofollow"></a>').text(match[0])[0]);
+        $link = $("<a href=\"" + uri + "\" rel=\"nofollow\"></a>").text(match[0]);
+        replaceEls.push($link[0]);
       }
       replaceEls.push(document.createTextNode(text.substring(lastIndex)));
       $node.replaceWith($(replaceEls));
@@ -484,11 +484,9 @@ Formatter = (function(superClass) {
         contents.first().unwrap();
       } else if ($node.is('table')) {
         $p = $('<p/>');
-        $node.find('tr').each((function(_this) {
-          return function(i, tr) {
-            return $p.append($(tr).text() + '<br/>');
-          };
-        })(this));
+        $node.find('tr').each(function(i, tr) {
+          return $p.append($(tr).text() + '<br/>');
+        });
         $node.replaceWith($p);
         contents = null;
       } else if ($node.is('thead, tfoot')) {
@@ -534,7 +532,7 @@ Formatter = (function(superClass) {
         continue;
       }
       if (ref1 = pair[0], indexOf.call(allowedStyles, ref1) >= 0) {
-        styles[pair[0]] = paire[1];
+        styles[$.trim(pair[0])] = $trim(pair[1]);
       }
     }
     if (Object.keys(styles).length > 0) {
@@ -562,7 +560,7 @@ Formatter = (function(superClass) {
           if (children.length > 0) {
             result += _this.clearHtml(children);
           }
-          if (lineBreak && i < contents.length - 1 && $node.is('br, p, div, li, tr, pre, address, artticle, aside, dl, figcaption, footer, h1, h2, h3, h4, header')) {
+          if (lineBreak && i < contents.length - 1 && $node.is('br, p, div, li,tr, pre, address, artticle, aside, dl, figcaption, footer, h1, h2,h3, h4, header')) {
             return result += '\n';
           }
         }
@@ -576,19 +574,15 @@ Formatter = (function(superClass) {
     uselessP = function($el) {
       return !!($el.is('p') && !$el.text() && $el.children(':not(br)').length < 1);
     };
-    return $contents.each((function(_this) {
-      return function(i, el) {
-        var $el;
-        $el = $(el);
-        if ($el.is(':not(img, br, col, td, hr, [class^="simditor-"]):empty')) {
-          $el.remove();
-        }
-        if (uselessP($el)) {
-          $el.remove();
-        }
-        return $el.find(':not(img, br, col, td, hr, [class^="simditor-"]):empty').remove();
-      };
-    })(this));
+    return $contents.each(function(i, el) {
+      var $el, invalid;
+      $el = $(el);
+      invalid = $el.is(':not(img, br, col, td, hr, [class^="simditor-"]):empty');
+      if (invalid || uselessP($el)) {
+        $el.remove();
+      }
+      return $el.find(':not(img, br, col, td, hr, [class^="simditor-"]):empty').remove();
+    });
   };
 
   return Formatter;
@@ -1690,17 +1684,15 @@ Util = (function(superClass) {
       return null;
     }
     blockEl = $node.parentsUntil(this.editor.body).addBack();
-    blockEl = blockEl.filter((function(_this) {
-      return function(i) {
-        var $n;
-        $n = blockEl.eq(i);
-        if ($.isFunction(filter)) {
-          return filter($n);
-        } else {
-          return $n.is(filter);
-        }
-      };
-    })(this));
+    blockEl = blockEl.filter(function(i) {
+      var $n;
+      $n = blockEl.eq(i);
+      if ($.isFunction(filter)) {
+        return filter($n);
+      } else {
+        return $n.is(filter);
+      }
+    });
     if (blockEl.length) {
       return blockEl.first();
     } else {
@@ -1750,7 +1742,7 @@ Util = (function(superClass) {
   };
 
   Util.prototype.dataURLtoBlob = function(dataURL) {
-    var BlobBuilder, arrayBuffer, bb, byteString, hasArrayBufferViewSupport, hasBlobConstructor, i, intArray, j, mimeString, ref;
+    var BlobBuilder, arrayBuffer, bb, blobArray, byteString, hasArrayBufferViewSupport, hasBlobConstructor, i, intArray, j, mimeString, ref, supportBlob;
     hasBlobConstructor = window.Blob && (function() {
       var e;
       try {
@@ -1770,7 +1762,8 @@ Util = (function(superClass) {
       }
     })();
     BlobBuilder = window.BlobBuilder || window.WebKitBlobBuilder || window.MozBlobBuilder || window.MSBlobBuilder;
-    if (!((hasBlobConstructor || BlobBuilder) && window.atob && window.ArrayBuffer && window.Uint8Array)) {
+    supportBlob = hasBlobConstructor || BlobBuilder;
+    if (!(supportBlob && window.atob && window.ArrayBuffer && window.Uint8Array)) {
       return false;
     }
     if (dataURL.split(',')[0].indexOf('base64') >= 0) {
@@ -1785,7 +1778,8 @@ Util = (function(superClass) {
     }
     mimeString = dataURL.split(',')[0].split(':')[1].split(';')[0];
     if (hasBlobConstructor) {
-      return new Blob([hasArrayBufferViewSupport ? intArray : arrayBuffer], {
+      blobArray = hasArrayBufferViewSupport ? intArray : arrayBuffer;
+      return new Blob(blobArray, {
         type: mimeString
       });
     }
@@ -2097,7 +2091,7 @@ Indentation = (function(superClass) {
   };
 
   Indentation.prototype.indentBlock = function(blockEl) {
-    var $blockEl, $childList, $nextTd, $nextTr, $parentLi, $pre, $td, $tr, indentLevel, range, tagName;
+    var $blockEl, $childList, $nextTd, $nextTr, $parentLi, $pre, $td, $tr, marginLeft, range, tagName;
     $blockEl = $(blockEl);
     if (!$blockEl.length) {
       return;
@@ -2124,9 +2118,9 @@ Indentation = (function(superClass) {
       }
       this.editor.selection.restore();
     } else if ($blockEl.is('p, h1, h2, h3, h4')) {
-      indentLevel = $blockEl.attr('data-indent') || 0;
-      indentLevel = Math.min(indentLevel * 1 + 1, 10);
-      $blockEl.attr('data-indent', indentLevel);
+      marginLeft = parseInt($blockEl.css('margin-left')) || 0;
+      marginLeft = (Math.round(marginLeft / this.opts.indentWidth) + 1) * this.opts.indentWidth;
+      $blockEl.css('margin-left', marginLeft);
     } else if ($blockEl.is('table') || $blockEl.is('.simditor-table')) {
       range = this.editor.selection.getRange();
       $td = $(range.commonAncestorContainer).closest('td, th');
@@ -2162,7 +2156,7 @@ Indentation = (function(superClass) {
   };
 
   Indentation.prototype.outdentBlock = function(blockEl) {
-    var $blockEl, $parent, $parentLi, $pre, $prevTd, $prevTr, $td, $tr, button, indentLevel, range, ref;
+    var $blockEl, $parent, $parentLi, $pre, $prevTd, $prevTr, $td, $tr, button, marginLeft, range;
     $blockEl = $(blockEl);
     if (!($blockEl && $blockEl.length > 0)) {
       return;
@@ -2194,12 +2188,9 @@ Indentation = (function(superClass) {
       }
       this.editor.selection.restore();
     } else if ($blockEl.is('p, h1, h2, h3, h4')) {
-      indentLevel = (ref = $blockEl.attr('data-indent')) != null ? ref : 0;
-      indentLevel = indentLevel * 1 - 1;
-      if (indentLevel < 0) {
-        indentLevel = 0;
-      }
-      $blockEl.attr('data-indent', indentLevel);
+      marginLeft = parseInt($blockEl.css('margin-left')) || 0;
+      marginLeft = Math.max(Math.round(marginLeft / this.opts.indentWidth) - 1, 0) * this.opts.indentWidth;
+      $blockEl.css('margin-left', marginLeft === 0 ? '' : marginLeft);
     } else if ($blockEl.is('table') || $blockEl.is('.simditor-table')) {
       range = this.editor.selection.getRange();
       $td = $(range.commonAncestorContainer).closest('td, th');
@@ -2256,7 +2247,8 @@ Simditor = (function(superClass) {
     placeholder: '',
     defaultImage: 'images/image.png',
     params: {},
-    upload: false
+    upload: false,
+    indentWidth: 40
   };
 
   Simditor.prototype._init = function() {
@@ -2347,9 +2339,9 @@ Simditor = (function(superClass) {
   };
 
   Simditor.prototype._placeholder = function() {
-    var children, ref;
+    var children;
     children = this.body.children();
-    if (children.length === 0 || (children.length === 1 && this.util.isEmptyNode(children) && ((ref = children.data('indent')) != null ? ref : 0) < 1)) {
+    if (children.length === 0 || (children.length === 1 && this.util.isEmptyNode(children) && parseInt(children.css('margin-left') || 0) < this.opts.indentWidth)) {
       return this.placeholderEl.show();
     } else {
       return this.placeholderEl.hide();
@@ -2424,14 +2416,12 @@ Simditor = (function(superClass) {
   };
 
   Simditor.prototype.hidePopover = function() {
-    return this.el.find('.simditor-popover').each((function(_this) {
-      return function(i, popover) {
-        popover = $(popover).data('popover');
-        if (popover.active) {
-          return popover.hide();
-        }
-      };
-    })(this));
+    return this.el.find('.simditor-popover').each(function(i, popover) {
+      popover = $(popover).data('popover');
+      if (popover.active) {
+        return popover.hide();
+      }
+    });
   };
 
   Simditor.prototype.destroy = function() {
@@ -5272,6 +5262,9 @@ AlignmentButton = (function(superClass) {
     if (align == null) {
       align = 'left';
     }
+    if (align !== 'left' && align !== 'center' && align !== 'right') {
+      align = 'left';
+    }
     if (align === 'left') {
       AlignmentButton.__super__.setActive.call(this, false);
     } else {
@@ -5297,14 +5290,14 @@ AlignmentButton = (function(superClass) {
       this.setActive(false);
       return true;
     }
-    this.setActive(true, $node.data("align"));
+    this.setActive(true, $node.css('text-align'));
     return this.active;
   };
 
   AlignmentButton.prototype.command = function(align) {
     var $blockEls, $endBlock, $startBlock, block, endNode, j, len, range, ref, startNode;
     if (['left', 'center', 'right'].indexOf(align) < 0) {
-      throw "invalid " + align;
+      throw new Error("invalid " + align);
     }
     range = this.editor.selection.getRange();
     startNode = range.startContainer;
@@ -5316,7 +5309,7 @@ AlignmentButton = (function(superClass) {
     ref = $blockEls.filter(this.htmlTag);
     for (j = 0, len = ref.length; j < len; j++) {
       block = ref[j];
-      $(block).attr('data-align', align).data('align', align);
+      $(block).css('text-align', align === 'left' ? '' : align);
     }
     this.editor.selection.restore();
     return this.editor.trigger('valuechanged');

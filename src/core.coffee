@@ -17,6 +17,7 @@ class Simditor extends SimpleModule
     defaultImage: 'images/image.png'
     params: {}
     upload: false
+    indentWidth: 40
 
   _init: ->
     @textarea = $(@opts.textarea)
@@ -74,7 +75,8 @@ class Simditor extends SimpleModule
     @el = $(@_tpl).insertBefore @textarea
     @wrapper = @el.find '.simditor-wrapper'
     @body = @wrapper.find '.simditor-body'
-    @placeholderEl = @wrapper.find('.simditor-placeholder').append(@opts.placeholder)
+    @placeholderEl = @wrapper.find('.simditor-placeholder')
+      .append(@opts.placeholder)
 
     @el.data 'simditor', @
     @wrapper.append(@textarea)
@@ -99,7 +101,9 @@ class Simditor extends SimpleModule
 
   _placeholder: ->
     children = @body.children()
-    if children.length == 0 or (children.length == 1 and @util.isEmptyNode(children) and (children.data('indent') ? 0) < 1)
+    if children.length == 0 or (children.length == 1 and
+        @util.isEmptyNode(children) and
+        parseInt(children.css('margin-left') || 0) < @opts.indentWidth)
       @placeholderEl.show()
     else
       @placeholderEl.hide()
@@ -156,7 +160,8 @@ class Simditor extends SimpleModule
       @undoManager.caretPosition @inputManager.lastCaretPosition
     else
       $blockEl = @body.find('p').last()
-      $blockEl = $('<p/>').append(@util.phBr).appendTo(@body) unless $blockEl.length > 0
+      unless $blockEl.length > 0
+        $blockEl = $('<p/>').append(@util.phBr).appendTo(@body)
       range = document.createRange()
       @selection.setRangeAtEndOf $blockEl, range
       @body.focus()
@@ -168,7 +173,7 @@ class Simditor extends SimpleModule
       @body.find('textarea:visible').blur()
 
   hidePopover: ()->
-    @el.find('.simditor-popover').each (i, popover) =>
+    @el.find('.simditor-popover').each (i, popover) ->
       popover = $(popover).data('popover')
       popover.hide() if popover.active
 

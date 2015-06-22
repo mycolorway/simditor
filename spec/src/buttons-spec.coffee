@@ -79,22 +79,22 @@ describe 'A Simditor instance with buttons', ->
       range.setStart $p1[0], 0
       editor.selection.selectRange range
 
-    it "can align to left", ->
-      expect($p1.attr('data-align')).toBe(undefined)
-      expect($p2.attr('data-align')).toBe(undefined)
+    it "can align to right", ->
+      expect($p1.css('text-align')).toBe('start')
+      expect($p2.css('text-align')).toBe('start')
       button = editor.toolbar.list.find('.toolbar-item-alignment').data 'button'
-      button.command "left"
-      expect($p1.attr('data-align')).toBe('left')
-      expect($p2.attr('data-align')).toBe('left')
+      button.command "right"
+      expect($p1.css('text-align')).toBe('right')
+      expect($p2.css('text-align')).toBe('right')
 
     it "can align to center", ->
       button = editor.toolbar.list.find('.toolbar-item-alignment').data 'button'
       button.command "center"
-      expect($p1.attr('data-align')).toBe('center')
-      expect($p2.attr('data-align')).toBe('center')
+      expect($p1.css('text-align')).toBe('center')
+      expect($p2.css('text-align')).toBe('center')
 
-    it "can align to right", ->
+    it "can align to left", ->
       button = editor.toolbar.list.find('.toolbar-item-alignment').data 'button'
-      button.command "right"
-      expect($p1.attr('data-align')).toBe('right')
-      expect($p2.attr('data-align')).toBe('right')
+      button.command "left"
+      expect($p1.css('text-align')).toBe('start')
+      expect($p2.css('text-align')).toBe('start')

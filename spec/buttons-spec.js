@@ -76,28 +76,28 @@
         range.setStart($p1[0], 0);
         return editor.selection.selectRange(range);
       });
-      it("can align to left", function() {
+      it("can align to right", function() {
         var button;
-        expect($p1.attr('data-align')).toBe(void 0);
-        expect($p2.attr('data-align')).toBe(void 0);
+        expect($p1.css('text-align')).toBe('start');
+        expect($p2.css('text-align')).toBe('start');
         button = editor.toolbar.list.find('.toolbar-item-alignment').data('button');
-        button.command("left");
-        expect($p1.attr('data-align')).toBe('left');
-        return expect($p2.attr('data-align')).toBe('left');
+        button.command("right");
+        expect($p1.css('text-align')).toBe('right');
+        return expect($p2.css('text-align')).toBe('right');
       });
       it("can align to center", function() {
         var button;
         button = editor.toolbar.list.find('.toolbar-item-alignment').data('button');
         button.command("center");
-        expect($p1.attr('data-align')).toBe('center');
-        return expect($p2.attr('data-align')).toBe('center');
+        expect($p1.css('text-align')).toBe('center');
+        return expect($p2.css('text-align')).toBe('center');
       });
-      return it("can align to right", function() {
+      return it("can align to left", function() {
         var button;
         button = editor.toolbar.list.find('.toolbar-item-alignment').data('button');
-        button.command("right");
-        expect($p1.attr('data-align')).toBe('right');
-        return expect($p2.attr('data-align')).toBe('right');
+        button.command("left");
+        expect($p1.css('text-align')).toBe('start');
+        return expect($p2.css('text-align')).toBe('start');
       });
     });
   });

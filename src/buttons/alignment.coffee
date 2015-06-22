@@ -26,6 +26,7 @@ class AlignmentButton extends Button
     super()
 
   setActive: (active, align = 'left') ->
+    align = 'left' unless align in ['left', 'center', 'right']
     if align == 'left'
       super false
     else
@@ -46,11 +47,12 @@ class AlignmentButton extends Button
       @setActive false
       return true
 
-    @setActive true, $node.data("align")
+    @setActive true, $node.css('text-align')
     @active
 
   command: (align) ->
-    throw "invalid #{align}" if ['left', 'center', 'right'].indexOf(align) < 0
+    if ['left', 'center', 'right'].indexOf(align) < 0
+      throw new Error("invalid #{align}")
 
     range = @editor.selection.getRange()
     startNode = range.startContainer
@@ -67,7 +69,7 @@ class AlignmentButton extends Button
         $startBlock.nextUntil($endBlock).addBack().add $endBlock
 
     for block in $blockEls.filter(@htmlTag)
-      $(block).attr('data-align', align).data('align', align)
+      $(block).css('text-align', if align == 'left' then '' else align)
 
     @editor.selection.restore()
     @editor.trigger 'valuechanged'

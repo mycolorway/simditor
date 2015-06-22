@@ -23,14 +23,18 @@ class Indentation extends SimpleModule
     $startBlock = @editor.util.closestBlockEl range.startContainer
     $endBlock = @editor.util.closestBlockEl range.endContainer
 
-    unless $startBlock.is('li') and $endBlock.is('li') and $startBlock.parent().is($endBlock.parent())
+    unless $startBlock.is('li') and $endBlock.is('li') and
+        $startBlock.parent().is($endBlock.parent())
       $startBlock = @editor.util.furthestBlockEl $startBlock
       $endBlock = @editor.util.furthestBlockEl $endBlock
 
     if $startBlock.is($endBlock)
       $blockEls = $startBlock
     else
-      $blockEls = $startBlock.nextUntil($endBlock).add($startBlock).add($endBlock)
+      $blockEls = $startBlock
+        .nextUntil($endBlock)
+        .add($startBlock)
+        .add($endBlock)
 
     result = false
     $blockEls.each (i, blockEl) =>
@@ -50,8 +54,6 @@ class Indentation extends SimpleModule
       $pre = $(range.commonAncestorContainer)
       return unless $pre.is($blockEl) or $pre.closest('pre').is($blockEl)
       @indentText range
-      # spaceNode = document.createTextNode '\u00A0\u00A0'
-      # @editor.selection.insertNode spaceNode
     else if $blockEl.is('li')
       $parentLi = $blockEl.prev('li')
       return if $parentLi.length < 1
@@ -69,9 +71,10 @@ class Indentation extends SimpleModule
 
       @editor.selection.restore()
     else if $blockEl.is 'p, h1, h2, h3, h4'
-      indentLevel = $blockEl.attr('data-indent') || 0
-      indentLevel = Math.min(indentLevel * 1 + 1, 10)
-      $blockEl.attr 'data-indent', indentLevel
+      marginLeft = parseInt($blockEl.css('margin-left')) || 0
+      marginLeft = (Math.round(marginLeft / @opts.indentWidth) + 1) *
+        @opts.indentWidth
+      $blockEl.css 'margin-left', marginLeft
     else if $blockEl.is('table') or $blockEl.is('.simditor-table')
       range = @editor.selection.getRange()
       $td = $(range.commonAncestorContainer).closest('td, th')
@@ -128,10 +131,10 @@ class Indentation extends SimpleModule
       $parent.remove() if $parent.children('li').length < 1
       @editor.selection.restore()
     else if $blockEl.is 'p, h1, h2, h3, h4'
-      indentLevel = $blockEl.attr('data-indent') ? 0
-      indentLevel = indentLevel * 1 - 1
-      indentLevel = 0 if indentLevel < 0
-      $blockEl.attr 'data-indent', indentLevel
+      marginLeft = parseInt($blockEl.css('margin-left')) || 0
+      marginLeft = Math.max(Math.round(marginLeft / @opts.indentWidth) - 1, 0) *
+        @opts.indentWidth
+      $blockEl.css 'margin-left', if marginLeft == 0 then '' else marginLeft
     else if $blockEl.is('table') or $blockEl.is('.simditor-table')
       range = @editor.selection.getRange()
       $td = $(range.commonAncestorContainer).closest('td, th')
@@ -149,18 +152,3 @@ class Indentation extends SimpleModule
 
   outdentText: (range) ->
     # TODO
-    # if range.startContainer.nodeType == 3 and range.startOffset >= 2
-    #   tempRange = document.createRange()
-    #   tempRange.setStart range.startContainer, range.startOffset - 2
-    #   tempRange.setEnd range.startContainer, range.startOffset
-    #   if tempRange.toString() == '\u00A0\u00A0'
-    #     range.setStart range.startContainer, range.startOffset - 2
-    # else if ($prev = $(range.startContainer).prev()).length and /\u00A0\u00A0$/.test($prev.text())
-    #   range.setStart $prev[0], $prev
-    #
-    # text = range.toString().replace /^\u00A0\u00A0/mg, ''
-    # textNode = document.createTextNode text
-    # range.deleteContents()
-    # range.insertNode textNode
-    # range.selectNode textNode
-    # @editor.selection.selectRange range

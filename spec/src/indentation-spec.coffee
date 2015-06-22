@@ -21,14 +21,14 @@ describe 'A Simditor instance with indentation manager', ->
     range.setStart $p1[0], 0
     editor.selection.selectRange range
 
-    expect($p1.attr('data-indent')).toBe(undefined)
-    expect($p2.attr('data-indent')).toBe(undefined)
+    expect(parseInt($p1.css('margin-left'))).toBe(0)
+    expect(parseInt($p2.css('margin-left'))).toBe(0)
     editor.indentation.indent()
-    expect($p1.attr('data-indent')).toBe('1')
-    expect($p2.attr('data-indent')).toBe('1')
+    expect(parseInt($p1.css('margin-left'))).toBe(editor.opts.indentWidth)
+    expect(parseInt($p2.css('margin-left'))).toBe(editor.opts.indentWidth)
     editor.indentation.indent(true)
-    expect($p1.attr('data-indent')).toBe('0')
-    expect($p2.attr('data-indent')).toBe('0')
+    expect(parseInt($p1.css('margin-left'))).toBe(0)
+    expect(parseInt($p2.css('margin-left'))).toBe(0)
 
   it 'should indent list when pressing tab in ul', ->
     editor.focus()

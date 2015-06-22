@@ -682,18 +682,4 @@ $simditor-button-height: 40px;
     vertical-align: middle;
   }
 
-  @for $i from 0 through 10 {
-    *[data-indent="#{$i}"] {
-      margin-left: 40px * $i;
-    }
-  }
-
-  @each $align in center, left, right {
-    p, h1, h2, h3, h4 {
-      &[data-align="#{$align}"] {
-        text-align: $align;
-      }
-    }
-  }
-
 }

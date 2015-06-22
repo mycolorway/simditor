@@ -1,7 +1,7 @@
 /*!
 * Simditor v2.1.13
 * http://simditor.tower.im/
-* 2015-14-06
+* 2015-22-06
 */
 @font-face {
   font-family: 'Simditor';
@@ -734,46 +734,4 @@
 .simditor .simditor-body img, .editor-style img {
   margin: 0 5px;
   vertical-align: middle;
-}
-.simditor .simditor-body *[data-indent="0"], .editor-style *[data-indent="0"] {
-  margin-left: 0px;
-}
-.simditor .simditor-body *[data-indent="1"], .editor-style *[data-indent="1"] {
-  margin-left: 40px;
-}
-.simditor .simditor-body *[data-indent="2"], .editor-style *[data-indent="2"] {
-  margin-left: 80px;
-}
-.simditor .simditor-body *[data-indent="3"], .editor-style *[data-indent="3"] {
-  margin-left: 120px;
-}
-.simditor .simditor-body *[data-indent="4"], .editor-style *[data-indent="4"] {
-  margin-left: 160px;
-}
-.simditor .simditor-body *[data-indent="5"], .editor-style *[data-indent="5"] {
-  margin-left: 200px;
-}
-.simditor .simditor-body *[data-indent="6"], .editor-style *[data-indent="6"] {
-  margin-left: 240px;
-}
-.simditor .simditor-body *[data-indent="7"], .editor-style *[data-indent="7"] {
-  margin-left: 280px;
-}
-.simditor .simditor-body *[data-indent="8"], .editor-style *[data-indent="8"] {
-  margin-left: 320px;
-}
-.simditor .simditor-body *[data-indent="9"], .editor-style *[data-indent="9"] {
-  margin-left: 360px;
-}
-.simditor .simditor-body *[data-indent="10"], .editor-style *[data-indent="10"] {
-  margin-left: 400px;
-}
-.simditor .simditor-body p[data-align="center"], .simditor .simditor-body h1[data-align="center"], .simditor .simditor-body h2[data-align="center"], .simditor .simditor-body h3[data-align="center"], .simditor .simditor-body h4[data-align="center"], .editor-style p[data-align="center"], .editor-style h1[data-align="center"], .editor-style h2[data-align="center"], .editor-style h3[data-align="center"], .editor-style h4[data-align="center"] {
-  text-align: center;
-}
-.simditor .simditor-body p[data-align="left"], .simditor .simditor-body h1[data-align="left"], .simditor .simditor-body h2[data-align="left"], .simditor .simditor-body h3[data-align="left"], .simditor .simditor-body h4[data-align="left"], .editor-style p[data-align="left"], .editor-style h1[data-align="left"], .editor-style h2[data-align="left"], .editor-style h3[data-align="left"], .editor-style h4[data-align="left"] {
-  text-align: left;
-}
-.simditor .simditor-body p[data-align="right"], .simditor .simditor-body h1[data-align="right"], .simditor .simditor-body h2[data-align="right"], .simditor .simditor-body h3[data-align="right"], .simditor .simditor-body h4[data-align="right"], .editor-style p[data-align="right"], .editor-style h1[data-align="right"], .editor-style h2[data-align="right"], .editor-style h3[data-align="right"], .editor-style h4[data-align="right"] {
-  text-align: right;
 }

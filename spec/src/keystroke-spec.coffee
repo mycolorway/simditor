@@ -36,16 +36,6 @@ describe 'A Simditor instance with keystroke manager', ->
     triggerKeyStroke 8
     expect(editor.body.find('hr')).not.toExist()
 
-  it 'should indent content when press tab', ->
-    editor.focus()
-    jasmine.clock().tick(100)
-    $p = editor.body.find('p:first')
-    editor.selection.setRangeAtStartOf($p)
-    expect($p).not.toHaveAttr('data-indent')
-    e = $.Event('keydown', {keyCode: 9, which: 9})
-    triggerKeyStroke 9
-    expect($p.attr('data-indent')).toBe('1')
-
   it 'should insert \\n by pressing return in code block', ->
     editor.focus()
     jasmine.clock().tick(100)
