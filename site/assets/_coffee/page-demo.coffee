@@ -11,3 +11,8 @@ $ ->
     pasteImage: true
     defaultImage: 'assets/images/image.png'
     upload: if location.search == '?upload' then {url: '/upload'} else false
+
+  $preview = $('#preview')
+  if $preview.length > 0
+    editor.on 'valuechanged', (e) ->
+      $preview.html editor.getValue()

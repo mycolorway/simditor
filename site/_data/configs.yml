@@ -141,18 +141,29 @@
   type: "Array"
   default: "null"
   description: |
-    自定义编辑器支持的标签属性白名单。默认的白名单是：
+    自定义编辑器支持的标签属性白名单，`style`属性是例外，行内样式的白名单由`allowedStyles`选项控制。默认的白名单是：
 
     ```coffee
-    img: ['src', 'alt', 'width', 'height', 'data-image-src', 'data-image-size', 'data-image-name', 'data-non-image']
+    img: ['src', 'alt', 'width', 'height', 'data-non-image']
     a: ['href', 'target']
     font: ['color']
-    pre: ['data-lang', 'class']
-    p: ['data-indent']
-    h1: ['data-indent']
-    h2: ['data-indent']
-    h3: ['data-indent']
-    h4: ['data-indent']
+    code: ['class']
+    ```
+
+    自定义的白名单列表会覆盖编辑器默认的白名单列表。
+
+- name: "allowedStyles"
+  type: "Array"
+  default: "null"
+  description: |
+    自定义编辑器支持的行内样式白名单。默认的白名单是：
+
+    ```coffee
+    p: ['margin-left', 'text-align']
+    h1: ['margin-left']
+    h2: ['margin-left']
+    h3: ['margin-left']
+    h4: ['margin-left']
     ```
 
     自定义的白名单列表会覆盖编辑器默认的白名单列表。

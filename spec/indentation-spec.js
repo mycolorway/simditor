@@ -22,14 +22,14 @@
       editor.selection.setRangeAtEndOf($p2, range);
       range.setStart($p1[0], 0);
       editor.selection.selectRange(range);
-      expect($p1.attr('data-indent')).toBe(void 0);
-      expect($p2.attr('data-indent')).toBe(void 0);
+      expect(parseInt($p1.css('margin-left'))).toBe(0);
+      expect(parseInt($p2.css('margin-left'))).toBe(0);
       editor.indentation.indent();
-      expect($p1.attr('data-indent')).toBe('1');
-      expect($p2.attr('data-indent')).toBe('1');
+      expect(parseInt($p1.css('margin-left'))).toBe(editor.opts.indentWidth);
+      expect(parseInt($p2.css('margin-left'))).toBe(editor.opts.indentWidth);
       editor.indentation.indent(true);
-      expect($p1.attr('data-indent')).toBe('0');
-      return expect($p2.attr('data-indent')).toBe('0');
+      expect(parseInt($p1.css('margin-left'))).toBe(0);
+      return expect(parseInt($p2.css('margin-left'))).toBe(0);
     });
     return it('should indent list when pressing tab in ul', function() {
       var $li, $li1, $li2, $ul, range;

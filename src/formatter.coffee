@@ -10,20 +10,22 @@ class Formatter extends SimpleModule
   _init: ->
     @editor = @_module
 
-    @_allowedTags = @opts.allowedTags || ['br', 'a', 'img', 'b', 'strong', 'i', 'u', 'font', 'p', 'ul', 'ol', 'li', 'blockquote', 'pre', 'code', 'h1', 'h2', 'h3', 'h4', 'hr']
+    @_allowedTags = @opts.allowedTags || ['br', 'a', 'img', 'b', 'strong', 'i',
+      'u', 'font', 'p', 'ul', 'ol', 'li', 'blockquote', 'pre', 'code', 'h1',
+      'h2', 'h3', 'h4', 'hr']
     @_allowedAttributes = @opts.allowedAttributes ||
-      img: ['src', 'alt', 'width', 'height', 'data-image-src', 'data-image-size', 'data-image-name', 'data-non-image']
+      img: ['src', 'alt', 'width', 'height', 'data-non-image']
       a: ['href', 'target']
       font: ['color']
-      pre: ['data-lang']
       code: ['class']
-      p: ['data-indent', 'data-align']
-      h1: ['data-indent']
-      h2: ['data-indent']
-      h3: ['data-indent']
-      h4: ['data-indent']
+    @_allowedStyles = @opts.allowedStyles ||
+      p: ['margin-left', 'text-align']
+      h1: ['margin-left']
+      h2: ['margin-left']
+      h3: ['margin-left']
+      h4: ['margin-left']
 
-    @editor.body.on 'click', 'a', (e) =>
+    @editor.body.on 'click', 'a', (e) ->
       false
 
   decorate: ($el = @editor.body) ->
@@ -57,10 +59,15 @@ class Formatter extends SimpleModule
       lastIndex = 0
 
       while (match = re.exec(text)) != null
-        replaceEls.push document.createTextNode(text.substring(lastIndex, match.index))
+        subStr = text.substring(lastIndex, match.index)
+        replaceEls.push document.createTextNode(subStr)
         lastIndex = re.lastIndex
-        uri = if /^(http(s)?:\/\/|\/)/.test(match[0]) then match[0] else 'http://' + match[0]
-        replaceEls.push $('<a href="' + uri + '" rel="nofollow"></a>').text(match[0])[0]
+        uri = if /^(http(s)?:\/\/|\/)/.test(match[0])
+          match[0]
+        else
+          'http://' + match[0]
+        $link = $("<a href=\"#{uri}\" rel=\"nofollow\"></a>").text(match[0])
+        replaceEls.push $link[0]
 
       replaceEls.push document.createTextNode(text.substring(lastIndex))
       $node.replaceWith $(replaceEls)
@@ -90,7 +97,8 @@ class Formatter extends SimpleModule
         else
           blockNode = null
       else
-        blockNode = $('<p/>').insertBefore(node) if !blockNode or blockNode.is('ul, ol')
+        if !blockNode or blockNode.is('ul, ol')
+          blockNode = $('<p/>').insertBefore(node)
         blockNode.append(node)
 
     $el
@@ -122,18 +130,22 @@ class Formatter extends SimpleModule
       if $node.is('img') and $node.hasClass('uploading')
         $node.remove()
 
-      # Clean attributes except `src` `alt` on `img` tag and `href` `target` on `a` tag
+      # Clean attributes except `src` `alt` on `img` tag
+      # and `href` `target` on `a` tag
       unless isDecoration
         allowedAttributes = @_allowedAttributes[$node[0].tagName.toLowerCase()]
         for attr in $.makeArray($node[0].attributes)
-            $node.removeAttr(attr.name) unless allowedAttributes? and attr.name in allowedAttributes
+          continue if attr.name == 'style'
+          unless allowedAttributes? and (attr.name in allowedAttributes)
+            $node.removeAttr(attr.name)
+          @_cleanNodeStyles $node
     else if $node[0].nodeType == 1 and !$node.is ':empty'
       if $node.is('div, article, dl, header, footer, tr')
         $node.append('<br/>')
         contents.first().unwrap()
       else if $node.is 'table'
         $p = $('<p/>')
-        $node.find('tr').each (i, tr) =>
+        $node.find('tr').each (i, tr) ->
           $p.append($(tr).text() + '<br/>')
         $node.replaceWith $p
         contents = null
@@ -149,8 +161,27 @@ class Formatter extends SimpleModule
       $node.remove()
       contents = null
 
-    @cleanNode(n, true) for n in contents if recursive and contents? and !$node.is('pre')
+    if recursive and contents? and !$node.is('pre')
+      @cleanNode(n, true) for n in contents
     null
+
+  _cleanNodeStyles: ($node) ->
+    styleStr = $node.attr 'style'
+    return unless styleStr
+
+    $node.removeAttr 'style'
+    allowedStyles = @_allowedStyles[$node[0].tagName.toLowerCase()]
+    return $node unless allowedStyles and allowedStyles.length > 0
+
+    styles = {}
+    for style in styleStr.split(';')
+      style = $.trim style
+      pair = style.split(':')
+      continue unless pair.length = 2
+      styles[$.trim(pair[0])] = $trim(pair[1]) if pair[0] in allowedStyles
+
+    $node.css styles if Object.keys(styles).length > 0
+    $node
 
   clearHtml: (html, lineBreak = true) ->
     container = $('<div/>').append(html)
@@ -164,7 +195,9 @@ class Formatter extends SimpleModule
         $node = $(node)
         children = $node.contents()
         result += @clearHtml children if children.length > 0
-        if lineBreak and i < contents.length - 1 and $node.is 'br, p, div, li, tr, pre, address, artticle, aside, dl, figcaption, footer, h1, h2, h3, h4, header'
+        if lineBreak and i < contents.length - 1 and $node.is 'br, p, div, li,\
+          tr, pre, address, artticle, aside, dl, figcaption, footer, h1, h2,\
+          h3, h4, header'
           result += '\n'
 
     result
@@ -174,8 +207,9 @@ class Formatter extends SimpleModule
     uselessP = ($el) ->
       !!($el.is('p') and !$el.text() and $el.children(':not(br)').length < 1)
 
-    $contents.each (i, el) =>
+    $contents.each (i, el) ->
       $el = $(el)
-      $el.remove() if $el.is(':not(img, br, col, td, hr, [class^="simditor-"]):empty')
-      $el.remove() if uselessP($el) #and uselessP($el.prev())
-      $el.find(':not(img, br, col, td, hr, [class^="simditor-"]):empty').remove()
+      invalid = $el.is(':not(img, br, col, td, hr, [class^="simditor-"]):empty')
+      $el.remove() if invalid or uselessP($el)
+      $el.find(':not(img, br, col, td, hr, [class^="simditor-"]):empty')
+        .remove()

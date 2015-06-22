@@ -66,7 +66,8 @@ class Util extends SimpleModule
       false
     oninput: do ->
       # NOTE: `oninput` event not working on contenteditable on IE
-      # `document` wouldn't return undefined of this event, for it's exists but not for contenteditable.
+      # `document` wouldn't return undefined of this event,
+      # for it's exists but not for contenteditable.
       # So we have to block the whole browser for Simditor.
       not /(msie|trident)/i.test(navigator.userAgent)
 
@@ -82,9 +83,11 @@ class Util extends SimpleModule
 
   isEmptyNode: (node) ->
     $node = $(node)
-    $node.is(':empty') or (!$node.text() and !$node.find(':not(br, span, div)').length)
+    $node.is(':empty') or
+      (!$node.text() and !$node.find(':not(br, span, div)').length)
 
-  blockNodes: ["div","p","ul","ol","li","blockquote","hr","pre","h1","h2","h3","h4","table"]
+  blockNodes: ["div","p","ul","ol","li","blockquote","hr","pre","h1","h2","h3",
+    "h4","table"]
 
   isBlockNode: (node) ->
     node = $(node)[0]
@@ -118,7 +121,7 @@ class Util extends SimpleModule
     return null unless $node.length
 
     blockEl = $node.parentsUntil(@editor.body).addBack()
-    blockEl = blockEl.filter (i) =>
+    blockEl = blockEl.filter (i) ->
       $n = blockEl.eq(i)
       if $.isFunction filter
         return filter $n
@@ -152,7 +155,8 @@ class Util extends SimpleModule
       result = callback n
       break if result == false
 
-  # convert base64 data url to blob object for pasting images in firefox and IE11
+  # convert base64 data url to blob object
+  # for pasting images in firefox and IE11
   dataURLtoBlob: (dataURL) ->
     hasBlobConstructor = window.Blob && (->
       try
@@ -170,8 +174,10 @@ class Util extends SimpleModule
 
     BlobBuilder = window.BlobBuilder || window.WebKitBlobBuilder ||
       window.MozBlobBuilder || window.MSBlobBuilder;
+    supportBlob = hasBlobConstructor || BlobBuilder
 
-    return false unless (hasBlobConstructor || BlobBuilder) && window.atob && window.ArrayBuffer && window.Uint8Array
+    unless supportBlob && window.atob && window.ArrayBuffer && window.Uint8Array
+      return false
 
     if dataURL.split(',')[0].indexOf('base64') >= 0
       # Convert base64 to raw binary data held in a string:
@@ -190,7 +196,8 @@ class Util extends SimpleModule
     mimeString = dataURL.split(',')[0].split(':')[1].split(';')[0]
     # Write the ArrayBuffer (or ArrayBufferView) to a blob:
     if hasBlobConstructor
-      return new Blob([if hasArrayBufferViewSupport then intArray else arrayBuffer], {type: mimeString})
+      blobArray = if hasArrayBufferViewSupport then intArray else arrayBuffer
+      return new Blob(blobArray, {type: mimeString})
     bb = new BlobBuilder()
     bb.append(arrayBuffer)
     bb.getBlob(mimeString)
@@ -238,11 +245,13 @@ class Util extends SimpleModule
       match.isEndTag = match[1] == '/' or match[3] == '/'
 
       cursor = if lastMatch then lastMatch.index + lastMatch[0].length else 0
-      result += str if (str = html.substring(cursor, match.index)).length > 0 and $.trim(str)
+      if (str = html.substring(cursor, match.index)).length > 0 and $.trim(str)
+        result += str
 
       level -= 1 if match.isBlockNode and match.isEndTag and !match.isStartTag
       if match.isBlockNode and match.isStartTag
-        result += '\n' if !(lastMatch and lastMatch.isBlockNode and lastMatch.isEndTag)
+        if !(lastMatch and lastMatch.isBlockNode and lastMatch.isEndTag)
+          result += '\n'
         result += repeatString(indentString, level)
       result += match[0]
       result += '\n' if match.isBlockNode and match.isEndTag
