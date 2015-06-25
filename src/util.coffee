@@ -197,7 +197,7 @@ class Util extends SimpleModule
     # Write the ArrayBuffer (or ArrayBufferView) to a blob:
     if hasBlobConstructor
       blobArray = if hasArrayBufferViewSupport then intArray else arrayBuffer
-      return new Blob(blobArray, {type: mimeString})
+      return new Blob([blobArray], {type: mimeString})
     bb = new BlobBuilder()
     bb.append(arrayBuffer)
     bb.getBlob(mimeString)

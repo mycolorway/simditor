@@ -1779,7 +1779,7 @@ Util = (function(superClass) {
     mimeString = dataURL.split(',')[0].split(':')[1].split(';')[0];
     if (hasBlobConstructor) {
       blobArray = hasArrayBufferViewSupport ? intArray : arrayBuffer;
-      return new Blob(blobArray, {
+      return new Blob([blobArray], {
         type: mimeString
       });
     }
