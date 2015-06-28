@@ -286,19 +286,65 @@
       <span class="default">默认值: null</span>
     </dt>
     <dd class="expand">
-      <p>自定义编辑器支持的标签属性白名单。默认的白名单是：</p>
-<div class="highlight"><pre><code class="language-coffee" data-lang="coffee"><span class="nv">img: </span><span class="p">[</span><span class="s">&#39;src&#39;</span><span class="p">,</span> <span class="s">&#39;alt&#39;</span><span class="p">,</span> <span class="s">&#39;width&#39;</span><span class="p">,</span> <span class="s">&#39;height&#39;</span><span class="p">,</span> <span class="s">&#39;data-image-src&#39;</span><span class="p">,</span> <span class="s">&#39;data-image-size&#39;</span><span class="p">,</span> <span class="s">&#39;data-image-name&#39;</span><span class="p">,</span> <span class="s">&#39;data-non-image&#39;</span><span class="p">]</span>
+      <p>自定义编辑器支持的标签属性白名单，<code>style</code>属性是例外，行内样式的白名单由<code>allowedStyles</code>选项控制。默认的白名单是：</p>
+<div class="highlight"><pre><code class="language-coffee" data-lang="coffee"><span class="nv">img: </span><span class="p">[</span><span class="s">&#39;src&#39;</span><span class="p">,</span> <span class="s">&#39;alt&#39;</span><span class="p">,</span> <span class="s">&#39;width&#39;</span><span class="p">,</span> <span class="s">&#39;height&#39;</span><span class="p">,</span> <span class="s">&#39;data-non-image&#39;</span><span class="p">]</span>
 <span class="nv">a: </span><span class="p">[</span><span class="s">&#39;href&#39;</span><span class="p">,</span> <span class="s">&#39;target&#39;</span><span class="p">]</span>
 <span class="nv">font: </span><span class="p">[</span><span class="s">&#39;color&#39;</span><span class="p">]</span>
-<span class="nv">pre: </span><span class="p">[</span><span class="s">&#39;data-lang&#39;</span><span class="p">,</span> <span class="s">&#39;class&#39;</span><span class="p">]</span>
-<span class="nv">p: </span><span class="p">[</span><span class="s">&#39;data-indent&#39;</span><span class="p">]</span>
-<span class="nv">h1: </span><span class="p">[</span><span class="s">&#39;data-indent&#39;</span><span class="p">]</span>
-<span class="nv">h2: </span><span class="p">[</span><span class="s">&#39;data-indent&#39;</span><span class="p">]</span>
-<span class="nv">h3: </span><span class="p">[</span><span class="s">&#39;data-indent&#39;</span><span class="p">]</span>
-<span class="nv">h4: </span><span class="p">[</span><span class="s">&#39;data-indent&#39;</span><span class="p">]</span>
+<span class="nv">code: </span><span class="p">[</span><span class="s">&#39;class&#39;</span><span class="p">]</span>
 </code></pre></div>
 <p>自定义的白名单列表会覆盖编辑器默认的白名单列表。</p>
 
+    </dd>
+  
+    <dt id="anchor-allowedStyles">
+      <!--<span class="icon simditor-icon simditor-icon-caret-down"></span>-->
+      <span class="name">allowedStyles</span>
+      <span class="type">Array</span>
+      <span class="default">默认值: null</span>
+    </dt>
+    <dd class="expand">
+      <p>自定义编辑器支持的行内样式白名单。默认的白名单是：</p>
+<div class="highlight"><pre><code class="language-coffee" data-lang="coffee"><span class="nv">p: </span><span class="p">[</span><span class="s">&#39;margin-left&#39;</span><span class="p">,</span> <span class="s">&#39;text-align&#39;</span><span class="p">]</span>
+<span class="nv">h1: </span><span class="p">[</span><span class="s">&#39;margin-left&#39;</span><span class="p">]</span>
+<span class="nv">h2: </span><span class="p">[</span><span class="s">&#39;margin-left&#39;</span><span class="p">]</span>
+<span class="nv">h3: </span><span class="p">[</span><span class="s">&#39;margin-left&#39;</span><span class="p">]</span>
+<span class="nv">h4: </span><span class="p">[</span><span class="s">&#39;margin-left&#39;</span><span class="p">]</span>
+</code></pre></div>
+<p>自定义的白名单列表会覆盖编辑器默认的白名单列表。</p>
+
+    </dd>
+  
+    <dt id="anchor-codeLanguages">
+      <!--<span class="icon simditor-icon simditor-icon-caret-down"></span>-->
+      <span class="name">codeLanguages</span>
+      <span class="type">Array</span>
+      <span class="default">默认值: null</span>
+    </dt>
+    <dd class="expand">
+      <p>自定义代码（code）按钮的支持的语言列表，默认的语言列表是：</p>
+<div class="highlight"><pre><code class="language-coffee" data-lang="coffee"><span class="p">[</span>
+  <span class="p">{</span> <span class="nv">name: </span><span class="s">&#39;Bash&#39;</span><span class="p">,</span> <span class="nv">value: </span><span class="s">&#39;bash&#39;</span> <span class="p">}</span>
+  <span class="p">{</span> <span class="nv">name: </span><span class="s">&#39;C++&#39;</span><span class="p">,</span> <span class="nv">value: </span><span class="s">&#39;c++&#39;</span> <span class="p">}</span>
+  <span class="p">{</span> <span class="nv">name: </span><span class="s">&#39;C#&#39;</span><span class="p">,</span> <span class="nv">value: </span><span class="s">&#39;cs&#39;</span> <span class="p">}</span>
+  <span class="p">{</span> <span class="nv">name: </span><span class="s">&#39;CSS&#39;</span><span class="p">,</span> <span class="nv">value: </span><span class="s">&#39;css&#39;</span> <span class="p">}</span>
+  <span class="p">{</span> <span class="nv">name: </span><span class="s">&#39;Erlang&#39;</span><span class="p">,</span> <span class="nv">value: </span><span class="s">&#39;erlang&#39;</span> <span class="p">}</span>
+  <span class="p">{</span> <span class="nv">name: </span><span class="s">&#39;Less&#39;</span><span class="p">,</span> <span class="nv">value: </span><span class="s">&#39;less&#39;</span> <span class="p">}</span>
+  <span class="p">{</span> <span class="nv">name: </span><span class="s">&#39;Sass&#39;</span><span class="p">,</span> <span class="nv">value: </span><span class="s">&#39;sass&#39;</span> <span class="p">}</span>
+  <span class="p">{</span> <span class="nv">name: </span><span class="s">&#39;Diff&#39;</span><span class="p">,</span> <span class="nv">value: </span><span class="s">&#39;diff&#39;</span> <span class="p">}</span>
+  <span class="p">{</span> <span class="nv">name: </span><span class="s">&#39;CoffeeScript&#39;</span><span class="p">,</span> <span class="nv">value: </span><span class="s">&#39;coffeescript&#39;</span> <span class="p">}</span>
+  <span class="p">{</span> <span class="nv">name: </span><span class="s">&#39;HTML,XML&#39;</span><span class="p">,</span> <span class="nv">value: </span><span class="s">&#39;html&#39;</span> <span class="p">}</span>
+  <span class="p">{</span> <span class="nv">name: </span><span class="s">&#39;JSON&#39;</span><span class="p">,</span> <span class="nv">value: </span><span class="s">&#39;json&#39;</span> <span class="p">}</span>
+  <span class="p">{</span> <span class="nv">name: </span><span class="s">&#39;Java&#39;</span><span class="p">,</span> <span class="nv">value: </span><span class="s">&#39;java&#39;</span> <span class="p">}</span>
+  <span class="p">{</span> <span class="nv">name: </span><span class="s">&#39;JavaScript&#39;</span><span class="p">,</span> <span class="nv">value: </span><span class="s">&#39;js&#39;</span> <span class="p">}</span>
+  <span class="p">{</span> <span class="nv">name: </span><span class="s">&#39;Markdown&#39;</span><span class="p">,</span> <span class="nv">value: </span><span class="s">&#39;markdown&#39;</span> <span class="p">}</span>
+  <span class="p">{</span> <span class="nv">name: </span><span class="s">&#39;Objective C&#39;</span><span class="p">,</span> <span class="nv">value: </span><span class="s">&#39;oc&#39;</span> <span class="p">}</span>
+  <span class="p">{</span> <span class="nv">name: </span><span class="s">&#39;PHP&#39;</span><span class="p">,</span> <span class="nv">value: </span><span class="s">&#39;php&#39;</span> <span class="p">}</span>
+  <span class="p">{</span> <span class="nv">name: </span><span class="s">&#39;Perl&#39;</span><span class="p">,</span> <span class="nv">value: </span><span class="s">&#39;parl&#39;</span> <span class="p">}</span>
+  <span class="p">{</span> <span class="nv">name: </span><span class="s">&#39;Python&#39;</span><span class="p">,</span> <span class="nv">value: </span><span class="s">&#39;python&#39;</span> <span class="p">}</span>
+  <span class="p">{</span> <span class="nv">name: </span><span class="s">&#39;Ruby&#39;</span><span class="p">,</span> <span class="nv">value: </span><span class="s">&#39;ruby&#39;</span> <span class="p">}</span>
+  <span class="p">{</span> <span class="nv">name: </span><span class="s">&#39;SQL&#39;</span><span class="p">,</span> <span class="nv">value: </span><span class="s">&#39;sql&#39;</span><span class="p">}</span>
+<span class="p">]</span>
+</code></pre></div>
     </dd>
   
 </dl>
