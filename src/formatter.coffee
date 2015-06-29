@@ -178,7 +178,7 @@ class Formatter extends SimpleModule
       style = $.trim style
       pair = style.split(':')
       continue unless pair.length = 2
-      styles[$.trim(pair[0])] = $trim(pair[1]) if pair[0] in allowedStyles
+      styles[$.trim(pair[0])] = $.trim(pair[1]) if pair[0] in allowedStyles
 
     $node.css styles if Object.keys(styles).length > 0
     $node
