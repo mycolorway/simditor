@@ -532,7 +532,7 @@ Formatter = (function(superClass) {
         continue;
       }
       if (ref1 = pair[0], indexOf.call(allowedStyles, ref1) >= 0) {
-        styles[$.trim(pair[0])] = $trim(pair[1]);
+        styles[$.trim(pair[0])] = $.trim(pair[1]);
       }
     }
     if (Object.keys(styles).length > 0) {
