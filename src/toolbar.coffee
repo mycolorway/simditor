@@ -22,7 +22,7 @@ class Toolbar extends SimpleModule
 
     @_render()
 
-    @list.on 'click', (e) =>
+    @list.on 'click', (e) ->
       false
 
     @wrapper.on 'mousedown', (e) =>
@@ -91,22 +91,21 @@ class Toolbar extends SimpleModule
 
     @wrapper.hide() if @opts.toolbarHidden
 
-  toolbarStatus: (name) ->
+  toolbarStatus: ->
     return unless @editor.inputManager.focused
 
-    buttons = @buttons[..]
-    @editor.util.traverseUp (node) =>
-      removeButtons = []
-      for button, i in buttons
-        continue if name? and button.name isnt name
-        removeButtons.push button if !button.status or button.status($(node)) is true
+    range = @editor.selection.getRange()
+    startNodes = $(range.startContainer).parentsUntil(@editor.body)
+    endNodes = if range.collapsed
+      null
+    else
+      $(range.endContainer).parentsUntil(@editor.body)
 
-      for button in removeButtons
-        i = $.inArray(button, buttons)
-        buttons.splice(i, 1)
-      return false if buttons.length == 0
-
-    #button.setActive false for button in buttons unless success
+    @trigger 'toolbarstatus', [{
+      range: range
+      startNodes: startNodes
+      endNodes: endNodes
+    }]
 
   findButton: (name) ->
     button = @list.find('.toolbar-item-' + name).data('button')

@@ -1898,11 +1898,9 @@ Toolbar = (function(superClass) {
       this.opts.toolbar = ['bold', 'italic', 'underline', 'strikethrough', '|', 'ol', 'ul', 'blockquote', 'code', '|', 'link', 'image', '|', 'indent', 'outdent'];
     }
     this._render();
-    this.list.on('click', (function(_this) {
-      return function(e) {
-        return false;
-      };
-    })(this));
+    this.list.on('click', function(e) {
+      return false;
+    });
     this.wrapper.on('mousedown', (function(_this) {
       return function(e) {
         return _this.list.find('.menu-on').removeClass('.menu-on');
@@ -1990,35 +1988,21 @@ Toolbar = (function(superClass) {
     }
   };
 
-  Toolbar.prototype.toolbarStatus = function(name) {
-    var buttons;
+  Toolbar.prototype.toolbarStatus = function() {
+    var endNodes, range, startNodes;
     if (!this.editor.inputManager.focused) {
       return;
     }
-    buttons = this.buttons.slice(0);
-    return this.editor.util.traverseUp((function(_this) {
-      return function(node) {
-        var button, i, j, k, len, len1, removeButtons;
-        removeButtons = [];
-        for (i = j = 0, len = buttons.length; j < len; i = ++j) {
-          button = buttons[i];
-          if ((name != null) && button.name !== name) {
-            continue;
-          }
-          if (!button.status || button.status($(node)) === true) {
-            removeButtons.push(button);
-          }
-        }
-        for (k = 0, len1 = removeButtons.length; k < len1; k++) {
-          button = removeButtons[k];
-          i = $.inArray(button, buttons);
-          buttons.splice(i, 1);
-        }
-        if (buttons.length === 0) {
-          return false;
-        }
-      };
-    })(this));
+    range = this.editor.selection.getRange();
+    startNodes = $(range.startContainer).parentsUntil(this.editor.body);
+    endNodes = range.collapsed ? null : $(range.endContainer).parentsUntil(this.editor.body);
+    return this.trigger('toolbarstatus', [
+      {
+        range: range,
+        startNodes: startNodes,
+        endNodes: endNodes
+      }
+    ]);
   };
 
   Toolbar.prototype.findButton = function(name) {
@@ -2526,13 +2510,14 @@ Button = (function(superClass) {
   }
 
   Button.prototype._init = function() {
-    var j, len, ref, results1, tag;
+    var j, len, ref, tag;
     this.render();
     this.el.on('mousedown', (function(_this) {
       return function(e) {
-        var exceed, param;
+        var exceed, noFocus, param;
         e.preventDefault();
-        if (_this.el.hasClass('disabled') || (_this.needFocus && !_this.editor.inputManager.focused)) {
+        noFocus = _this.needFocus && !_this.editor.inputManager.focused;
+        if (_this.el.hasClass('disabled') || noFocus) {
           return false;
         }
         if (_this.menu) {
@@ -2556,11 +2541,12 @@ Button = (function(superClass) {
     })(this));
     this.wrapper.on('click', 'a.menu-item', (function(_this) {
       return function(e) {
-        var btn, param;
+        var btn, noFocus, param;
         e.preventDefault();
         btn = $(e.currentTarget);
         _this.wrapper.removeClass('menu-on');
-        if (btn.hasClass('disabled') || (_this.needFocus && !_this.editor.inputManager.focused)) {
+        noFocus = _this.needFocus && !_this.editor.inputManager.focused;
+        if (btn.hasClass('disabled') || noFocus) {
           return false;
         }
         _this.editor.toolbar.wrapper.removeClass('menu-on');
@@ -2569,14 +2555,14 @@ Button = (function(superClass) {
         return false;
       };
     })(this));
-    this.wrapper.on('mousedown', 'a.menu-item', (function(_this) {
-      return function(e) {
-        return false;
-      };
-    })(this));
+    this.wrapper.on('mousedown', 'a.menu-item', function(e) {
+      return false;
+    });
     this.editor.on('blur', (function(_this) {
       return function() {
-        if (!(_this.editor.body.is(':visible') && _this.editor.body.is('[contenteditable]'))) {
+        var editorActive;
+        editorActive = _this.editor.body.is(':visible') && _this.editor.body.is('[contenteditable]');
+        if (!editorActive) {
           return;
         }
         _this.setActive(false);
@@ -2592,17 +2578,18 @@ Button = (function(superClass) {
       })(this));
     }
     ref = this.htmlTag.split(',');
-    results1 = [];
     for (j = 0, len = ref.length; j < len; j++) {
       tag = ref[j];
       tag = $.trim(tag);
       if (tag && $.inArray(tag, this.editor.formatter._allowedTags) < 0) {
-        results1.push(this.editor.formatter._allowedTags.push(tag));
-      } else {
-        results1.push(void 0);
+        this.editor.formatter._allowedTags.push(tag);
       }
     }
-    return results1;
+    return this.editor.toolbar.on('toolbarstatus', (function(_this) {
+      return function(e, status) {
+        return _this.status(status);
+      };
+    })(this));
   };
 
   Button.prototype.iconClassOf = function(icon) {
@@ -2663,8 +2650,7 @@ Button = (function(superClass) {
       return;
     }
     this.active = active;
-    this.el.toggleClass('active', this.active);
-    return this.editor.toolbar.trigger('buttonstatus', [this]);
+    return this.el.toggleClass('active', this.active);
   };
 
   Button.prototype.setDisabled = function(disabled) {
@@ -2672,20 +2658,18 @@ Button = (function(superClass) {
       return;
     }
     this.disabled = disabled;
-    this.el.toggleClass('disabled', this.disabled);
-    return this.editor.toolbar.trigger('buttonstatus', [this]);
+    return this.el.toggleClass('disabled', this.disabled);
   };
 
-  Button.prototype.status = function($node) {
-    if ($node != null) {
-      this.setDisabled($node.is(this.disableTag));
+  Button.prototype.status = function(status) {
+    var active, disabled;
+    disabled = status.startNodes.filter(this.disableTag).length > 0 || (status.endNodes && status.endNodes.filter(this.disableTag).length > 0);
+    this.setDisabled(disabled);
+    if (disabled) {
+      return false;
     }
-    if (this.disabled) {
-      return true;
-    }
-    if ($node != null) {
-      this.setActive($node.is(this.htmlTag));
-    }
+    active = status.startNodes.filter(this.htmlTag).length > 0 && (!status.endNodes || status.endNodes.filter(this.htmlTag).length > 0);
+    this.setActive(active);
     return this.active;
   };
 

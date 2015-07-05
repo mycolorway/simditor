@@ -2,9 +2,11 @@
 class Button extends SimpleModule
 
   _tpl:
-    item: '<li><a tabindex="-1" unselectable="on" class="toolbar-item" href="javascript:;"><span></span></a></li>'
+    item: '<li><a tabindex="-1" unselectable="on" class="toolbar-item" \
+      href="javascript:;"><span></span></a></li>'
     menuWrapper: '<div class="toolbar-menu"></div>'
-    menuItem: '<li><a tabindex="-1" unselectable="on" class="menu-item" href="javascript:;"><span></span></a></li>'
+    menuItem: '<li><a tabindex="-1" unselectable="on" class="menu-item" \
+      href="javascript:;"><span></span></a></li>'
     separator: '<li><span class="separator"></span></li>'
 
   name: ''
@@ -39,7 +41,8 @@ class Button extends SimpleModule
 
     @el.on 'mousedown', (e) =>
       e.preventDefault()
-      return false if @el.hasClass('disabled') or (@needFocus and !@editor.inputManager.focused)
+      noFocus = @needFocus and !@editor.inputManager.focused
+      return false if @el.hasClass('disabled') or noFocus
 
       if @menu
         @wrapper.toggleClass('menu-on')
@@ -67,18 +70,21 @@ class Button extends SimpleModule
       e.preventDefault()
       btn = $(e.currentTarget)
       @wrapper.removeClass('menu-on')
-      return false if btn.hasClass('disabled') or (@needFocus and !@editor.inputManager.focused)
+      noFocus = @needFocus and !@editor.inputManager.focused
+      return false if btn.hasClass('disabled') or noFocus
 
       @editor.toolbar.wrapper.removeClass('menu-on')
       param = btn.data('param')
       @command(param)
       false
 
-    @wrapper.on 'mousedown', 'a.menu-item', (e) =>
+    @wrapper.on 'mousedown', 'a.menu-item', (e) ->
       false
 
     @editor.on 'blur', =>
-      return unless @editor.body.is(':visible') and @editor.body.is('[contenteditable]')
+      editorActive =
+        @editor.body.is(':visible') and @editor.body.is('[contenteditable]')
+      return unless editorActive
       @setActive false
       @setDisabled false
 
@@ -92,6 +98,9 @@ class Button extends SimpleModule
       tag = $.trim tag
       if tag && $.inArray(tag, @editor.formatter._allowedTags) < 0
         @editor.formatter._allowedTags.push tag
+
+    @editor.toolbar.on 'toolbarstatus', (e, status) =>
+      @status status
 
   iconClassOf: (icon) ->
     if icon then "simditor-icon simditor-icon-#{icon}" else ''
@@ -143,19 +152,21 @@ class Button extends SimpleModule
     return if active == @active
     @active = active
     @el.toggleClass('active', @active)
-    @editor.toolbar.trigger 'buttonstatus', [@]
 
   setDisabled: (disabled) ->
     return if disabled == @disabled
     @disabled = disabled
     @el.toggleClass('disabled', @disabled)
-    @editor.toolbar.trigger 'buttonstatus', [@]
 
-  status: ($node) ->
-    @setDisabled $node.is(@disableTag) if $node?
-    return true if @disabled
+  status: (status) ->
+    disabled = status.startNodes.filter(@disableTag).length > 0 or
+      (status.endNodes and status.endNodes.filter(@disableTag).length > 0)
+    @setDisabled disabled
+    return false if disabled
 
-    @setActive $node.is(@htmlTag) if $node?
+    active = status.startNodes.filter(@htmlTag).length > 0 and
+      (!status.endNodes or status.endNodes.filter(@htmlTag).length > 0)
+    @setActive active
     @active
 
   command: (param) ->
