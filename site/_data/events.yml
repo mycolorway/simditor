@@ -3,14 +3,14 @@
     - name: "e"
       type: "jQuery Event"
   description: |
-    **触发条件：编辑器内容发生改变**
+    Event fires when body content has changed
 
 - name: "selectionchanged"
   params:
     - name: "e"
       type: "jQuery Event"
   description: |
-    **触发条件：当光标位置或者选择的文本区域发生变化**
+    Event fires when cursor position or selected text has changed
 
 - name: "decorate"
   params:
@@ -19,19 +19,22 @@
     - name: "$el"
       type: "jQuery Object"
   description: |
-    **触发条件：当调用** [**setValue**](../docs/doc-method.html#anchor-setValue) **方法或粘贴内容的时候**
+    Event fires when pasting content and calling [**setValue**](../docs/doc-method.html#anchor-setValue).
 
-    在扩展或者按钮中可能会在编辑的内容中插入一些比较复杂元素（比如表格），在编辑过程中，为了给用户呈现更友好的编辑体验，我们需要加入一些与内容无关的交互元素（我们称这个过程为「修饰」），这些起修饰作用的元素不应该成为内容的一部分，因此会在获取编辑器内容的时候被去掉。
 
-    例如，为了实现表格拖动调整列宽的功能，我们需要一些额外的 HTML 标签：
+    #####Example:
+
+    Some features will insert extra attributes or tags in order to make the element looks nicer. That is "decorating".
+    These elements should never be included when getting the raw HTML content.
 
     ```html
-    <div class="simditor-table"> <!-- 额外的标签 -->
+    <div class="simditor-table"> <!-- extra tags -->
       <table>...</table>
-      <div class="simditor-resize-handle" contenteditable="false"></div> <!-- 额外的标签 -->
+      <div class="simditor-resize-handle" contenteditable="false"></div> <!-- extra tags  -->
     </div>
     ```
-    在插入表格的时候，编辑器会调用表格的 decorate 方法（创建额外的 HTML 标签），在获取编辑器内容的时候会通过 undecorate 事件调用表格的 undecorate 方法（去掉额外的 HTML 标签）。
+    When inserting the above table, Simditor needs to call 'decorate' method to create extra tags in 'decorate' event.
+    When getting the content value, it will call 'undecorate' method to remove all extra tags.
 
     ```coffee
     class TableButton extends Button
@@ -68,9 +71,8 @@
     - name: "$el"
       type: "jQuery Object"
   description: |
-    **触发条件：当调用** [**getValue**](../docs/doc-method.html#anchor-decorate) 和 [**sync**](../docs/doc-method.html#anchor-sync) **方法的时候**
-
-    参考 [decorate](../docs/doc-event.html#anchor-decorate) 事件
+    Event fires when calling [**getValue**](../docs/doc-method.html#anchor-decorate) and [**sync**](../docs/doc-method.html#anchor-sync).<br />
+    Refer to [decorate](../docs/doc-event.html#anchor-decorate) event
 
 - name: "pasting"
   params:
@@ -79,14 +81,13 @@
     - name: "$pasteContent"
       type: "jQuery Object"
   description: |
-    **触发条件：粘贴内容到编辑器的时候**
+    Event fires when pasting content into editor.<br />
+    Param `$pasteContent` is the pasted content. You can valid the content and stop paste.
 
-    参数`$pasteContent`是粘贴的内容，可以根据它来决定是否要中断粘贴，如果返回false，粘贴将不会生效
-
-    ######示例
+    ######Example:
 
     ```js
-    // 如果粘贴的内容含有图片则中断粘贴
+    // stop paste if the content contains images
     editor.on 'pasting', (e, $pasteContent) ->
       if $pasteContent.find("img").length > 0
         return false
@@ -97,15 +98,14 @@
     - name: "e"
       type: "jQuery Event"
   description: |
-    **触发条件：内容区域获得焦点的时候**
-
+    Event fires when textarea is focused.
 
 - name: "blur"
   params:
     - name: "e"
       type: "jQuery Event"
   description: |
-    **触发条件：内容区域失去焦点的时候**
+    Event fires when textarea is blur.
 
 
 - name: "destroy"
@@ -113,5 +113,5 @@
     - name: "e"
       type: "jQuery Event"
   description: |
-    **触发条件：调用实例的 destroy 方法的时候**
+    Event fires when calling destroy method.
 

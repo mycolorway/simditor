@@ -2,39 +2,39 @@
   type: "jQuery Object / HTML Element / Selector String"
   default: "null"
   description: |
-    指定用来初始化编辑器的 `textarea` 元素，可以接受 jQuery Object、HTML Element 或者 Selector String 类型的参数。
+    The textarea element which Simditor will be created on.
 
 - name: "placeholder"
   type: "String"
   default: "''"
   description: |
-    编辑器的 placeholder，如果为空 Simditor 会取 textarea 的 placeholder 属性。
+    Placeholder of Simditor. Use the placeholder attribute value of the textarea by default.
 
 - name: "toolbar"
   type: "Boolean / Array"
   default: "true"
   description: |
-    是否显示工具栏按钮，可通过数组的形式配置具体显示按钮，支持以下按钮：
+    Show toolbar buttons. Accpect an array of buttons that includes：
 
     ```coffee
     [
-      'title'          # 标题文字
-      'bold'           # 加粗文字
-      'italic'         # 斜体文字
-      'underline'      # 下划线文字
-      'strikethrough'  # 删除线文字
-      'color'          # 修改文字颜色
-      'ol'             # 有序列表
-      'ul'             # 无序列表
-      'blockquote'     # 引用
-      'code'           # 代码
-      'table'          # 表格
-      'link'           # 插入链接
-      'image'          # 插入图片
-      'hr'             # 分割线
-      'indent'         # 向右缩进
-      'outdent'        # 向左缩进
-      'alignment'      # 水平对齐
+      'title'
+      'bold'
+      'italic'
+      'underline'
+      'strikethrough'
+      'color'
+      'ol'             # ordered list
+      'ul'             # unordered list
+      'blockquote'
+      'code'           # code block
+      'table'
+      'link'
+      'image'
+      'hr'             # horizontal ruler
+      'indent'
+      'outdent'
+      'alignment'
     ]
     ```
 
@@ -42,37 +42,37 @@
   type: "Boolean"
   default: "true"
   description: |
-    是否让工具栏按钮在页面滚动的过程中始终可见。
+    Fixed the toolbar on the top of the browser when scrolling.
 
 - name: "toolbarFloatOffset"
   type: "Number"
   default: 0
   description: |
-    自定义工具栏浮动的位置。
+    Top offset of the toolbar when fixed
 
 - name: "toolbarHidden"
   type: "Boolean"
   default: "false"
   description: |
-    是否隐藏工具栏，隐藏后 `toolbarFloat` 会失效。
+    Hide the toolbar. Can not work with `toolbarFloat`.
 
 - name: "defaultImage"
   type: "String"
   default: "images/image.png"
   description: |
-    编辑器插入混排图片时使用的默认图片。
+    Default image placeholder. Used when inserting pictures in Simditor.
 
 - name: "tabIndent"
   type: "Boolean"
   default: "true"
   description: |
-    是否在编辑器中使用 `tab` 键来缩进（代码块里的缩进不受这个选项控制）。
+    Use 'tab' key to make an indent.
 
 - name: "params"
   type: "Object"
   default: "{ }"
   description: |
-    键值对，在编辑器中增加 hidden 字段（input:hidden），通常用于生成 form 表单的默认参数。可生成如下标签：
+    Insert a hidden input in textarea to store params (key-value pairs). Usually used as the default params of forms. It will generate：
 
     ```html
     <input type="hidden" name="key" value="val" />
@@ -82,15 +82,15 @@
   type: "Boolean / Object"
   default: "false"
   description: |
-    false 或者键值对，编辑器上传本地文件的配置，键值对可以设置的参数有：
+    Accept false or key - value pairs. Extra options for uploading images:
 
-    * `url` 文件上传的接口地址；
-    * `params` 键值对，指定文件上传接口的额外参数，上传的时候随文件一起提交；
-    * `fileKey` 服务器端获取文件数据的参数名；
-    * `connectionCount` 同时上传文件的最大数量；
-    * `leaveConfirm` 在文件上传过程中离开页面时提醒的文案。
+    * `url` image server address;
+    * `params` extra params needs to send to the server;
+    * `fileKey` prefix of the file name;
+    * `connectionCount` maximum uploading images at the same time;
+    * `leaveConfirm` message that will be alert if one leave the page when uploading is in progress;
 
-    键值对参数的默认值：
+    Default values of these params：
 
     ```coffee
     editor = new Simditor
@@ -100,15 +100,15 @@
         params: null
         fileKey: 'upload_file'
         connectionCount: 3
-        leaveConfirm: '正在上传文件，如果离开上传会自动取消'
+        leaveConfirm: 'Uploading is in progress, are you sure to leave this page?'
     ```
 
-    图片上传成功后，服务端需要返回json格式的图片地址：
+    JSON that will be sent back after uploading complete:
 
     ```coffee
     {
       "success": true/false,
-      "msg": "上传失败信息", # 可选
+      "msg": "error message", # optional
       "file_path": "[real file path]"
     }
     ```
@@ -117,31 +117,32 @@
   type: "Boolean"
   default: "false"
   description: |
-    是否允许粘贴上传图片，依赖 `upload` 选项，仅支持 Firefox 和 Chrome 浏览器。
+    Support uploading by pasting images from the clipboard. Work with `upload` and only supported by Firefox and Chrome.
 
 - name: "imageButton"
   type: "Array/String"
   default: "['upload', 'external']"
   description: |
-    自定义图片按钮的功能，支持`upload`和`external`两种，分别表示本地上传和外链图片。如果提供的选项是数组，那么会以下拉菜单的形式支持对应的功能。
+    Insert images by uploading or external links. If both are enabled, will show a drop-down menu when click the image button.
 
 - name: "allowedTags"
   type: "Array"
   default: "null"
   description: |
-    自定义编辑器支持的标签白名单。为了保证输出HTML的干净和标准，Simditor采用白名单的机制来过滤内容，默认的白名单是：
+    Tags that are allowed in Simditor.
+    Default whitelist:
 
     ```coffee
     ['br', 'a', 'img', 'b', 'strong', 'i', 'u', 'font', 'p', 'ul', 'ol', 'li', 'blockquote', 'pre', 'h1', 'h2', 'h3', 'h4', 'hr']
     ```
 
-    自定义的白名单列表会覆盖编辑器默认的白名单列表。
+    Note that custom whitelist will overwrite the default one.
 
 - name: "allowedAttributes"
   type: "Array"
   default: "null"
   description: |
-    自定义编辑器支持的标签属性白名单，`style`属性是例外，行内样式的白名单由`allowedStyles`选项控制。默认的白名单是：
+    Whitelist of tag attributes. `style` attribute whitelist is defined in `allowedStyles`. Default whitelist:
 
     ```coffee
     img: ['src', 'alt', 'width', 'height', 'data-non-image']
@@ -150,13 +151,13 @@
     code: ['class']
     ```
 
-    自定义的白名单列表会覆盖编辑器默认的白名单列表。
+    Note that custom whitelist will overwrite the default one.
 
 - name: "allowedStyles"
   type: "Array"
   default: "null"
   description: |
-    自定义编辑器支持的行内样式白名单。默认的白名单是：
+    Inline style whitelist. Default whitelist:
 
     ```coffee
     p: ['margin-left', 'text-align']
@@ -166,13 +167,13 @@
     h4: ['margin-left']
     ```
 
-    自定义的白名单列表会覆盖编辑器默认的白名单列表。
+    Note that custom whitelist will overwrite the default one.
 
 - name: 'codeLanguages'
   type: 'Array'
   default: 'null'
   description: |
-    自定义代码（code）按钮的支持的语言列表，默认的语言列表是：
+    A list of programming languages that supported by code block. Default list:
 
     ```coffee
     [
