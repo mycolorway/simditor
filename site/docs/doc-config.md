@@ -1,6 +1,6 @@
 ---
 layout: doc
-title: Configuration - Simditor
+title: Options - Simditor
 id: doc-config
 root: ../
 ---

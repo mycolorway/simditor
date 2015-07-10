@@ -1,6 +1,6 @@
 ---
 layout: doc
-title: Usage - Simditor
+title: How to use - Simditor
 id: doc-usage
 root: ../
 ---
