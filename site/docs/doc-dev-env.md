@@ -19,7 +19,7 @@ $ git clone git@github.com:[your username]/simditor.git
 
 #Install Gem Dependencies
 
-We use [Bundler](http://bundler.io/) to manage gem dependencies：
+We use [Bundler](http://bundler.io/) to manage the gem dependencies：
 
 * [sass](https://github.com/nex3/sass)：Compile SCSS file to CSS.
 * [github-pages](https://github.com/github/pages-gem): Install [Jekyll](http://jekyllrb.com/) which is used by [Github Pages](https://pages.github.com/) locally to produce Simditor site.
@@ -42,9 +42,9 @@ $ bundle install
 
 #Install Grunt
 
-Simditor uses [Grunt](http://gruntjs.com/) as a task runner to run tasks such as compiling and watching files.
+Simditor uses [Grunt](http://gruntjs.com/) as the task runner to run tasks such as auto-compiling and watching files.
 
-Grunt need to be installed by npm. To have npm working, first need to install [Node.js](https://nodejs.org/).
+Grunt needs to be installed by npm. To have npm working, first need to install [Node.js](https://nodejs.org/).
 
 Install Grunt's command line interface (CLI) globally:
 
@@ -61,7 +61,7 @@ $ npm install
 
 #Install Bower Dependencies
 
-Simditor use [Bower](http://bower.io/) to manage front-end libraries:
+Simditor uses [Bower](http://bower.io/) to manage front-end libraries:
 
 Install bower：
 
@@ -84,8 +84,8 @@ Run project with grunt:
 $ grunt
 ```
 
-Now you can visit the Simditor homepage in `http://localhost:3000/demo.html`.
-Every time you change the source code of Simditor, Grunt will automatically re-compile the project.
-You can simply test your code by refreshing the page.
+Now you can visit the homepage in `http://localhost:3000/demo.html`.
+Every time you change the source code of Simditor, Grunt will automatically re-compile the project,
+so you can simply test your code by refreshing the page.
 
 To test the uploading feature, add a upload param to the url: `http://localhost:3000/demo.html?upload`

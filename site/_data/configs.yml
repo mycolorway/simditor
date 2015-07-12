@@ -54,7 +54,7 @@
   type: "Boolean"
   default: "false"
   description: |
-    Hide the toolbar. Can not work with `toolbarFloat`.
+    Hide the toolbar. Can not work together with `toolbarFloat`.
 
 - name: "defaultImage"
   type: "String"
@@ -72,7 +72,7 @@
   type: "Object"
   default: "{ }"
   description: |
-    Insert a hidden input in textarea to store params (key-value pairs). Usually used as the default params of forms. It will generate：
+    Insert a hidden input in textarea to store params (key-value pairs). Usually used as the default params of the form. It will generate：
 
     ```html
     <input type="hidden" name="key" value="val" />
@@ -117,13 +117,13 @@
   type: "Boolean"
   default: "false"
   description: |
-    Support uploading by pasting images from the clipboard. Work with `upload` and only supported by Firefox and Chrome.
+    Support uploading by pasting images from the clipboard. Work together with `upload` and only supported by Firefox and Chrome.
 
 - name: "imageButton"
   type: "Array/String"
   default: "['upload', 'external']"
   description: |
-    Insert images by uploading or external links. If both are enabled, will show a drop-down menu when click the image button.
+    Insert images by uploading from the local computer or external links. If both are enabled, Simditor will show a drop-down menu when click the image button.
 
 - name: "allowedTags"
   type: "Array"

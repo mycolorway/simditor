@@ -25,7 +25,7 @@
     #####Example:
 
     Some features will insert extra attributes or tags in order to make the element looks nicer. That is "decorating".
-    These elements should never be included when getting the raw HTML content.
+    These elements should never be included when getting the content from the editor.
 
     ```html
     <div class="simditor-table"> <!-- extra tags -->
