@@ -3,39 +3,153 @@ class Selection extends SimpleModule
 
   @pluginName: 'Selection'
 
+  _range: null
+
+  _startNodes: null
+
+  _endNodes: null
+
+  _containerNode: null
+
+  _nodes: null
+
+  _blockNodes: null
+
+  _rootNodes: null
+
   _init: ->
     @editor = @_module
-    @sel = document.getSelection()
+    @_selection = document.getSelection()
+
+    @editor.on 'selectionchanged', (e) =>
+      @_reset()
+      @_range = @_selection.getRangeAt 0
+
+    @editor.on 'blur', (e) =>
+      @_reset()
+
+  _reset: ->
+    @_range = null
+    @_startNodes = null
+    @_endNodes = null
+    @_containerNode = null
+    @_nodes = null
+    @_blockNodes = null
+    @_rootNodes = null
 
   clear: ->
     try
-      @sel.removeAllRanges()
+      @_selection.removeAllRanges()
     catch e
 
-  getRange: ->
-    if !@editor.inputManager.focused or !@sel.rangeCount
-      return null
+    @_reset()
 
-    return @sel.getRangeAt 0
+  range: (range) ->
+    if range
+      @clear()
+      @_selection.addRange range
+      @_range = range
 
-  selectRange: (range) ->
-    @clear()
-    @sel.addRange(range)
+      # firefox won't auto focus while applying new range
+      ffOrIE = @editor.util.browser.firefox or @editor.util.browser.msie
+      @editor.body.focus() if !@editor.inputManager.focused and ffOrIE
 
-    # firefox won't auto focus while applying new range
-    @editor.body.focus() if !@editor.inputManager.focused and (@editor.util.browser.firefox or @editor.util.browser.msie)
+    else if @editor.inputManager.focused and @_selection.rangeCount
+      @_range ||= @_selection.getRangeAt 0
+    else
+      @_range = null
 
-    range
+    @_range
 
-  rangeAtEndOf: (node, range = @getRange()) ->
-    return unless range? and range.collapsed
+  startNodes: ->
+    if @_range
+      @_startNodes ||= do =>
+        startNodes = $(@_range.startContainer).parentsUntil(@editor.body).get()
+        startNodes.unshift range.startContainer
+        $(startNodes)
+
+    @_startNodes
+
+  endNodes: ->
+    if @_range
+      @_endNodes ||= if @_range.collapsed
+        @startNodes()
+      else
+        endNodes = $(range.endContainer).parentsUntil(@editor.body).get()
+        endNodes.unshift range.endContainer
+        $(endNodes)
+
+    @_endNodes
+
+  containerNode: ->
+    if @_range
+      @_containerNode ||= $(@_range.commonAncestorContainer)
+
+    @_containerNode
+
+  # all nodes in selection content
+  nodes: ->
+    if @_range
+      @_nodes ||= do =>
+        nodes = []
+
+        if @startNodes.first().is(@endNodes.first())
+          nodes = @startNodes.get()
+        else
+          @startNodes.each (i, node) =>
+            $node = $ node
+            if @endNodes.index($node) > -1
+              nodes.push node
+            else if(sharedIndex = @endNodes.index($node.parent())) > -1
+              $endNode = @endNodes.eq(sharedIndex - 1)
+              $.merge nodes, $node.nextUntil($endNode).get()
+            else
+              $.merge nodes, $node.nextAll().get()
+
+          @endNodes.each (i, node) =>
+            $node = $ node
+            if (sharedIndex = @startNodes.index($node.parent())) > -1
+              nodes.push node
+              return false
+            else
+              $.merge nodes, $node.prevAll().get()
+
+        $($.unique(nodes))
+
+    @_nodes
+
+  # all block nodes in selection content
+  blockNodes: ->
+    return unless @_range
+
+    @_blockNodes ||= do =>
+      @nodes().filter (i, node) =>
+        @editor.util.isBlockNode node
+
+    @_blockNodes
+
+  rootNodes: ->
+    return unless @_range
+
+    @_rootNodes ||= do =>
+      @nodes().filter (i, node) =>
+        $parent = $(node).parent()
+        $parent.is(@editor.body) or $parent.is('blockquote')
+
+    @_rootNodes
+
+  rangeAtEndOf: (node, range = @range()) ->
+    return unless range and range.collapsed
 
     node = $(node)[0]
     endNode = range.endContainer
     endNodeLength = @editor.util.getNodeLength endNode
     #node.normalize()
 
-    if !(range.endOffset == endNodeLength - 1 and $(endNode).contents().last().is('br')) and range.endOffset != endNodeLength
+    beforeLastNode = range.endOffset == endNodeLength - 1
+    lastNodeIsBr = $(endNode).contents().last().is('br')
+    afterLastNode = range.endOffset == endNodeLength
+    unless (beforeLastNode and lastNodeIsBr) or afterLastNode
       return false
 
     if node == endNode
@@ -44,18 +158,21 @@ class Selection extends SimpleModule
       return false
 
     result = true
-    $(endNode).parentsUntil(node).addBack().each (i, n) =>
+    $(endNode).parentsUntil(node).addBack().each (i, n) ->
+      # remove empty text nodes
       nodes = $(n).parent().contents().filter ->
         !(this != n && this.nodeType == 3 && !this.nodeValue)
       $lastChild = nodes.last()
-      unless $lastChild.get(0) == n or ($lastChild.is('br') and $lastChild.prev().get(0) == n)
+      isLastNode = $lastChild.get(0) == n
+      beforeLastbr = $lastChild.is('br') and $lastChild.prev().get(0) == n
+      unless isLastNode or beforeLastbr
         result = false
         return false
 
     result
 
-  rangeAtStartOf: (node, range = @getRange()) ->
-    return unless range? and range.collapsed
+  rangeAtStartOf: (node, range = @range()) ->
+    return unless range and range.collapsed
 
     node = $(node)[0]
     startNode = range.startContainer
@@ -69,43 +186,45 @@ class Selection extends SimpleModule
       return false
 
     result = true
-    $(startNode).parentsUntil(node).addBack().each (i, n) =>
+    $(startNode).parentsUntil(node).addBack().each (i, n) ->
+      # remove empty nodes
       nodes = $(n).parent().contents().filter ->
         !(this != n && this.nodeType == 3 && !this.nodeValue)
       result = false unless nodes.first().get(0) == n
 
     result
 
-  insertNode: (node, range = @getRange()) ->
-    return unless range?
+  insertNode: (node, range = @range()) ->
+    return unless range
 
     node = $(node)[0]
     range.insertNode node
     @setRangeAfter node, range
 
-  setRangeAfter: (node, range = @getRange()) ->
+  setRangeAfter: (node, range = @range()) ->
     return unless range?
 
     node = $(node)[0]
     range.setEndAfter node
     range.collapse(false)
-    @selectRange range
+    @range range
 
-  setRangeBefore: (node, range = @getRange()) ->
+  setRangeBefore: (node, range = @range()) ->
     return unless range?
 
     node = $(node)[0]
     range.setEndBefore node
     range.collapse(false)
-    @selectRange range
+    @range range
 
-  setRangeAtStartOf: (node, range = @getRange()) ->
+  setRangeAtStartOf: (node, range = @range()) ->
     node = $(node).get(0)
     range.setEnd(node, 0)
     range.collapse(false)
-    @selectRange range
+    @range range
 
-  setRangeAtEndOf: (node, range = @getRange()) ->
+  setRangeAtEndOf: (node, range = @range()) ->
+    # TODO: need refactor
     $node = $(node)
     node = $node.get(0)
 
@@ -114,10 +233,11 @@ class Selection extends SimpleModule
       if contents.length > 0
         lastChild = contents.last()
         lastText = lastChild.text()
+        lastChildLength = @editor.util.getNodeLength(lastChild[0])
         if lastText.charAt(lastText.length - 1) is '\n'
-          range.setEnd(lastChild[0], @editor.util.getNodeLength(lastChild[0]) - 1)
+          range.setEnd(lastChild[0], lastChildLength - 1)
         else
-          range.setEnd(lastChild[0], @editor.util.getNodeLength(lastChild[0]))
+          range.setEnd(lastChild[0], lastChildLength)
       else
         range.setEnd(node, 0)
     else
@@ -126,7 +246,8 @@ class Selection extends SimpleModule
         $lastNode = $(node).contents().last()
         if $lastNode.is('br')
           nodeLength -= 1
-        else if $lastNode[0].nodeType != 3 and @editor.util.isEmptyNode($lastNode)
+        else if $lastNode[0].nodeType != 3 and
+            @editor.util.isEmptyNode($lastNode)
           $lastNode.append @editor.util.phBr
           node = $lastNode[0]
           nodeLength = 0
@@ -134,33 +255,36 @@ class Selection extends SimpleModule
       range.setEnd(node, nodeLength)
 
     range.collapse(false)
-    @selectRange range
+    @range range
 
-  deleteRangeContents: (range = @getRange()) ->
+  deleteRangeContents: (range = @range()) ->
     startRange = range.cloneRange()
     endRange = range.cloneRange()
     startRange.collapse(true)
     endRange.collapse(false)
 
     # the default behavior of cmd+a is buggy
-    if !range.collapsed and @rangeAtStartOf(@editor.body, startRange) and @rangeAtEndOf(@editor.body, endRange)
+    atStartOfBody = @rangeAtStartOf(@editor.body, startRange)
+    atEndOfBody = @rangeAtEndOf(@editor.body, endRange)
+    if !range.collapsed and atStartOfBody and atEndOfBody
       @editor.body.empty()
       range.setStart @editor.body[0], 0
       range.collapse true
-      @selectRange range
+      @range range
     else
       range.deleteContents()
 
     range
 
-  breakBlockEl: (el, range = @getRange()) ->
+  breakBlockEl: (el, range = @range()) ->
+    # TODO: need refactor
     $el = $(el)
     return $el unless range.collapsed
     range.setStartBefore $el.get(0)
     return $el if range.collapsed
     $el.before range.extractContents()
 
-  save: (range = @getRange()) ->
+  save: (range = @range()) ->
     return if @_selectionSaved
 
     endRange = range.cloneRange()
@@ -175,7 +299,7 @@ class Selection extends SimpleModule
     @clear()
     @_selectionSaved = true
 
-  restore: () ->
+  restore: ->
     return false unless @_selectionSaved
 
     startCaret = @editor.body.find('.simditor-caret-start')
@@ -196,12 +320,10 @@ class Selection extends SimpleModule
 
       startCaret.remove()
       endCaret.remove()
-      @selectRange range
+      @range range
     else
       startCaret.remove()
       endCaret.remove()
 
     @_selectionSaved = false
     range
-
-

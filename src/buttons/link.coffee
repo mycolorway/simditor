@@ -14,43 +14,22 @@ class LinkButton extends Button
     @popover = new LinkPopover
       button: @
 
-  status: ($node) ->
-    @setDisabled $node.is(@disableTag) if $node?
-    return true if @disabled
+  _status: ->
+    super()
 
-    return @active unless $node?
-
-    showPopover = true
-    if !$node.is(@htmlTag) or $node.is('[class^="simditor-"]')
-      @setActive false
-      showPopover = false
-    else if @editor.selection.rangeAtEndOf($node)
-      @setActive true
-      showPopover = false
+    if @active and !@editor.selection.rangeAtEndOf(@node)
+      @popover.show @node
     else
-      @setActive true
-
-    if showPopover
-      @popover.show($node)
-    else if @editor.util.isBlockNode($node)
       @popover.hide()
 
-    @active
-
   command: ->
-    range = @editor.selection.getRange()
+    range = @editor.selection.range()
 
     if @active
-      $link = $(range.commonAncestorContainer).closest('a')
-      txtNode = document.createTextNode $link.text()
-      $link.replaceWith txtNode
+      txtNode = document.createTextNode @node.text()
+      @node.replaceWith txtNode
       range.selectNode txtNode
     else
-      startNode = range.startContainer
-      endNode = range.endContainer
-      $startBlock = @editor.util.closestBlockEl(startNode)
-      $endBlock = @editor.util.closestBlockEl(endNode)
-
       $contents = $(range.extractContents())
       linkText = @editor.formatter.clearHtml($contents.contents(), false)
       $link = $('<a/>', {
@@ -59,7 +38,7 @@ class LinkButton extends Button
         text: linkText || @_t('linkText')
       })
 
-      if $startBlock[0] == $endBlock[0]
+      if @editor.selection.blockNodes.length == 1
         range.insertNode $link[0]
       else
         $newBlock = $('<p/>').append($link)
@@ -75,7 +54,7 @@ class LinkButton extends Button
           @popover.textEl.focus()
           @popover.textEl[0].select()
 
-    @editor.selection.selectRange range
+    @editor.selection.range range
     @editor.trigger 'valuechanged'
 
 
@@ -83,17 +62,20 @@ class LinkPopover extends Popover
 
   render: ->
     tpl = """
-      <div class="link-settings">
-        <div class="settings-field">
-          <label>#{ @_t 'text' }</label>
-          <input class="link-text" type="text"/>
-          <a class="btn-unlink" href="javascript:;" title="#{ @_t 'removeLink' }" tabindex="-1"><span class="simditor-icon simditor-icon-unlink"></span></a>
-        </div>
-        <div class="settings-field">
-          <label>#{ @_t 'linkUrl' }</label>
-          <input class="link-url" type="text"/>
-        </div>
+    <div class="link-settings">
+      <div class="settings-field">
+        <label>#{ @_t 'text' }</label>
+        <input class="link-text" type="text"/>
+        <a class="btn-unlink" href="javascript:;" title="#{ @_t 'removeLink' }"
+          tabindex="-1">
+          <span class="simditor-icon simditor-icon-unlink"></span>
+        </a>
       </div>
+      <div class="settings-field">
+        <label>#{ @_t 'linkUrl' }</label>
+        <input class="link-url" type="text"/>
+      </div>
+    </div>
     """
     @el.addClass('link-popover')
       .append(tpl)
@@ -140,4 +122,3 @@ class LinkPopover extends Popover
 
 
 Simditor.Toolbar.addButton LinkButton
-

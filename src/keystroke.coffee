@@ -57,7 +57,8 @@ class Keystroke extends SimpleModule
 
       # fix the span bug in webkit browsers
       $blockEl = @editor.util.closestBlockEl()
-      if @editor.util.browser.webkit and @editor.selection.rangeAtStartOf $blockEl
+      isWebkit = @editor.util.browser.webkit
+      if isWebkit and @editor.selection.rangeAtStartOf $blockEl
         @editor.selection.save()
         @editor.formatter.cleanNode $blockEl, true
         @editor.selection.restore()
@@ -67,7 +68,9 @@ class Keystroke extends SimpleModule
     @editor.inputManager.addKeystrokeHandler '13', 'li', (e, $node) =>
       $cloneNode = $node.clone()
       $cloneNode.find('ul, ol').remove()
-      return unless @editor.util.isEmptyNode($cloneNode) and $node.is(@editor.util.closestBlockEl())
+      isEmptyNode = @editor.util.isEmptyNode($cloneNode)
+      isClosestBlock = $node.is(@editor.util.closestBlockEl())
+      return unless isEmptyNode and isClosestBlock
       listEl = $node.parent()
 
       # item in the middle of list
@@ -76,13 +79,17 @@ class Keystroke extends SimpleModule
 
         # in a nested list
         if listEl.parent('li').length > 0
-          newBlockEl = $('<li/>').append(@editor.util.phBr).insertAfter(listEl.parent('li'))
-          newListEl = $('<' + listEl[0].tagName + '/>').append($node.nextAll('li'))
+          newBlockEl = $('<li/>')
+            .append(@editor.util.phBr)
+            .insertAfter(listEl.parent('li'))
+          newListEl = $('<' + listEl[0].tagName + '/>')
+            .append($node.nextAll('li'))
           newBlockEl.append newListEl
         # in a root list
         else
           newBlockEl = $('<p/>').append(@editor.util.phBr).insertAfter(listEl)
-          newListEl = $('<' + listEl[0].tagName + '/>').append($node.nextAll('li'))
+          newListEl = $('<' + listEl[0].tagName + '/>')
+            .append($node.nextAll('li'))
           newBlockEl.after newListEl
 
       # item at the end of list
@@ -97,7 +104,8 @@ class Keystroke extends SimpleModule
         # in a root list
         else
           newBlockEl = $('<p/>').append(@editor.util.phBr).insertAfter(listEl)
-          newBlockEl.after $node.children('ul, ol') if $node.children('ul, ol').length > 0
+          if $node.children('ul, ol').length > 0
+            newBlockEl.after $node.children('ul, ol')
 
       if $node.prev('li').length
         $node.remove()
@@ -117,7 +125,7 @@ class Keystroke extends SimpleModule
         @editor.selection.setRangeAtStartOf $p
         return true
 
-      range = @editor.selection.getRange()
+      range = @editor.selection.range()
       breakNode = null
 
       range.deleteContents()
@@ -132,14 +140,17 @@ class Keystroke extends SimpleModule
         range.setStartAfter breakNode
 
       range.collapse(false)
-      @editor.selection.selectRange range
+      @editor.selection.range range
       true
 
 
-    # press enter in the last paragraph of blockquote, just leave the block quote
+    # press enter in the last paragraph of blockquote,
+    # just leave the block quote
     @editor.inputManager.addKeystrokeHandler '13', 'blockquote', (e, $node) =>
       $closestBlock = @editor.util.closestBlockEl()
-      return unless $closestBlock.is('p') and !$closestBlock.next().length and @editor.util.isEmptyNode $closestBlock
+      isLastBlock = !$closestBlock.next().length
+      isEmptyNode = @editor.util.isEmptyNode $closestBlock
+      return unless $closestBlock.is('p') and isLastBlock and isEmptyNode
       $node.after $closestBlock
       range = document.createRange()
       @editor.selection.setRangeAtStartOf $closestBlock, range
@@ -154,7 +165,7 @@ class Keystroke extends SimpleModule
 
       text = ''
       $textNode = null
-      $node.contents().each (i, n) =>
+      $node.contents().each (i, n) ->
         return false if n.nodeType is 1 and /UL|OL/.test(n.nodeName)
         return if n.nodeType is 1 and /BR/.test(n.nodeName)
 
@@ -165,7 +176,8 @@ class Keystroke extends SimpleModule
 
         $textNode= $(n)
 
-      if $textNode and text.length == 1 and @editor.util.browser.firefox and !$textNode.next('br').length
+      isFF = @editor.util.browser.firefox and !$textNode.next('br').length
+      if $textNode and text.length == 1 and isFF
         $br = $(@editor.util.phBr).insertAfter $textNode
         $textNode.remove()
         @editor.selection.setRangeBefore $br
@@ -184,15 +196,15 @@ class Keystroke extends SimpleModule
         @editor.selection.setRangeAtEndOf $prevNode, range
         $prevNode.append $childList
         $node.remove()
-        @editor.selection.selectRange range
+        @editor.selection.range range
       true
 
 
     # press delete at start of code block
     @editor.inputManager.addKeystrokeHandler '8', 'pre', (e, $node) =>
       return unless @editor.selection.rangeAtStartOf $node
-      codeStr = $node.html().replace('\n', '<br/>')
-      $newNode = $('<p/>').append(codeStr || @editor.util.phBr).insertAfter $node
+      codeStr = $node.html().replace('\n', '<br/>') || @editor.util.phBr
+      $newNode = $('<p/>').append(codeStr).insertAfter $node
       $node.remove()
       range = document.createRange()
       @editor.selection.setRangeAtStartOf $newNode, range

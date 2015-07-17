@@ -117,7 +117,7 @@ class UndoManager extends SimpleModule
 
     offset = 0
     merging = false
-    $parent.contents().each (i, child) =>
+    $parent.contents().each (i, child) ->
       if index == i or node == child
         return false
 
@@ -170,9 +170,10 @@ class UndoManager extends SimpleModule
     node
 
   caretPosition: (caret) ->
+    # TODO: refactor
     # calculate current caret state
     if !caret
-      range = @editor.selection.getRange()
+      range = @editor.selection.range()
       return {} unless @editor.inputManager.focused and range?
 
       caret =
@@ -214,8 +215,4 @@ class UndoManager extends SimpleModule
       range.setStart(startContainer, startOffset)
       range.setEnd(endContainer, endOffset)
 
-      @editor.selection.selectRange range
-
-
-
-
+      @editor.selection.range range

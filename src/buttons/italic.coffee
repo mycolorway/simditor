@@ -20,13 +20,10 @@ class ItalicButton extends Button
 
     super()
 
-  status: ($node) ->
-    @setDisabled $node.is(@disableTag) if $node?
-    return @disabled if @disabled
-
+  _activeStatus: ->
     active = document.queryCommandState('italic') is true
     @setActive active
-    active
+    @active
 
   command: ->
     document.execCommand 'italic'
@@ -38,4 +35,3 @@ class ItalicButton extends Button
 
 
 Simditor.Toolbar.addButton ItalicButton
-

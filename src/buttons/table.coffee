@@ -14,7 +14,10 @@ class TableButton extends Button
   _init: ->
     super()
 
-    $.merge @editor.formatter._allowedTags, ['thead', 'th', 'tbody', 'tr', 'td', 'colgroup', 'col']
+    $.merge(
+      @editor.formatter._allowedTags,
+      ['thead', 'th', 'tbody', 'tr', 'td', 'colgroup', 'col']
+    )
     $.extend(@editor.formatter._allowedAttributes, {
       td: ['rowspan', 'colspan'],
       col: ['width']
@@ -31,10 +34,11 @@ class TableButton extends Button
         @undecorate $(table)
 
     @editor.on 'selectionchanged.table', (e) =>
-      @editor.body.find('.simditor-table td, .simditor-table th').removeClass('active')
-      range = @editor.selection.getRange()
-      return unless range?
-      $container = $(range.commonAncestorContainer)
+      @editor.body.find('.simditor-table td, .simditor-table th')
+        .removeClass('active')
+      range = @editor.selection.range()
+      return unless range
+      $container = @editor.selection.containerNode
 
       if range.collapsed and $container.is('.simditor-table')
         if @editor.selection.rangeAtStartOf $container
@@ -69,7 +73,10 @@ class TableButton extends Button
 
   _tdNav: ($td, direction = 'up') ->
     action = if direction == 'up' then 'prev' else 'next'
-    [parentTag, anotherTag] = if direction == 'up' then ['tbody', 'thead'] else ['thead', 'tbody']
+    [parentTag, anotherTag] = if direction == 'up'
+      ['tbody', 'thead']
+    else
+      ['thead', 'tbody']
     $tr = $td.parent 'tr'
     $anotherTr = @["_#{action}Row"]($tr)
     return true unless $anotherTr.length > 0
@@ -94,16 +101,18 @@ class TableButton extends Button
     $colgroup = $table.find 'colgroup'
     if $colgroup.length < 1
       $colgroup = $('<colgroup/>').prependTo $table
-      $table.find('thead tr th').each (i, td) =>
+      $table.find('thead tr th').each (i, td) ->
         $col = $('<col/>').appendTo $colgroup
 
       @refreshTableWidth $table
 
 
-    $resizeHandle = $('<div class="simditor-resize-handle" contenteditable="false"></div>')
-      .appendTo($wrapper)
+    $resizeHandle = $ '<div />',
+      class: 'simditor-resize-handle'
+      contenteditable: 'false'
+    .appendTo($wrapper)
 
-    $wrapper.on 'mousemove', 'td, th', (e) =>
+    $wrapper.on 'mousemove', 'td, th', (e) ->
       return if $wrapper.hasClass('resizing')
       $td = $(e.currentTarget)
       x = e.pageX - $(e.currentTarget).offset().left
@@ -130,10 +139,10 @@ class TableButton extends Button
         .data('col', $col)
         .show()
 
-    $wrapper.on 'mouseleave', (e) =>
+    $wrapper.on 'mouseleave', (e) ->
       $resizeHandle.hide()
 
-    $wrapper.on 'mousedown', '.simditor-resize-handle', (e) =>
+    $wrapper.on 'mousedown', '.simditor-resize-handle', (e) ->
       $handle = $(e.currentTarget)
       $leftTd = $handle.data 'td'
       $leftCol = $handle.data 'col'
@@ -146,7 +155,7 @@ class TableButton extends Button
       tableWidth = $leftTd.closest('table').width()
       minWidth = 50
 
-      $(document).on 'mousemove.simditor-resize-table', (e) =>
+      $(document).on 'mousemove.simditor-resize-table', (e) ->
         deltaX = e.pageX - startX
         leftWidth = startLeftWidth + deltaX
         rightWidth = startRightWidth - deltaX
@@ -163,7 +172,7 @@ class TableButton extends Button
         $rightCol.attr 'width', (rightWidth / tableWidth * 100) + '%'
         $handle.css 'left', startHandleLeft + deltaX
 
-      $(document).one 'mouseup.simditor-resize-table', (e) =>
+      $(document).one 'mouseup.simditor-resize-table', (e) ->
         $(document).off '.simditor-resize-table'
         $wrapper.removeClass 'resizing'
 
@@ -205,15 +214,50 @@ class TableButton extends Button
       </div>
       <div class="menu-edit-table">
         <ul>
-          <li><a tabindex="-1" unselectable="on" class="menu-item" href="javascript:;" data-param="deleteRow"><span>#{ @_t 'deleteRow' }</span></a></li>
-          <li><a tabindex="-1" unselectable="on" class="menu-item" href="javascript:;" data-param="insertRowAbove"><span>#{ @_t 'insertRowAbove' } ( Ctrl + Alt + ↑ )</span></a></li>
-          <li><a tabindex="-1" unselectable="on" class="menu-item" href="javascript:;" data-param="insertRowBelow"><span>#{ @_t 'insertRowBelow' } ( Ctrl + Alt + ↓ )</span></a></li>
+          <li>
+            <a tabindex="-1" unselectable="on" class="menu-item"
+              href="javascript:;" data-param="deleteRow">
+              <span>#{ @_t 'deleteRow' }</span>
+            </a>
+          </li>
+          <li>
+            <a tabindex="-1" unselectable="on" class="menu-item"
+              href="javascript:;" data-param="insertRowAbove">
+              <span>#{ @_t 'insertRowAbove' } ( Ctrl + Alt + ↑ )</span>
+            </a>
+          </li>
+          <li>
+            <a tabindex="-1" unselectable="on" class="menu-item"
+              href="javascript:;" data-param="insertRowBelow">
+              <span>#{ @_t 'insertRowBelow' } ( Ctrl + Alt + ↓ )</span>
+            </a>
+          </li>
           <li><span class="separator"></span></li>
-          <li><a tabindex="-1" unselectable="on" class="menu-item" href="javascript:;" data-param="deleteCol"><span>#{ @_t 'deleteColumn' }</span></a></li>
-          <li><a tabindex="-1" unselectable="on" class="menu-item" href="javascript:;" data-param="insertColLeft"><span>#{ @_t 'insertColumnLeft' } ( Ctrl + Alt + ← )</span></a></li>
-          <li><a tabindex="-1" unselectable="on" class="menu-item" href="javascript:;" data-param="insertColRight"><span>#{ @_t 'insertColumnRight' } ( Ctrl + Alt + → )</span></a></li>
+          <li>
+            <a tabindex="-1" unselectable="on" class="menu-item"
+              href="javascript:;" data-param="deleteCol">
+              <span>#{ @_t 'deleteColumn' }</span>
+            </a>
+          </li>
+          <li>
+            <a tabindex="-1" unselectable="on" class="menu-item"
+              href="javascript:;" data-param="insertColLeft">
+              <span>#{ @_t 'insertColumnLeft' } ( Ctrl + Alt + ← )</span>
+            </a>
+          </li>
+          <li>
+            <a tabindex="-1" unselectable="on" class="menu-item"
+              href="javascript:;" data-param="insertColRight">
+              <span>#{ @_t 'insertColumnRight' } ( Ctrl + Alt + → )</span>
+            </a>
+          </li>
           <li><span class="separator"></span></li>
-          <li><a tabindex="-1" unselectable="on" class="menu-item" href="javascript:;" data-param="deleteTable"><span>#{ @_t 'deleteTable' }</span></a></li>
+          <li>
+            <a tabindex="-1" unselectable="on" class="menu-item"
+              href="javascript:;" data-param="deleteTable">
+              <span>#{ @_t 'deleteTable' }</span>
+            </a>
+          </li>
         </ul>
       </div>
     """).appendTo(@menuWrapper)
@@ -232,7 +276,7 @@ class TableButton extends Button
       $trs = $trs.add($table.find('thead tr')) if $tr.parent().is('tbody')
       $trs.find("td:lt(#{num}), th:lt(#{num})").addClass('selected')
 
-    @createMenu.on 'mouseleave', (e) =>
+    @createMenu.on 'mouseleave', (e) ->
       $(e.currentTarget).find('td, th').removeClass('selected')
 
     @createMenu.on 'mousedown', 'td, th', (e) =>
@@ -272,7 +316,7 @@ class TableButton extends Button
   refreshTableWidth: ($table)->
     tableWidth = $table.width()
     cols = $table.find('col')
-    $table.find('thead tr th').each (i, td) =>
+    $table.find('thead tr th').each (i, td) ->
       $col = cols.eq(i)
       $col.attr 'width', ($(td).outerWidth() / tableWidth * 100) + '%'
 
@@ -287,7 +331,7 @@ class TableButton extends Button
       @editMenu.hide()
 
   _changeCellTag: ($tr, tagName) ->
-    $tr.find('td, th').each (i, cell) =>
+    $tr.find('td, th').each (i, cell) ->
       $cell = $(cell)
       $cell.replaceWith("<#{tagName}>#{$cell.html()}</#{tagName}>")
 
@@ -312,7 +356,7 @@ class TableButton extends Button
     $table = $tr.closest 'table'
 
     colNum = 0
-    $table.find('tr').each (i, tr) =>
+    $table.find('tr').each (i, tr) ->
       colNum = Math.max colNum, $(tr).find('td').length
 
     index = $tr.find('td, th').index($td)
@@ -336,7 +380,9 @@ class TableButton extends Button
 
   deleteCol: ($td) ->
     $tr = $td.parent 'tr'
-    if $tr.closest('table').find('tr').length < 1 and $td.siblings('td, th').length < 1
+    noOtherRow = $tr.closest('table').find('tr').length < 2
+    noOtherCol = $td.siblings('td, th').length < 1
+    if noOtherRow and noOtherCol
       @deleteTable $td
     else
       index = $tr.find('td, th').index($td)
@@ -345,7 +391,7 @@ class TableButton extends Button
       $table = $tr.closest 'table'
 
       $table.find('col').eq(index).remove()
-      $table.find('tr').each (i, tr) =>
+      $table.find('tr').each (i, tr) ->
         $(tr).find('td, th').eq(index).remove()
       @refreshTableWidth $table
 
@@ -371,7 +417,10 @@ class TableButton extends Button
     $newCol.attr 'width', width + '%'
     @refreshTableWidth $table
 
-    $newTd = if direction == 'after' then $td.next('td, th') else $td.prev('td, th')
+    $newTd = if direction == 'after'
+      $td.next('td, th')
+    else
+      $td.prev('td, th')
     @editor.selection.setRangeAtStartOf $newTd
 
   deleteTable: ($td) ->
@@ -381,8 +430,7 @@ class TableButton extends Button
     @editor.selection.setRangeAtStartOf($block) if $block.length > 0
 
   command: (param) ->
-    range = @editor.selection.getRange()
-    $td = $(range.commonAncestorContainer).closest('td, th')
+    $td = @editor.selection.containerNode.closest('td, th')
     return unless $td.length > 0
 
     if param == 'deleteRow'

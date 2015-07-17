@@ -86,6 +86,9 @@ class Util extends SimpleModule
     $node.is(':empty') or
       (!$node.text() and !$node.find(':not(br, span, div)').length)
 
+  isDecoratedNode: (node) ->
+    $(node).is('[class^="simditor-"]')
+
   blockNodes: ["div","p","ul","ol","li","blockquote","hr","pre","h1","h2","h3",
     "h4","table"]
 
@@ -97,8 +100,9 @@ class Util extends SimpleModule
     new RegExp("^(#{@blockNodes.join('|')})$").test node.nodeName.toLowerCase()
 
   closestBlockEl: (node) ->
+    # TODO: refactor
     unless node?
-      range = @editor.selection.getRange()
+      range = @editor.selection.range()
       node = range?.commonAncestorContainer
 
     $node = $(node)
@@ -112,8 +116,9 @@ class Util extends SimpleModule
     if blockEl.length then blockEl.last() else null
 
   furthestNode: (node, filter) ->
+    # TODO: refactor
     unless node?
-      range = @editor.selection.getRange()
+      range = @editor.selection.range()
       node = range?.commonAncestorContainer
 
     $node = $(node)
@@ -142,8 +147,9 @@ class Util extends SimpleModule
 
 
   traverseUp:(callback, node) ->
+    # TODO: refactor
     unless node?
-      range = @editor.selection.getRange()
+      range = @editor.selection.range()
       node = range?.commonAncestorContainer
 
     if !node? or !$.contains(@editor.body[0], node)

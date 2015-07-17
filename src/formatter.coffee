@@ -117,7 +117,7 @@ class Formatter extends SimpleModule
       return
 
     contents = $node.contents()
-    isDecoration = $node.is('[class^="simditor-"]')
+    isDecoration = @editor.util.isDecoratedNode($node)
 
     if $node.is(@_allowedTags.join(',')) or isDecoration
       # img inside a is not allowed

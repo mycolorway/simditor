@@ -99,8 +99,8 @@ class Button extends SimpleModule
       if tag && $.inArray(tag, @editor.formatter._allowedTags) < 0
         @editor.formatter._allowedTags.push tag
 
-    @editor.toolbar.on 'toolbarstatus', (e, status) =>
-      @status status
+    @editor.on 'selectionchanged', (e) =>
+      @_status()
 
   iconClassOf: (icon) ->
     if icon then "simditor-icon simditor-icon-#{icon}" else ''
@@ -158,16 +158,31 @@ class Button extends SimpleModule
     @disabled = disabled
     @el.toggleClass('disabled', @disabled)
 
-  status: (status) ->
-    disabled = status.startNodes.filter(@disableTag).length > 0 or
-      (status.endNodes and status.endNodes.filter(@disableTag).length > 0)
+  _disableStatus: ->
+    startNodes = @editor.selection.startNodes()
+    endNodes = @editor.selection.endNodes()
+    disabled = startNodes.filter(@disableTag).length > 0 or
+      endNodes.filter(@disableTag).length > 0
     @setDisabled disabled
-    return false if disabled
+    @setActive(false) if @disabled
+    @disabled
 
-    active = status.startNodes.filter(@htmlTag).length > 0 and
-      (!status.endNodes or status.endNodes.filter(@htmlTag).length > 0)
+  _activeStatus: ->
+    startNodes = @editor.selection.startNodes()
+    endNodes = @editor.selection.endNodes()
+    startNode = startNodes.filter(@htmlTag)
+    endNode = endNodes.filter(@htmlTag)
+    active = startNode.length > 0 and endNode.length > 0 and
+      startNode.is(endNode)
+    @node = if active then startNode else null
     @setActive active
     @active
+
+  _status: ->
+    @_disableStatus()
+    return if @disabled
+
+    @_activeStatus()
 
   command: (param) ->
 

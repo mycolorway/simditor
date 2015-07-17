@@ -22,7 +22,7 @@
       range = document.createRange();
       range.setStart($text[0], 0);
       range.setEnd($text[0], 8);
-      editor.selection.selectRange(range);
+      editor.selection.range(range);
       $button.mousedown();
       return expect($p.find('b')).toExist();
     });
@@ -38,7 +38,7 @@
       range = document.createRange();
       range.setStart($text[0], 0);
       range.setEnd($text[0], 8);
-      editor.selection.selectRange(range);
+      editor.selection.range(range);
       $button.mousedown();
       editor.trigger('selectionchanged');
       expect(editor.getValue()).toBe('<pre><code>var test = 1;</code></pre>');
@@ -74,7 +74,7 @@
         range = document.createRange();
         editor.selection.setRangeAtEndOf($p2, range);
         range.setStart($p1[0], 0);
-        return editor.selection.selectRange(range);
+        return editor.selection.range(range);
       });
       it("can align to right", function() {
         var button;

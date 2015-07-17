@@ -21,7 +21,7 @@ describe 'A Simditor instance with buttons', ->
     range = document.createRange()
     range.setStart($text[0], 0)
     range.setEnd($text[0], 8)
-    editor.selection.selectRange range
+    editor.selection.range range
     $button.mousedown()
     expect($p.find('b')).toExist()
 
@@ -38,7 +38,7 @@ describe 'A Simditor instance with buttons', ->
     range = document.createRange()
     range.setStart($text[0], 0)
     range.setEnd($text[0], 8)
-    editor.selection.selectRange range
+    editor.selection.range range
     $button.mousedown()
     editor.trigger 'selectionchanged'
 
@@ -77,7 +77,7 @@ describe 'A Simditor instance with buttons', ->
       range = document.createRange()
       editor.selection.setRangeAtEndOf $p2, range
       range.setStart $p1[0], 0
-      editor.selection.selectRange range
+      editor.selection.range range
 
     it "can align to right", ->
       expect($p1.css('text-align')).toBe('start')

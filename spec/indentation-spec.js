@@ -21,7 +21,7 @@
       range = document.createRange();
       editor.selection.setRangeAtEndOf($p2, range);
       range.setStart($p1[0], 0);
-      editor.selection.selectRange(range);
+      editor.selection.range(range);
       expect(parseInt($p1.css('margin-left'))).toBe(0);
       expect(parseInt($p2.css('margin-left'))).toBe(0);
       editor.indentation.indent();
@@ -42,7 +42,7 @@
       range = document.createRange();
       editor.selection.setRangeAtEndOf($li2, range);
       range.setStart($li1[0], 0);
-      editor.selection.selectRange(range);
+      editor.selection.range(range);
       expect($li1.parentsUntil(editor.body, 'ul').length).toBe(1);
       expect($li2.parentsUntil(editor.body, 'ul').length).toBe(1);
       editor.indentation.indent();

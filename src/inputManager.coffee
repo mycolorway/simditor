@@ -19,9 +19,11 @@ class InputManager extends SimpleModule
       , 10
     , 300
 
-    @opts.pasteImage = 'inline' if @opts.pasteImage and typeof @opts.pasteImage != 'string'
+    if @opts.pasteImage and typeof @opts.pasteImage != 'string'
+      @opts.pasteImage = 'inline'
 
-    # handlers which will be called when specific key is pressed in specific node
+    # handlers which will be called
+    # when specific key is pressed in specific node
     @_keystrokeHandlers = {}
 
     @hotkeys = simpleHotkeys
@@ -103,11 +105,11 @@ class InputManager extends SimpleModule
       # fix firefox cmd+left/right bug
       @addShortcut 'cmd+left', (e) =>
         e.preventDefault()
-        @editor.selection.sel.modify('move', 'backward', 'lineboundary')
+        @editor.selection._selection.modify('move', 'backward', 'lineboundary')
         false
       @addShortcut 'cmd+right', (e) =>
         e.preventDefault()
-        @editor.selection.sel.modify('move', 'forward', 'lineboundary')
+        @editor.selection._selection.modify('move', 'forward', 'lineboundary')
         false
 
       # override default behavior of cmd/ctrl + a in firefox(which is buggy)
@@ -119,7 +121,7 @@ class InputManager extends SimpleModule
         range = document.createRange()
         range.setStart firstBlock, 0
         range.setEnd lastBlock, @editor.util.getNodeLength(lastBlock)
-        @editor.selection.selectRange range
+        @editor.selection.range range
         false
 
     # meta + enter: submit form
@@ -183,7 +185,7 @@ class InputManager extends SimpleModule
         result = handler?(e, $(node))
 
         # different result means:
-        # 1. true, has do everythings, stop browser default action and traverseUp
+        # 1. true, handler done, stop browser default action and traverseUp
         # 2. false, stop traverseUp
         # 3. undefined, continue traverseUp
         false if result == true or result == false
@@ -213,7 +215,7 @@ class InputManager extends SimpleModule
       @editor.trigger 'selectionchanged'
       return
 
-    if (e.which == 8 or e.which == 46) and @editor.util.isEmptyNode(@editor.body)
+    if (e.which == 8 or e.which == 46) && @editor.util.isEmptyNode(@editor.body)
       @editor.body.empty()
       p = $('<p/>').append(@editor.util.phBr)
         .appendTo(@editor.body)
@@ -229,7 +231,8 @@ class InputManager extends SimpleModule
     $blockEl = @editor.util.closestBlockEl()
     cleanPaste = $blockEl.is 'pre, table'
 
-    if e.originalEvent.clipboardData && e.originalEvent.clipboardData.items && e.originalEvent.clipboardData.items.length > 0
+    if e.originalEvent.clipboardData && e.originalEvent.clipboardData.items &&
+        e.originalEvent.clipboardData.items.length > 0
       pasteItem = e.originalEvent.clipboardData.items[0]
 
       # paste file in chrome
@@ -261,7 +264,8 @@ class InputManager extends SimpleModule
           @editor.selection.insertNode document.createTextNode(lastLine)
         else
           pasteContent = $('<div/>').text(pasteContent)
-          @editor.selection.insertNode($(node)[0], range) for node in pasteContent.contents()
+          for node in pasteContent.contents()
+            @editor.selection.insertNode($(node)[0], range)
       else if $blockEl.is @editor.body
         @editor.selection.insertNode(node, range) for node in pasteContent
       else if pasteContent.length < 1
@@ -296,7 +300,8 @@ class InputManager extends SimpleModule
         else if pasteContent.is('ul, ol')
           if pasteContent.find('li').length == 1
             pasteContent = $('<div/>').text(pasteContent.text())
-            @editor.selection.insertNode($(node)[0], range) for node in pasteContent.contents()
+            for node in pasteContent.contents()
+              @editor.selection.insertNode($(node)[0], range)
           else if $blockEl.is 'li'
             $blockEl.parent().after pasteContent
             @editor.selection.setRangeAtEndOf(pasteContent, range)

@@ -35,57 +35,26 @@ class TitleButton extends Button
     }]
     super()
 
-  setActive: (active, param) ->
+  setActive: (active, param = @node[0]?.tagName.toLowerCase()) ->
     super active
 
     @el.removeClass 'active-p active-h1 active-h2 active-h3'
     @el.addClass('active active-' + param) if active
 
-  status: ($node) ->
-    @setDisabled $node.is(@disableTag) if $node?
-    return true if @disabled
-
-    if $node?
-      param = $node[0].tagName?.toLowerCase()
-      @setActive $node.is(@htmlTag), param
-    @active
-
   command: (param) ->
-    range = @editor.selection.getRange()
-    startNode = range.startContainer
-    endNode = range.endContainer
-    $startBlock = @editor.util.closestBlockEl(startNode)
-    $endBlock = @editor.util.closestBlockEl(endNode)
-
+    $rootNodes = @editor.selection.rootNodes()
     @editor.selection.save()
 
-    range.setStartBefore $startBlock[0]
-    range.setEndAfter $endBlock[0]
+    $rootNodes.each (i, node) =>
+      $node = $ node
+      return if $node.is('blockquote') or $node.is(param) or
+        $node.is(@disableTag) or @editor.util.isDecoratedNode($node)
 
-    $contents = $(range.extractContents())
+      $('<' + param + '/>').append($node.contents())
+        .replaceAll($node)
 
-    results = []
-    $contents.children().each (i, el) =>
-      converted = @_convertEl el, param
-      results.push(c) for c in converted
-
-    range.insertNode node[0] for node in results.reverse()
     @editor.selection.restore()
-
     @editor.trigger 'valuechanged'
-
-  _convertEl: (el, param) ->
-    $el = $(el)
-    results = []
-
-    if $el.is param
-      results.push $el
-    else
-      $block = $('<' + param + '/>').append($el.contents())
-      results.push($block)
-
-    results
 
 
 Simditor.Toolbar.addButton TitleButton
-

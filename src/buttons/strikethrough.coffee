@@ -9,13 +9,10 @@ class StrikethroughButton extends Button
 
   disableTag: 'pre'
 
-  status: ($node) ->
-    @setDisabled $node.is(@disableTag) if $node?
-    return true if @disabled
-
+  _activeStatus: ->
     active = document.queryCommandState('strikethrough') is true
     @setActive active
-    active
+    @active
 
   command: ->
     document.execCommand 'strikethrough'

@@ -17,7 +17,8 @@ class Indentation extends SimpleModule
       @indent e.shiftKey
 
   indent: (isBackward) ->
-    range = @editor.selection.getRange()
+    # TODO: refactor by selection.blockNodes
+    range = @editor.selection.range()
     return unless range
 
     $startBlock = @editor.util.closestBlockEl range.startContainer
@@ -50,8 +51,7 @@ class Indentation extends SimpleModule
     return unless $blockEl.length
 
     if $blockEl.is('pre')
-      range = @editor.selection.getRange()
-      $pre = $(range.commonAncestorContainer)
+      $pre = @editor.selection.containerNode
       return unless $pre.is($blockEl) or $pre.closest('pre').is($blockEl)
       @indentText range
     else if $blockEl.is('li')
@@ -76,8 +76,7 @@ class Indentation extends SimpleModule
         @opts.indentWidth
       $blockEl.css 'margin-left', marginLeft
     else if $blockEl.is('table') or $blockEl.is('.simditor-table')
-      range = @editor.selection.getRange()
-      $td = $(range.commonAncestorContainer).closest('td, th')
+      $td = @editor.selection.containerNode.closest('td, th')
       $nextTd = $td.next('td, th')
       unless $nextTd.length > 0
         $tr = $td.parent('tr')
@@ -98,7 +97,7 @@ class Indentation extends SimpleModule
 
     if text
       range.selectNode textNode
-      @editor.selection.selectRange range
+      @editor.selection.range range
     else
       @editor.selection.setRangeAfter textNode
 
@@ -107,8 +106,7 @@ class Indentation extends SimpleModule
     return unless $blockEl and $blockEl.length > 0
 
     if $blockEl.is('pre')
-      range = @editor.selection.getRange()
-      $pre = $(range.commonAncestorContainer)
+      $pre = @editor.selection.containerNode
       return unless $pre.is($blockEl) or $pre.closest('pre').is($blockEl)
       @outdentText range
     else if $blockEl.is('li')
@@ -136,8 +134,7 @@ class Indentation extends SimpleModule
         @opts.indentWidth
       $blockEl.css 'margin-left', if marginLeft == 0 then '' else marginLeft
     else if $blockEl.is('table') or $blockEl.is('.simditor-table')
-      range = @editor.selection.getRange()
-      $td = $(range.commonAncestorContainer).closest('td, th')
+      $td = @editor.selection.containerNode.closest('td, th')
       $prevTd = $td.prev('td, th')
       unless $prevTd.length > 0
         $tr = $td.parent('tr')

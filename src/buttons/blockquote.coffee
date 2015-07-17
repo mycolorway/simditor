@@ -10,47 +10,32 @@ class BlockquoteButton extends Button
   disableTag: 'pre, table'
 
   command: ->
-    range = @editor.selection.getRange()
-    startNode = range.startContainer
-    endNode = range.endContainer
-    $startBlock = @editor.util.furthestBlockEl(startNode)
-    $endBlock = @editor.util.furthestBlockEl(endNode)
-
+    $rootNodes = @editor.selection.rootNodes()
     @editor.selection.save()
 
-    range.setStartBefore $startBlock[0]
-    range.setEndAfter $endBlock[0]
+    nodeCache = []
 
-    $contents = $(range.extractContents())
+    clearCache = ->
+      if nodeCache.length > 0
+        $("<#{@htmlTag}/>")
+          .insertBefore(nodeCache[0])
+          .append(nodeCache)
+        nodeCache.length = 0
 
-    results = []
-    $contents.children().each (i, el) =>
-      converted = @_convertEl el
-      for c in converted
-        if results.length and results[results.length - 1].is(@htmlTag) and c.is(@htmlTag)
-          results[results.length - 1].append(c.children())
-        else
-          results.push(c)
+    $rootNodes.each (i, node) =>
+      $node = $ node
+      return unless $node.parent().is(@editor.body)
 
-    range.insertNode node[0] for node in results.reverse()
+      if $node.is @htmlTag
+        clearCache()
+        $node.children().unwrap()
+      else if $node.is(@disableTag) or @editor.util.isDecoratedNode($node)
+        clearCache()
+      else
+        nodeCache.push node
+
+    clearCache()
     @editor.selection.restore()
-
     @editor.trigger 'valuechanged'
 
-  _convertEl: (el) ->
-    $el = $(el)
-    results = []
-
-    if $el.is @htmlTag
-      $el.children().each (i, node) =>
-        results.push $(node)
-    else
-      block = $('<' + @htmlTag + '/>').append($el)
-      results.push(block)
-
-    results
-
-
-
 Simditor.Toolbar.addButton BlockquoteButton
-

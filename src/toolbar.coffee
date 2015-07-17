@@ -18,7 +18,9 @@ class Toolbar extends SimpleModule
     return unless @opts.toolbar
 
     unless $.isArray @opts.toolbar
-      @opts.toolbar = ['bold', 'italic', 'underline', 'strikethrough', '|', 'ol', 'ul', 'blockquote', 'code', '|', 'link', 'image', '|', 'indent', 'outdent']
+      @opts.toolbar = ['bold', 'italic', 'underline', 'strikethrough', '|',
+        'ol', 'ul', 'blockquote', 'code', '|', 'link', 'image', '|',
+        'indent', 'outdent']
 
     @_render()
 
@@ -63,13 +65,10 @@ class Toolbar extends SimpleModule
           if @editor.util.os.mobile
             @wrapper.css 'top', scrollTop - topEdge + @opts.toolbarFloatOffset
 
-    @editor.on 'selectionchanged', =>
-      @toolbarStatus()
-
     @editor.on 'destroy', =>
       @buttons.length = 0
 
-    $(document).on 'mousedown.simditor-' + @editor.id, (e) =>
+    $(document).on "mousedown.simditor-#{@editor.id}", (e) =>
       @list.find('li.menu-on').removeClass('menu-on')
 
   _render: ->
@@ -83,29 +82,13 @@ class Toolbar extends SimpleModule
         continue
 
       unless @constructor.buttons[name]
-        throw new Error 'simditor: invalid toolbar button "' + name + '"'
+        throw new Error "simditor: invalid toolbar button #{name}"
         continue
 
       @buttons.push new @constructor.buttons[name]
         editor: @editor
 
     @wrapper.hide() if @opts.toolbarHidden
-
-  toolbarStatus: ->
-    return unless @editor.inputManager.focused
-
-    range = @editor.selection.getRange()
-    startNodes = $(range.startContainer).parentsUntil(@editor.body)
-    endNodes = if range.collapsed
-      null
-    else
-      $(range.endContainer).parentsUntil(@editor.body)
-
-    @trigger 'toolbarstatus', [{
-      range: range
-      startNodes: startNodes
-      endNodes: endNodes
-    }]
 
   findButton: (name) ->
     button = @list.find('.toolbar-item-' + name).data('button')
