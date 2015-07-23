@@ -100,7 +100,7 @@ class Button extends SimpleModule
         @editor.formatter._allowedTags.push tag
 
     @editor.on 'selectionchanged', (e) =>
-      @_status()
+      @_status() if @editor.inputManager.focused
 
   iconClassOf: (icon) ->
     if icon then "simditor-icon simditor-icon-#{icon}" else ''

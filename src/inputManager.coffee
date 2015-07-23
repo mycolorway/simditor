@@ -56,7 +56,7 @@ class InputManager extends SimpleModule
       , 20
 
     @editor.on 'valuechanged', =>
-      if !@editor.util.closestBlockEl() and @focused
+      if @focused and !@editor.selection.blockNodes().length
         @editor.selection.save()
         @editor.formatter.format()
         @editor.selection.restore()
@@ -86,10 +86,6 @@ class InputManager extends SimpleModule
 
       if !@editor.util.support.onselectionchange and @focused
         @editor.trigger 'selectionchanged'
-
-    @editor.on 'selectionchanged', (e) =>
-      @editor.undoManager.update()
-
 
     @editor.body.on('keydown', $.proxy(@_onKeyDown, @))
       .on('keypress', $.proxy(@_onKeyPress, @))
@@ -179,16 +175,17 @@ class InputManager extends SimpleModule
         @editor.trigger 'valuechanged'
         return false
 
-      @editor.util.traverseUp (node) =>
-        return unless node.nodeType == document.ELEMENT_NODE
+      @editor.selection.startNodes().each (i, node) =>
+        return unless node.nodeType == Node.ELEMENT_NODE
         handler = @_keystrokeHandlers[e.which]?[node.tagName.toLowerCase()]
         result = handler?(e, $(node))
 
         # different result means:
-        # 1. true, handler done, stop browser default action and traverseUp
-        # 2. false, stop traverseUp
-        # 3. undefined, continue traverseUp
+        # 1. true, handler done, stop browser default action and traverse up
+        # 2. false, stop traverse up
+        # 3. undefined, continue traverse up
         false if result == true or result == false
+
       if result
         @editor.trigger 'valuechanged'
         return false
@@ -228,7 +225,7 @@ class InputManager extends SimpleModule
 
     range = @editor.selection.deleteRangeContents()
     range.collapse(true) unless range.collapsed
-    $blockEl = @editor.util.closestBlockEl()
+    $blockEl = @editor.selection.blockNodes().first()
     cleanPaste = $blockEl.is 'pre, table'
 
     if e.originalEvent.clipboardData && e.originalEvent.clipboardData.items &&

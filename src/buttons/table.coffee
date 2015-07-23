@@ -38,7 +38,7 @@ class TableButton extends Button
         .removeClass('active')
       range = @editor.selection.range()
       return unless range
-      $container = @editor.selection.containerNode
+      $container = @editor.selection.containerNode()
 
       if range.collapsed and $container.is('.simditor-table')
         if @editor.selection.rangeAtStartOf $container
@@ -290,7 +290,7 @@ class TableButton extends Button
       rowNum += 1 if $tr.parent().is('tbody')
       $table = @createTable(rowNum, colNum, true)
 
-      $closestBlock = @editor.util.closestBlockEl()
+      $closestBlock = @editor.selection.blockNodes().first()
       if @editor.util.isEmptyNode $closestBlock
         $closestBlock.replaceWith $table
       else

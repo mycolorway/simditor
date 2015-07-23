@@ -17,25 +17,11 @@ class Indentation extends SimpleModule
       @indent e.shiftKey
 
   indent: (isBackward) ->
-    # TODO: refactor by selection.blockNodes
-    range = @editor.selection.range()
-    return unless range
-
-    $startBlock = @editor.util.closestBlockEl range.startContainer
-    $endBlock = @editor.util.closestBlockEl range.endContainer
-
-    unless $startBlock.is('li') and $endBlock.is('li') and
-        $startBlock.parent().is($endBlock.parent())
-      $startBlock = @editor.util.furthestBlockEl $startBlock
-      $endBlock = @editor.util.furthestBlockEl $endBlock
-
-    if $startBlock.is($endBlock)
-      $blockEls = $startBlock
-    else
-      $blockEls = $startBlock
-        .nextUntil($endBlock)
-        .add($startBlock)
-        .add($endBlock)
+    $startNodes = @editor.selection.startNodes()
+    $endNodes = @editor.selection.endNodes()
+    $blockNodes = @editor.selection.blockNodes().filter (i, node) ->
+      $node = $ node
+      !($startNodes.index($node) > -1 and $endNodes.index($node) > -1)
 
     result = false
     $blockEls.each (i, blockEl) =>

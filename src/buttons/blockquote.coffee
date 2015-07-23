@@ -15,7 +15,7 @@ class BlockquoteButton extends Button
 
     nodeCache = []
 
-    clearCache = ->
+    clearCache = =>
       if nodeCache.length > 0
         $("<#{@htmlTag}/>")
           .insertBefore(nodeCache[0])

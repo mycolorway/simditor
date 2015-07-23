@@ -65,7 +65,7 @@ class Selection extends SimpleModule
     if @_range
       @_startNodes ||= do =>
         startNodes = $(@_range.startContainer).parentsUntil(@editor.body).get()
-        startNodes.unshift range.startContainer
+        startNodes.unshift @_range.startContainer
         $(startNodes)
 
     @_startNodes
@@ -75,8 +75,8 @@ class Selection extends SimpleModule
       @_endNodes ||= if @_range.collapsed
         @startNodes()
       else
-        endNodes = $(range.endContainer).parentsUntil(@editor.body).get()
-        endNodes.unshift range.endContainer
+        endNodes = $(@_range.endContainer).parentsUntil(@editor.body).get()
+        endNodes.unshift @_range.endContainer
         $(endNodes)
 
     @_endNodes
@@ -93,22 +93,22 @@ class Selection extends SimpleModule
       @_nodes ||= do =>
         nodes = []
 
-        if @startNodes.first().is(@endNodes.first())
-          nodes = @startNodes.get()
+        if @startNodes().first().is(@endNodes().first())
+          nodes = @startNodes().get()
         else
-          @startNodes.each (i, node) =>
+          @startNodes().each (i, node) =>
             $node = $ node
-            if @endNodes.index($node) > -1
+            if @endNodes().index($node) > -1
               nodes.push node
-            else if(sharedIndex = @endNodes.index($node.parent())) > -1
-              $endNode = @endNodes.eq(sharedIndex - 1)
+            else if (sharedIndex = @endNodes().index($node.parent())) > -1
+              $endNode = @endNodes().eq(sharedIndex - 1)
               $.merge nodes, $node.nextUntil($endNode).get()
             else
               $.merge nodes, $node.nextAll().get()
 
-          @endNodes.each (i, node) =>
+          @endNodes().each (i, node) =>
             $node = $ node
-            if (sharedIndex = @startNodes.index($node.parent())) > -1
+            if (sharedIndex = @startNodes().index($node.parent())) > -1
               nodes.push node
               return false
             else
@@ -226,7 +226,7 @@ class Selection extends SimpleModule
   setRangeAtEndOf: (node, range = @range()) ->
     # TODO: need refactor
     $node = $(node)
-    node = $node.get(0)
+    node = $node[0]
 
     if $node.is('pre')
       contents = $node.contents()
@@ -277,7 +277,6 @@ class Selection extends SimpleModule
     range
 
   breakBlockEl: (el, range = @range()) ->
-    # TODO: need refactor
     $el = $(el)
     return $el unless range.collapsed
     range.setStartBefore $el.get(0)

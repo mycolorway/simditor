@@ -35,9 +35,10 @@ class TitleButton extends Button
     }]
     super()
 
-  setActive: (active, param = @node[0]?.tagName.toLowerCase()) ->
+  setActive: (active, param) ->
     super active
 
+    param ||= @node[0].tagName.toLowerCase() if active
     @el.removeClass 'active-p active-h1 active-h2 active-h3'
     @el.addClass('active active-' + param) if active
 

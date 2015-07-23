@@ -2,10 +2,10 @@
 class Simditor extends SimpleModule
   @connect Util
   @connect InputManager
+  @connect Selection
   @connect UndoManager
   @connect Keystroke
   @connect Formatter
-  @connect Selection
   @connect Toolbar
   @connect Indentation
 

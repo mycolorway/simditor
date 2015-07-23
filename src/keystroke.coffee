@@ -12,7 +12,7 @@ class Keystroke extends SimpleModule
     if @editor.util.browser.safari
       @editor.inputManager.addKeystrokeHandler '13', '*', (e) =>
         return unless e.shiftKey
-        $blockEl = @editor.util.closestBlockEl()
+        $blockEl = @editor.selection.blockNodes().first()
         return if $blockEl.is('pre')
 
         $br = $('<br/>')
@@ -45,18 +45,17 @@ class Keystroke extends SimpleModule
 
     @editor.inputManager.addKeystrokeHandler '8', '*', (e) =>
       # Remove hr
-      $rootBlock = @editor.util.furthestBlockEl()
+      $rootBlock = @editor.selection.rootNodes().first()
       $prevBlockEl = $rootBlock.prev()
 
       if $prevBlockEl.is('hr') and @editor.selection.rangeAtStartOf $rootBlock
-        # TODO: need to test on IE
         @editor.selection.save()
         $prevBlockEl.remove()
         @editor.selection.restore()
         return true
 
       # fix the span bug in webkit browsers
-      $blockEl = @editor.util.closestBlockEl()
+      $blockEl = @editor.selection.blockNodes().first()
       isWebkit = @editor.util.browser.webkit
       if isWebkit and @editor.selection.rangeAtStartOf $blockEl
         @editor.selection.save()
@@ -68,9 +67,8 @@ class Keystroke extends SimpleModule
     @editor.inputManager.addKeystrokeHandler '13', 'li', (e, $node) =>
       $cloneNode = $node.clone()
       $cloneNode.find('ul, ol').remove()
-      isEmptyNode = @editor.util.isEmptyNode($cloneNode)
-      isClosestBlock = $node.is(@editor.util.closestBlockEl())
-      return unless isEmptyNode and isClosestBlock
+      return unless @editor.util.isEmptyNode($cloneNode) and
+        $node.is(@editor.selection.blockNodes().first())
       listEl = $node.parent()
 
       # item in the middle of list
@@ -147,10 +145,9 @@ class Keystroke extends SimpleModule
     # press enter in the last paragraph of blockquote,
     # just leave the block quote
     @editor.inputManager.addKeystrokeHandler '13', 'blockquote', (e, $node) =>
-      $closestBlock = @editor.util.closestBlockEl()
-      isLastBlock = !$closestBlock.next().length
-      isEmptyNode = @editor.util.isEmptyNode $closestBlock
-      return unless $closestBlock.is('p') and isLastBlock and isEmptyNode
+      $closestBlock = @editor.selection.blockNodes().first()
+      return unless $closestBlock.is('p') and !$closestBlock.next().length and
+        @editor.util.isEmptyNode $closestBlock
       $node.after $closestBlock
       range = document.createRange()
       @editor.selection.setRangeAtStartOf $closestBlock, range

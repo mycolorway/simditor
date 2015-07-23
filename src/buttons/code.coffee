@@ -25,8 +25,8 @@ class CodeButton extends Button
     @popover = new CodePopover
       button: @
 
-  _status: ->
-    super()
+  setActive: (active) ->
+    super active
 
     if @active
       @popover.show(@node)
@@ -52,12 +52,12 @@ class CodeButton extends Button
     nodeCache = []
     pres = []
 
-    clearCache = ->
+    clearCache = =>
       return unless nodeCache.length > 0
       $pre = $("<#{@htmlTag}/>")
         .insertBefore(nodeCache[0])
         .text(@editor.formatter.clearHtml(nodeCache))
-      pres.push $pre
+      pres.push $pre[0]
       nodeCache.length = 0
 
     $rootNodes.each (i, node) =>

@@ -14,8 +14,8 @@ class LinkButton extends Button
     @popover = new LinkPopover
       button: @
 
-  _status: ->
-    super()
+  setActive: (active) ->
+    super active
 
     if @active and !@editor.selection.rangeAtEndOf(@node)
       @popover.show @node
