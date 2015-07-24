@@ -14,8 +14,8 @@ class LinkButton extends Button
     @popover = new LinkPopover
       button: @
 
-  setActive: (active) ->
-    super active
+  _status: ->
+    super()
 
     if @active and !@editor.selection.rangeAtEndOf(@node)
       @popover.show @node
@@ -38,7 +38,7 @@ class LinkButton extends Button
         text: linkText || @_t('linkText')
       })
 
-      if @editor.selection.blockNodes.length == 1
+      if @editor.selection.blockNodes().length == 1
         range.insertNode $link[0]
       else
         $newBlock = $('<p/>').append($link)
@@ -96,14 +96,13 @@ class LinkPopover extends Popover
       @target.attr 'href', val
 
     $([@urlEl[0], @textEl[0]]).on 'keydown', (e) =>
-      if e.which == 13 or e.which == 27 or (!e.shiftKey and e.which == 9 and $(e.target).hasClass('link-url'))
+      if e.which == 13 or e.which == 27 or
+          (!e.shiftKey and e.which == 9 and $(e.target).hasClass('link-url'))
         e.preventDefault()
-        setTimeout =>
-          range = document.createRange()
-          @editor.selection.setRangeAfter @target, range
-          @hide()
-          @editor.trigger 'valuechanged'
-        , 0
+        range = document.createRange()
+        @editor.selection.setRangeAfter @target, range
+        @hide()
+        @editor.trigger 'valuechanged'
 
     @unlinkEl.on 'click', (e) =>
       txtNode = document.createTextNode @target.text()

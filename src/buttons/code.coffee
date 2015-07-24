@@ -25,8 +25,8 @@ class CodeButton extends Button
     @popover = new CodePopover
       button: @
 
-  setActive: (active) ->
-    super active
+  _status: ->
+    super()
 
     if @active
       @popover.show(@node)

@@ -290,7 +290,7 @@ class TableButton extends Button
       rowNum += 1 if $tr.parent().is('tbody')
       $table = @createTable(rowNum, colNum, true)
 
-      $closestBlock = @editor.selection.blockNodes().first()
+      $closestBlock = @editor.selection.blockNodes().last()
       if @editor.util.isEmptyNode $closestBlock
         $closestBlock.replaceWith $table
       else

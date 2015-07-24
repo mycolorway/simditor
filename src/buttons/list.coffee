@@ -23,7 +23,7 @@ class ListButton extends Button
           $('<p/>').append($(li).html() || @editor.util.phBr)
             .insertBefore($node)
         $node.remove()
-      else if $el.is anotherType
+      else if $node.is anotherType
         $('<' + @type + '/>').append($node.contents())
           .replaceAll($node)
       else if $list and $node.prev().is($list)

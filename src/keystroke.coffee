@@ -12,7 +12,7 @@ class Keystroke extends SimpleModule
     if @editor.util.browser.safari
       @editor.inputManager.addKeystrokeHandler '13', '*', (e) =>
         return unless e.shiftKey
-        $blockEl = @editor.selection.blockNodes().first()
+        $blockEl = @editor.selection.blockNodes().last()
         return if $blockEl.is('pre')
 
         $br = $('<br/>')
@@ -55,7 +55,7 @@ class Keystroke extends SimpleModule
         return true
 
       # fix the span bug in webkit browsers
-      $blockEl = @editor.selection.blockNodes().first()
+      $blockEl = @editor.selection.blockNodes().last()
       isWebkit = @editor.util.browser.webkit
       if isWebkit and @editor.selection.rangeAtStartOf $blockEl
         @editor.selection.save()
@@ -68,7 +68,7 @@ class Keystroke extends SimpleModule
       $cloneNode = $node.clone()
       $cloneNode.find('ul, ol').remove()
       return unless @editor.util.isEmptyNode($cloneNode) and
-        $node.is(@editor.selection.blockNodes().first())
+        $node.is(@editor.selection.blockNodes().last())
       listEl = $node.parent()
 
       # item in the middle of list
@@ -145,9 +145,9 @@ class Keystroke extends SimpleModule
     # press enter in the last paragraph of blockquote,
     # just leave the block quote
     @editor.inputManager.addKeystrokeHandler '13', 'blockquote', (e, $node) =>
-      $closestBlock = @editor.selection.blockNodes().first()
+      $closestBlock = @editor.selection.blockNodes().last()
       return unless $closestBlock.is('p') and !$closestBlock.next().length and
-        @editor.util.isEmptyNode $closestBlock
+        @editor.util.isEmptyNode($closestBlock)
       $node.after $closestBlock
       range = document.createRange()
       @editor.selection.setRangeAtStartOf $closestBlock, range

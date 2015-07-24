@@ -38,7 +38,7 @@ class UndoManager extends SimpleModule
 
     throttledPushState = @editor.util.throttle =>
       @_pushUndoState()
-    , 200
+    , 500
 
     @editor.on 'valuechanged', (e, src) ->
       return if src == 'undo' or src == 'redo'
@@ -55,13 +55,13 @@ class UndoManager extends SimpleModule
       @_endPosition = null
 
   startPosition: ->
-    if @_range
+    if @editor.selection._range
       @_startPosition ||= @_getPosition('start')
 
     @_startPosition
 
   endPosition: ->
-    if @_range
+    if @editor.selection._range
       @_endPosition ||= do =>
         range = @editor.selection.range()
         return @_startPosition if range.collapsed
@@ -166,7 +166,7 @@ class UndoManager extends SimpleModule
       prevNode = node.previousSibling
       while prevNode and prevNode.nodeType == Node.TEXT_NODE
         node = prevNode
-        startOffset += @editor.util.getNodeLength prevNode
+        offset += @editor.util.getNodeLength prevNode
         prevNode = prevNode.previousSibling
 
       nodes = $nodes.get()
@@ -202,8 +202,8 @@ class UndoManager extends SimpleModule
     if !caret
       range = @editor.selection.range()
       caret = if @editor.inputManager.focused and range?
-        start: @startPosition
-        end: @endPosition
+        start: @startPosition()
+        end: @endPosition()
         collapsed: range.collapsed
       else
         {}

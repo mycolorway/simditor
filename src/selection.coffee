@@ -26,7 +26,7 @@ class Selection extends SimpleModule
       @_range = @_selection.getRangeAt 0
 
     @editor.on 'blur', (e) =>
-      @_reset()
+      @clear()
 
   _reset: ->
     @_range = null
@@ -100,19 +100,31 @@ class Selection extends SimpleModule
             $node = $ node
             if @endNodes().index($node) > -1
               nodes.push node
-            else if (sharedIndex = @endNodes().index($node.parent())) > -1
-              $endNode = @endNodes().eq(sharedIndex - 1)
-              $.merge nodes, $node.nextUntil($endNode).get()
+            else if $node.parent().is(@editor.body) or
+                (sharedIndex = @endNodes().index($node.parent())) > -1
+              if sharedIndex and sharedIndex > -1
+                $endNode = @endNodes().eq(sharedIndex - 1)
+              else
+                $endNode = @endNodes().last()
+              $nodes = $node.parent().contents()
+              startIndex = $nodes.index($node)
+              endIndex = $nodes.index($endNode)
+              $.merge nodes, $nodes.slice(startIndex, endIndex).get()
             else
-              $.merge nodes, $node.nextAll().get()
+              $nodes = $node.parent().contents()
+              index = $nodes.index($node)
+              $.merge nodes, $nodes.slice(index).get()
 
           @endNodes().each (i, node) =>
             $node = $ node
-            if (sharedIndex = @startNodes().index($node.parent())) > -1
+            if $node.parent().is(@editor.body) or
+                @startNodes().index($node.parent()) > -1
               nodes.push node
               return false
             else
-              $.merge nodes, $node.prevAll().get()
+              $nodes = $node.parent().contents()
+              index = $nodes.index($node)
+              $.merge nodes, $nodes.slice(0, index + 1)
 
         $($.unique(nodes))
 

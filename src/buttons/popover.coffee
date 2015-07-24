@@ -51,10 +51,9 @@ class Popover extends SimpleModule
         left: -9999
       }).show()
 
-      setTimeout =>
-        @refresh(position)
-        @trigger 'popovershow'
-      , 0
+      @editor.util.reflow()
+      @refresh(position)
+      @trigger 'popovershow'
 
   hide: ->
     return unless @active

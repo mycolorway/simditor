@@ -302,8 +302,9 @@ class ImageButton extends Button
     @editor.focus() unless @editor.inputManager.focused
     range = @editor.selection.range()
     range.deleteContents()
+    @editor.selection.range range
 
-    $block = @editor.selection.blockNodes().first()
+    $block = @editor.selection.blockNodes().last()
     if $block.is('p') and !@editor.util.isEmptyNode $block
       $block = $('<p/>').append(@editor.util.phBr).insertAfter($block)
       @editor.selection.setRangeAtStartOf $block, range

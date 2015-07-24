@@ -54,7 +54,7 @@ Selection = (function(superClass) {
     })(this));
     return this.editor.on('blur', (function(_this) {
       return function(e) {
-        return _this._reset();
+        return _this.clear();
       };
     })(this));
   };
@@ -136,25 +136,36 @@ Selection = (function(superClass) {
             nodes = _this.startNodes().get();
           } else {
             _this.startNodes().each(function(i, node) {
-              var $endNode, $node, sharedIndex;
+              var $endNode, $node, $nodes, endIndex, index, sharedIndex, startIndex;
               $node = $(node);
               if (_this.endNodes().index($node) > -1) {
                 return nodes.push(node);
-              } else if ((sharedIndex = _this.endNodes().index($node.parent())) > -1) {
-                $endNode = _this.endNodes().eq(sharedIndex - 1);
-                return $.merge(nodes, $node.nextUntil($endNode).get());
+              } else if ($node.parent().is(_this.editor.body) || (sharedIndex = _this.endNodes().index($node.parent())) > -1) {
+                if (sharedIndex && sharedIndex > -1) {
+                  $endNode = _this.endNodes().eq(sharedIndex - 1);
+                } else {
+                  $endNode = _this.endNodes().last();
+                }
+                $nodes = $node.parent().contents();
+                startIndex = $nodes.index($node);
+                endIndex = $nodes.index($endNode);
+                return $.merge(nodes, $nodes.slice(startIndex, endIndex).get());
               } else {
-                return $.merge(nodes, $node.nextAll().get());
+                $nodes = $node.parent().contents();
+                index = $nodes.index($node);
+                return $.merge(nodes, $nodes.slice(index).get());
               }
             });
             _this.endNodes().each(function(i, node) {
-              var $node, sharedIndex;
+              var $node, $nodes, index;
               $node = $(node);
-              if ((sharedIndex = _this.startNodes().index($node.parent())) > -1) {
+              if ($node.parent().is(_this.editor.body) || _this.startNodes().index($node.parent()) > -1) {
                 nodes.push(node);
                 return false;
               } else {
-                return $.merge(nodes, $node.prevAll().get());
+                $nodes = $node.parent().contents();
+                index = $nodes.index($node);
+                return $.merge(nodes, $nodes.slice(0, index + 1));
               }
             });
           }
@@ -492,7 +503,7 @@ Formatter = (function(superClass) {
   };
 
   Formatter.prototype.autolink = function($el) {
-    var $link, $node, findLinkNode, j, lastIndex, len, linkNodes, match, re, replaceEls, subStr, text, uri;
+    var $link, $node, findLinkNode, k, lastIndex, len, linkNodes, match, re, replaceEls, subStr, text, uri;
     if ($el == null) {
       $el = this.editor.body;
     }
@@ -513,8 +524,8 @@ Formatter = (function(superClass) {
     };
     findLinkNode($el);
     re = /(https?:\/\/|www\.)[\w\-\.\?&=\/#%:,@\!\+]+/ig;
-    for (j = 0, len = linkNodes.length; j < len; j++) {
-      $node = linkNodes[j];
+    for (k = 0, len = linkNodes.length; k < len; k++) {
+      $node = linkNodes[k];
       text = $node.text();
       replaceEls = [];
       match = null;
@@ -534,7 +545,7 @@ Formatter = (function(superClass) {
   };
 
   Formatter.prototype.format = function($el) {
-    var $node, blockNode, j, k, len, len1, n, node, ref, ref1;
+    var $node, blockNode, k, l, len, len1, n, node, ref, ref1;
     if ($el == null) {
       $el = this.editor.body;
     }
@@ -543,13 +554,13 @@ Formatter = (function(superClass) {
       return $el;
     }
     ref = $el.contents();
-    for (j = 0, len = ref.length; j < len; j++) {
-      n = ref[j];
+    for (k = 0, len = ref.length; k < len; k++) {
+      n = ref[k];
       this.cleanNode(n, true);
     }
     ref1 = $el.contents();
-    for (k = 0, len1 = ref1.length; k < len1; k++) {
-      node = ref1[k];
+    for (l = 0, len1 = ref1.length; l < len1; l++) {
+      node = ref1[l];
       $node = $(node);
       if ($node.is('br')) {
         if (typeof blockNode !== "undefined" && blockNode !== null) {
@@ -578,7 +589,7 @@ Formatter = (function(superClass) {
   };
 
   Formatter.prototype.cleanNode = function(node, recursive) {
-    var $childImg, $node, $p, $td, allowedAttributes, attr, contents, isDecoration, j, k, len, len1, n, ref, ref1, text, textNode;
+    var $childImg, $node, $p, $td, allowedAttributes, attr, contents, isDecoration, k, l, len, len1, n, ref, ref1, text, textNode;
     $node = $(node);
     if (!($node.length > 0)) {
       return;
@@ -607,8 +618,8 @@ Formatter = (function(superClass) {
       if (!isDecoration) {
         allowedAttributes = this._allowedAttributes[$node[0].tagName.toLowerCase()];
         ref = $.makeArray($node[0].attributes);
-        for (j = 0, len = ref.length; j < len; j++) {
-          attr = ref[j];
+        for (k = 0, len = ref.length; k < len; k++) {
+          attr = ref[k];
           if (attr.name === 'style') {
             continue;
           }
@@ -643,8 +654,8 @@ Formatter = (function(superClass) {
       contents = null;
     }
     if (recursive && (contents != null) && !$node.is('pre')) {
-      for (k = 0, len1 = contents.length; k < len1; k++) {
-        n = contents[k];
+      for (l = 0, len1 = contents.length; l < len1; l++) {
+        n = contents[l];
         this.cleanNode(n, true);
       }
     }
@@ -652,7 +663,7 @@ Formatter = (function(superClass) {
   };
 
   Formatter.prototype._cleanNodeStyles = function($node) {
-    var allowedStyles, j, len, pair, ref, ref1, style, styleStr, styles;
+    var allowedStyles, k, len, pair, ref, ref1, style, styleStr, styles;
     styleStr = $node.attr('style');
     if (!styleStr) {
       return;
@@ -664,8 +675,8 @@ Formatter = (function(superClass) {
     }
     styles = {};
     ref = styleStr.split(';');
-    for (j = 0, len = ref.length; j < len; j++) {
-      style = ref[j];
+    for (k = 0, len = ref.length; k < len; k++) {
+      style = ref[k];
       style = $.trim(style);
       pair = style.split(':');
       if (!(pair.length = 2)) {
@@ -749,16 +760,18 @@ InputManager = (function(superClass) {
   InputManager.prototype._init = function() {
     var submitKey;
     this.editor = this._module;
-    this.throttledTrigger = this.editor.util.throttle((function(_this) {
-      return function() {
-        var args;
-        args = 1 <= arguments.length ? slice.call(arguments, 0) : [];
+    this.throttledValueChanged = this.editor.util.throttle((function(_this) {
+      return function(params) {
         return setTimeout(function() {
-          var ref;
-          return (ref = _this.editor).trigger.apply(ref, args);
+          return _this.editor.trigger('valuechanged', params);
         }, 10);
       };
     })(this), 300);
+    this.throttledSelectionChanged = this.editor.util.throttle((function(_this) {
+      return function() {
+        return _this.editor.trigger('selectionchanged');
+      };
+    })(this), 50);
     if (this.opts.pasteImage && typeof this.opts.pasteImage !== 'string') {
       this.opts.pasteImage = 'inline';
     }
@@ -782,13 +795,7 @@ InputManager = (function(superClass) {
         if (!_this.focused) {
           return;
         }
-        if (_this._selectionTimer) {
-          clearTimeout(_this._selectionTimer);
-          _this._selectionTimer = null;
-        }
-        return _this._selectionTimer = setTimeout(function() {
-          return _this.editor.trigger('selectionchanged');
-        }, 20);
+        return _this.throttledSelectionChanged();
       };
     })(this));
     this.editor.on('valuechanged', (function(_this) {
@@ -812,15 +819,13 @@ InputManager = (function(superClass) {
               formatted = true;
             }
             if (formatted) {
-              return setTimeout(function() {
-                return _this.editor.trigger('valuechanged');
-              }, 10);
+              return _this.throttledValueChanged();
             }
           }
         });
         _this.editor.body.find('pre:empty').append(_this.editor.util.phBr);
         if (!_this.editor.util.support.onselectionchange && _this.focused) {
-          return _this.editor.trigger('selectionchanged');
+          return _this.throttledValueChanged();
         }
       };
     })(this));
@@ -880,7 +885,9 @@ InputManager = (function(superClass) {
     return setTimeout((function(_this) {
       return function() {
         _this.editor.triggerHandler('focus');
-        return _this.editor.trigger('selectionchanged');
+        if (!_this.editor.util.support.onselectionchange) {
+          return _this.throttledSelectionChanged();
+        }
       };
     })(this), 0);
   };
@@ -896,11 +903,7 @@ InputManager = (function(superClass) {
 
   InputManager.prototype._onMouseUp = function(e) {
     if (!this.editor.util.support.onselectionchange) {
-      return setTimeout((function(_this) {
-        return function() {
-          return _this.editor.trigger('selectionchanged');
-        };
-      })(this), 0);
+      return this.throttledSelectionChanged();
     }
   };
 
@@ -915,7 +918,7 @@ InputManager = (function(superClass) {
     if (e.which in this._keystrokeHandlers) {
       result = typeof (base = this._keystrokeHandlers[e.which])['*'] === "function" ? base['*'](e) : void 0;
       if (result) {
-        this.editor.trigger('valuechanged');
+        this.throttledValueChanged();
         return false;
       }
       this.editor.selection.startNodes().each((function(_this) {
@@ -932,7 +935,7 @@ InputManager = (function(superClass) {
         };
       })(this));
       if (result) {
-        this.editor.trigger('valuechanged');
+        this.throttledValueChanged();
         return false;
       }
     }
@@ -943,7 +946,7 @@ InputManager = (function(superClass) {
       return;
     }
     if (!this.editor.util.support.oninput) {
-      this.throttledTrigger('valuechanged', ['typing']);
+      this.throttledValueChanged(['typing']);
     }
     return null;
   };
@@ -960,7 +963,7 @@ InputManager = (function(superClass) {
       return false;
     }
     if (!this.editor.util.support.onselectionchange && (ref = e.which, indexOf.call(this._arrowKeys, ref) >= 0)) {
-      this.editor.trigger('selectionchanged');
+      this.throttledValueChanged();
       return;
     }
     if ((e.which === 8 || e.which === 46) && this.editor.util.isEmptyNode(this.editor.body)) {
@@ -979,7 +982,8 @@ InputManager = (function(superClass) {
     if (!range.collapsed) {
       range.collapse(true);
     }
-    $blockEl = this.editor.selection.blockNodes().first();
+    this.editor.selection.range(range);
+    $blockEl = this.editor.selection.blockNodes().last();
     cleanPaste = $blockEl.is('pre, table');
     if (e.originalEvent.clipboardData && e.originalEvent.clipboardData.items && e.originalEvent.clipboardData.items.length > 0) {
       pasteItem = e.originalEvent.clipboardData.items[0];
@@ -1001,7 +1005,7 @@ InputManager = (function(superClass) {
     }
     processPasteContent = (function(_this) {
       return function(pasteContent) {
-        var $img, blob, children, insertPosition, j, k, l, lastLine, len, len1, len2, len3, len4, line, lines, m, node, o, ref1, ref2, ref3;
+        var $img, blob, children, insertPosition, k, l, lastLine, len, len1, len2, len3, len4, line, lines, m, node, o, q, ref1, ref2, ref3;
         if (_this.editor.triggerHandler('pasting', [pasteContent]) === false) {
           return;
         }
@@ -1011,8 +1015,8 @@ InputManager = (function(superClass) {
           if ($blockEl.is('table')) {
             lines = pasteContent.split('\n');
             lastLine = lines.pop();
-            for (j = 0, len = lines.length; j < len; j++) {
-              line = lines[j];
+            for (k = 0, len = lines.length; k < len; k++) {
+              line = lines[k];
               _this.editor.selection.insertNode(document.createTextNode(line));
               _this.editor.selection.insertNode($('<br/>'));
             }
@@ -1020,14 +1024,14 @@ InputManager = (function(superClass) {
           } else {
             pasteContent = $('<div/>').text(pasteContent);
             ref1 = pasteContent.contents();
-            for (k = 0, len1 = ref1.length; k < len1; k++) {
-              node = ref1[k];
+            for (l = 0, len1 = ref1.length; l < len1; l++) {
+              node = ref1[l];
               _this.editor.selection.insertNode($(node)[0], range);
             }
           }
         } else if ($blockEl.is(_this.editor.body)) {
-          for (l = 0, len2 = pasteContent.length; l < len2; l++) {
-            node = pasteContent[l];
+          for (m = 0, len2 = pasteContent.length; m < len2; m++) {
+            node = pasteContent[m];
             _this.editor.selection.insertNode(node, range);
           }
         } else if (pasteContent.length < 1) {
@@ -1053,8 +1057,8 @@ InputManager = (function(superClass) {
                 return;
               }
             }
-            for (m = 0, len3 = children.length; m < len3; m++) {
-              node = children[m];
+            for (o = 0, len3 = children.length; o < len3; o++) {
+              node = children[o];
               _this.editor.selection.insertNode(node, range);
             }
           } else if ($blockEl.is('p') && _this.editor.util.isEmptyNode($blockEl)) {
@@ -1064,8 +1068,8 @@ InputManager = (function(superClass) {
             if (pasteContent.find('li').length === 1) {
               pasteContent = $('<div/>').text(pasteContent.text());
               ref3 = pasteContent.contents();
-              for (o = 0, len4 = ref3.length; o < len4; o++) {
-                node = ref3[o];
+              for (q = 0, len4 = ref3.length; q < len4; q++) {
+                node = ref3[q];
                 _this.editor.selection.insertNode($(node)[0], range);
               }
             } else if ($blockEl.is('li')) {
@@ -1094,7 +1098,7 @@ InputManager = (function(superClass) {
           $blockEl[insertPosition](pasteContent);
           _this.editor.selection.setRangeAtEndOf(pasteContent.last(), range);
         }
-        return _this.editor.trigger('valuechanged');
+        return _this.throttledValueChanged();
       };
     })(this);
     if (cleanPaste) {
@@ -1136,15 +1140,11 @@ InputManager = (function(superClass) {
     if (this.editor.triggerHandler(e) === false) {
       return false;
     }
-    return setTimeout((function(_this) {
-      return function() {
-        return _this.editor.trigger('valuechanged');
-      };
-    })(this), 0);
+    return this.throttledValueChanged();
   };
 
   InputManager.prototype._onInput = function(e) {
-    return this.throttledTrigger('valuechanged', ['oninput']);
+    return this.throttledValueChanged(['oninput']);
   };
 
   InputManager.prototype.addKeystrokeHandler = function(key, node, handler) {
@@ -1181,7 +1181,7 @@ Keystroke = (function(superClass) {
           if (!e.shiftKey) {
             return;
           }
-          $blockEl = _this.editor.selection.blockNodes().first();
+          $blockEl = _this.editor.selection.blockNodes().last();
           if ($blockEl.is('pre')) {
             return;
           }
@@ -1227,7 +1227,7 @@ Keystroke = (function(superClass) {
           _this.editor.selection.restore();
           return true;
         }
-        $blockEl = _this.editor.selection.blockNodes().first();
+        $blockEl = _this.editor.selection.blockNodes().last();
         isWebkit = _this.editor.util.browser.webkit;
         if (isWebkit && _this.editor.selection.rangeAtStartOf($blockEl)) {
           _this.editor.selection.save();
@@ -1242,7 +1242,7 @@ Keystroke = (function(superClass) {
         var $cloneNode, listEl, newBlockEl, newListEl;
         $cloneNode = $node.clone();
         $cloneNode.find('ul, ol').remove();
-        if (!(_this.editor.util.isEmptyNode($cloneNode) && $node.is(_this.editor.selection.blockNodes().first()))) {
+        if (!(_this.editor.util.isEmptyNode($cloneNode) && $node.is(_this.editor.selection.blockNodes().last()))) {
           return;
         }
         listEl = $node.parent();
@@ -1312,7 +1312,7 @@ Keystroke = (function(superClass) {
     this.editor.inputManager.addKeystrokeHandler('13', 'blockquote', (function(_this) {
       return function(e, $node) {
         var $closestBlock, range;
-        $closestBlock = _this.editor.selection.blockNodes().first();
+        $closestBlock = _this.editor.selection.blockNodes().last();
         if (!($closestBlock.is('p') && !$closestBlock.next().length && _this.editor.util.isEmptyNode($closestBlock))) {
           return;
         }
@@ -1452,7 +1452,7 @@ UndoManager = (function(superClass) {
       return function() {
         return _this._pushUndoState();
       };
-    })(this), 200);
+    })(this), 500);
     this.editor.on('valuechanged', function(e, src) {
       if (src === 'undo' || src === 'redo') {
         return;
@@ -1475,14 +1475,14 @@ UndoManager = (function(superClass) {
   };
 
   UndoManager.prototype.startPosition = function() {
-    if (this._range) {
+    if (this.editor.selection._range) {
       this._startPosition || (this._startPosition = this._getPosition('start'));
     }
     return this._startPosition;
   };
 
   UndoManager.prototype.endPosition = function() {
-    if (this._range) {
+    if (this.editor.selection._range) {
       this._endPosition || (this._endPosition = (function(_this) {
         return function() {
           var range;
@@ -1610,7 +1610,7 @@ UndoManager = (function(superClass) {
       prevNode = node.previousSibling;
       while (prevNode && prevNode.nodeType === Node.TEXT_NODE) {
         node = prevNode;
-        startOffset += this.editor.util.getNodeLength(prevNode);
+        offset += this.editor.util.getNodeLength(prevNode);
         prevNode = prevNode.previousSibling;
       }
       nodes = $nodes.get();
@@ -1627,10 +1627,10 @@ UndoManager = (function(superClass) {
   };
 
   UndoManager.prototype._getNodeByPosition = function(position) {
-    var child, childNodes, i, j, len, node, offset, ref;
+    var child, childNodes, i, k, len, node, offset, ref;
     node = this.editor.body[0];
     ref = position.slice(0, position.length - 1);
-    for (i = j = 0, len = ref.length; j < len; i = ++j) {
+    for (i = k = 0, len = ref.length; k < len; i = ++k) {
       offset = ref[i];
       childNodes = node.childNodes;
       if (offset > childNodes.length - 1) {
@@ -1653,8 +1653,8 @@ UndoManager = (function(superClass) {
     if (!caret) {
       range = this.editor.selection.range();
       caret = this.editor.inputManager.focused && (range != null) ? {
-        start: this.startPosition,
-        end: this.endPosition,
+        start: this.startPosition(),
+        end: this.endPosition(),
         collapsed: range.collapsed
       } : {};
       return caret;
@@ -1836,7 +1836,7 @@ Util = (function(superClass) {
   };
 
   Util.prototype.dataURLtoBlob = function(dataURL) {
-    var BlobBuilder, arrayBuffer, bb, blobArray, byteString, hasArrayBufferViewSupport, hasBlobConstructor, i, intArray, j, mimeString, ref, supportBlob;
+    var BlobBuilder, arrayBuffer, bb, blobArray, byteString, hasArrayBufferViewSupport, hasBlobConstructor, i, intArray, k, mimeString, ref, supportBlob;
     hasBlobConstructor = window.Blob && (function() {
       var e;
       try {
@@ -1867,7 +1867,7 @@ Util = (function(superClass) {
     }
     arrayBuffer = new ArrayBuffer(byteString.length);
     intArray = new Uint8Array(arrayBuffer);
-    for (i = j = 0, ref = byteString.length; 0 <= ref ? j <= ref : j >= ref; i = 0 <= ref ? ++j : --j) {
+    for (i = k = 0, ref = byteString.length; 0 <= ref ? k <= ref : k >= ref; i = 0 <= ref ? ++k : --k) {
       intArray[i] = byteString.charCodeAt(i);
     }
     mimeString = dataURL.split(',')[0].split(':')[1].split(';')[0];
@@ -2045,13 +2045,13 @@ Toolbar = (function(superClass) {
   };
 
   Toolbar.prototype._render = function() {
-    var j, len, name, ref;
+    var k, len, name, ref;
     this.buttons = [];
     this.wrapper = $(this._tpl.wrapper).prependTo(this.editor.wrapper);
     this.list = this.wrapper.find('ul');
     ref = this.opts.toolbar;
-    for (j = 0, len = ref.length; j < len; j++) {
-      name = ref[j];
+    for (k = 0, len = ref.length; k < len; k++) {
+      name = ref[k];
       if (name === '|') {
         $(this._tpl.separator).appendTo(this.list);
         continue;
@@ -2113,18 +2113,38 @@ Indentation = (function(superClass) {
   };
 
   Indentation.prototype.indent = function(isBackward) {
-    var $blockNodes, $endNodes, $startNodes, result;
+    var $blockNodes, $endNodes, $startNodes, nodes, result;
     $startNodes = this.editor.selection.startNodes();
     $endNodes = this.editor.selection.endNodes();
-    $blockNodes = this.editor.selection.blockNodes().filter(function(i, node) {
-      var $node;
-      $node = $(node);
-      return !($startNodes.index($node) > -1 && $endNodes.index($node) > -1);
+    $blockNodes = this.editor.selection.blockNodes();
+    nodes = [];
+    $blockNodes = $blockNodes.each(function(i, node) {
+      var include, j, k, len, n;
+      include = true;
+      for (j = k = 0, len = nodes.length; k < len; j = ++k) {
+        n = nodes[j];
+        if ($.contains(node, n)) {
+          include = false;
+          break;
+        } else if ($.contains(n, node)) {
+          nodes.splice(j, 1, node);
+          include = false;
+          break;
+        }
+      }
+      if (include) {
+        return nodes.push(node);
+      }
     });
+    $blockNodes = $(nodes);
     result = false;
-    $blockEls.each((function(_this) {
+    $blockNodes.each((function(_this) {
       return function(i, blockEl) {
-        return result = isBackward ? _this.outdentBlock(blockEl) : _this.indentBlock(blockEl);
+        var r;
+        r = isBackward ? _this.outdentBlock(blockEl) : _this.indentBlock(blockEl);
+        if (r) {
+          return result = r;
+        }
       };
     })(this));
     return result;
@@ -2172,9 +2192,11 @@ Indentation = (function(superClass) {
         $nextTd = $nextTr.find('td:first, th:first');
       }
       if (!($td.length > 0 && $nextTd.length > 0)) {
-        return false;
+        return;
       }
       this.editor.selection.setRangeAtEndOf($nextTd);
+    } else {
+      return false;
     }
     return true;
   };
@@ -2194,7 +2216,7 @@ Indentation = (function(superClass) {
   };
 
   Indentation.prototype.outdentBlock = function(blockEl) {
-    var $blockEl, $parent, $parentLi, $pre, $prevTd, $prevTr, $td, $tr, button, marginLeft;
+    var $blockEl, $parent, $parentLi, $pre, $prevTd, $prevTr, $td, $tr, marginLeft, range;
     $blockEl = $(blockEl);
     if (!($blockEl && $blockEl.length > 0)) {
       return;
@@ -2208,20 +2230,22 @@ Indentation = (function(superClass) {
     } else if ($blockEl.is('li')) {
       $parent = $blockEl.parent();
       $parentLi = $parent.parent('li');
-      if ($parentLi.length < 1) {
-        button = this.editor.toolbar.findButton($parent[0].tagName.toLowerCase());
-        if (button != null) {
-          button.command();
-        }
-        return;
-      }
       this.editor.selection.save();
-      if ($blockEl.next('li').length > 0) {
-        $('<' + $parent[0].tagName + '/>').append($blockEl.nextAll('li')).appendTo($blockEl);
-      }
-      $blockEl.insertAfter($parentLi);
-      if ($parent.children('li').length < 1) {
-        $parent.remove();
+      if ($parentLi.length < 1) {
+        range = document.createRange();
+        range.setStartBefore($parent[0]);
+        range.setEndBefore($blockEl[0]);
+        $parent.before(range.extractContents());
+        $('<p/>').insertBefore($parent).after($blockEl.children('ul, ol')).append($blockEl.contents());
+        $blockEl.remove();
+      } else {
+        if ($blockEl.next('li').length > 0) {
+          $('<' + $parent[0].tagName + '/>').append($blockEl.nextAll('li')).appendTo($blockEl);
+        }
+        $blockEl.insertAfter($parentLi);
+        if ($parent.children('li').length < 1) {
+          $parent.remove();
+        }
       }
       this.editor.selection.restore();
     } else if ($blockEl.is('p, h1, h2, h3, h4')) {
@@ -2243,6 +2267,8 @@ Indentation = (function(superClass) {
         return;
       }
       this.editor.selection.setRangeAtEndOf($prevTd);
+    } else {
+      return false;
     }
     return true;
   };
@@ -2562,7 +2588,7 @@ Button = (function(superClass) {
   }
 
   Button.prototype._init = function() {
-    var j, len, ref, tag;
+    var k, len, ref, tag;
     this.render();
     this.el.on('mousedown', (function(_this) {
       return function(e) {
@@ -2630,8 +2656,8 @@ Button = (function(superClass) {
       })(this));
     }
     ref = this.htmlTag.split(',');
-    for (j = 0, len = ref.length; j < len; j++) {
-      tag = ref[j];
+    for (k = 0, len = ref.length; k < len; k++) {
+      tag = ref[k];
       tag = $.trim(tag);
       if (tag && $.inArray(tag, this.editor.formatter._allowedTags) < 0) {
         this.editor.formatter._allowedTags.push(tag);
@@ -2672,15 +2698,15 @@ Button = (function(superClass) {
   };
 
   Button.prototype.renderMenu = function() {
-    var $menuBtnEl, $menuItemEl, j, len, menuItem, ref, ref1, results;
+    var $menuBtnEl, $menuItemEl, k, len, menuItem, ref, ref1, results;
     if (!$.isArray(this.menu)) {
       return;
     }
     this.menuEl = $('<ul/>').appendTo(this.menuWrapper);
     ref = this.menu;
     results = [];
-    for (j = 0, len = ref.length; j < len; j++) {
-      menuItem = ref[j];
+    for (k = 0, len = ref.length; k < len; k++) {
+      menuItem = ref[k];
       if (menuItem === '|') {
         $(this._tpl.separator).appendTo(this.menuEl);
         continue;
@@ -2827,12 +2853,9 @@ Popover = (function(superClass) {
       this.el.css({
         left: -9999
       }).show();
-      return setTimeout((function(_this) {
-        return function() {
-          _this.refresh(position);
-          return _this.trigger('popovershow');
-        };
-      })(this), 0);
+      this.editor.util.reflow();
+      this.refresh(position);
+      return this.trigger('popovershow');
     }
   };
 
@@ -3232,7 +3255,7 @@ ListButton = (function(superClass) {
             return $('<p/>').append($(li).html() || _this.editor.util.phBr).insertBefore($node);
           });
           return $node.remove();
-        } else if ($el.is(anotherType)) {
+        } else if ($node.is(anotherType)) {
           return $('<' + _this.type + '/>').append($node.contents()).replaceAll($node);
         } else if ($list && $node.prev().is($list)) {
           $('<li/>').append($node.html() || _this.editor.util.phBr).appendTo($list);
@@ -3416,8 +3439,8 @@ CodeButton = (function(superClass) {
     });
   };
 
-  CodeButton.prototype.setActive = function(active) {
-    CodeButton.__super__.setActive.call(this, active);
+  CodeButton.prototype._status = function() {
+    CodeButton.__super__._status.call(this);
     if (this.active) {
       return this.popover.show(this.node);
     } else {
@@ -3494,7 +3517,7 @@ CodePopover = (function(superClass) {
   }
 
   CodePopover.prototype.render = function() {
-    var $option, j, lang, len, ref;
+    var $option, k, lang, len, ref;
     this._tpl = "<div class=\"code-settings\">\n  <div class=\"settings-field\">\n    <select class=\"select-lang\">\n      <option value=\"-1\">" + (this._t('selectLanguage')) + "</option>\n    </select>\n  </div>\n</div>";
     this.langs = this.editor.opts.codeLanguages || [
       {
@@ -3562,8 +3585,8 @@ CodePopover = (function(superClass) {
     this.el.addClass('code-popover').append(this._tpl);
     this.selectEl = this.el.find('.select-lang');
     ref = this.langs;
-    for (j = 0, len = ref.length; j < len; j++) {
-      lang = ref[j];
+    for (k = 0, len = ref.length; k < len; k++) {
+      lang = ref[k];
       $option = $('<option/>', {
         text: lang.name,
         value: lang.value
@@ -3635,8 +3658,8 @@ LinkButton = (function(superClass) {
     });
   };
 
-  LinkButton.prototype.setActive = function(active) {
-    LinkButton.__super__.setActive.call(this, active);
+  LinkButton.prototype._status = function() {
+    LinkButton.__super__._status.call(this);
     if (this.active && !this.editor.selection.rangeAtEndOf(this.node)) {
       return this.popover.show(this.node);
     } else {
@@ -3659,7 +3682,7 @@ LinkButton = (function(superClass) {
         target: '_blank',
         text: linkText || this._t('linkText')
       });
-      if (this.editor.selection.blockNodes.length === 1) {
+      if (this.editor.selection.blockNodes().length === 1) {
         range.insertNode($link[0]);
       } else {
         $newBlock = $('<p/>').append($link);
@@ -3723,15 +3746,13 @@ LinkPopover = (function(superClass) {
     })(this));
     $([this.urlEl[0], this.textEl[0]]).on('keydown', (function(_this) {
       return function(e) {
+        var range;
         if (e.which === 13 || e.which === 27 || (!e.shiftKey && e.which === 9 && $(e.target).hasClass('link-url'))) {
           e.preventDefault();
-          return setTimeout(function() {
-            var range;
-            range = document.createRange();
-            _this.editor.selection.setRangeAfter(_this.target, range);
-            _this.hide();
-            return _this.editor.trigger('valuechanged');
-          }, 0);
+          range = document.createRange();
+          _this.editor.selection.setRangeAfter(_this.target, range);
+          _this.hide();
+          return _this.editor.trigger('valuechanged');
         }
       };
     })(this));
@@ -3782,13 +3803,13 @@ ImageButton = (function(superClass) {
   ImageButton.prototype.needFocus = false;
 
   ImageButton.prototype._init = function() {
-    var item, j, len, ref;
+    var item, k, len, ref;
     if (this.editor.opts.imageButton) {
       if (Array.isArray(this.editor.opts.imageButton)) {
         this.menu = [];
         ref = this.editor.opts.imageButton;
-        for (j = 0, len = ref.length; j < len; j++) {
-          item = ref[j];
+        for (k = 0, len = ref.length; k < len; k++) {
+          item = ref[k];
           this.menu.push({
             name: item + '-image',
             text: this._t(item + 'Image')
@@ -4142,7 +4163,8 @@ ImageButton = (function(superClass) {
     }
     range = this.editor.selection.range();
     range.deleteContents();
-    $block = this.editor.selection.blockNodes().first();
+    this.editor.selection.range(range);
+    $block = this.editor.selection.blockNodes().last();
     if ($block.is('p') && !this.editor.util.isEmptyNode($block)) {
       $block = $('<p/>').append(this.editor.util.phBr).insertAfter($block);
       this.editor.selection.setRangeAtStartOf($block, range);
@@ -4796,7 +4818,7 @@ TableButton = (function(superClass) {
           rowNum += 1;
         }
         $table = _this.createTable(rowNum, colNum, true);
-        $closestBlock = _this.editor.selection.blockNodes().first();
+        $closestBlock = _this.editor.selection.blockNodes().last();
         if (_this.editor.util.isEmptyNode($closestBlock)) {
           $closestBlock.replaceWith($table);
         } else {
@@ -4811,14 +4833,14 @@ TableButton = (function(superClass) {
   };
 
   TableButton.prototype.createTable = function(row, col, phBr) {
-    var $table, $tbody, $td, $thead, $tr, c, j, k, r, ref, ref1;
+    var $table, $tbody, $td, $thead, $tr, c, k, l, r, ref, ref1;
     $table = $('<table/>');
     $thead = $('<thead/>').appendTo($table);
     $tbody = $('<tbody/>').appendTo($table);
-    for (r = j = 0, ref = row; 0 <= ref ? j < ref : j > ref; r = 0 <= ref ? ++j : --j) {
+    for (r = k = 0, ref = row; 0 <= ref ? k < ref : k > ref; r = 0 <= ref ? ++k : --k) {
       $tr = $('<tr/>');
       $tr.appendTo(r === 0 ? $thead : $tbody);
-      for (c = k = 0, ref1 = col; 0 <= ref1 ? k < ref1 : k > ref1; c = 0 <= ref1 ? ++k : --k) {
+      for (c = l = 0, ref1 = col; 0 <= ref1 ? l < ref1 : l > ref1; c = 0 <= ref1 ? ++l : --l) {
         $td = $(r === 0 ? '<th/>' : '<td/>').appendTo($tr);
         if (phBr) {
           $td.append(this.editor.util.phBr);
@@ -4879,7 +4901,7 @@ TableButton = (function(superClass) {
   };
 
   TableButton.prototype.insertRow = function($td, direction) {
-    var $newTr, $table, $tr, cellTag, colNum, i, index, j, ref;
+    var $newTr, $table, $tr, cellTag, colNum, i, index, k, ref;
     if (direction == null) {
       direction = 'after';
     }
@@ -4902,7 +4924,7 @@ TableButton = (function(superClass) {
     } else {
       $tr[direction]($newTr);
     }
-    for (i = j = 1, ref = colNum; 1 <= ref ? j <= ref : j >= ref; i = 1 <= ref ? ++j : --j) {
+    for (i = k = 1, ref = colNum; 1 <= ref ? k <= ref : k >= ref; i = 1 <= ref ? ++k : --k) {
       $("<" + cellTag + "/>").append(this.editor.util.phBr).appendTo($newTr);
     }
     return this.editor.selection.setRangeAtStartOf($newTr.find('td, th').eq(index));

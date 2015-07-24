@@ -72,7 +72,7 @@ class Util extends SimpleModule
       not /(msie|trident)/i.test(navigator.userAgent)
 
 
-  # force element to reflow, about relow:
+  # force element to reflow, about reflow:
   # http://blog.letitialew.com/post/30425074101/repaints-and-reflows-manipulating-the-dom-responsibly
   reflow: (el = document) ->
     $(el)[0].offsetHeight
