@@ -4,26 +4,34 @@ class Formatter extends SimpleModule
   @pluginName: 'Formatter'
 
   opts:
-    allowedTags: null
-    allowedAttributes: null
+    allowedTags: []
+    allowedAttributes: {}
+    allowedStyles: {}
 
   _init: ->
     @editor = @_module
 
-    @_allowedTags = @opts.allowedTags || ['br', 'a', 'img', 'b', 'strong', 'i',
+    @_allowedTags = $.merge(
+      ['br', 'a', 'img', 'b', 'strong', 'i',
       'u', 'font', 'p', 'ul', 'ol', 'li', 'blockquote', 'pre', 'code', 'h1',
-      'h2', 'h3', 'h4', 'hr']
-    @_allowedAttributes = @opts.allowedAttributes ||
+      'h2', 'h3', 'h4', 'hr'],
+      @opts.allowedTags
+    )
+
+    @_allowedAttributes = $.extend
       img: ['src', 'alt', 'width', 'height', 'data-non-image']
       a: ['href', 'target']
       font: ['color']
       code: ['class']
-    @_allowedStyles = @opts.allowedStyles ||
+    , @opts.allowedAttributes
+
+    @_allowedStyles = $.extend
       p: ['margin-left', 'text-align']
       h1: ['margin-left', 'text-align']
       h2: ['margin-left', 'text-align']
       h3: ['margin-left', 'text-align']
       h4: ['margin-left', 'text-align']
+    , @opts.allowedStyles
 
     @editor.body.on 'click', 'a', (e) ->
       false
