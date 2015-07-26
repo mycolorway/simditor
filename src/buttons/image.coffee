@@ -278,6 +278,8 @@ class ImageButton extends Button
 
       $img.attr
         src: src,
+        width: width,
+        height: height,
         'data-image-size': width + ',' + height
       .removeClass('loading')
 
@@ -463,16 +465,18 @@ class ImagePopover extends Popover
     return unless $.isNumeric(value) or value < 0
 
     if inputEl.is @widthEl
+      width = value
       height = @height * value / @width
       @heightEl.val height
     else
+      height = value
       width = @width * value / @height
       @widthEl.val width
 
     unless onlySetVal
       @target.attr
-        width: width || value
-        height: height || value
+        width: width
+        height: height
 
     @editor.trigger 'valuechanged'
 
@@ -491,6 +495,8 @@ class ImagePopover extends Popover
       callback(false) if callback
       return
 
+    return if @target.attr('src') == src
+
     @button.loadImage @target, src, (img) =>
       return unless img
 
@@ -500,9 +506,6 @@ class ImagePopover extends Popover
 
         @widthEl.val @width
         @heightEl.val @height
-
-        @target.removeAttr('width')
-          .removeAttr('height')
 
       if /^data:image/.test(src)
         blob = @editor.util.dataURLtoBlob src

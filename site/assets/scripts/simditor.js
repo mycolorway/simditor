@@ -4138,6 +4138,8 @@ ImageButton = (function(superClass) {
         height = img.height;
         $img.attr({
           src: src,
+          width: width,
+          height: height,
           'data-image-size': width + ',' + height
         }).removeClass('loading');
         if ($img.hasClass('uploading')) {
@@ -4353,16 +4355,18 @@ ImagePopover = (function(superClass) {
       return;
     }
     if (inputEl.is(this.widthEl)) {
+      width = value;
       height = this.height * value / this.width;
       this.heightEl.val(height);
     } else {
+      height = value;
       width = this.width * value / this.height;
       this.widthEl.val(width);
     }
     if (!onlySetVal) {
       this.target.attr({
-        width: width || value,
-        height: height || value
+        width: width,
+        height: height
       });
     }
     return this.editor.trigger('valuechanged');
@@ -4387,6 +4391,9 @@ ImagePopover = (function(superClass) {
       }
       return;
     }
+    if (this.target.attr('src') === src) {
+      return;
+    }
     return this.button.loadImage(this.target, src, (function(_this) {
       return function(img) {
         var blob;
@@ -4398,7 +4405,6 @@ ImagePopover = (function(superClass) {
           _this.height = img.height;
           _this.widthEl.val(_this.width);
           _this.heightEl.val(_this.height);
-          _this.target.removeAttr('width').removeAttr('height');
         }
         if (/^data:image/.test(src)) {
           blob = _this.editor.util.dataURLtoBlob(src);
