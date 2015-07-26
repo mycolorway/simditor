@@ -440,8 +440,11 @@ class ImagePopover extends Popover
 
     createInput = =>
       @input.remove() if @input
-      @input = $('<input type="file" title="' + @_t('uploadImage') + '" accept="image/*">')
-        .appendTo($uploadBtn)
+      @input = $ '<input/>',
+        type: 'file'
+        title: @_t('uploadImage')
+        accept: 'image/*'
+      .appendTo($uploadBtn)
 
     createInput()
 

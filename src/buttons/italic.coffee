@@ -13,9 +13,9 @@ class ItalicButton extends Button
 
   _init: ->
     if @editor.util.os.mac
-      @title = @title + ' ( Cmd + i )'
+      @title = "#{@title} ( Cmd + i )"
     else
-      @title = @title + ' ( Ctrl + i )'
+      @title = "#{@title} ( Ctrl + i )"
       @shortcut = 'ctrl+i'
 
     super()

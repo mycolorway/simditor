@@ -30,10 +30,11 @@ class Formatter extends SimpleModule
 
   decorate: ($el = @editor.body) ->
     @editor.trigger 'decorate', [$el]
+    $el
 
   undecorate: ($el = @editor.body.clone()) ->
     @editor.trigger 'undecorate', [$el]
-    $.trim $el.html()
+    $el
 
   autolink: ($el = @editor.body) ->
     linkNodes = []

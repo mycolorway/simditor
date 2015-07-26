@@ -2,19 +2,17 @@
   describe('A Simditor instance with indentation manager', function() {
     var editor;
     editor = null;
-    beforeEach(function() {
-      jasmine.clock().install();
-      return editor = spec.generateSimditor();
-    });
+    beforeEach(function() {});
     afterEach(function() {
-      jasmine.clock().uninstall();
       spec.destroySimditor();
       return editor = null;
     });
     it('should indent paragraph when pressing tab', function() {
       var $p, $p1, $p2, range;
+      editor = spec.generateSimditor({
+        content: '<p>paragraph 1</>\n<p>paragraph 2</>'
+      });
       editor.focus();
-      jasmine.clock().tick(100);
       $p = editor.body.find('> p');
       $p1 = $p.first();
       $p2 = $p.eq(1);
@@ -33,8 +31,10 @@
     });
     return it('should indent list when pressing tab in ul', function() {
       var $li, $li1, $li2, $ul, range;
+      editor = spec.generateSimditor({
+        content: '<ul>\n  <li>item 1</li>\n  <li>item 2</li>\n  <li>item 3</li>\n</ul>'
+      });
       editor.focus();
-      jasmine.clock().tick(100);
       $ul = editor.body.find('> ul');
       $li = $ul.find('li');
       $li1 = $li.eq(1);

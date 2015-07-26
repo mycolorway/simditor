@@ -54,6 +54,8 @@ class InputManager extends SimpleModule
       @throttledSelectionChanged()
 
     @editor.on 'valuechanged', =>
+      @lastCaretPosition = null
+
       if @focused and !@editor.selection.blockNodes().length
         @editor.selection.save()
         @editor.formatter.format()
@@ -134,8 +136,6 @@ class InputManager extends SimpleModule
       .removeClass('error')
     @focused = true
     @lastCaretPosition = null
-
-    #@editor.body.find('.selected').removeClass('selected')
 
     setTimeout =>
       @editor.triggerHandler 'focus'

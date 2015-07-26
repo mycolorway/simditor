@@ -491,7 +491,8 @@ Formatter = (function(superClass) {
     if ($el == null) {
       $el = this.editor.body;
     }
-    return this.editor.trigger('decorate', [$el]);
+    this.editor.trigger('decorate', [$el]);
+    return $el;
   };
 
   Formatter.prototype.undecorate = function($el) {
@@ -499,7 +500,7 @@ Formatter = (function(superClass) {
       $el = this.editor.body.clone();
     }
     this.editor.trigger('undecorate', [$el]);
-    return $.trim($el.html());
+    return $el;
   };
 
   Formatter.prototype.autolink = function($el) {
@@ -800,6 +801,7 @@ InputManager = (function(superClass) {
     })(this));
     this.editor.on('valuechanged', (function(_this) {
       return function() {
+        _this.lastCaretPosition = null;
         if (_this.focused && !_this.editor.selection.blockNodes().length) {
           _this.editor.selection.save();
           _this.editor.formatter.format();
@@ -2833,14 +2835,12 @@ Popover = (function(superClass) {
     if ($target == null) {
       return;
     }
-    this.el.siblings('.simditor-popover').each((function(_this) {
-      return function(i, popover) {
-        popover = $(popover).data('popover');
-        if (popover.active) {
-          return popover.hide();
-        }
-      };
-    })(this));
+    this.el.siblings('.simditor-popover').each(function(i, popover) {
+      popover = $(popover).data('popover');
+      if (popover.active) {
+        return popover.hide();
+      }
+    });
     if (this.active && this.target) {
       this.target.removeClass('selected');
     }
@@ -2873,7 +2873,7 @@ Popover = (function(superClass) {
   };
 
   Popover.prototype.refresh = function(position) {
-    var editorOffset, left, targetH, targetOffset, top;
+    var editorOffset, left, maxLeft, targetH, targetOffset, top;
     if (position == null) {
       position = 'bottom';
     }
@@ -2888,7 +2888,8 @@ Popover = (function(superClass) {
     } else if (position === 'top') {
       top = targetOffset.top - editorOffset.top - this.el.height();
     }
-    left = Math.min(targetOffset.left - editorOffset.left, this.editor.wrapper.width() - this.el.outerWidth() - 10);
+    maxLeft = this.editor.wrapper.width() - this.el.outerWidth() - 10;
+    left = Math.min(targetOffset.left - editorOffset.left, maxLeft);
     return this.el.css({
       top: top + this.offset.top,
       left: left + this.offset.left
@@ -3064,9 +3065,9 @@ ItalicButton = (function(superClass) {
 
   ItalicButton.prototype._init = function() {
     if (this.editor.util.os.mac) {
-      this.title = this.title + ' ( Cmd + i )';
+      this.title = this.title + " ( Cmd + i )";
     } else {
-      this.title = this.title + ' ( Ctrl + i )';
+      this.title = this.title + " ( Ctrl + i )";
       this.shortcut = 'ctrl+i';
     }
     return ItalicButton.__super__._init.call(this);
@@ -4316,7 +4317,11 @@ ImagePopover = (function(superClass) {
         if (_this.input) {
           _this.input.remove();
         }
-        return _this.input = $('<input type="file" title="' + _this._t('uploadImage') + '" accept="image/*">').appendTo($uploadBtn);
+        return _this.input = $('<input/>', {
+          type: 'file',
+          title: _this._t('uploadImage'),
+          accept: 'image/*'
+        }).appendTo($uploadBtn);
       };
     })(this);
     createInput();

@@ -66,13 +66,3 @@ describe 'Simditor Formatter Module', ->
 
     expect($p1.html()).toBe('<p>this is test</p><p><br></p>')
     expect($p2.html()).toBe('<br><hr><img src="" alt="">')
-
-  it 'can trigger custom event after call decorate method', ->
-    spyDecorate = spyOnEvent(editor, 'decorate')
-    spyUnDecorate = spyOnEvent(editor, 'undecorate')
-
-    editor.formatter.decorate()
-    editor.formatter.undecorate()
-
-    expect(spyDecorate).toHaveBeenTriggered()
-    expect(spyUnDecorate).toHaveBeenTriggered()

@@ -47,11 +47,18 @@ module.exports = (grunt) ->
         dest: 'site/assets/scripts/'
         ext: '.js'
 
-      spec:
+      muduleSpec:
         expand: true
         flatten: true
         src: 'spec/src/*.coffee'
-        dest: 'spec'
+        dest: 'spec/'
+        ext: '.js'
+
+      buttonSpec:
+        expand: true
+        flatten: true
+        src: 'spec/src/buttons/*.coffee'
+        dest: 'spec/buttons/'
         ext: '.js'
 
     sass:
@@ -111,6 +118,7 @@ module.exports = (grunt) ->
           src: 'lib/simditor.js',
           dest: 'site/assets/scripts/simditor.js'
         }]
+
       package:
         files: [{
           expand: true,
@@ -155,9 +163,12 @@ module.exports = (grunt) ->
       jekyll:
         files: ['site/**/*.html', 'site/**/*.md', 'site/**/*.yml']
         tasks: ['jekyll']
-      spec:
-        files: ['spec/**/*.coffee']
-        tasks: ['coffee:spec']
+      moduleSpec:
+        files: ['spec/src/*.coffee']
+        tasks: ['coffee:moduleSpec']
+      buttonSpec:
+        files: ['spec/src/buttons/*.coffee']
+        tasks: ['coffee:buttonSpec']
 
     jekyll:
       site:
@@ -215,10 +226,12 @@ module.exports = (grunt) ->
           styles: [
             'styles/simditor.css'
           ]
-          specs: 'spec/*.js'
+          specs: [
+            'spec/*.js'
+            'spec/buttons/*.js'
+          ]
           vendor: [
             'vendor/bower/jquery/dist/jquery.min.js'
-            'vendor/bower/jasmine-jquery/lib/jasmine-jquery.js'
             'vendor/bower/simple-module/lib/module.js'
             'vendor/bower/simple-uploader/lib/uploader.js'
             'vendor/bower/simple-hotkeys/lib/hotkeys.js'

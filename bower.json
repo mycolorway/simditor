@@ -30,7 +30,6 @@
     "umd.hbs"
   ],
   "devDependencies": {
-    "jasmine-jquery": "2.x"
   },
   "dependencies": {
     "jquery": "~2.1.4",
