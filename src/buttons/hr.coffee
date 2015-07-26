@@ -7,11 +7,10 @@ class HrButton extends Button
 
   htmlTag: 'hr'
 
-  status: ($node) ->
-    true
+  _status: ->
 
   command: ->
-    $rootBlock = @editor.util.furthestBlockEl()
+    $rootBlock = @editor.selection.rootNodes().first()
     $nextBlock = $rootBlock.next()
 
     if $nextBlock.length > 0
@@ -31,4 +30,3 @@ class HrButton extends Button
 
 
 Simditor.Toolbar.addButton HrButton
-

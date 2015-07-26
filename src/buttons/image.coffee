@@ -43,17 +43,17 @@ class ImageButton extends Button
       #@popover.show $img
       range = document.createRange()
       range.selectNode $img[0]
-      @editor.selection.selectRange range
-      @editor.trigger 'selectionchanged' unless @editor.util.support.onselectionchange
+      @editor.selection.range range
+      unless @editor.util.support.onselectionchange
+        @editor.trigger 'selectionchanged'
 
       false
 
-    @editor.body.on 'mouseup', 'img:not([data-non-image])', (e) =>
+    @editor.body.on 'mouseup', 'img:not([data-non-image])', (e) ->
       return false
 
-
     @editor.on 'selectionchanged.image', =>
-      range = @editor.selection.getRange()
+      range = @editor.selection.range()
       return unless range?
 
       $contents = $(range.cloneContents()).contents()
@@ -100,12 +100,15 @@ class ImageButton extends Button
     $input = null
     createInput = =>
       $input.remove() if $input
-      $input = $('<input type="file" title="' + @_t('uploadImage') + '" accept="image/*">')
-        .appendTo($uploadItem)
+      $input = $ '<input/>',
+        type: 'file'
+        title: @_t('uploadImage')
+        accept: 'image/*'
+      .appendTo($uploadItem)
 
     createInput()
 
-    $uploadItem.on 'click mousedown', 'input[type=file]', (e) =>
+    $uploadItem.on 'click mousedown', 'input[type=file]', (e) ->
       e.stopPropagation()
 
     $uploadItem.on 'change', 'input[type=file]', (e) =>
@@ -147,7 +150,7 @@ class ImageButton extends Button
             @popover.srcEl.val(@_t('uploading'))
               .prop('disabled', true)
 
-    @editor.uploader.on 'uploadprogress', $.proxy @editor.util.throttle((e, file, loaded, total) ->
+    uploadProgress = $.proxy @editor.util.throttle((e, file, loaded, total) ->
       return unless file.inline
 
       $mask = file.img.data('mask')
@@ -163,6 +166,7 @@ class ImageButton extends Button
       percent = 99 if percent > 99
       $mask.find('.progress').height "#{100 - percent}%"
     , 500), @
+    @editor.uploader.on 'uploadprogress', uploadProgress
 
     @editor.uploader.on 'uploadsuccess', (e, file, result) =>
       return unless file.inline
@@ -236,9 +240,8 @@ class ImageButton extends Button
         @editor.uploader.trigger 'uploadready', [file, result]
 
 
-  status: ($node) ->
-    @setDisabled $node.is(@disableTag) if $node?
-    return true if @disabled
+  _status: ->
+    @_disableStatus()
 
   loadImage: ($img, src, callback) ->
     positionMask = =>
@@ -254,7 +257,11 @@ class ImageButton extends Button
     $img.addClass('loading')
     $mask = $img.data('mask')
     if !$mask
-      $mask = $('<div class="simditor-image-loading"><div class="progress"></div></div>')
+      $mask = $('''
+        <div class="simditor-image-loading">
+          <div class="progress"></div>
+        </div>
+      ''')
         .hide()
         .appendTo(@editor.wrapper)
       positionMask()
@@ -283,7 +290,7 @@ class ImageButton extends Button
 
       callback(img)
 
-    img.onerror = =>
+    img.onerror = ->
       callback(false)
       $mask.remove()
       $img.removeData('mask')
@@ -293,10 +300,11 @@ class ImageButton extends Button
 
   createImage: (name = 'Image') ->
     @editor.focus() unless @editor.inputManager.focused
-    range = @editor.selection.getRange()
+    range = @editor.selection.range()
     range.deleteContents()
+    @editor.selection.range range
 
-    $block = @editor.util.closestBlockEl()
+    $block = @editor.selection.blockNodes().last()
     if $block.is('p') and !@editor.util.isEmptyNode $block
       $block = $('<p/>').append(@editor.util.phBr).insertAfter($block)
       @editor.selection.setRangeAtStartOf $block, range
@@ -336,28 +344,30 @@ class ImagePopover extends Popover
 
   render: ->
     tpl = """
-      <div class="link-settings">
-        <div class="settings-field">
-          <label>#{ @_t 'imageUrl' }</label>
-          <input class="image-src" type="text" tabindex="1" />
-          <a class="btn-upload" href="javascript:;" title="#{ @_t 'uploadImage' }" tabindex="-1">
-            <span class="simditor-icon simditor-icon-upload"></span>
-          </a>
-        </div>
-        <div class='settings-field'>
-          <label>#{ @_t 'imageAlt' }</label>
-          <input class="image-alt" id="image-alt" type="text" tabindex="1" />
-        </div>
-        <div class="settings-field">
-          <label>#{ @_t 'imageSize' }</label>
-          <input class="image-size" id="image-width" type="text" tabindex="2" />
-          <span class="times">×</span>
-          <input class="image-size" id="image-height" type="text" tabindex="3" />
-          <a class="btn-restore" href="javascript:;" title="#{ @_t 'restoreImageSize' }" tabindex="-1">
-            <span class="simditor-icon simditor-icon-undo"></span>
-          </a>
-        </div>
+    <div class="link-settings">
+      <div class="settings-field">
+        <label>#{ @_t 'imageUrl' }</label>
+        <input class="image-src" type="text" tabindex="1" />
+        <a class="btn-upload" href="javascript:;"
+          title="#{ @_t 'uploadImage' }" tabindex="-1">
+          <span class="simditor-icon simditor-icon-upload"></span>
+        </a>
       </div>
+      <div class='settings-field'>
+        <label>#{ @_t 'imageAlt' }</label>
+        <input class="image-alt" id="image-alt" type="text" tabindex="1" />
+      </div>
+      <div class="settings-field">
+        <label>#{ @_t 'imageSize' }</label>
+        <input class="image-size" id="image-width" type="text" tabindex="2" />
+        <span class="times">×</span>
+        <input class="image-size" id="image-height" type="text" tabindex="3" />
+        <a class="btn-restore" href="javascript:;"
+          title="#{ @_t 'restoreImageSize' }" tabindex="-1">
+          <span class="simditor-icon simditor-icon-undo"></span>
+        </a>
+      </div>
+    </div>
     """
     @el.addClass('image-popover')
       .append(tpl)
@@ -430,12 +440,15 @@ class ImagePopover extends Popover
 
     createInput = =>
       @input.remove() if @input
-      @input = $('<input type="file" title="' + @_t('uploadImage') + '" accept="image/*">')
-        .appendTo($uploadBtn)
+      @input = $ '<input/>',
+        type: 'file'
+        title: @_t('uploadImage')
+        accept: 'image/*'
+      .appendTo($uploadBtn)
 
     createInput()
 
-    @el.on 'click mousedown', 'input[type=file]', (e) =>
+    @el.on 'click mousedown', 'input[type=file]', (e) ->
       e.stopPropagation()
 
     @el.on 'change', 'input[type=file]', (e) =>

@@ -17,31 +17,31 @@ class Indentation extends SimpleModule
       @indent e.shiftKey
 
   indent: (isBackward) ->
-    range = @editor.selection.getRange()
-    return unless range
+    $startNodes = @editor.selection.startNodes()
+    $endNodes = @editor.selection.endNodes()
+    $blockNodes = @editor.selection.blockNodes()
 
-    $startBlock = @editor.util.closestBlockEl range.startContainer
-    $endBlock = @editor.util.closestBlockEl range.endContainer
-
-    unless $startBlock.is('li') and $endBlock.is('li') and
-        $startBlock.parent().is($endBlock.parent())
-      $startBlock = @editor.util.furthestBlockEl $startBlock
-      $endBlock = @editor.util.furthestBlockEl $endBlock
-
-    if $startBlock.is($endBlock)
-      $blockEls = $startBlock
-    else
-      $blockEls = $startBlock
-        .nextUntil($endBlock)
-        .add($startBlock)
-        .add($endBlock)
+    nodes = []
+    $blockNodes = $blockNodes.each (i, node) ->
+      include = true
+      for n, j in nodes
+        if $.contains(node, n)
+          include = false
+          break
+        else if $.contains(n, node)
+          nodes.splice j, 1, node
+          include = false
+          break
+      nodes.push(node) if include
+    $blockNodes = $ nodes
 
     result = false
-    $blockEls.each (i, blockEl) =>
-      result = if isBackward
+    $blockNodes.each (i, blockEl) =>
+      r = if isBackward
         @outdentBlock(blockEl)
       else
         @indentBlock(blockEl)
+      result = r if r
 
     result
 
@@ -50,8 +50,7 @@ class Indentation extends SimpleModule
     return unless $blockEl.length
 
     if $blockEl.is('pre')
-      range = @editor.selection.getRange()
-      $pre = $(range.commonAncestorContainer)
+      $pre = @editor.selection.containerNode
       return unless $pre.is($blockEl) or $pre.closest('pre').is($blockEl)
       @indentText range
     else if $blockEl.is('li')
@@ -76,8 +75,7 @@ class Indentation extends SimpleModule
         @opts.indentWidth
       $blockEl.css 'margin-left', marginLeft
     else if $blockEl.is('table') or $blockEl.is('.simditor-table')
-      range = @editor.selection.getRange()
-      $td = $(range.commonAncestorContainer).closest('td, th')
+      $td = @editor.selection.containerNode.closest('td, th')
       $nextTd = $td.next('td, th')
       unless $nextTd.length > 0
         $tr = $td.parent('tr')
@@ -85,8 +83,10 @@ class Indentation extends SimpleModule
         if $nextTr.length < 1 and $tr.parent().is('thead')
           $nextTr = $tr.parent('thead').next('tbody').find('tr:first')
         $nextTd = $nextTr.find('td:first, th:first')
-      return false unless $td.length > 0 and $nextTd.length > 0
+      return unless $td.length > 0 and $nextTd.length > 0
       @editor.selection.setRangeAtEndOf $nextTd
+    else
+      return false
 
     true
 
@@ -98,7 +98,7 @@ class Indentation extends SimpleModule
 
     if text
       range.selectNode textNode
-      @editor.selection.selectRange range
+      @editor.selection.range range
     else
       @editor.selection.setRangeAfter textNode
 
@@ -107,28 +107,34 @@ class Indentation extends SimpleModule
     return unless $blockEl and $blockEl.length > 0
 
     if $blockEl.is('pre')
-      range = @editor.selection.getRange()
-      $pre = $(range.commonAncestorContainer)
+      $pre = @editor.selection.containerNode
       return unless $pre.is($blockEl) or $pre.closest('pre').is($blockEl)
       @outdentText range
     else if $blockEl.is('li')
       $parent = $blockEl.parent()
       $parentLi = $parent.parent('li')
-
-      if $parentLi.length < 1
-        button = @editor.toolbar.findButton $parent[0].tagName.toLowerCase()
-        button?.command()
-        return
-
       @editor.selection.save()
 
-      if $blockEl.next('li').length > 0
-        $('<' + $parent[0].tagName + '/>')
-          .append($blockEl.nextAll('li'))
-          .appendTo($blockEl)
+      if $parentLi.length < 1
+        range = document.createRange()
+        range.setStartBefore $parent[0]
+        range.setEndBefore $blockEl[0]
+        $parent.before range.extractContents()
 
-      $blockEl.insertAfter $parentLi
-      $parent.remove() if $parent.children('li').length < 1
+        $('<p/>').insertBefore($parent)
+          .after($blockEl.children('ul, ol'))
+          .append($blockEl.contents())
+          
+        $blockEl.remove()
+      else
+        if $blockEl.next('li').length > 0
+          $('<' + $parent[0].tagName + '/>')
+            .append($blockEl.nextAll('li'))
+            .appendTo($blockEl)
+
+        $blockEl.insertAfter $parentLi
+        $parent.remove() if $parent.children('li').length < 1
+
       @editor.selection.restore()
     else if $blockEl.is 'p, h1, h2, h3, h4'
       marginLeft = parseInt($blockEl.css('margin-left')) || 0
@@ -136,8 +142,7 @@ class Indentation extends SimpleModule
         @opts.indentWidth
       $blockEl.css 'margin-left', if marginLeft == 0 then '' else marginLeft
     else if $blockEl.is('table') or $blockEl.is('.simditor-table')
-      range = @editor.selection.getRange()
-      $td = $(range.commonAncestorContainer).closest('td, th')
+      $td = @editor.selection.containerNode.closest('td, th')
       $prevTd = $td.prev('td, th')
       unless $prevTd.length > 0
         $tr = $td.parent('tr')
@@ -147,6 +152,8 @@ class Indentation extends SimpleModule
         $prevTd = $prevTr.find('td:last, th:last')
       return unless $td.length > 0 and $prevTd.length > 0
       @editor.selection.setRangeAtEndOf $prevTd
+    else
+      return false
 
     true
 

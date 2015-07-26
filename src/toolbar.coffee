@@ -18,11 +18,13 @@ class Toolbar extends SimpleModule
     return unless @opts.toolbar
 
     unless $.isArray @opts.toolbar
-      @opts.toolbar = ['bold', 'italic', 'underline', 'strikethrough', '|', 'ol', 'ul', 'blockquote', 'code', '|', 'link', 'image', '|', 'indent', 'outdent']
+      @opts.toolbar = ['bold', 'italic', 'underline', 'strikethrough', '|',
+        'ol', 'ul', 'blockquote', 'code', '|', 'link', 'image', '|',
+        'indent', 'outdent']
 
     @_render()
 
-    @list.on 'click', (e) =>
+    @list.on 'click', (e) ->
       false
 
     @wrapper.on 'mousedown', (e) =>
@@ -63,13 +65,10 @@ class Toolbar extends SimpleModule
           if @editor.util.os.mobile
             @wrapper.css 'top', scrollTop - topEdge + @opts.toolbarFloatOffset
 
-    @editor.on 'selectionchanged', =>
-      @toolbarStatus()
-
     @editor.on 'destroy', =>
       @buttons.length = 0
 
-    $(document).on 'mousedown.simditor-' + @editor.id, (e) =>
+    $(document).on "mousedown.simditor-#{@editor.id}", (e) =>
       @list.find('li.menu-on').removeClass('menu-on')
 
   _render: ->
@@ -83,30 +82,13 @@ class Toolbar extends SimpleModule
         continue
 
       unless @constructor.buttons[name]
-        throw new Error 'simditor: invalid toolbar button "' + name + '"'
+        throw new Error "simditor: invalid toolbar button #{name}"
         continue
 
       @buttons.push new @constructor.buttons[name]
         editor: @editor
 
     @wrapper.hide() if @opts.toolbarHidden
-
-  toolbarStatus: (name) ->
-    return unless @editor.inputManager.focused
-
-    buttons = @buttons[..]
-    @editor.util.traverseUp (node) =>
-      removeButtons = []
-      for button, i in buttons
-        continue if name? and button.name isnt name
-        removeButtons.push button if !button.status or button.status($(node)) is true
-
-      for button in removeButtons
-        i = $.inArray(button, buttons)
-        buttons.splice(i, 1)
-      return false if buttons.length == 0
-
-    #button.setActive false for button in buttons unless success
 
   findButton: (name) ->
     button = @list.find('.toolbar-item-' + name).data('button')

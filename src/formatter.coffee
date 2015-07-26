@@ -30,10 +30,11 @@ class Formatter extends SimpleModule
 
   decorate: ($el = @editor.body) ->
     @editor.trigger 'decorate', [$el]
+    $el
 
   undecorate: ($el = @editor.body.clone()) ->
     @editor.trigger 'undecorate', [$el]
-    $.trim $el.html()
+    $el
 
   autolink: ($el = @editor.body) ->
     linkNodes = []
@@ -117,7 +118,7 @@ class Formatter extends SimpleModule
       return
 
     contents = $node.contents()
-    isDecoration = $node.is('[class^="simditor-"]')
+    isDecoration = @editor.util.isDecoratedNode($node)
 
     if $node.is(@_allowedTags.join(',')) or isDecoration
       # img inside a is not allowed

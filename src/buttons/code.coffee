@@ -7,7 +7,7 @@ class CodeButton extends Button
 
   htmlTag: 'pre'
 
-  disableTag: 'li, table'
+  disableTag: 'ul, ol, table'
 
   _init: ->
     super()
@@ -25,15 +25,13 @@ class CodeButton extends Button
     @popover = new CodePopover
       button: @
 
-  status: ($node) ->
-    result = super $node
+  _status: ->
+    super()
 
     if @active
-      @popover.show($node)
-    else if @editor.util.isBlockNode($node)
+      @popover.show(@node)
+    else
       @popover.hide()
-
-    result
 
   decorate: ($pre) ->
     $code = $pre.find('> code')
@@ -50,47 +48,34 @@ class CodeButton extends Button
       .removeAttr('data-lang')
 
   command: ->
-    range = @editor.selection.getRange()
-    startNode = range.startContainer
-    endNode = range.endContainer
-    $startBlock = @editor.util.closestBlockEl(startNode)
-    $endBlock = @editor.util.closestBlockEl(endNode)
+    $rootNodes = @editor.selection.rootNodes()
+    nodeCache = []
+    pres = []
 
-    range.setStartBefore $startBlock[0]
-    range.setEndAfter $endBlock[0]
+    clearCache = =>
+      return unless nodeCache.length > 0
+      $pre = $("<#{@htmlTag}/>")
+        .insertBefore(nodeCache[0])
+        .text(@editor.formatter.clearHtml(nodeCache))
+      pres.push $pre[0]
+      nodeCache.length = 0
 
-    $contents = $(range.extractContents())
-
-    results = []
-    $contents.children().each (i, el) =>
-      converted = @_convertEl el
-      for c in converted
-        if results.length and results[results.length - 1].is(@htmlTag) and c.is(@htmlTag)
-          results[results.length - 1].append(c.contents())
-        else
-          results.push(c)
-
-    range.insertNode node[0] for node in results.reverse()
-    @editor.selection.setRangeAtEndOf results[0]
-
-    @editor.trigger 'valuechanged'
-
-  _convertEl: (el) ->
-    $el = $(el)
-    results = []
-
-    if $el.is @htmlTag
-      block = $('<p/>').append($el.html().replace('\n', '<br/>'))
-      results.push block
-    else
-      if !$el.text() and $el.children().length == 1 and $el.children().is('br')
-        codeStr = '\n'
+    $rootNodes.each (i, node) =>
+      $node = $ node
+      if $node.is @htmlTag
+        clearCache()
+        $('<p/>').append($node.html().replace('\n', '<br/>'))
+          .replaceAll($node)
+      else if $node.is(@disableTag) or @editor.util.isDecoratedNode($node) or
+          $node.is('blockquote')
+        clearCache()
       else
-        codeStr = @editor.formatter.clearHtml($el)
-      block = $('<' + @htmlTag + '/>').text(codeStr)
-      results.push(block)
+        nodeCache.push node
 
-    results
+    clearCache()
+
+    @editor.selection.setRangeAtEndOf $(pres).last()
+    @editor.trigger 'valuechanged'
 
 
 class CodePopover extends Popover

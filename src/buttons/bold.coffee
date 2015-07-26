@@ -19,13 +19,10 @@ class BoldButton extends Button
       @shortcut = 'ctrl+b'
     super()
 
-  status: ($node) ->
-    @setDisabled $node.is(@disableTag) if $node?
-    return true if @disabled
-
+  _activeStatus: ->
     active = document.queryCommandState('bold') is true
     @setActive active
-    active
+    @active
 
   command: ->
     document.execCommand 'bold'

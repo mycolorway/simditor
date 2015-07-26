@@ -38,40 +38,22 @@ class AlignmentButton extends Button
     @menuEl.find('.menu-item').show().end()
         .find('.menu-item-' + align).hide()
 
-  status: ($node) ->
-    return true unless $node?
-    return unless @editor.util.isBlockNode $node
-
-    @setDisabled !$node.is(@htmlTag)
-    if @disabled
+  _status: ->
+    @nodes = @editor.selection.nodes().filter(@htmlTag)
+    if @nodes.length < 1
+      @setDisabled true
       @setActive false
-      return true
-
-    @setActive true, $node.css('text-align')
-    @active
+    else
+      @setDisabled false
+      @setActive true, @nodes.first().css('text-align')
 
   command: (align) ->
-    if ['left', 'center', 'right'].indexOf(align) < 0
-      throw new Error("invalid #{align}")
+    unless align in ['left', 'center', 'right']
+      throw new Error("simditor alignment button: invalid align #{align}")
 
-    range = @editor.selection.getRange()
-    startNode = range.startContainer
-    endNode = range.endContainer
-    $startBlock = @editor.util.closestBlockEl(startNode)
-    $endBlock = @editor.util.closestBlockEl(endNode)
+    @nodes.css
+      'text-align': if align == 'left' then '' else align
 
-    @editor.selection.save()
-
-    $blockEls =
-      if $startBlock.is $endBlock
-        $startBlock
-      else
-        $startBlock.nextUntil($endBlock).addBack().add $endBlock
-
-    for block in $blockEls.filter(@htmlTag)
-      $(block).css('text-align', if align == 'left' then '' else align)
-
-    @editor.selection.restore()
     @editor.trigger 'valuechanged'
 
 Simditor.Toolbar.addButton AlignmentButton

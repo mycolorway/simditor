@@ -13,15 +13,21 @@ class InputManager extends SimpleModule
   _init: ->
     @editor = @_module
 
-    @throttledTrigger = @editor.util.throttle (args...) =>
+    @throttledValueChanged = @editor.util.throttle (params) =>
       setTimeout =>
-        @editor.trigger args...
+        @editor.trigger 'valuechanged', params
       , 10
     , 300
 
-    @opts.pasteImage = 'inline' if @opts.pasteImage and typeof @opts.pasteImage != 'string'
+    @throttledSelectionChanged = @editor.util.throttle =>
+      @editor.trigger 'selectionchanged'
+    , 50
 
-    # handlers which will be called when specific key is pressed in specific node
+    if @opts.pasteImage and typeof @opts.pasteImage != 'string'
+      @opts.pasteImage = 'inline'
+
+    # handlers which will be called
+    # when specific key is pressed in specific node
     @_keystrokeHandlers = {}
 
     @hotkeys = simpleHotkeys
@@ -45,16 +51,12 @@ class InputManager extends SimpleModule
 
     $(document).on 'selectionchange.simditor' + @editor.id, (e) =>
       return unless @focused
-
-      if @_selectionTimer
-        clearTimeout @_selectionTimer
-        @_selectionTimer = null
-      @_selectionTimer = setTimeout =>
-        @editor.trigger 'selectionchanged'
-      , 20
+      @throttledSelectionChanged()
 
     @editor.on 'valuechanged', =>
-      if !@editor.util.closestBlockEl() and @focused
+      @lastCaretPosition = null
+
+      if @focused and !@editor.selection.blockNodes().length
         @editor.selection.save()
         @editor.formatter.format()
         @editor.selection.restore()
@@ -75,19 +77,12 @@ class InputManager extends SimpleModule
               .insertBefore($el)
             formatted = true
 
-          if formatted
-            setTimeout =>
-              @editor.trigger 'valuechanged'
-            , 10
+          @throttledValueChanged() if formatted
 
       @editor.body.find('pre:empty').append(@editor.util.phBr)
 
       if !@editor.util.support.onselectionchange and @focused
-        @editor.trigger 'selectionchanged'
-
-    @editor.on 'selectionchanged', (e) =>
-      @editor.undoManager.update()
-
+        @throttledValueChanged()
 
     @editor.body.on('keydown', $.proxy(@_onKeyDown, @))
       .on('keypress', $.proxy(@_onKeyPress, @))
@@ -103,11 +98,11 @@ class InputManager extends SimpleModule
       # fix firefox cmd+left/right bug
       @addShortcut 'cmd+left', (e) =>
         e.preventDefault()
-        @editor.selection.sel.modify('move', 'backward', 'lineboundary')
+        @editor.selection._selection.modify('move', 'backward', 'lineboundary')
         false
       @addShortcut 'cmd+right', (e) =>
         e.preventDefault()
-        @editor.selection.sel.modify('move', 'forward', 'lineboundary')
+        @editor.selection._selection.modify('move', 'forward', 'lineboundary')
         false
 
       # override default behavior of cmd/ctrl + a in firefox(which is buggy)
@@ -119,7 +114,7 @@ class InputManager extends SimpleModule
         range = document.createRange()
         range.setStart firstBlock, 0
         range.setEnd lastBlock, @editor.util.getNodeLength(lastBlock)
-        @editor.selection.selectRange range
+        @editor.selection.range range
         false
 
     # meta + enter: submit form
@@ -142,11 +137,9 @@ class InputManager extends SimpleModule
     @focused = true
     @lastCaretPosition = null
 
-    #@editor.body.find('.selected').removeClass('selected')
-
     setTimeout =>
       @editor.triggerHandler 'focus'
-      @editor.trigger 'selectionchanged'
+      @throttledSelectionChanged() unless @editor.util.support.onselectionchange
     , 0
 
   _onBlur: (e) ->
@@ -159,9 +152,7 @@ class InputManager extends SimpleModule
 
   _onMouseUp: (e) ->
     unless @editor.util.support.onselectionchange
-      setTimeout =>
-        @editor.trigger 'selectionchanged'
-      , 0
+      @throttledSelectionChanged()
 
   _onKeyDown: (e) ->
     if @editor.triggerHandler(e) == false
@@ -174,21 +165,22 @@ class InputManager extends SimpleModule
     if e.which of @_keystrokeHandlers
       result = @_keystrokeHandlers[e.which]['*']?(e)
       if result
-        @editor.trigger 'valuechanged'
+        @throttledValueChanged()
         return false
 
-      @editor.util.traverseUp (node) =>
-        return unless node.nodeType == document.ELEMENT_NODE
+      @editor.selection.startNodes().each (i, node) =>
+        return unless node.nodeType == Node.ELEMENT_NODE
         handler = @_keystrokeHandlers[e.which]?[node.tagName.toLowerCase()]
         result = handler?(e, $(node))
 
         # different result means:
-        # 1. true, has do everythings, stop browser default action and traverseUp
-        # 2. false, stop traverseUp
-        # 3. undefined, continue traverseUp
+        # 1. true, handler done, stop browser default action and traverse up
+        # 2. false, stop traverse up
+        # 3. undefined, continue traverse up
         false if result == true or result == false
+
       if result
-        @editor.trigger 'valuechanged'
+        @throttledValueChanged()
         return false
 
     if e.which in @_modifierKeys or e.which in @_arrowKeys
@@ -197,7 +189,7 @@ class InputManager extends SimpleModule
     return if @editor.util.metaKey(e) and e.which == 86
 
     unless @editor.util.support.oninput
-      @throttledTrigger 'valuechanged', ['typing']
+      @throttledValueChanged ['typing']
 
     null
 
@@ -210,10 +202,10 @@ class InputManager extends SimpleModule
       return false
 
     if !@editor.util.support.onselectionchange and e.which in @_arrowKeys
-      @editor.trigger 'selectionchanged'
+      @throttledValueChanged()
       return
 
-    if (e.which == 8 or e.which == 46) and @editor.util.isEmptyNode(@editor.body)
+    if (e.which == 8 or e.which == 46) && @editor.util.isEmptyNode(@editor.body)
       @editor.body.empty()
       p = $('<p/>').append(@editor.util.phBr)
         .appendTo(@editor.body)
@@ -226,10 +218,12 @@ class InputManager extends SimpleModule
 
     range = @editor.selection.deleteRangeContents()
     range.collapse(true) unless range.collapsed
-    $blockEl = @editor.util.closestBlockEl()
+    @editor.selection.range range
+    $blockEl = @editor.selection.blockNodes().last()
     cleanPaste = $blockEl.is 'pre, table'
 
-    if e.originalEvent.clipboardData && e.originalEvent.clipboardData.items && e.originalEvent.clipboardData.items.length > 0
+    if e.originalEvent.clipboardData && e.originalEvent.clipboardData.items &&
+        e.originalEvent.clipboardData.items.length > 0
       pasteItem = e.originalEvent.clipboardData.items[0]
 
       # paste file in chrome
@@ -261,7 +255,8 @@ class InputManager extends SimpleModule
           @editor.selection.insertNode document.createTextNode(lastLine)
         else
           pasteContent = $('<div/>').text(pasteContent)
-          @editor.selection.insertNode($(node)[0], range) for node in pasteContent.contents()
+          for node in pasteContent.contents()
+            @editor.selection.insertNode($(node)[0], range)
       else if $blockEl.is @editor.body
         @editor.selection.insertNode(node, range) for node in pasteContent
       else if pasteContent.length < 1
@@ -296,7 +291,8 @@ class InputManager extends SimpleModule
         else if pasteContent.is('ul, ol')
           if pasteContent.find('li').length == 1
             pasteContent = $('<div/>').text(pasteContent.text())
-            @editor.selection.insertNode($(node)[0], range) for node in pasteContent.contents()
+            for node in pasteContent.contents()
+              @editor.selection.insertNode($(node)[0], range)
           else if $blockEl.is 'li'
             $blockEl.parent().after pasteContent
             @editor.selection.setRangeAtEndOf(pasteContent, range)
@@ -320,7 +316,7 @@ class InputManager extends SimpleModule
         $blockEl[insertPosition](pasteContent)
         @editor.selection.setRangeAtEndOf(pasteContent.last(), range)
 
-      @editor.trigger 'valuechanged'
+      @throttledValueChanged()
 
     if cleanPaste
       e.preventDefault()
@@ -358,12 +354,10 @@ class InputManager extends SimpleModule
     if @editor.triggerHandler(e) == false
       return false
 
-    setTimeout =>
-      @editor.trigger 'valuechanged'
-    , 0
+    @throttledValueChanged()
 
   _onInput: (e) ->
-    @throttledTrigger 'valuechanged', ['oninput']
+    @throttledValueChanged ['oninput']
 
   addKeystrokeHandler: (key, node, handler) ->
     @_keystrokeHandlers[key] = {} unless @_keystrokeHandlers[key]

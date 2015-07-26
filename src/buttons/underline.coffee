@@ -19,13 +19,10 @@ class UnderlineButton extends Button
       @shortcut = 'ctrl+u'
     super()
 
-  status: ($node) ->
-    @setDisabled $node.is(@disableTag) if $node?
-    return @disabled if @disabled
-
+  _activeStatus: ->
     active = document.queryCommandState('underline') is true
     @setActive active
-    active
+    @active
 
   command: ->
     document.execCommand 'underline'
@@ -37,5 +34,3 @@ class UnderlineButton extends Button
 
 
 Simditor.Toolbar.addButton UnderlineButton
-
-

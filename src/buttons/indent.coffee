@@ -9,8 +9,7 @@ class IndentButton extends Button
     @title = @_t(@name) + ' (Tab)'
     super()
 
-  status: ($node) ->
-    true
+  _status: ->
 
   command: ->
     @editor.indentation.indent()
