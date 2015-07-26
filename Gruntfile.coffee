@@ -211,7 +211,7 @@ module.exports = (grunt) ->
           expand: true,
           cwd: 'package/'
           src: '**',
-          dest: './'
+          dest: 'simditor-<%= pkg.version %>/'
         }]
 
     clean:
