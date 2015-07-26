@@ -12,7 +12,7 @@ class Formatter extends SimpleModule
     @editor = @_module
 
     @_allowedTags = $.merge(
-      ['br', 'a', 'img', 'b', 'strong', 'i',
+      ['br', 'span', 'a', 'img', 'b', 'strong', 'i',
       'u', 'font', 'p', 'ul', 'ol', 'li', 'blockquote', 'pre', 'code', 'h1',
       'h2', 'h3', 'h4', 'hr'],
       @opts.allowedTags
@@ -26,6 +26,7 @@ class Formatter extends SimpleModule
     , @opts.allowedAttributes
 
     @_allowedStyles = $.extend
+      span: ['color']
       p: ['margin-left', 'text-align']
       h1: ['margin-left', 'text-align']
       h2: ['margin-left', 'text-align']

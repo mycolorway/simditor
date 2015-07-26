@@ -44,7 +44,12 @@ class ColorButton extends Button
         hex = @_convertRgbToHex rgb
 
       return unless hex
+
+      # Use span[style] instead of font[color]
+      document.execCommand 'styleWithCSS', false, true
       document.execCommand 'foreColor', false, hex
+      document.execCommand 'styleWithCSS', false, false
+      
       unless @editor.util.support.oninput
         @editor.trigger 'valuechanged'
 
