@@ -20,10 +20,10 @@ class Formatter extends SimpleModule
       code: ['class']
     @_allowedStyles = @opts.allowedStyles ||
       p: ['margin-left', 'text-align']
-      h1: ['margin-left']
-      h2: ['margin-left']
-      h3: ['margin-left']
-      h4: ['margin-left']
+      h1: ['margin-left', 'text-align']
+      h2: ['margin-left', 'text-align']
+      h3: ['margin-left', 'text-align']
+      h4: ['margin-left', 'text-align']
 
     @editor.body.on 'click', 'a', (e) ->
       false

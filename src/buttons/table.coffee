@@ -18,10 +18,12 @@ class TableButton extends Button
       @editor.formatter._allowedTags,
       ['thead', 'th', 'tbody', 'tr', 'td', 'colgroup', 'col']
     )
-    $.extend(@editor.formatter._allowedAttributes, {
+    $.extend @editor.formatter._allowedAttributes,
       td: ['rowspan', 'colspan'],
       col: ['width']
-    })
+    $.extend @editor.formatter._allowedStyles,
+      td: ['text-align']
+      th: ['text-align']
 
     @_initShortcuts()
 

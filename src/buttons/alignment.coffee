@@ -4,7 +4,7 @@ class AlignmentButton extends Button
 
   icon: 'align-left'
 
-  htmlTag: 'p, h1, h2, h3, h4'
+  htmlTag: 'p, h1, h2, h3, h4, td, th'
 
   _init: ->
     @menu = [{
