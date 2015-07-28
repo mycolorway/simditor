@@ -1,23 +1,23 @@
 ---
 layout: doc
-title: 事件 - Simditor
+title: Events - Simditor
 id: doc-event
 root: ../
 ---
 
-Simditor 会在特定情况下触发下列事件，你可以为编辑器实例绑定这些事件来做相应的操作：
+Simditor will trigger different events, you can bind these events if needed：
 
 ```coffee
-# 初始化 Simditor
+# init Simditor
 editor = new Simditor
   textarea: $('#editor')
 
-# 绑定 valuechanged 方法
+# bind valuechanged event
 editor.on 'valuechanged', (e, src) ->
   alert('simditor valuechanged')
 ```
 
-###事件
+###Events
 
 <dl class="doc-events">
   {% for item in site.data.events %}

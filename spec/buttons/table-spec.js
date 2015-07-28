@@ -1,5 +1,5 @@
 (function() {
-  describe('Simditor table', function() {
+  describe('Simditor table button', function() {
     var editor;
     editor = null;
     beforeEach(function() {

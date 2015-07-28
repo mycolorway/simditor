@@ -89,10 +89,8 @@ Selection = (function(superClass) {
       if (!this.editor.inputManager.focused && ffOrIE) {
         this.editor.body.focus();
       }
-    } else if (this.editor.inputManager.focused && this._selection.rangeCount) {
-      this._range || (this._range = this._selection.getRangeAt(0));
-    } else {
-      this._range = null;
+    } else if (!this._range && this.editor.inputManager.focused && this._selection.rangeCount) {
+      this._range = this._selection.getRangeAt(0);
     }
     return this._range;
   };
@@ -629,7 +627,10 @@ Formatter = (function(superClass) {
           if (!((allowedAttributes != null) && (ref1 = attr.name, indexOf.call(allowedAttributes, ref1) >= 0))) {
             $node.removeAttr(attr.name);
           }
-          this._cleanNodeStyles($node);
+        }
+        this._cleanNodeStyles($node);
+        if ($node.is('span') && $node[0].attributes.length === 0) {
+          $node.contents().first().unwrap();
         }
       }
     } else if ($node[0].nodeType === 1 && !$node.is(':empty')) {

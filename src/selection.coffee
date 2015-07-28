@@ -54,10 +54,8 @@ class Selection extends SimpleModule
       ffOrIE = @editor.util.browser.firefox or @editor.util.browser.msie
       @editor.body.focus() if !@editor.inputManager.focused and ffOrIE
 
-    else if @editor.inputManager.focused and @_selection.rangeCount
-      @_range ||= @_selection.getRangeAt 0
-    else
-      @_range = null
+    else if !@_range and @editor.inputManager.focused and @_selection.rangeCount
+      @_range = @_selection.getRangeAt 0
 
     @_range
 

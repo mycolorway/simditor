@@ -1,13 +1,14 @@
 ---
 layout: doc
-title: 配置 - Simditor
+title: Options - Simditor
 id: doc-config
 root: ../
 ---
 
-###默认配置
+#Options
 
-Simditor 构造函数创建一个新的编辑器实例。通过传递的 options 参数定制实例。下面的示例使用所有选项及其默认值：
+You can customize Simditor by passing optional options when initializing Simditor.
+Here are all the optional options and their default values:
 
 ```coffee
 editor = new Simditor
@@ -24,15 +25,14 @@ editor = new Simditor
   pasteImage: false
 ```
 
-###配置选项
 
 <dl class="doc-configs">
   {% for item in site.data.configs %}
     <dt id="anchor-{{ item.name }}">
       <!--<span class="icon simditor-icon simditor-icon-caret-down"></span>-->
-      <span class="name">{{ item.name }}</span>
+      <a href="#anchor-{{ item.name }}" class="name">{{ item.name }}</a>
       <span class="type">{{ item.type }}</span>
-      <span class="default">默认值: {{ item.default }}</span>
+      <span class="default">default: {{ item.default }}</span>
     </dt>
     <dd class="expand">
       {{ item.description | markdownify }}

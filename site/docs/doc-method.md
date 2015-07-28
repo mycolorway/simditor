@@ -1,22 +1,22 @@
 ---
 layout: doc
-title: 方法 - Simditor
+title: Methods - Simditor
 id: doc-method
 root: ../
 ---
 
-Simditor 初始化之后，编辑器实例会暴露一些公共方法供调用：
+Keep a reference of Simditor instance and call the methods：
 
 ```coffee
-# 初始化 Simditor
+# init Simditor
 editor = new Simditor
   textarea: $('#editor')
 
-# 调用 setValue 方法设置内容
+# call setValue to set content
 editor.setValue 'hello world'
 ```
 
-###公共方法
+#Public Methods
 
 <dl class="doc-methods">
   {% for item in site.data.methods %}
@@ -32,7 +32,7 @@ editor.setValue 'hello world'
         {% endfor %}
       </span>
       {% if item.return.size > 0 %}
-      <span class="return">返回值: {{ item.return.type }}</span>
+      <span class="return">return value: {{ item.return.type }}</span>
       {% endif %}
     </dt>
     <dd class="expand">
