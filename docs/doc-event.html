@@ -3,13 +3,17 @@
 <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
-    <title>事件 - Simditor</title>
+    <title>Events - Simditor</title>
     <meta name="viewport" content="width=device-width,initial-scale=1.0">
 
     <link rel="shortcut icon" href="../favicon.ico" type="image/x-icon" />
     <link rel="icon" href="../favicon.ico" sizes="32x32" />
     <link rel="icon" href="../favicon.ico" sizes="64x64" />
     <link rel="icon" href="../favicon.ico" sizes="128x128" />
+
+    <link rel="stylesheet" href="https://storage.googleapis.com/code.getmdl.io/1.0.1/material.indigo-pink.min.css">
+    <script src="https://storage.googleapis.com/code.getmdl.io/1.0.1/material.min.js"></script>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
 
     <link media="all" rel="stylesheet" type="text/css" href="../assets/styles/app.css" />
     <link media="all" rel="stylesheet" type="text/css" href="../assets/styles/simditor.css" />
@@ -33,14 +37,13 @@
     
 <header>
 	<h1><a href="../.">Simditor</a></h1>
-	<p class="desc">简单快速的富文本编辑器</p>
+	<p class="desc">An Easy and Fast WYSIWYG Editor</p>
 </header>
 <nav>
 	<a href="../.">Demo</a>
-	<a href="../tours/tour-usage.html">教程</a>
-	<a href="../docs/doc-config.html" class="active">文档</a>
-	<a href="../extension.html">扩展</a>
-	<a href="https://github.com/mycolorway/simditor/releases" target="_blank">下载</a>
+	<a href="../docs/doc-usage.html" class="active">Docs</a>
+	<a href="../extension.html">Extension</a>
+	<a href="https://github.com/mycolorway/simditor/releases" target="_blank">Download</a>
 </nav>
 
     <section class="page-doc page-sidebar" id="page-doc-event">
@@ -48,36 +51,34 @@
 	<ul>
 		<li>
 			<i class="icon simditor-icon simditor-icon-caret-right"></i>
-			<a href="../docs/doc-config.html">配置</a>
+			<a href="../docs/doc-usage.html">How to use</a>
 		</li>
 		<li>
 			<i class="icon simditor-icon simditor-icon-caret-right"></i>
-			<a href="../docs/doc-method.html">方法</a>
+			<a href="../docs/doc-config.html">Options</a>
+		</li>
+		<li>
+			<i class="icon simditor-icon simditor-icon-caret-right"></i>
+			<a href="../docs/doc-method.html">Methods</a>
 		</li>
 		<li class="active">
 			<i class="icon simditor-icon simditor-icon-caret-right"></i>
-			<a href="../docs/doc-event.html">事件</a>
-		</li>
-		<li>
-			<i class="icon simditor-icon simditor-icon-caret-right"></i>
-			<a href="../docs/doc-button.html">Button</a>
+			<a href="../docs/doc-event.html">Events</a>
 		</li>
 	</ul>
 </aside>
 
-
-
 	<article class="editor-style">
-		<p>Simditor 会在特定情况下触发下列事件，你可以为编辑器实例绑定这些事件来做相应的操作：</p>
-<div class="highlight"><pre><code class="language-coffee" data-lang="coffee"><span class="c1"># 初始化 Simditor</span>
+		<p>Simditor will trigger different events, you can bind these events if needed：</p>
+<div class="highlight"><pre><code class="language-coffee" data-lang="coffee"><span class="c1"># init Simditor</span>
 <span class="nv">editor = </span><span class="k">new</span> <span class="nx">Simditor</span>
   <span class="nv">textarea: </span><span class="nx">$</span><span class="p">(</span><span class="s">&#39;#editor&#39;</span><span class="p">)</span>
 
-<span class="c1"># 绑定 valuechanged 方法</span>
+<span class="c1"># bind valuechanged event</span>
 <span class="nx">editor</span><span class="p">.</span><span class="nx">on</span> <span class="s">&#39;valuechanged&#39;</span><span class="p">,</span> <span class="nf">(e, src) -&gt;</span>
   <span class="nx">alert</span><span class="p">(</span><span class="s">&#39;simditor valuechanged&#39;</span><span class="p">)</span>
 </code></pre></div>
-<h3>事件</h3>
+<h3>Events</h3>
 
 <dl class="doc-events">
   
@@ -94,7 +95,7 @@
       </span>
     </dt>
     <dd class="expand">
-      <p><strong>触发条件：编辑器内容发生改变</strong></p>
+      <p>Event fires when body content has changed</p>
 
     </dd>
   
@@ -111,7 +112,7 @@
       </span>
     </dt>
     <dd class="expand">
-      <p><strong>触发条件：当光标位置或者选择的文本区域发生变化</strong></p>
+      <p>Event fires when cursor position or selected text has changed</p>
 
     </dd>
   
@@ -133,17 +134,19 @@
       </span>
     </dt>
     <dd class="expand">
-      <p><strong>触发条件：当调用</strong> <a href="../docs/doc-method.html#anchor-setValue"><strong>setValue</strong></a> <strong>方法或粘贴内容的时候</strong></p>
+      <p>Event fires when pasting content and calling <a href="../docs/doc-method.html#anchor-setValue"><strong>setValue</strong></a>.</p>
 
-<p>在扩展或者按钮中可能会在编辑的内容中插入一些比较复杂元素（比如表格），在编辑过程中，为了给用户呈现更友好的编辑体验，我们需要加入一些与内容无关的交互元素（我们称这个过程为「修饰」），这些起修饰作用的元素不应该成为内容的一部分，因此会在获取编辑器内容的时候被去掉。</p>
+<h5>Example:</h5>
 
-<p>例如，为了实现表格拖动调整列宽的功能，我们需要一些额外的 HTML 标签：</p>
-<div class="highlight"><pre><code class="language-html" data-lang="html"><span class="nt">&lt;div</span> <span class="na">class=</span><span class="s">&quot;simditor-table&quot;</span><span class="nt">&gt;</span> <span class="c">&lt;!-- 额外的标签 --&gt;</span>
+<p>Some features will insert extra attributes or tags in order to make the element looks nicer. That is &quot;decorating&quot;.
+These elements should never be included when getting the content from the editor.</p>
+<div class="highlight"><pre><code class="language-html" data-lang="html"><span class="nt">&lt;div</span> <span class="na">class=</span><span class="s">&quot;simditor-table&quot;</span><span class="nt">&gt;</span> <span class="c">&lt;!-- extra tags --&gt;</span>
   <span class="nt">&lt;table&gt;</span>...<span class="nt">&lt;/table&gt;</span>
-  <span class="nt">&lt;div</span> <span class="na">class=</span><span class="s">&quot;simditor-resize-handle&quot;</span> <span class="na">contenteditable=</span><span class="s">&quot;false&quot;</span><span class="nt">&gt;&lt;/div&gt;</span> <span class="c">&lt;!-- 额外的标签 --&gt;</span>
+  <span class="nt">&lt;div</span> <span class="na">class=</span><span class="s">&quot;simditor-resize-handle&quot;</span> <span class="na">contenteditable=</span><span class="s">&quot;false&quot;</span><span class="nt">&gt;&lt;/div&gt;</span> <span class="c">&lt;!-- extra tags  --&gt;</span>
 <span class="nt">&lt;/div&gt;</span>
 </code></pre></div>
-<p>在插入表格的时候，编辑器会调用表格的 decorate 方法（创建额外的 HTML 标签），在获取编辑器内容的时候会通过 undecorate 事件调用表格的 undecorate 方法（去掉额外的 HTML 标签）。</p>
+<p>When inserting the above table, Simditor needs to call &#39;decorate&#39; method to create extra tags in &#39;decorate&#39; event.
+When getting the content value, it will call &#39;undecorate&#39; method to remove all extra tags.</p>
 <div class="highlight"><pre><code class="language-coffee" data-lang="coffee"><span class="k">class</span> <span class="nx">TableButton</span> <span class="k">extends</span> <span class="nx">Button</span>
   <span class="nv">constructor: </span><span class="nf">(@editor) -&gt;</span>
     <span class="p">...</span>
@@ -190,9 +193,8 @@
       </span>
     </dt>
     <dd class="expand">
-      <p><strong>触发条件：当调用</strong> <a href="../docs/doc-method.html#anchor-decorate"><strong>getValue</strong></a> 和 <a href="../docs/doc-method.html#anchor-sync"><strong>sync</strong></a> <strong>方法的时候</strong></p>
-
-<p>参考 <a href="../docs/doc-event.html#anchor-decorate">decorate</a> 事件</p>
+      <p>Event fires when calling <a href="../docs/doc-method.html#anchor-decorate"><strong>getValue</strong></a> and <a href="../docs/doc-method.html#anchor-sync"><strong>sync</strong></a>.<br />
+Refer to <a href="../docs/doc-event.html#anchor-decorate">decorate</a> event</p>
 
     </dd>
   
@@ -214,12 +216,11 @@
       </span>
     </dt>
     <dd class="expand">
-      <p><strong>触发条件：粘贴内容到编辑器的时候</strong></p>
+      <p>Event fires when pasting content into editor.<br />
+Param <code>$pasteContent</code> is the pasted content. You can valid the content and stop paste.</p>
 
-<p>参数<code>$pasteContent</code>是粘贴的内容，可以根据它来决定是否要中断粘贴，如果返回false，粘贴将不会生效</p>
-
-<h6>示例</h6>
-<div class="highlight"><pre><code class="language-js" data-lang="js"><span class="c1">// 如果粘贴的内容含有图片则中断粘贴</span>
+<h6>Example:</h6>
+<div class="highlight"><pre><code class="language-js" data-lang="js"><span class="c1">// stop paste if the content contains images</span>
 <span class="nx">editor</span><span class="p">.</span><span class="nx">on</span> <span class="s1">&#39;pasting&#39;</span><span class="p">,</span> <span class="p">(</span><span class="nx">e</span><span class="p">,</span> <span class="nx">$pasteContent</span><span class="p">)</span> <span class="o">-&gt;</span>
   <span class="k">if</span> <span class="nx">$pasteContent</span><span class="p">.</span><span class="nx">find</span><span class="p">(</span><span class="s2">&quot;img&quot;</span><span class="p">).</span><span class="nx">length</span> <span class="o">&gt;</span> <span class="mi">0</span>
     <span class="k">return</span> <span class="kc">false</span>
@@ -239,7 +240,7 @@
       </span>
     </dt>
     <dd class="expand">
-      <p><strong>触发条件：内容区域获得焦点的时候</strong></p>
+      <p>Event fires when textarea is focused.</p>
 
     </dd>
   
@@ -256,7 +257,7 @@
       </span>
     </dt>
     <dd class="expand">
-      <p><strong>触发条件：内容区域失去焦点的时候</strong></p>
+      <p>Event fires when textarea is blur.</p>
 
     </dd>
   
@@ -273,7 +274,7 @@
       </span>
     </dt>
     <dd class="expand">
-      <p><strong>触发条件：调用实例的 destroy 方法的时候</strong></p>
+      <p>Event fires when calling destroy method.</p>
 
     </dd>
   
@@ -297,4 +298,3 @@
 
 </body>
 </html>
-

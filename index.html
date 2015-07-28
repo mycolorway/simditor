@@ -11,6 +11,10 @@
     <link rel="icon" href="favicon.ico" sizes="64x64" />
     <link rel="icon" href="favicon.ico" sizes="128x128" />
 
+    <link rel="stylesheet" href="https://storage.googleapis.com/code.getmdl.io/1.0.1/material.indigo-pink.min.css">
+    <script src="https://storage.googleapis.com/code.getmdl.io/1.0.1/material.min.js"></script>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+
     <link media="all" rel="stylesheet" type="text/css" href="assets/styles/app.css" />
     <link media="all" rel="stylesheet" type="text/css" href="assets/styles/simditor.css" />
 
@@ -33,26 +37,25 @@
     
 <header>
 	<h1><a href=".">Simditor</a></h1>
-	<p class="desc">简单快速的富文本编辑器</p>
+	<p class="desc">An Easy and Fast WYSIWYG Editor</p>
 </header>
 <nav>
 	<a href="." class="active">Demo</a>
-	<a href="tours/tour-usage.html">教程</a>
-	<a href="docs/doc-config.html">文档</a>
-	<a href="extension.html">扩展</a>
-	<a href="https://github.com/mycolorway/simditor/releases" target="_blank">下载</a>
+	<a href="docs/doc-usage.html">Docs</a>
+	<a href="extension.html">Extension</a>
+	<a href="https://github.com/mycolorway/simditor/releases" target="_blank">Download</a>
 </nav>
 
     <section id="page-demo">
 <textarea id="txt-content" data-autosave="editor-content" autofocus>
-<p>Simditor 是团队协作工具 <a href="http://tower.im">Tower</a> 使用的富文本编辑器。</p>
-<p>相比传统的编辑器它的特点是：</p>
-<ul>
-	<li>功能精简，加载快速</li>
-	<li>输出格式化的标准 HTML</li>
-	<li>每一个功能都有非常优秀的使用体验</li>
-</ul>
-<p>兼容的浏览器：IE10+、Chrome、Firefox、Safari。</p>
+    <p>Simditor is a browser-based WYSIWYG text editor.</p>
+    <p>It is used by <a href="http://tower.im">Tower</a> -- a popular project management web application.</p>
+    <p>Supported Browsers: IE10+、Chrome、Firefox、Safari.</p>
+    <ul>
+        <li><a href="https://github.com/mycolorway/simditor/releases" target="_blank" class="">Download Zip</a></li>
+        <li>Install with npm: $ npm install simditor</li>
+        <li>Install with bower: $ bower install simditor</li>
+    </ul>
 </textarea>
 </section>
 
@@ -61,7 +64,6 @@
 <script type="text/javascript" src="assets/scripts/hotkeys.js"></script>
 <script type="text/javascript" src="assets/scripts/simditor.js"></script>
 <script type="text/javascript" src="assets/scripts/page-demo.js"></script>
-
 
     
 <footer>
@@ -77,4 +79,3 @@
 
 </body>
 </html>
-

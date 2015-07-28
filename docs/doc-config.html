@@ -3,13 +3,17 @@
 <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
-    <title>配置 - Simditor</title>
+    <title>Options - Simditor</title>
     <meta name="viewport" content="width=device-width,initial-scale=1.0">
 
     <link rel="shortcut icon" href="../favicon.ico" type="image/x-icon" />
     <link rel="icon" href="../favicon.ico" sizes="32x32" />
     <link rel="icon" href="../favicon.ico" sizes="64x64" />
     <link rel="icon" href="../favicon.ico" sizes="128x128" />
+
+    <link rel="stylesheet" href="https://storage.googleapis.com/code.getmdl.io/1.0.1/material.indigo-pink.min.css">
+    <script src="https://storage.googleapis.com/code.getmdl.io/1.0.1/material.min.js"></script>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
 
     <link media="all" rel="stylesheet" type="text/css" href="../assets/styles/app.css" />
     <link media="all" rel="stylesheet" type="text/css" href="../assets/styles/simditor.css" />
@@ -33,44 +37,42 @@
     
 <header>
 	<h1><a href="../.">Simditor</a></h1>
-	<p class="desc">简单快速的富文本编辑器</p>
+	<p class="desc">An Easy and Fast WYSIWYG Editor</p>
 </header>
 <nav>
 	<a href="../.">Demo</a>
-	<a href="../tours/tour-usage.html">教程</a>
-	<a href="../docs/doc-config.html" class="active">文档</a>
-	<a href="../extension.html">扩展</a>
-	<a href="https://github.com/mycolorway/simditor/releases" target="_blank">下载</a>
+	<a href="../docs/doc-usage.html" class="active">Docs</a>
+	<a href="../extension.html">Extension</a>
+	<a href="https://github.com/mycolorway/simditor/releases" target="_blank">Download</a>
 </nav>
 
     <section class="page-doc page-sidebar" id="page-doc-config">
 	<aside>
 	<ul>
+		<li>
+			<i class="icon simditor-icon simditor-icon-caret-right"></i>
+			<a href="../docs/doc-usage.html">How to use</a>
+		</li>
 		<li class="active">
 			<i class="icon simditor-icon simditor-icon-caret-right"></i>
-			<a href="../docs/doc-config.html">配置</a>
+			<a href="../docs/doc-config.html">Options</a>
 		</li>
 		<li>
 			<i class="icon simditor-icon simditor-icon-caret-right"></i>
-			<a href="../docs/doc-method.html">方法</a>
+			<a href="../docs/doc-method.html">Methods</a>
 		</li>
 		<li>
 			<i class="icon simditor-icon simditor-icon-caret-right"></i>
-			<a href="../docs/doc-event.html">事件</a>
-		</li>
-		<li>
-			<i class="icon simditor-icon simditor-icon-caret-right"></i>
-			<a href="../docs/doc-button.html">Button</a>
+			<a href="../docs/doc-event.html">Events</a>
 		</li>
 	</ul>
 </aside>
 
-
-
 	<article class="editor-style">
-		<h3>默认配置</h3>
+		<h1>Options</h1>
 
-<p>Simditor 构造函数创建一个新的编辑器实例。通过传递的 options 参数定制实例。下面的示例使用所有选项及其默认值：</p>
+<p>You can customize Simditor by passing optional options when initializing Simditor.
+Here are all the optional options and their default values:</p>
 <div class="highlight"><pre><code class="language-coffee" data-lang="coffee"><span class="nv">editor = </span><span class="k">new</span> <span class="nx">Simditor</span>
   <span class="nv">textarea: </span><span class="kc">null</span>
   <span class="nv">placeholder: </span><span class="s">&#39;&#39;</span>
@@ -84,147 +86,145 @@
   <span class="nv">toolbarHidden: </span><span class="kc">false</span>
   <span class="nv">pasteImage: </span><span class="kc">false</span>
 </code></pre></div>
-<h3>配置选项</h3>
-
 <dl class="doc-configs">
   
     <dt id="anchor-textarea">
       <!--<span class="icon simditor-icon simditor-icon-caret-down"></span>-->
-      <span class="name">textarea</span>
+      <a href="#anchor-textarea" class="name">textarea</a>
       <span class="type">jQuery Object / HTML Element / Selector String</span>
-      <span class="default">默认值: null</span>
+      <span class="default">default: null</span>
     </dt>
     <dd class="expand">
-      <p>指定用来初始化编辑器的 <code>textarea</code> 元素，可以接受 jQuery Object、HTML Element 或者 Selector String 类型的参数。</p>
+      <p>The textarea element which Simditor will be created on.</p>
 
     </dd>
   
     <dt id="anchor-placeholder">
       <!--<span class="icon simditor-icon simditor-icon-caret-down"></span>-->
-      <span class="name">placeholder</span>
+      <a href="#anchor-placeholder" class="name">placeholder</a>
       <span class="type">String</span>
-      <span class="default">默认值: ''</span>
+      <span class="default">default: ''</span>
     </dt>
     <dd class="expand">
-      <p>编辑器的 placeholder，如果为空 Simditor 会取 textarea 的 placeholder 属性。</p>
+      <p>Placeholder of Simditor. Use the placeholder attribute value of the textarea by default.</p>
 
     </dd>
   
     <dt id="anchor-toolbar">
       <!--<span class="icon simditor-icon simditor-icon-caret-down"></span>-->
-      <span class="name">toolbar</span>
+      <a href="#anchor-toolbar" class="name">toolbar</a>
       <span class="type">Boolean / Array</span>
-      <span class="default">默认值: true</span>
+      <span class="default">default: true</span>
     </dt>
     <dd class="expand">
-      <p>是否显示工具栏按钮，可通过数组的形式配置具体显示按钮，支持以下按钮：</p>
+      <p>Show toolbar buttons. Accpect an array of buttons that includes：</p>
 <div class="highlight"><pre><code class="language-coffee" data-lang="coffee"><span class="p">[</span>
-  <span class="s">&#39;title&#39;</span>          <span class="c1"># 标题文字</span>
-  <span class="s">&#39;bold&#39;</span>           <span class="c1"># 加粗文字</span>
-  <span class="s">&#39;italic&#39;</span>         <span class="c1"># 斜体文字</span>
-  <span class="s">&#39;underline&#39;</span>      <span class="c1"># 下划线文字</span>
-  <span class="s">&#39;strikethrough&#39;</span>  <span class="c1"># 删除线文字</span>
-  <span class="s">&#39;color&#39;</span>          <span class="c1"># 修改文字颜色</span>
-  <span class="s">&#39;ol&#39;</span>             <span class="c1"># 有序列表</span>
-  <span class="s">&#39;ul&#39;</span>             <span class="c1"># 无序列表</span>
-  <span class="s">&#39;blockquote&#39;</span>     <span class="c1"># 引用</span>
-  <span class="s">&#39;code&#39;</span>           <span class="c1"># 代码</span>
-  <span class="s">&#39;table&#39;</span>          <span class="c1"># 表格</span>
-  <span class="s">&#39;link&#39;</span>           <span class="c1"># 插入链接</span>
-  <span class="s">&#39;image&#39;</span>          <span class="c1"># 插入图片</span>
-  <span class="s">&#39;hr&#39;</span>             <span class="c1"># 分割线</span>
-  <span class="s">&#39;indent&#39;</span>         <span class="c1"># 向右缩进</span>
-  <span class="s">&#39;outdent&#39;</span>        <span class="c1"># 向左缩进</span>
-  <span class="s">&#39;alignment&#39;</span>      <span class="c1"># 水平对齐</span>
+  <span class="s">&#39;title&#39;</span>
+  <span class="s">&#39;bold&#39;</span>
+  <span class="s">&#39;italic&#39;</span>
+  <span class="s">&#39;underline&#39;</span>
+  <span class="s">&#39;strikethrough&#39;</span>
+  <span class="s">&#39;color&#39;</span>
+  <span class="s">&#39;ol&#39;</span>             <span class="c1"># ordered list</span>
+  <span class="s">&#39;ul&#39;</span>             <span class="c1"># unordered list</span>
+  <span class="s">&#39;blockquote&#39;</span>
+  <span class="s">&#39;code&#39;</span>           <span class="c1"># code block</span>
+  <span class="s">&#39;table&#39;</span>
+  <span class="s">&#39;link&#39;</span>
+  <span class="s">&#39;image&#39;</span>
+  <span class="s">&#39;hr&#39;</span>             <span class="c1"># horizontal ruler</span>
+  <span class="s">&#39;indent&#39;</span>
+  <span class="s">&#39;outdent&#39;</span>
+  <span class="s">&#39;alignment&#39;</span>
 <span class="p">]</span>
 </code></pre></div>
     </dd>
   
     <dt id="anchor-toolbarFloat">
       <!--<span class="icon simditor-icon simditor-icon-caret-down"></span>-->
-      <span class="name">toolbarFloat</span>
+      <a href="#anchor-toolbarFloat" class="name">toolbarFloat</a>
       <span class="type">Boolean</span>
-      <span class="default">默认值: true</span>
+      <span class="default">default: true</span>
     </dt>
     <dd class="expand">
-      <p>是否让工具栏按钮在页面滚动的过程中始终可见。</p>
+      <p>Fixed the toolbar on the top of the browser when scrolling.</p>
 
     </dd>
   
     <dt id="anchor-toolbarFloatOffset">
       <!--<span class="icon simditor-icon simditor-icon-caret-down"></span>-->
-      <span class="name">toolbarFloatOffset</span>
+      <a href="#anchor-toolbarFloatOffset" class="name">toolbarFloatOffset</a>
       <span class="type">Number</span>
-      <span class="default">默认值: 0</span>
+      <span class="default">default: 0</span>
     </dt>
     <dd class="expand">
-      <p>自定义工具栏浮动的位置。</p>
+      <p>Top offset of the toolbar when fixed</p>
 
     </dd>
   
     <dt id="anchor-toolbarHidden">
       <!--<span class="icon simditor-icon simditor-icon-caret-down"></span>-->
-      <span class="name">toolbarHidden</span>
+      <a href="#anchor-toolbarHidden" class="name">toolbarHidden</a>
       <span class="type">Boolean</span>
-      <span class="default">默认值: false</span>
+      <span class="default">default: false</span>
     </dt>
     <dd class="expand">
-      <p>是否隐藏工具栏，隐藏后 <code>toolbarFloat</code> 会失效。</p>
+      <p>Hide the toolbar. Can not work together with <code>toolbarFloat</code>.</p>
 
     </dd>
   
     <dt id="anchor-defaultImage">
       <!--<span class="icon simditor-icon simditor-icon-caret-down"></span>-->
-      <span class="name">defaultImage</span>
+      <a href="#anchor-defaultImage" class="name">defaultImage</a>
       <span class="type">String</span>
-      <span class="default">默认值: images/image.png</span>
+      <span class="default">default: images/image.png</span>
     </dt>
     <dd class="expand">
-      <p>编辑器插入混排图片时使用的默认图片。</p>
+      <p>Default image placeholder. Used when inserting pictures in Simditor.</p>
 
     </dd>
   
     <dt id="anchor-tabIndent">
       <!--<span class="icon simditor-icon simditor-icon-caret-down"></span>-->
-      <span class="name">tabIndent</span>
+      <a href="#anchor-tabIndent" class="name">tabIndent</a>
       <span class="type">Boolean</span>
-      <span class="default">默认值: true</span>
+      <span class="default">default: true</span>
     </dt>
     <dd class="expand">
-      <p>是否在编辑器中使用 <code>tab</code> 键来缩进（代码块里的缩进不受这个选项控制）。</p>
+      <p>Use &#39;tab&#39; key to make an indent.</p>
 
     </dd>
   
     <dt id="anchor-params">
       <!--<span class="icon simditor-icon simditor-icon-caret-down"></span>-->
-      <span class="name">params</span>
+      <a href="#anchor-params" class="name">params</a>
       <span class="type">Object</span>
-      <span class="default">默认值: { }</span>
+      <span class="default">default: { }</span>
     </dt>
     <dd class="expand">
-      <p>键值对，在编辑器中增加 hidden 字段（input:hidden），通常用于生成 form 表单的默认参数。可生成如下标签：</p>
+      <p>Insert a hidden input in textarea to store params (key-value pairs). Usually used as the default params of the form. It will generate：</p>
 <div class="highlight"><pre><code class="language-html" data-lang="html"><span class="nt">&lt;input</span> <span class="na">type=</span><span class="s">&quot;hidden&quot;</span> <span class="na">name=</span><span class="s">&quot;key&quot;</span> <span class="na">value=</span><span class="s">&quot;val&quot;</span> <span class="nt">/&gt;</span>
 </code></pre></div>
     </dd>
   
     <dt id="anchor-upload">
       <!--<span class="icon simditor-icon simditor-icon-caret-down"></span>-->
-      <span class="name">upload</span>
+      <a href="#anchor-upload" class="name">upload</a>
       <span class="type">Boolean / Object</span>
-      <span class="default">默认值: false</span>
+      <span class="default">default: false</span>
     </dt>
     <dd class="expand">
-      <p>false 或者键值对，编辑器上传本地文件的配置，键值对可以设置的参数有：</p>
+      <p>Accept false or key - value pairs. Extra options for uploading images:</p>
 
 <ul>
-<li><code>url</code> 文件上传的接口地址；</li>
-<li><code>params</code> 键值对，指定文件上传接口的额外参数，上传的时候随文件一起提交；</li>
-<li><code>fileKey</code> 服务器端获取文件数据的参数名；</li>
-<li><code>connectionCount</code> 同时上传文件的最大数量；</li>
-<li><code>leaveConfirm</code> 在文件上传过程中离开页面时提醒的文案。</li>
+<li><code>url</code> image server address;</li>
+<li><code>params</code> extra params needs to send to the server;</li>
+<li><code>fileKey</code> prefix of the file name;</li>
+<li><code>connectionCount</code> maximum uploading images at the same time;</li>
+<li><code>leaveConfirm</code> message that will be alert if one leave the page when uploading is in progress;</li>
 </ul>
 
-<p>键值对参数的默认值：</p>
+<p>Default values of these params：</p>
 <div class="highlight"><pre><code class="language-coffee" data-lang="coffee"><span class="nv">editor = </span><span class="k">new</span> <span class="nx">Simditor</span>
   <span class="nv">textarea: </span><span class="nx">$</span><span class="p">(</span><span class="s">&#39;#editor&#39;</span><span class="p">)</span>
   <span class="nv">upload:</span>
@@ -232,12 +232,12 @@
     <span class="nv">params: </span><span class="kc">null</span>
     <span class="nv">fileKey: </span><span class="s">&#39;upload_file&#39;</span>
     <span class="nv">connectionCount: </span><span class="mi">3</span>
-    <span class="nv">leaveConfirm: </span><span class="s">&#39;正在上传文件，如果离开上传会自动取消&#39;</span>
+    <span class="nv">leaveConfirm: </span><span class="s">&#39;Uploading is in progress, are you sure to leave this page?&#39;</span>
 </code></pre></div>
-<p>图片上传成功后，服务端需要返回json格式的图片地址：</p>
+<p>JSON that will be sent back after uploading complete:</p>
 <div class="highlight"><pre><code class="language-coffee" data-lang="coffee"><span class="p">{</span>
   <span class="s">&quot;success&quot;</span><span class="o">:</span> <span class="kc">true</span><span class="o">/</span><span class="kc">false</span><span class="p">,</span>
-  <span class="s">&quot;msg&quot;</span><span class="o">:</span> <span class="s">&quot;上传失败信息&quot;</span><span class="p">,</span> <span class="c1"># 可选</span>
+  <span class="s">&quot;msg&quot;</span><span class="o">:</span> <span class="s">&quot;error message&quot;</span><span class="p">,</span> <span class="c1"># optional</span>
   <span class="s">&quot;file_path&quot;</span><span class="o">:</span> <span class="s">&quot;[real file path]&quot;</span>
 <span class="p">}</span>
 </code></pre></div>
@@ -245,83 +245,84 @@
   
     <dt id="anchor-pasteImage">
       <!--<span class="icon simditor-icon simditor-icon-caret-down"></span>-->
-      <span class="name">pasteImage</span>
+      <a href="#anchor-pasteImage" class="name">pasteImage</a>
       <span class="type">Boolean</span>
-      <span class="default">默认值: false</span>
+      <span class="default">default: false</span>
     </dt>
     <dd class="expand">
-      <p>是否允许粘贴上传图片，依赖 <code>upload</code> 选项，仅支持 Firefox 和 Chrome 浏览器。</p>
+      <p>Support uploading by pasting images from the clipboard. Work together with <code>upload</code> and only supported by Firefox and Chrome.</p>
 
     </dd>
   
     <dt id="anchor-imageButton">
       <!--<span class="icon simditor-icon simditor-icon-caret-down"></span>-->
-      <span class="name">imageButton</span>
+      <a href="#anchor-imageButton" class="name">imageButton</a>
       <span class="type">Array/String</span>
-      <span class="default">默认值: ['upload', 'external']</span>
+      <span class="default">default: ['upload', 'external']</span>
     </dt>
     <dd class="expand">
-      <p>自定义图片按钮的功能，支持<code>upload</code>和<code>external</code>两种，分别表示本地上传和外链图片。如果提供的选项是数组，那么会以下拉菜单的形式支持对应的功能。</p>
+      <p>Insert images by uploading from the local computer or external links. If both are enabled, Simditor will show a drop-down menu when click the image button.</p>
 
     </dd>
   
     <dt id="anchor-allowedTags">
       <!--<span class="icon simditor-icon simditor-icon-caret-down"></span>-->
-      <span class="name">allowedTags</span>
+      <a href="#anchor-allowedTags" class="name">allowedTags</a>
       <span class="type">Array</span>
-      <span class="default">默认值: null</span>
+      <span class="default">default: null</span>
     </dt>
     <dd class="expand">
-      <p>自定义编辑器支持的标签白名单。为了保证输出HTML的干净和标准，Simditor采用白名单的机制来过滤内容，默认的白名单是：</p>
+      <p>Tags that are allowed in Simditor.
+Default whitelist:</p>
 <div class="highlight"><pre><code class="language-coffee" data-lang="coffee"><span class="p">[</span><span class="s">&#39;br&#39;</span><span class="p">,</span> <span class="s">&#39;a&#39;</span><span class="p">,</span> <span class="s">&#39;img&#39;</span><span class="p">,</span> <span class="s">&#39;b&#39;</span><span class="p">,</span> <span class="s">&#39;strong&#39;</span><span class="p">,</span> <span class="s">&#39;i&#39;</span><span class="p">,</span> <span class="s">&#39;u&#39;</span><span class="p">,</span> <span class="s">&#39;font&#39;</span><span class="p">,</span> <span class="s">&#39;p&#39;</span><span class="p">,</span> <span class="s">&#39;ul&#39;</span><span class="p">,</span> <span class="s">&#39;ol&#39;</span><span class="p">,</span> <span class="s">&#39;li&#39;</span><span class="p">,</span> <span class="s">&#39;blockquote&#39;</span><span class="p">,</span> <span class="s">&#39;pre&#39;</span><span class="p">,</span> <span class="s">&#39;h1&#39;</span><span class="p">,</span> <span class="s">&#39;h2&#39;</span><span class="p">,</span> <span class="s">&#39;h3&#39;</span><span class="p">,</span> <span class="s">&#39;h4&#39;</span><span class="p">,</span> <span class="s">&#39;hr&#39;</span><span class="p">]</span>
 </code></pre></div>
-<p>自定义的白名单列表会覆盖编辑器默认的白名单列表。</p>
+<p>Note that custom whitelist will be merged into the default one.</p>
 
     </dd>
   
     <dt id="anchor-allowedAttributes">
       <!--<span class="icon simditor-icon simditor-icon-caret-down"></span>-->
-      <span class="name">allowedAttributes</span>
+      <a href="#anchor-allowedAttributes" class="name">allowedAttributes</a>
       <span class="type">Array</span>
-      <span class="default">默认值: null</span>
+      <span class="default">default: null</span>
     </dt>
     <dd class="expand">
-      <p>自定义编辑器支持的标签属性白名单，<code>style</code>属性是例外，行内样式的白名单由<code>allowedStyles</code>选项控制。默认的白名单是：</p>
+      <p>Whitelist of tag attributes. <code>style</code> attribute whitelist is defined in <code>allowedStyles</code>. Default whitelist:</p>
 <div class="highlight"><pre><code class="language-coffee" data-lang="coffee"><span class="nv">img: </span><span class="p">[</span><span class="s">&#39;src&#39;</span><span class="p">,</span> <span class="s">&#39;alt&#39;</span><span class="p">,</span> <span class="s">&#39;width&#39;</span><span class="p">,</span> <span class="s">&#39;height&#39;</span><span class="p">,</span> <span class="s">&#39;data-non-image&#39;</span><span class="p">]</span>
 <span class="nv">a: </span><span class="p">[</span><span class="s">&#39;href&#39;</span><span class="p">,</span> <span class="s">&#39;target&#39;</span><span class="p">]</span>
 <span class="nv">font: </span><span class="p">[</span><span class="s">&#39;color&#39;</span><span class="p">]</span>
 <span class="nv">code: </span><span class="p">[</span><span class="s">&#39;class&#39;</span><span class="p">]</span>
 </code></pre></div>
-<p>自定义的白名单列表会覆盖编辑器默认的白名单列表。</p>
+<p>Note that custom whitelist will be merged into the default one.</p>
 
     </dd>
   
     <dt id="anchor-allowedStyles">
       <!--<span class="icon simditor-icon simditor-icon-caret-down"></span>-->
-      <span class="name">allowedStyles</span>
+      <a href="#anchor-allowedStyles" class="name">allowedStyles</a>
       <span class="type">Array</span>
-      <span class="default">默认值: null</span>
+      <span class="default">default: null</span>
     </dt>
     <dd class="expand">
-      <p>自定义编辑器支持的行内样式白名单。默认的白名单是：</p>
+      <p>Inline style whitelist. Default whitelist:</p>
 <div class="highlight"><pre><code class="language-coffee" data-lang="coffee"><span class="nv">p: </span><span class="p">[</span><span class="s">&#39;margin-left&#39;</span><span class="p">,</span> <span class="s">&#39;text-align&#39;</span><span class="p">]</span>
 <span class="nv">h1: </span><span class="p">[</span><span class="s">&#39;margin-left&#39;</span><span class="p">]</span>
 <span class="nv">h2: </span><span class="p">[</span><span class="s">&#39;margin-left&#39;</span><span class="p">]</span>
 <span class="nv">h3: </span><span class="p">[</span><span class="s">&#39;margin-left&#39;</span><span class="p">]</span>
 <span class="nv">h4: </span><span class="p">[</span><span class="s">&#39;margin-left&#39;</span><span class="p">]</span>
 </code></pre></div>
-<p>自定义的白名单列表会覆盖编辑器默认的白名单列表。</p>
+<p>Note that custom whitelist will be merged into the default one.</p>
 
     </dd>
   
     <dt id="anchor-codeLanguages">
       <!--<span class="icon simditor-icon simditor-icon-caret-down"></span>-->
-      <span class="name">codeLanguages</span>
+      <a href="#anchor-codeLanguages" class="name">codeLanguages</a>
       <span class="type">Array</span>
-      <span class="default">默认值: null</span>
+      <span class="default">default: null</span>
     </dt>
     <dd class="expand">
-      <p>自定义代码（code）按钮的支持的语言列表，默认的语言列表是：</p>
+      <p>A list of programming languages supported by code block. Default list:</p>
 <div class="highlight"><pre><code class="language-coffee" data-lang="coffee"><span class="p">[</span>
   <span class="p">{</span> <span class="nv">name: </span><span class="s">&#39;Bash&#39;</span><span class="p">,</span> <span class="nv">value: </span><span class="s">&#39;bash&#39;</span> <span class="p">}</span>
   <span class="p">{</span> <span class="nv">name: </span><span class="s">&#39;C++&#39;</span><span class="p">,</span> <span class="nv">value: </span><span class="s">&#39;c++&#39;</span> <span class="p">}</span>
@@ -367,4 +368,3 @@
 
 </body>
 </html>
-

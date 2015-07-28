@@ -3,13 +3,17 @@
 <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
-    <title>方法 - Simditor</title>
+    <title>Methods - Simditor</title>
     <meta name="viewport" content="width=device-width,initial-scale=1.0">
 
     <link rel="shortcut icon" href="../favicon.ico" type="image/x-icon" />
     <link rel="icon" href="../favicon.ico" sizes="32x32" />
     <link rel="icon" href="../favicon.ico" sizes="64x64" />
     <link rel="icon" href="../favicon.ico" sizes="128x128" />
+
+    <link rel="stylesheet" href="https://storage.googleapis.com/code.getmdl.io/1.0.1/material.indigo-pink.min.css">
+    <script src="https://storage.googleapis.com/code.getmdl.io/1.0.1/material.min.js"></script>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
 
     <link media="all" rel="stylesheet" type="text/css" href="../assets/styles/app.css" />
     <link media="all" rel="stylesheet" type="text/css" href="../assets/styles/simditor.css" />
@@ -33,14 +37,13 @@
     
 <header>
 	<h1><a href="../.">Simditor</a></h1>
-	<p class="desc">简单快速的富文本编辑器</p>
+	<p class="desc">An Easy and Fast WYSIWYG Editor</p>
 </header>
 <nav>
 	<a href="../.">Demo</a>
-	<a href="../tours/tour-usage.html">教程</a>
-	<a href="../docs/doc-config.html" class="active">文档</a>
-	<a href="../extension.html">扩展</a>
-	<a href="https://github.com/mycolorway/simditor/releases" target="_blank">下载</a>
+	<a href="../docs/doc-usage.html" class="active">Docs</a>
+	<a href="../extension.html">Extension</a>
+	<a href="https://github.com/mycolorway/simditor/releases" target="_blank">Download</a>
 </nav>
 
     <section class="page-doc page-sidebar" id="page-doc-method">
@@ -48,35 +51,33 @@
 	<ul>
 		<li>
 			<i class="icon simditor-icon simditor-icon-caret-right"></i>
-			<a href="../docs/doc-config.html">配置</a>
+			<a href="../docs/doc-usage.html">How to use</a>
+		</li>
+		<li>
+			<i class="icon simditor-icon simditor-icon-caret-right"></i>
+			<a href="../docs/doc-config.html">Options</a>
 		</li>
 		<li class="active">
 			<i class="icon simditor-icon simditor-icon-caret-right"></i>
-			<a href="../docs/doc-method.html">方法</a>
+			<a href="../docs/doc-method.html">Methods</a>
 		</li>
 		<li>
 			<i class="icon simditor-icon simditor-icon-caret-right"></i>
-			<a href="../docs/doc-event.html">事件</a>
-		</li>
-		<li>
-			<i class="icon simditor-icon simditor-icon-caret-right"></i>
-			<a href="../docs/doc-button.html">Button</a>
+			<a href="../docs/doc-event.html">Events</a>
 		</li>
 	</ul>
 </aside>
 
-
-
 	<article class="editor-style">
-		<p>Simditor 初始化之后，编辑器实例会暴露一些公共方法供调用：</p>
-<div class="highlight"><pre><code class="language-coffee" data-lang="coffee"><span class="c1"># 初始化 Simditor</span>
+		<p>Keep a reference of Simditor instance and call the methods：</p>
+<div class="highlight"><pre><code class="language-coffee" data-lang="coffee"><span class="c1"># init Simditor</span>
 <span class="nv">editor = </span><span class="k">new</span> <span class="nx">Simditor</span>
   <span class="nv">textarea: </span><span class="nx">$</span><span class="p">(</span><span class="s">&#39;#editor&#39;</span><span class="p">)</span>
 
-<span class="c1"># 调用 setValue 方法设置内容</span>
+<span class="c1"># call setValue to set content</span>
 <span class="nx">editor</span><span class="p">.</span><span class="nx">setValue</span> <span class="s">&#39;hello world&#39;</span>
 </code></pre></div>
-<h3>公共方法</h3>
+<h1>Public Methods</h1>
 
 <dl class="doc-methods">
   
@@ -94,7 +95,7 @@
       
     </dt>
     <dd class="expand">
-      <p>设置编辑器的正文内容，Simditor 会自动格式化新设置的内容。</p>
+      <p>Set the body content of Simditor. Simditor would format the new content automatically.</p>
 
     </dd>
   
@@ -105,11 +106,11 @@
         
       </span>
       
-      <span class="return">返回值: String</span>
+      <span class="return">return value: String</span>
       
     </dt>
     <dd class="expand">
-      <p>用于获取编辑器的正文内容，返回值为编辑器正文的 HTML 内容。</p>
+      <p>Get the body content of Simditor in HTML format.</p>
 
     </dd>
   
@@ -120,11 +121,11 @@
         
       </span>
       
-      <span class="return">返回值: String</span>
+      <span class="return">return value: String</span>
       
     </dt>
     <dd class="expand">
-      <p>将编辑器的正文内容同步到 textarea 元素的 val 属性，返回值为编辑器正文的 HTML 内容。</p>
+      <p>Synchronize the body content of Simditor to the value attribute of the textarea. Return the HTML content of the editor.</p>
 
     </dd>
   
@@ -135,11 +136,11 @@
         
       </span>
       
-      <span class="return">返回值: jQuery Object</span>
+      <span class="return">return value: jQuery Object</span>
       
     </dt>
     <dd class="expand">
-      <p>用于把焦点移动到编辑器，触发 focus 事件。</p>
+      <p>Focus the textarea and trigger &#39;focus&#39; event.</p>
 
     </dd>
   
@@ -150,11 +151,11 @@
         
       </span>
       
-      <span class="return">返回值: jQuery Object</span>
+      <span class="return">return value: jQuery Object</span>
       
     </dt>
     <dd class="expand">
-      <p>用于让编辑器失去焦点，触发 blur 事件。</p>
+      <p>Blur the textarea and trigger &#39;blur&#39; event.</p>
 
     </dd>
   
@@ -165,11 +166,11 @@
         
       </span>
       
-      <span class="return">返回值: jQuery Object</span>
+      <span class="return">return value: jQuery Object</span>
       
     </dt>
     <dd class="expand">
-      <p>用于隐藏编辑器界面中的 popover 弹出窗，如编辑图片、链接的弹窗。</p>
+      <p>Hide the popover dialog such as image editing and link dialog.</p>
 
     </dd>
   
@@ -182,7 +183,7 @@
       
     </dt>
     <dd class="expand">
-      <p>恢复编辑器到初始化之前的状态。</p>
+      <p>Destroy Simditor, unbind all event and remove all HTML elements created by Simditor.</p>
 
     </dd>
   
@@ -206,4 +207,3 @@
 
 </body>
 </html>
-
