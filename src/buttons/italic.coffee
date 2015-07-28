@@ -13,20 +13,17 @@ class ItalicButton extends Button
 
   _init: ->
     if @editor.util.os.mac
-      @title = @title + ' ( Cmd + i )'
+      @title = "#{@title} ( Cmd + i )"
     else
-      @title = @title + ' ( Ctrl + i )'
+      @title = "#{@title} ( Ctrl + i )"
       @shortcut = 'ctrl+i'
 
     super()
 
-  status: ($node) ->
-    @setDisabled $node.is(@disableTag) if $node?
-    return @disabled if @disabled
-
+  _activeStatus: ->
     active = document.queryCommandState('italic') is true
     @setActive active
-    active
+    @active
 
   command: ->
     document.execCommand 'italic'
@@ -38,4 +35,3 @@ class ItalicButton extends Button
 
 
 Simditor.Toolbar.addButton ItalicButton
-

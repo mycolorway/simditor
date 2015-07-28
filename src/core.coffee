@@ -2,10 +2,10 @@
 class Simditor extends SimpleModule
   @connect Util
   @connect InputManager
+  @connect Selection
   @connect UndoManager
   @connect Keystroke
   @connect Formatter
-  @connect Selection
   @connect Toolbar
   @connect Indentation
 
@@ -57,8 +57,8 @@ class Simditor extends SimpleModule
     if @util.browser.mozilla
       @util.reflow()
       try
-        document.execCommand "enableObjectResizing", false, false
-        document.execCommand "enableInlineTableEditing", false, false
+        document.execCommand 'enableObjectResizing', false, false
+        document.execCommand 'enableInlineTableEditing', false, false
       catch e
 
   _tpl:"""

@@ -5,9 +5,11 @@ class UndoManager extends SimpleModule
 
   _index: -1
 
-  _capacity: 50
+  _capacity: 20
 
-  _timer: null
+  _startPosition: null
+
+  _endPosition: null
 
   _init: ->
     @editor = @_module
@@ -34,17 +36,38 @@ class UndoManager extends SimpleModule
       @redo()
       false
 
-    @editor.on 'valuechanged', (e, src) =>
+    throttledPushState = @editor.util.throttle =>
+      @_pushUndoState()
+    , 500
+
+    @editor.on 'valuechanged', (e, src) ->
       return if src == 'undo' or src == 'redo'
+      throttledPushState()
 
-      if @_timer
-        clearTimeout @_timer
-        @_timer = null
+    @editor.on 'selectionchanged', (e) =>
+      @_startPosition = null
+      @_endPosition = null
 
-      @_timer = setTimeout =>
-        @_pushUndoState()
-        @_timer = null
-      , 200
+      @update()
+
+    @editor.on 'blur', (e) =>
+      @_startPosition = null
+      @_endPosition = null
+
+  startPosition: ->
+    if @editor.selection._range
+      @_startPosition ||= @_getPosition('start')
+
+    @_startPosition
+
+  endPosition: ->
+    if @editor.selection._range
+      @_endPosition ||= do =>
+        range = @editor.selection.range()
+        return @_startPosition if range.collapsed
+        @_getPosition 'end'
+
+    @_endPosition
 
   _pushUndoState: ->
     return if @editor.triggerHandler('pushundostate') == false
@@ -117,7 +140,7 @@ class UndoManager extends SimpleModule
 
     offset = 0
     merging = false
-    $parent.contents().each (i, child) =>
+    $parent.contents().each (i, child) ->
       if index == i or node == child
         return false
 
@@ -133,21 +156,26 @@ class UndoManager extends SimpleModule
 
     offset
 
-  _getNodePosition: (node, offset) ->
-    if node.nodeType == 3
+  _getPosition: (type = 'start') ->
+    range = @editor.selection.range()
+    offset = range["#{type}Offset"]
+    $nodes = @editor.selection["#{type}Nodes"]()
+
+    # merge text nodes before startContainer/endContainer
+    if (node = $nodes.first()[0]).nodeType == Node.TEXT_NODE
       prevNode = node.previousSibling
-      while prevNode and prevNode.nodeType == 3
+      while prevNode and prevNode.nodeType == Node.TEXT_NODE
         node = prevNode
         offset += @editor.util.getNodeLength prevNode
         prevNode = prevNode.previousSibling
-    else
-      offset = @_getNodeOffset(node, offset)
 
-    position = []
-    position.unshift offset
-    @editor.util.traverseUp (n) =>
-      position.unshift @_getNodeOffset(n)
-    , node
+      nodes = $nodes.get()
+      nodes[0] = node
+      $nodes = $ nodes
+
+    position = [offset]
+    $nodes.each (i, node) =>
+      position.unshift @_getNodeOffset(node)
 
     position
 
@@ -172,19 +200,13 @@ class UndoManager extends SimpleModule
   caretPosition: (caret) ->
     # calculate current caret state
     if !caret
-      range = @editor.selection.getRange()
-      return {} unless @editor.inputManager.focused and range?
-
-      caret =
-        start: []
-        end: null
-        collapsed: true
-
-      caret.start = @_getNodePosition(range.startContainer, range.startOffset)
-
-      unless range.collapsed
-        caret.end = @_getNodePosition(range.endContainer, range.endOffset)
-        caret.collapsed = false
+      range = @editor.selection.range()
+      caret = if @editor.inputManager.focused and range?
+        start: @startPosition()
+        end: @endPosition()
+        collapsed: range.collapsed
+      else
+        {}
 
       return caret
 
@@ -214,8 +236,4 @@ class UndoManager extends SimpleModule
       range.setStart(startContainer, startOffset)
       range.setEnd(endContainer, endOffset)
 
-      @editor.selection.selectRange range
-
-
-
-
+      @editor.selection.range range

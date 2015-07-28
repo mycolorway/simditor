@@ -14,16 +14,16 @@ class ColorButton extends Button
 
   renderMenu: ->
     $('''
-      <ul class="color-list">
-        <li><a href="javascript:;" class="font-color font-color-1" data-color=""></a></li>
-        <li><a href="javascript:;" class="font-color font-color-2" data-color=""></a></li>
-        <li><a href="javascript:;" class="font-color font-color-3" data-color=""></a></li>
-        <li><a href="javascript:;" class="font-color font-color-4" data-color=""></a></li>
-        <li><a href="javascript:;" class="font-color font-color-5" data-color=""></a></li>
-        <li><a href="javascript:;" class="font-color font-color-6" data-color=""></a></li>
-        <li><a href="javascript:;" class="font-color font-color-7" data-color=""></a></li>
-        <li><a href="javascript:;" class="font-color font-color-default" data-color=""></a></li>
-      </ul>
+    <ul class="color-list">
+      <li><a href="javascript:;" class="font-color font-color-1"></a></li>
+      <li><a href="javascript:;" class="font-color font-color-2"></a></li>
+      <li><a href="javascript:;" class="font-color font-color-3"></a></li>
+      <li><a href="javascript:;" class="font-color font-color-4"></a></li>
+      <li><a href="javascript:;" class="font-color font-color-5"></a></li>
+      <li><a href="javascript:;" class="font-color font-color-6"></a></li>
+      <li><a href="javascript:;" class="font-color font-color-7"></a></li>
+      <li><a href="javascript:;" class="font-color font-color-default"></a></li>
+    </ul>
     ''').appendTo(@menuWrapper)
 
     @menuWrapper.on 'mousedown', '.color-list', (e) ->
@@ -39,11 +39,17 @@ class ColorButton extends Button
         rgb = window.getComputedStyle($p[0], null).getPropertyValue('color')
         hex = @_convertRgbToHex rgb
       else
-        rgb = window.getComputedStyle($link[0], null).getPropertyValue('background-color')
+        rgb = window.getComputedStyle($link[0], null)
+          .getPropertyValue('background-color')
         hex = @_convertRgbToHex rgb
 
       return unless hex
+
+      # Use span[style] instead of font[color]
+      document.execCommand 'styleWithCSS', false, true
       document.execCommand 'foreColor', false, hex
+      document.execCommand 'styleWithCSS', false, false
+      
       unless @editor.util.support.oninput
         @editor.trigger 'valuechanged'
 
@@ -62,4 +68,3 @@ class ColorButton extends Button
 
 
 Simditor.Toolbar.addButton ColorButton
-

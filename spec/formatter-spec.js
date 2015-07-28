@@ -57,7 +57,7 @@
       expect($p1).toBe('this is\ntest');
       return expect($p2).toBe('this is test');
     });
-    it('can remove empty nodes and useless paragraph', function() {
+    return it('can remove empty nodes and useless paragraph', function() {
       var $p1, $p2;
       $p1 = $('<div><p></p><p>this is test</p><p><br></p></div>');
       $p2 = $('<div><br/><hr/><img src="" alt=""/></div>');
@@ -65,15 +65,6 @@
       editor.formatter.beautify($p2);
       expect($p1.html()).toBe('<p>this is test</p><p><br></p>');
       return expect($p2.html()).toBe('<br><hr><img src="" alt="">');
-    });
-    return it('can trigger custom event after call decorate method', function() {
-      var spyDecorate, spyUnDecorate;
-      spyDecorate = spyOnEvent(editor, 'decorate');
-      spyUnDecorate = spyOnEvent(editor, 'undecorate');
-      editor.formatter.decorate();
-      editor.formatter.undecorate();
-      expect(spyDecorate).toHaveBeenTriggered();
-      return expect(spyUnDecorate).toHaveBeenTriggered();
     });
   });
 

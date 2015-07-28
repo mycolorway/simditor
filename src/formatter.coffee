@@ -4,36 +4,46 @@ class Formatter extends SimpleModule
   @pluginName: 'Formatter'
 
   opts:
-    allowedTags: null
-    allowedAttributes: null
+    allowedTags: []
+    allowedAttributes: {}
+    allowedStyles: {}
 
   _init: ->
     @editor = @_module
 
-    @_allowedTags = @opts.allowedTags || ['br', 'a', 'img', 'b', 'strong', 'i',
+    @_allowedTags = $.merge(
+      ['br', 'span', 'a', 'img', 'b', 'strong', 'i',
       'u', 'font', 'p', 'ul', 'ol', 'li', 'blockquote', 'pre', 'code', 'h1',
-      'h2', 'h3', 'h4', 'hr']
-    @_allowedAttributes = @opts.allowedAttributes ||
+      'h2', 'h3', 'h4', 'hr'],
+      @opts.allowedTags
+    )
+
+    @_allowedAttributes = $.extend
       img: ['src', 'alt', 'width', 'height', 'data-non-image']
       a: ['href', 'target']
       font: ['color']
       code: ['class']
-    @_allowedStyles = @opts.allowedStyles ||
+    , @opts.allowedAttributes
+
+    @_allowedStyles = $.extend
+      span: ['color']
       p: ['margin-left', 'text-align']
-      h1: ['margin-left']
-      h2: ['margin-left']
-      h3: ['margin-left']
-      h4: ['margin-left']
+      h1: ['margin-left', 'text-align']
+      h2: ['margin-left', 'text-align']
+      h3: ['margin-left', 'text-align']
+      h4: ['margin-left', 'text-align']
+    , @opts.allowedStyles
 
     @editor.body.on 'click', 'a', (e) ->
       false
 
   decorate: ($el = @editor.body) ->
     @editor.trigger 'decorate', [$el]
+    $el
 
   undecorate: ($el = @editor.body.clone()) ->
     @editor.trigger 'undecorate', [$el]
-    $.trim $el.html()
+    $el
 
   autolink: ($el = @editor.body) ->
     linkNodes = []
@@ -44,7 +54,7 @@ class Formatter extends SimpleModule
         if $node.is('a') or $node.closest('a, pre', $el).length
           return
 
-        if $node.contents().length
+        if !$node.is('iframe') and $node.contents().length
           findLinkNode $node
         else if (text = $node.text()) and /https?:\/\/|www\./ig.test(text)
           linkNodes.push $node
@@ -116,8 +126,8 @@ class Formatter extends SimpleModule
         $node.remove()
       return
 
-    contents = $node.contents()
-    isDecoration = $node.is('[class^="simditor-"]')
+    contents = if $node.is('iframe') then null else $node.contents()
+    isDecoration = @editor.util.isDecoratedNode($node)
 
     if $node.is(@_allowedTags.join(',')) or isDecoration
       # img inside a is not allowed
@@ -193,8 +203,8 @@ class Formatter extends SimpleModule
         result += node.nodeValue
       else if node.nodeType == 1
         $node = $(node)
-        children = $node.contents()
-        result += @clearHtml children if children.length > 0
+        children = if $node.is('iframe') then null else $node.contents()
+        result += @clearHtml(children) if children and children.length > 0
         if lineBreak and i < contents.length - 1 and $node.is 'br, p, div, li,\
           tr, pre, address, artticle, aside, dl, figcaption, footer, h1, h2,\
           h3, h4, header'

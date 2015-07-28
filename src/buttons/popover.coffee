@@ -34,7 +34,7 @@ class Popover extends SimpleModule
     return unless $target?
 
     #hide other popovers
-    @el.siblings('.simditor-popover').each (i, popover) =>
+    @el.siblings('.simditor-popover').each (i, popover) ->
       popover = $(popover).data('popover')
       popover.hide() if popover.active
 
@@ -51,10 +51,9 @@ class Popover extends SimpleModule
         left: -9999
       }).show()
 
-      setTimeout =>
-        @refresh(position)
-        @trigger 'popovershow'
-      , 0
+      @editor.util.reflow()
+      @refresh(position)
+      @trigger 'popovershow'
 
   hide: ->
     return unless @active
@@ -75,7 +74,8 @@ class Popover extends SimpleModule
     else if position is 'top'
       top = targetOffset.top - editorOffset.top - @el.height()
 
-    left = Math.min(targetOffset.left - editorOffset.left, @editor.wrapper.width() - @el.outerWidth() - 10)
+    maxLeft = @editor.wrapper.width() - @el.outerWidth() - 10
+    left = Math.min(targetOffset.left - editorOffset.left, maxLeft)
 
     @el.css({
       top: top + @offset.top,
