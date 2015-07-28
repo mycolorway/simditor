@@ -629,7 +629,10 @@ Formatter = (function(superClass) {
           if (!((allowedAttributes != null) && (ref1 = attr.name, indexOf.call(allowedAttributes, ref1) >= 0))) {
             $node.removeAttr(attr.name);
           }
-          this._cleanNodeStyles($node);
+        }
+        this._cleanNodeStyles($node);
+        if ($node.is('span') && $node[0].attributes.length === 0) {
+          $node.contents().first().unwrap();
         }
       }
     } else if ($node[0].nodeType === 1 && !$node.is(':empty')) {
