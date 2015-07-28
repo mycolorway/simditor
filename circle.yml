@@ -2,4 +2,6 @@ dependencies:
   pre:
     - npm install -g bower
     - bower install
-
+machine:
+  ruby:
+    version: 2.2.1
