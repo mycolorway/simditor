@@ -54,7 +54,7 @@ class Formatter extends SimpleModule
         if $node.is('a') or $node.closest('a, pre', $el).length
           return
 
-        if $node.contents().length
+        if !$node.is('iframe') and $node.contents().length
           findLinkNode $node
         else if (text = $node.text()) and /https?:\/\/|www\./ig.test(text)
           linkNodes.push $node
@@ -126,7 +126,7 @@ class Formatter extends SimpleModule
         $node.remove()
       return
 
-    contents = $node.contents()
+    contents = if $node.is('iframe') then null else $node.contents()
     isDecoration = @editor.util.isDecoratedNode($node)
 
     if $node.is(@_allowedTags.join(',')) or isDecoration
@@ -203,8 +203,8 @@ class Formatter extends SimpleModule
         result += node.nodeValue
       else if node.nodeType == 1
         $node = $(node)
-        children = $node.contents()
-        result += @clearHtml children if children.length > 0
+        children = if $node.is('iframe') then null else $node.contents()
+        result += @clearHtml(children) if children and children.length > 0
         if lineBreak and i < contents.length - 1 and $node.is 'br, p, div, li,\
           tr, pre, address, artticle, aside, dl, figcaption, footer, h1, h2,\
           h3, h4, header'

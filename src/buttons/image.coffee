@@ -317,6 +317,7 @@ class ImageButton extends Button
 
     $img = $('<img/>').attr('alt', name)
     range.insertNode $img[0]
+    @editor.selection.setRangeAfter $img, range
     @editor.trigger 'valuechanged'
 
     # $nextBlock = $block.next 'p'
