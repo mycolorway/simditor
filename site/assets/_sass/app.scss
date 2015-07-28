@@ -287,6 +287,7 @@ section.page-doc {
       padding-top: 0;
     }
 
+    & > a,
     & > span {
       margin-left: 10px;
 
@@ -361,12 +362,13 @@ section#page-extension {
       margin: 20px 0 0 0;
       display: inline-block;
       padding: 6px 12px;
-      color: #ffffff;
-      background: #aaaaaa;
+      color: #333333;
+      border: 1px solid #cccccc;
       border-radius: 4px;
 
       &:hover {
-        background: #bbbbbb;
+        border-color: #aaaaaa;
+        background: #f3f3f3;
       }
     }
   }

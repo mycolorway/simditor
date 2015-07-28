@@ -136,7 +136,7 @@
     ['br', 'a', 'img', 'b', 'strong', 'i', 'u', 'font', 'p', 'ul', 'ol', 'li', 'blockquote', 'pre', 'h1', 'h2', 'h3', 'h4', 'hr']
     ```
 
-    Note that custom whitelist will overwrite the default one.
+    Note that custom whitelist will be merged into the default one.
 
 - name: "allowedAttributes"
   type: "Array"
@@ -151,7 +151,7 @@
     code: ['class']
     ```
 
-    Note that custom whitelist will overwrite the default one.
+    Note that custom whitelist will be merged into the default one.
 
 - name: "allowedStyles"
   type: "Array"
@@ -167,13 +167,13 @@
     h4: ['margin-left']
     ```
 
-    Note that custom whitelist will overwrite the default one.
+    Note that custom whitelist will be merged into the default one.
 
 - name: 'codeLanguages'
   type: 'Array'
   default: 'null'
   description: |
-    A list of programming languages that supported by code block. Default list:
+    A list of programming languages supported by code block. Default list:
 
     ```coffee
     [

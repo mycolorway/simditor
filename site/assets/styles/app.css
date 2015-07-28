@@ -603,10 +603,10 @@ section.page-doc dt:first-child {
   margin-top: 0;
   padding-top: 0;
 }
-section.page-doc dt > span {
+section.page-doc dt > a, section.page-doc dt > span {
   margin-left: 10px;
 }
-section.page-doc dt > span:first-child {
+section.page-doc dt > a:first-child, section.page-doc dt > span:first-child {
   margin-left: 0;
 }
 section.page-doc dt .name {
@@ -658,10 +658,11 @@ section#page-extension article #btn-submit-extension {
   margin: 20px 0 0 0;
   display: inline-block;
   padding: 6px 12px;
-  color: #ffffff;
-  background: #aaaaaa;
+  color: #333333;
+  border: 1px solid #cccccc;
   border-radius: 4px;
 }
 section#page-extension article #btn-submit-extension:hover {
-  background: #bbbbbb;
+  border-color: #aaaaaa;
+  background: #f3f3f3;
 }
