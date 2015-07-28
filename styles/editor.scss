@@ -400,7 +400,9 @@ $simditor-button-height: 40px;
           display: none;
 
           ul {
-            min-width: 240px;
+            li {
+              white-space: nowrap;
+            }
           }
         }
       }

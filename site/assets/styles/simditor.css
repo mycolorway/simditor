@@ -478,8 +478,8 @@
 .simditor .simditor-toolbar .toolbar-menu.toolbar-menu-table .menu-edit-table {
   display: none;
 }
-.simditor .simditor-toolbar .toolbar-menu.toolbar-menu-table .menu-edit-table ul {
-  min-width: 240px;
+.simditor .simditor-toolbar .toolbar-menu.toolbar-menu-table .menu-edit-table ul li {
+  white-space: nowrap;
 }
 .simditor .simditor-toolbar .toolbar-menu.toolbar-menu-image .menu-item-upload-image {
   position: relative;
