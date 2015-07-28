@@ -306,10 +306,10 @@ class ImageButton extends Button
     range.deleteContents()
     @editor.selection.range range
 
-    $block = @editor.selection.blockNodes().last()
-    if $block.is('p') and !@editor.util.isEmptyNode $block
-      $block = $('<p/>').append(@editor.util.phBr).insertAfter($block)
-      @editor.selection.setRangeAtStartOf $block, range
+    # $block = @editor.selection.blockNodes().last()
+    # if $block.is('p') and !@editor.util.isEmptyNode $block
+    #   $block = $('<p/>').append(@editor.util.phBr).insertAfter($block)
+    #   @editor.selection.setRangeAtStartOf $block, range
     #else if $block.is('li')
       #$block = @editor.util.furthestNode $block, 'ul, ol'
       #$block = $('<p/>').append(@editor.util.phBr).insertAfter($block)
@@ -317,11 +317,12 @@ class ImageButton extends Button
 
     $img = $('<img/>').attr('alt', name)
     range.insertNode $img[0]
+    @editor.trigger 'valuechanged'
 
-    $nextBlock = $block.next 'p'
-    unless $nextBlock.length > 0
-      $nextBlock = $('<p/>').append(@editor.util.phBr).insertAfter($block)
-    @editor.selection.setRangeAtStartOf $nextBlock
+    # $nextBlock = $block.next 'p'
+    # unless $nextBlock.length > 0
+    #   $nextBlock = $('<p/>').append(@editor.util.phBr).insertAfter($block)
+    # @editor.selection.setRangeAtStartOf $nextBlock
 
     $img
 
