@@ -1,4 +1,4 @@
-describe 'Simditor table', ->
+describe 'Simditor table button', ->
   editor = null
 
   beforeEach ->

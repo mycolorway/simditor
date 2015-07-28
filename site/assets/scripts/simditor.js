@@ -89,10 +89,8 @@ Selection = (function(superClass) {
       if (!this.editor.inputManager.focused && ffOrIE) {
         this.editor.body.focus();
       }
-    } else if (this.editor.inputManager.focused && this._selection.rangeCount) {
-      this._range || (this._range = this._selection.getRangeAt(0));
-    } else {
-      this._range = null;
+    } else if (!this._range && this.editor.inputManager.focused && this._selection.rangeCount) {
+      this._range = this._selection.getRangeAt(0);
     }
     return this._range;
   };

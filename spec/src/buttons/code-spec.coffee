@@ -16,6 +16,7 @@ describe 'Simditor code button', ->
     editor.focus()
 
     $button = editor.toolbar.list.find('.toolbar-item-code')
+    button = $button.data 'button'
     expect($button.length).toBe(1)
 
     $p = editor.body.find 'p:first'
@@ -23,7 +24,7 @@ describe 'Simditor code button', ->
     range.setStart($p[0], 0)
     range.setEnd($p[0], 0)
     editor.selection.range range
-    $button.mousedown()
+    button.command()
     editor.trigger 'selectionchanged'
 
     expect(editor.getValue()).toBe('<pre><code>var test = 1;</code></pre>')

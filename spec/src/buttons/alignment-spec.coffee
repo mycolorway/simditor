@@ -1,4 +1,4 @@
-describe 'Simditor buttons', ->
+describe 'Simditor alignment button', ->
   editor = null
   $p1 = null
   $p2 = null
@@ -26,8 +26,9 @@ describe 'Simditor buttons', ->
     editor = null
 
   it "can align to right", ->
-    expect($p1.css('text-align')).toBe('start')
-    expect($p2.css('text-align')).toBe('start')
+    leftValues = ['left', 'start', '-moz-left', '-webkit-auto']
+    expect(leftValues).toContain($p1.css('text-align'))
+    expect(leftValues).toContain($p2.css('text-align'))
     button = editor.toolbar.list.find('.toolbar-item-alignment').data 'button'
     button.command "right"
     expect($p1.css('text-align')).toBe('right')
@@ -40,7 +41,8 @@ describe 'Simditor buttons', ->
     expect($p2.css('text-align')).toBe('center')
 
   it "can align to left", ->
+    leftValues = ['left', 'start', '-moz-left', '-webkit-auto']
     button = editor.toolbar.list.find('.toolbar-item-alignment').data 'button'
     button.command "left"
-    expect($p1.css('text-align')).toBe('start')
-    expect($p2.css('text-align')).toBe('start')
+    expect(leftValues).toContain($p1.css('text-align'))
+    expect(leftValues).toContain($p2.css('text-align'))
