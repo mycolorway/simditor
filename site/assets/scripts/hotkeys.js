@@ -8,7 +8,7 @@
     // Node. Does not work with strict CommonJS, but
     // only CommonJS-like environments that support module.exports,
     // like Node.
-    module.exports = factory(require("jquery"),require("simple-module"));
+    module.exports = factory(require("jquery"),require("simplemodule"));
   } else {
     root.simple = root.simple || {};
     root.simple['hotkeys'] = factory(jQuery,SimpleModule);

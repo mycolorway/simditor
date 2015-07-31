@@ -82,7 +82,7 @@ class InputManager extends SimpleModule
       @editor.body.find('pre:empty').append(@editor.util.phBr)
 
       if !@editor.util.support.onselectionchange and @focused
-        @throttledValueChanged()
+        @throttledSelectionChanged()
 
     @editor.body.on('keydown', $.proxy(@_onKeyDown, @))
       .on('keypress', $.proxy(@_onKeyPress, @))

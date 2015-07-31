@@ -830,7 +830,7 @@ InputManager = (function(superClass) {
         });
         _this.editor.body.find('pre:empty').append(_this.editor.util.phBr);
         if (!_this.editor.util.support.onselectionchange && _this.focused) {
-          return _this.throttledValueChanged();
+          return _this.throttledSelectionChanged();
         }
       };
     })(this));
