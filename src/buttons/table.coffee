@@ -432,7 +432,7 @@ class TableButton extends Button
     @editor.selection.setRangeAtStartOf($block) if $block.length > 0
 
   command: (param) ->
-    $td = @editor.selection.containerNode.closest('td, th')
+    $td = @editor.selection.containerNode().closest('td, th')
     return unless $td.length > 0
 
     if param == 'deleteRow'
