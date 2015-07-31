@@ -50,7 +50,7 @@ class Indentation extends SimpleModule
     return unless $blockEl.length
 
     if $blockEl.is('pre')
-      $pre = @editor.selection.containerNode
+      $pre = @editor.selection.containerNode()
       return unless $pre.is($blockEl) or $pre.closest('pre').is($blockEl)
       @indentText range
     else if $blockEl.is('li')
@@ -75,7 +75,7 @@ class Indentation extends SimpleModule
         @opts.indentWidth
       $blockEl.css 'margin-left', marginLeft
     else if $blockEl.is('table') or $blockEl.is('.simditor-table')
-      $td = @editor.selection.containerNode.closest('td, th')
+      $td = @editor.selection.containerNode().closest('td, th')
       $nextTd = $td.next('td, th')
       unless $nextTd.length > 0
         $tr = $td.parent('tr')
@@ -107,7 +107,7 @@ class Indentation extends SimpleModule
     return unless $blockEl and $blockEl.length > 0
 
     if $blockEl.is('pre')
-      $pre = @editor.selection.containerNode
+      $pre = @editor.selection.containerNode()
       return unless $pre.is($blockEl) or $pre.closest('pre').is($blockEl)
       @outdentText range
     else if $blockEl.is('li')
@@ -124,7 +124,7 @@ class Indentation extends SimpleModule
         $('<p/>').insertBefore($parent)
           .after($blockEl.children('ul, ol'))
           .append($blockEl.contents())
-          
+
         $blockEl.remove()
       else
         if $blockEl.next('li').length > 0
@@ -142,7 +142,7 @@ class Indentation extends SimpleModule
         @opts.indentWidth
       $blockEl.css 'margin-left', if marginLeft == 0 then '' else marginLeft
     else if $blockEl.is('table') or $blockEl.is('.simditor-table')
-      $td = @editor.selection.containerNode.closest('td, th')
+      $td = @editor.selection.containerNode().closest('td, th')
       $prevTd = $td.prev('td, th')
       unless $prevTd.length > 0
         $tr = $td.parent('tr')

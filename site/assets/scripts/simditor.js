@@ -2162,7 +2162,7 @@ Indentation = (function(superClass) {
       return;
     }
     if ($blockEl.is('pre')) {
-      $pre = this.editor.selection.containerNode;
+      $pre = this.editor.selection.containerNode();
       if (!($pre.is($blockEl) || $pre.closest('pre').is($blockEl))) {
         return;
       }
@@ -2186,7 +2186,7 @@ Indentation = (function(superClass) {
       marginLeft = (Math.round(marginLeft / this.opts.indentWidth) + 1) * this.opts.indentWidth;
       $blockEl.css('margin-left', marginLeft);
     } else if ($blockEl.is('table') || $blockEl.is('.simditor-table')) {
-      $td = this.editor.selection.containerNode.closest('td, th');
+      $td = this.editor.selection.containerNode().closest('td, th');
       $nextTd = $td.next('td, th');
       if (!($nextTd.length > 0)) {
         $tr = $td.parent('tr');
@@ -2227,7 +2227,7 @@ Indentation = (function(superClass) {
       return;
     }
     if ($blockEl.is('pre')) {
-      $pre = this.editor.selection.containerNode;
+      $pre = this.editor.selection.containerNode();
       if (!($pre.is($blockEl) || $pre.closest('pre').is($blockEl))) {
         return;
       }
@@ -2258,7 +2258,7 @@ Indentation = (function(superClass) {
       marginLeft = Math.max(Math.round(marginLeft / this.opts.indentWidth) - 1, 0) * this.opts.indentWidth;
       $blockEl.css('margin-left', marginLeft === 0 ? '' : marginLeft);
     } else if ($blockEl.is('table') || $blockEl.is('.simditor-table')) {
-      $td = this.editor.selection.containerNode.closest('td, th');
+      $td = this.editor.selection.containerNode().closest('td, th');
       $prevTd = $td.prev('td, th');
       if (!($prevTd.length > 0)) {
         $tr = $td.parent('tr');
@@ -5049,7 +5049,7 @@ TableButton = (function(superClass) {
 
   TableButton.prototype.command = function(param) {
     var $td;
-    $td = this.editor.selection.containerNode.closest('td, th');
+    $td = this.editor.selection.containerNode().closest('td, th');
     if (!($td.length > 0)) {
       return;
     }
