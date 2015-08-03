@@ -383,8 +383,8 @@ class ImagePopover extends Popover
     @srcEl.on 'keydown', (e) =>
       return unless e.which == 13 and !@target.hasClass('uploading')
       e.preventDefault()
-      @button.editor.body.focus()
-      @button.editor.selection.setRangeAfter @target
+      range = document.createRange()
+      @button.editor.selection.setRangeAfter @target, range
       @hide()
 
     @srcEl.on 'blur', (e) =>
@@ -408,9 +408,10 @@ class ImagePopover extends Popover
         else
           @_restoreImg()
 
-        @button.editor.body.focus()
-        @button.editor.selection.setRangeAfter @target
+        $img = @target
         @hide()
+        range = document.createRange()
+        @button.editor.selection.setRangeAfter $img, range
       else if e.which == 9
         @el.data('popover').refresh()
 
@@ -418,8 +419,8 @@ class ImagePopover extends Popover
       if e.which == 13
         e.preventDefault()
 
-        @button.editor.body.focus()
-        @button.editor.selection.setRangeAfter @target
+        range = document.createRange()
+        @button.editor.selection.setRangeAfter @target, range
         @hide()
 
     @altEl.on 'keyup', (e) =>
@@ -464,7 +465,7 @@ class ImagePopover extends Popover
 
   _resizeImg: (inputEl, onlySetVal = false) ->
     value = inputEl.val() * 1
-    return unless $.isNumeric(value) or value < 0
+    return unless @target and ($.isNumeric(value) or value < 0)
 
     if inputEl.is @widthEl
       width = value
@@ -479,8 +480,7 @@ class ImagePopover extends Popover
       @target.attr
         width: width
         height: height
-
-    @editor.trigger 'valuechanged'
+      @editor.trigger 'valuechanged'
 
   _restoreImg: ->
     size = @target.data('image-size')?.split(",") || [@width, @height]

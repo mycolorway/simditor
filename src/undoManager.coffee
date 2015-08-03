@@ -212,11 +212,7 @@ class UndoManager extends SimpleModule
 
     # restore caret state
     else
-      @editor.body.focus() unless @editor.inputManager.focused
-
-      unless caret.start
-        @editor.body.blur()
-        return
+      return unless caret.start
 
       startContainer = @_getNodeByPosition caret.start
       startOffset = caret.start[caret.start.length - 1]
