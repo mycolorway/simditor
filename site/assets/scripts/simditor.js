@@ -1980,7 +1980,7 @@ Toolbar = (function(superClass) {
   };
 
   Toolbar.prototype._init = function() {
-    var toolbarHeight;
+    var floatInitialized, initToolbarFloat, toolbarHeight;
     this.editor = this._module;
     if (!this.opts.toolbar) {
       return;
@@ -2005,21 +2005,30 @@ Toolbar = (function(superClass) {
     if (!this.opts.toolbarHidden && this.opts.toolbarFloat) {
       this.wrapper.css('top', this.opts.toolbarFloatOffset);
       toolbarHeight = 0;
-      $(window).on('resize.simditor-' + this.editor.id, (function(_this) {
-        return function(e) {
+      initToolbarFloat = (function(_this) {
+        return function() {
           _this.wrapper.css('position', 'static');
           _this.wrapper.width('auto');
           _this.editor.util.reflow(_this.wrapper);
           _this.wrapper.width(_this.wrapper.outerWidth());
-          _this.wrapper.css('left', _this.wrapper.offset().left);
+          _this.wrapper.css('left', _this.editor.util.os.mobile ? _this.wrapper.position().left : _this.wrapper.offset().left);
           _this.wrapper.css('position', '');
           toolbarHeight = _this.wrapper.outerHeight();
-          return _this.editor.placeholderEl.css('top', toolbarHeight);
+          _this.editor.placeholderEl.css('top', toolbarHeight);
+          return true;
         };
-      })(this)).resize();
+      })(this);
+      $(window).on('resize.simditor-' + this.editor.id, function(e) {
+        var floatInitialized;
+        return floatInitialized = null;
+      });
+      floatInitialized = null;
       $(window).on('scroll.simditor-' + this.editor.id, (function(_this) {
         return function(e) {
           var bottomEdge, scrollTop, topEdge;
+          if (!_this.wrapper.is(':visible')) {
+            return;
+          }
           topEdge = _this.editor.wrapper.offset().top;
           bottomEdge = topEdge + _this.editor.wrapper.outerHeight() - 80;
           scrollTop = $(document).scrollTop() + _this.opts.toolbarFloatOffset;
@@ -2029,6 +2038,7 @@ Toolbar = (function(superClass) {
               return _this.wrapper.css('top', _this.opts.toolbarFloatOffset);
             }
           } else {
+            floatInitialized || (floatInitialized = initToolbarFloat());
             _this.editor.wrapper.addClass('toolbar-floating').css('padding-top', toolbarHeight);
             if (_this.editor.util.os.mobile) {
               return _this.wrapper.css('top', scrollTop - topEdge + _this.opts.toolbarFloatOffset);

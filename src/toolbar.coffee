@@ -37,19 +37,26 @@ class Toolbar extends SimpleModule
       @wrapper.css 'top', @opts.toolbarFloatOffset
       toolbarHeight = 0
 
-      # unless @editor.util.os.mobile
-      $(window).on 'resize.simditor-' + @editor.id, (e) =>
+      initToolbarFloat = =>
         @wrapper.css 'position', 'static'
         @wrapper.width 'auto'
         @editor.util.reflow @wrapper
-        @wrapper.width @wrapper.outerWidth()
-        @wrapper.css 'left', @wrapper.offset().left
+        @wrapper.width @wrapper.outerWidth() # set width for fixed element
+        @wrapper.css 'left', if @editor.util.os.mobile
+          @wrapper.position().left
+        else
+          @wrapper.offset().left
         @wrapper.css 'position', ''
         toolbarHeight = @wrapper.outerHeight()
         @editor.placeholderEl.css 'top', toolbarHeight
-      .resize()
+        true
 
+      $(window).on 'resize.simditor-' + @editor.id, (e) ->
+        floatInitialized = null
+
+      floatInitialized = null
       $(window).on 'scroll.simditor-' + @editor.id, (e) =>
+        return unless @wrapper.is(':visible')
         topEdge = @editor.wrapper.offset().top
         bottomEdge = topEdge + @editor.wrapper.outerHeight() - 80
         scrollTop = $(document).scrollTop() + @opts.toolbarFloatOffset
@@ -60,6 +67,7 @@ class Toolbar extends SimpleModule
           if @editor.util.os.mobile
             @wrapper.css 'top', @opts.toolbarFloatOffset
         else
+          floatInitialized ||= initToolbarFloat()
           @editor.wrapper.addClass('toolbar-floating')
             .css('padding-top', toolbarHeight)
           if @editor.util.os.mobile
