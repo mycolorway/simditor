@@ -129,6 +129,8 @@ class UndoManager extends SimpleModule
     return unless currentState
 
     html = @editor.body.html()
+    return unless html == currentState.html
+    
     currentState.html = html
     currentState.caret = @caretPosition()
 
