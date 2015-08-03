@@ -45,11 +45,18 @@ class ColorButton extends Button
 
       return unless hex
 
+      range = @editor.selection.range()
+      if !$link.hasClass('font-color-default') and range.collapsed
+        textNode = document.createTextNode(@_t('coloredText'))
+        range.insertNode textNode
+        range.selectNodeContents textNode
+        @editor.selection.range range
+
       # Use span[style] instead of font[color]
       document.execCommand 'styleWithCSS', false, true
       document.execCommand 'foreColor', false, hex
       document.execCommand 'styleWithCSS', false, false
-      
+
       unless @editor.util.support.oninput
         @editor.trigger 'valuechanged'
 
