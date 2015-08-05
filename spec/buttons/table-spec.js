@@ -3,11 +3,13 @@
     var editor;
     editor = null;
     beforeEach(function() {
+      jasmine.clock().install();
       return editor = spec.generateSimditor({
         toolbar: ['table']
       });
     });
     afterEach(function() {
+      jasmine.clock().uninstall();
       spec.destroySimditor();
       return editor = null;
     });
@@ -17,6 +19,7 @@
       $button = editor.toolbar.list.find('.toolbar-item-table');
       expect($button.length).toBe(1);
       expect(editor.body.find('table').length).toBe(0);
+      editor.trigger('selectionchanged');
       $button.mousedown();
       $('.menu-create-table td').eq(2).mousedown();
       $table = editor.body.find('table');

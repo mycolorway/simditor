@@ -42,17 +42,6 @@ describe 'A Simditor instance', ->
     editor.body.html(tmpHtml)
     expect(editor.getValue()).toBe('<p>test format</p>')
 
-  it 'should focus on editor\'s last paragraph after calling focus', ->
-    editor.setValue '''
-      <p>The only paragraph.</p>
-    '''
-    $p = editor.body.find('p')
-
-    editor.focus()
-    expect(document.activeElement).toBe(editor.body[0])
-    expect(editor.selection.rangeAtEndOf($p)).toBe(true)
-    expect(editor.inputManager.focused).toBe(true)
-
   it 'should lose focus after calling blur', ->
     editor.focus()
     editor.blur()

@@ -2,10 +2,12 @@ describe 'Simditor table button', ->
   editor = null
 
   beforeEach ->
+    jasmine.clock().install()
     editor = spec.generateSimditor
       toolbar: ['table']
 
   afterEach ->
+    jasmine.clock().uninstall()
     spec.destroySimditor()
     editor = null
 
@@ -16,6 +18,7 @@ describe 'Simditor table button', ->
     expect($button.length).toBe(1)
     expect(editor.body.find('table').length).toBe(0)
 
+    editor.trigger 'selectionchanged'
     $button.mousedown()
     $('.menu-create-table td').eq(2).mousedown()
     $table = editor.body.find('table')
