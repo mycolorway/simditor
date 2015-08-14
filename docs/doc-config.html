@@ -210,17 +210,17 @@ Here are all the optional options and their default values:</p>
       <span class="default">default: false</span>
     </dt>
     <dd class="expand">
-      <p>Accept false or key - value pairs. Extra options for uploading images:</p>
+      <p>Accept false or key/value pairs. Extra options for uploading images:</p>
 
 <ul>
-<li><code>url</code> image server address;</li>
-<li><code>params</code> extra params needs to send to the server;</li>
-<li><code>fileKey</code> prefix of the file name;</li>
-<li><code>connectionCount</code> maximum uploading images at the same time;</li>
-<li><code>leaveConfirm</code> message that will be alert if one leave the page when uploading is in progress;</li>
+<li><code>url</code> upload api url;</li>
+<li><code>params</code> extra params sent to the server;</li>
+<li><code>fileKey</code> key of the file param;</li>
+<li><code>connectionCount</code> how many images can be uploaded simultaneously;</li>
+<li><code>leaveConfirm</code> messages will be shown if one leave the page while file is being uploaded;</li>
 </ul>
 
-<p>Default values of these params：</p>
+<p>Default values of these options</p>
 <div class="highlight"><pre><code class="language-coffee" data-lang="coffee"><span class="nv">editor = </span><span class="k">new</span> <span class="nx">Simditor</span>
   <span class="nv">textarea: </span><span class="nx">$</span><span class="p">(</span><span class="s">&#39;#editor&#39;</span><span class="p">)</span>
   <span class="nv">upload:</span>
@@ -230,7 +230,7 @@ Here are all the optional options and their default values:</p>
     <span class="nv">connectionCount: </span><span class="mi">3</span>
     <span class="nv">leaveConfirm: </span><span class="s">&#39;Uploading is in progress, are you sure to leave this page?&#39;</span>
 </code></pre></div>
-<p>JSON that will be sent back after uploading complete:</p>
+<p>JSON response after uploading complete:</p>
 <div class="highlight"><pre><code class="language-coffee" data-lang="coffee"><span class="p">{</span>
   <span class="s">&quot;success&quot;</span><span class="o">:</span> <span class="kc">true</span><span class="o">/</span><span class="kc">false</span><span class="p">,</span>
   <span class="s">&quot;msg&quot;</span><span class="o">:</span> <span class="s">&quot;error message&quot;</span><span class="p">,</span> <span class="c1"># optional</span>
