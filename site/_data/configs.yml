@@ -82,15 +82,15 @@
   type: "Boolean / Object"
   default: "false"
   description: |
-    Accept false or key - value pairs. Extra options for uploading images:
+    Accept false or key/value pairs. Extra options for uploading images:
 
-    * `url` image server address;
-    * `params` extra params needs to send to the server;
-    * `fileKey` prefix of the file name;
-    * `connectionCount` maximum uploading images at the same time;
-    * `leaveConfirm` message that will be alert if one leave the page when uploading is in progress;
+    * `url` upload api url;
+    * `params` extra params sent to the server;
+    * `fileKey` key of the file param;
+    * `connectionCount` how many images can be uploaded simultaneously;
+    * `leaveConfirm` messages will be shown if one leave the page while file is being uploaded;
 
-    Default values of these params：
+    Default values of these options
 
     ```coffee
     editor = new Simditor
@@ -103,7 +103,7 @@
         leaveConfirm: 'Uploading is in progress, are you sure to leave this page?'
     ```
 
-    JSON that will be sent back after uploading complete:
+    JSON response after uploading complete:
 
     ```coffee
     {
