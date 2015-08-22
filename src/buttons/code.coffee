@@ -28,6 +28,7 @@ class CodeButton extends Button
   _status: ->
     super()
 
+    console.log 'test'
     if @active
       @popover.show(@node)
     else
@@ -50,22 +51,23 @@ class CodeButton extends Button
   command: ->
     $rootNodes = @editor.selection.rootNodes()
     nodeCache = []
-    pres = []
+    resultNodes = []
 
     clearCache = =>
       return unless nodeCache.length > 0
       $pre = $("<#{@htmlTag}/>")
         .insertBefore(nodeCache[0])
         .text(@editor.formatter.clearHtml(nodeCache))
-      pres.push $pre[0]
+      resultNodes.push $pre[0]
       nodeCache.length = 0
 
     $rootNodes.each (i, node) =>
       $node = $ node
       if $node.is @htmlTag
         clearCache()
-        $('<p/>').append($node.html().replace('\n', '<br/>'))
+        $p = $('<p/>').append($node.html().replace('\n', '<br/>'))
           .replaceAll($node)
+        resultNodes.push $p[0]
       else if $node.is(@disableTag) or @editor.util.isDecoratedNode($node) or
           $node.is('blockquote')
         clearCache()
@@ -74,7 +76,7 @@ class CodeButton extends Button
 
     clearCache()
 
-    @editor.selection.setRangeAtEndOf $(pres).last()
+    @editor.selection.setRangeAtEndOf $(resultNodes).last()
     @editor.trigger 'valuechanged'
 
 

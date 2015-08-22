@@ -3502,6 +3502,7 @@ CodeButton = (function(superClass) {
 
   CodeButton.prototype._status = function() {
     CodeButton.__super__._status.call(this);
+    console.log('test');
     if (this.active) {
       return this.popover.show(this.node);
     } else {
@@ -3532,10 +3533,10 @@ CodeButton = (function(superClass) {
   };
 
   CodeButton.prototype.command = function() {
-    var $rootNodes, clearCache, nodeCache, pres;
+    var $rootNodes, clearCache, nodeCache, resultNodes;
     $rootNodes = this.editor.selection.rootNodes();
     nodeCache = [];
-    pres = [];
+    resultNodes = [];
     clearCache = (function(_this) {
       return function() {
         var $pre;
@@ -3543,17 +3544,18 @@ CodeButton = (function(superClass) {
           return;
         }
         $pre = $("<" + _this.htmlTag + "/>").insertBefore(nodeCache[0]).text(_this.editor.formatter.clearHtml(nodeCache));
-        pres.push($pre[0]);
+        resultNodes.push($pre[0]);
         return nodeCache.length = 0;
       };
     })(this);
     $rootNodes.each((function(_this) {
       return function(i, node) {
-        var $node;
+        var $node, $p;
         $node = $(node);
         if ($node.is(_this.htmlTag)) {
           clearCache();
-          return $('<p/>').append($node.html().replace('\n', '<br/>')).replaceAll($node);
+          $p = $('<p/>').append($node.html().replace('\n', '<br/>')).replaceAll($node);
+          return resultNodes.push($p[0]);
         } else if ($node.is(_this.disableTag) || _this.editor.util.isDecoratedNode($node) || $node.is('blockquote')) {
           return clearCache();
         } else {
@@ -3562,7 +3564,7 @@ CodeButton = (function(superClass) {
       };
     })(this));
     clearCache();
-    this.editor.selection.setRangeAtEndOf($(pres).last());
+    this.editor.selection.setRangeAtEndOf($(resultNodes).last());
     return this.editor.trigger('valuechanged');
   };
 
