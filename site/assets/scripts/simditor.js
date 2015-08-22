@@ -3420,6 +3420,9 @@ BlockquoteButton = (function(superClass) {
   BlockquoteButton.prototype.command = function() {
     var $rootNodes, clearCache, nodeCache;
     $rootNodes = this.editor.selection.rootNodes();
+    $rootNodes = $rootNodes.filter(function(i, node) {
+      return !$(node).parent().is('blockquote');
+    });
     this.editor.selection.save();
     nodeCache = [];
     clearCache = (function(_this) {

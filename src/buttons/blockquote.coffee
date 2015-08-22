@@ -11,6 +11,8 @@ class BlockquoteButton extends Button
 
   command: ->
     $rootNodes = @editor.selection.rootNodes()
+    $rootNodes = $rootNodes.filter (i, node) ->
+      !$(node).parent().is('blockquote')
     @editor.selection.save()
 
     nodeCache = []
