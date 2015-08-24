@@ -56,7 +56,9 @@ class InputManager extends SimpleModule
     @editor.on 'valuechanged', =>
       @lastCaretPosition = null
 
-      if @focused and !@editor.selection.blockNodes().length
+      $rootBlocks = @editor.body.children().filter (i, node) =>
+        @editor.util.isBlockNode node
+      if @focused and $rootBlocks.length == 0
         @editor.selection.save()
         @editor.formatter.format()
         @editor.selection.restore()

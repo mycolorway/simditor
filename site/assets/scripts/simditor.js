@@ -804,8 +804,12 @@ InputManager = (function(superClass) {
     })(this));
     this.editor.on('valuechanged', (function(_this) {
       return function() {
+        var $rootBlocks;
         _this.lastCaretPosition = null;
-        if (_this.focused && !_this.editor.selection.blockNodes().length) {
+        $rootBlocks = _this.editor.body.children().filter(function(i, node) {
+          return _this.editor.util.isBlockNode(node);
+        });
+        if (_this.focused && $rootBlocks.length === 0) {
           _this.editor.selection.save();
           _this.editor.formatter.format();
           _this.editor.selection.restore();
@@ -3505,7 +3509,6 @@ CodeButton = (function(superClass) {
 
   CodeButton.prototype._status = function() {
     CodeButton.__super__._status.call(this);
-    console.log('test');
     if (this.active) {
       return this.popover.show(this.node);
     } else {

@@ -28,7 +28,6 @@ class CodeButton extends Button
   _status: ->
     super()
 
-    console.log 'test'
     if @active
       @popover.show(@node)
     else
