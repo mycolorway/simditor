@@ -159,11 +159,11 @@ class Simditor extends SimpleModule
     if @inputManager.lastCaretPosition
       @undoManager.caretPosition @inputManager.lastCaretPosition
     else
-      # $blockEl = @body.find('p').last()
-      # unless $blockEl.length > 0
-      #   $blockEl = $('<p/>').append(@util.phBr).appendTo(@body)
-      # range = document.createRange()
-      # @selection.setRangeAtEndOf $blockEl, range
+      $blockEl = @body.children().last()
+      unless $blockEl.is('p')
+        $blockEl = $('<p/>').append(@util.phBr).appendTo(@body)
+      range = document.createRange()
+      @selection.setRangeAtEndOf $blockEl, range
       @body.focus()
 
   blur: ->

@@ -2469,6 +2469,7 @@ Simditor = (function(superClass) {
   };
 
   Simditor.prototype.focus = function() {
+    var $blockEl, range;
     if (!(this.body.is(':visible') && this.body.is('[contenteditable]'))) {
       this.el.find('textarea:visible').focus();
       return;
@@ -2476,6 +2477,12 @@ Simditor = (function(superClass) {
     if (this.inputManager.lastCaretPosition) {
       return this.undoManager.caretPosition(this.inputManager.lastCaretPosition);
     } else {
+      $blockEl = this.body.children().last();
+      if (!$blockEl.is('p')) {
+        $blockEl = $('<p/>').append(this.util.phBr).appendTo(this.body);
+      }
+      range = document.createRange();
+      this.selection.setRangeAtEndOf($blockEl, range);
       return this.body.focus();
     }
   };
