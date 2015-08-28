@@ -796,10 +796,27 @@ InputManager = (function(superClass) {
     }).addClass('simditor-paste-area').appendTo(this.editor.el);
     $(document).on('selectionchange.simditor' + this.editor.id, (function(_this) {
       return function(e) {
+        var triggerEvent;
         if (!_this.focused) {
           return;
         }
-        return _this.throttledSelectionChanged();
+        triggerEvent = function() {
+          if (_this._selectionTimer) {
+            clearTimeout(_this._selectionTimer);
+            _this._selectionTimer = null;
+          }
+          if (_this.editor.selection._selection.rangeCount > 0) {
+            return _this.throttledSelectionChanged();
+          } else {
+            return _this._selectionTimer = setTimeout(function() {
+              _this._selectionTimer = null;
+              if (_this.focused) {
+                return triggerEvent();
+              }
+            }, 10);
+          }
+        };
+        return triggerEvent();
       };
     })(this));
     this.editor.on('valuechanged', (function(_this) {
@@ -3758,7 +3775,7 @@ LinkButton = (function(superClass) {
         target: '_blank',
         text: linkText || this._t('linkText')
       });
-      if (this.editor.selection.blockNodes().length === 1) {
+      if (this.editor.selection.blockNodes().length > 0) {
         range.insertNode($link[0]);
       } else {
         $newBlock = $('<p/>').append($link);

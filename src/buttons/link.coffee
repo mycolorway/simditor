@@ -38,7 +38,7 @@ class LinkButton extends Button
         text: linkText || @_t('linkText')
       })
 
-      if @editor.selection.blockNodes().length == 1
+      if @editor.selection.blockNodes().length > 0
         range.insertNode $link[0]
       else
         $newBlock = $('<p/>').append($link)

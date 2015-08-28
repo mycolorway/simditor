@@ -51,7 +51,21 @@ class InputManager extends SimpleModule
 
     $(document).on 'selectionchange.simditor' + @editor.id, (e) =>
       return unless @focused
-      @throttledSelectionChanged()
+
+      # make selection range is available before triggering selectionchanged
+      triggerEvent = =>
+        if @_selectionTimer
+          clearTimeout @_selectionTimer
+          @_selectionTimer = null
+
+        if @editor.selection._selection.rangeCount > 0
+          @throttledSelectionChanged()
+        else
+          @_selectionTimer = setTimeout =>
+            @_selectionTimer = null
+            triggerEvent() if @focused
+          , 10
+      triggerEvent()
 
     @editor.on 'valuechanged', =>
       @lastCaretPosition = null
