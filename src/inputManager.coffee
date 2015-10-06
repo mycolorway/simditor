@@ -49,6 +49,24 @@ class InputManager extends SimpleModule
       .addClass('simditor-paste-area')
       .appendTo(@editor.el)
 
+    # clipboard api is buggy in MS Edge
+    if @editor.util.browser.edge
+      @_cleanPasteArea = $('<div/>')
+        .css({
+          width: '1px',
+          height: '1px',
+          overflow: 'hidden',
+          position: 'fixed',
+          right: '0',
+          bottom: '105px'
+        })
+        .attr({
+          tabIndex: '-1',
+        })
+        .addClass('simditor-clean-paste-area')
+        .appendTo(@editor.el)
+
+
     $(document).on 'selectionchange.simditor' + @editor.id, (e) =>
       return unless @focused
 
@@ -238,7 +256,9 @@ class InputManager extends SimpleModule
     $blockEl = @editor.selection.blockNodes().last()
     cleanPaste = $blockEl.is 'pre, table'
 
-    if e.originalEvent.clipboardData && e.originalEvent.clipboardData.items &&
+    # clipboard api is buggy in MS Edge
+    if !@editor.util.browser.edge &&
+        e.originalEvent.clipboardData && e.originalEvent.clipboardData.items &&
         e.originalEvent.clipboardData.items.length > 0
       pasteItem = e.originalEvent.clipboardData.items[0]
 
@@ -336,7 +356,17 @@ class InputManager extends SimpleModule
 
     if cleanPaste
       e.preventDefault()
-      if @editor.util.browser.msie
+      # clipboard api is buggy in MS Edge
+      if @editor.util.browser.edge
+        @editor.selection.save range
+        @_cleanPasteArea.focus()
+        setTimeout =>
+          pasteContent = @_cleanPasteArea.val()
+          @_cleanPasteArea.empty()
+          range = @editor.selection.restore()
+          processPasteContent pasteContent
+        , 10
+      else if @editor.util.browser.msie
         pasteContent = window.clipboardData.getData('Text')
       else
         pasteContent = e.originalEvent.clipboardData.getData('text/plain')
