@@ -2039,7 +2039,7 @@ Indentation = (function(superClass) {
       if (!($pre.is($blockEl) || $pre.closest('pre').is($blockEl))) {
         return;
       }
-      this.indentText(range);
+      this.indentText(this.editor.selection.range());
     } else if ($blockEl.is('li')) {
       $parentLi = $blockEl.prev('li');
       if ($parentLi.length < 1) {

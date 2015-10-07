@@ -52,7 +52,7 @@ class Indentation extends SimpleModule
     if $blockEl.is('pre')
       $pre = @editor.selection.containerNode()
       return unless $pre.is($blockEl) or $pre.closest('pre').is($blockEl)
-      @indentText range
+      @indentText @editor.selection.range()
     else if $blockEl.is('li')
       $parentLi = $blockEl.prev('li')
       return if $parentLi.length < 1
