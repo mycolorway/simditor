@@ -171,7 +171,7 @@ class Util extends SimpleModule
       args = null
 
     throttled = ->
-      ctx = this
+      ctx = @
       args = arguments
       delta = new Date() - last
 
@@ -182,6 +182,14 @@ class Util extends SimpleModule
           timeoutID = setTimeout(call, wait - delta)
 
       rtn
+
+    throttled.clear = ->
+      return unless timeoutID
+      clearTimeout timeoutID
+      call()
+      console.log throttled
+
+    throttled
 
   formatHTML: (html) ->
     re = /<(\/?)(.+?)(\/?)>/g

@@ -36,13 +36,13 @@ class UndoManager extends SimpleModule
       @redo()
       false
 
-    throttledPushState = @editor.util.throttle =>
+    @throttledPushState = @editor.util.throttle =>
       @_pushUndoState()
     , 500
 
-    @editor.on 'valuechanged', (e, src) ->
+    @editor.on 'valuechanged', (e, src) =>
       return if src == 'undo' or src == 'redo'
-      throttledPushState()
+      @throttledPushState()
 
     @editor.on 'selectionchanged', (e) =>
       @_startPosition = null
@@ -124,18 +124,18 @@ class UndoManager extends SimpleModule
     @editor.trigger 'valuechanged', ['redo']
 
   update: () ->
-    return if @_timer
     currentState = @currentState()
     return unless currentState
 
     html = @editor.body.html()
-    return unless html == currentState.html
-    
+    # return unless html == currentState.html
+
     currentState.html = html
     currentState.caret = @caretPosition()
 
+
   _getNodeOffset: (node, index) ->
-    if index
+    if $.isNumeric index
       $parent = $(node)
     else
       $parent = $(node).parent()
@@ -143,10 +143,9 @@ class UndoManager extends SimpleModule
     offset = 0
     merging = false
     $parent.contents().each (i, child) ->
-      if index == i or node == child
-        return false
+      return false if node == child or index == i == 0
 
-      if child.nodeType == 3
+      if child.nodeType == Node.TEXT_NODE
         if !merging
           offset += 1
           merging = true
@@ -154,6 +153,7 @@ class UndoManager extends SimpleModule
         offset += 1
         merging = false
 
+      return false if index - 1 == i
       null
 
     offset
@@ -162,9 +162,10 @@ class UndoManager extends SimpleModule
     range = @editor.selection.range()
     offset = range["#{type}Offset"]
     $nodes = @editor.selection["#{type}Nodes"]()
+    node = $nodes.first()[0]
 
     # merge text nodes before startContainer/endContainer
-    if (node = $nodes.first()[0]).nodeType == Node.TEXT_NODE
+    if node.nodeType == Node.TEXT_NODE
       prevNode = node.previousSibling
       while prevNode and prevNode.nodeType == Node.TEXT_NODE
         node = prevNode
@@ -174,6 +175,8 @@ class UndoManager extends SimpleModule
       nodes = $nodes.get()
       nodes[0] = node
       $nodes = $ nodes
+    else
+      offset = @_getNodeOffset node, offset
 
     position = [offset]
     $nodes.each (i, node) =>
@@ -188,7 +191,7 @@ class UndoManager extends SimpleModule
       childNodes = node.childNodes
       if offset > childNodes.length - 1
         # when pre is empty, the text node will be lost
-        if i == position.length - 2 and $(node).is('pre')
+        if i == position.length - 2 and $(node).is('pre:empty')
           child = document.createTextNode ''
           node.appendChild child
           childNodes = node.childNodes

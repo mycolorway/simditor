@@ -19,6 +19,7 @@ module.exports = (grunt) ->
             'src/util.coffee'
             'src/toolbar.coffee'
             'src/indentation.coffee'
+            'src/clipboard.coffee'
             'src/core.coffee'
             'src/i18n.coffee'
             'src/buttons/button.coffee'

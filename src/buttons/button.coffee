@@ -84,7 +84,7 @@ class Button extends SimpleModule
     @editor.on 'blur', =>
       editorActive =
         @editor.body.is(':visible') and @editor.body.is('[contenteditable]')
-      return unless editorActive
+      return unless editorActive and !@editor.clipboard.pasting
       @setActive false
       @setDisabled false
 
