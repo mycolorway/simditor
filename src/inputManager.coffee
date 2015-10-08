@@ -20,13 +20,6 @@ class InputManager extends SimpleModule
       @editor.trigger 'selectionchanged'
     , 50
 
-    # handlers which will be called
-    # when specific key is pressed in specific node
-    @_keystrokeHandlers = {}
-
-    @hotkeys = simpleHotkeys
-      el: @editor.body
-
     $(document).on 'selectionchange.simditor' + @editor.id, (e) =>
       return unless @focused and !@editor.clipboard.pasting
 
@@ -89,17 +82,19 @@ class InputManager extends SimpleModule
 
     if @editor.util.browser.firefox
       # fix firefox cmd+left/right bug
-      @addShortcut 'cmd+left', (e) =>
+      @editor.hotkeys.add 'cmd+left', (e) =>
         e.preventDefault()
         @editor.selection._selection.modify('move', 'backward', 'lineboundary')
         false
-      @addShortcut 'cmd+right', (e) =>
+
+      @editor.hotkeys.add 'cmd+right', (e) =>
         e.preventDefault()
         @editor.selection._selection.modify('move', 'forward', 'lineboundary')
         false
 
       # override default behavior of cmd/ctrl + a in firefox(which is buggy)
-      @addShortcut (if @editor.util.os.mac then 'cmd+a' else 'ctrl+a'), (e) =>
+      selectAllKey = if @editor.util.os.mac then 'cmd+a' else 'ctrl+a'
+      @editor.hotkeys.add selectAllKey, (e) =>
         $children = @editor.body.children()
         return unless $children.length > 0
         firstBlock = $children.first().get(0)
@@ -112,7 +107,7 @@ class InputManager extends SimpleModule
 
     # meta + enter: submit form
     submitKey = if @editor.util.os.mac then 'cmd+enter' else 'ctrl+enter'
-    @addShortcut submitKey, (e) =>
+    @editor.hotkeys.add submitKey, (e) =>
       @editor.el.closest('form')
         .find('button:submit')
         .click()
@@ -122,7 +117,6 @@ class InputManager extends SimpleModule
       setTimeout =>
         @editor.focus()
       , 0
-
 
   _onFocus: (e) ->
     return if @editor.clipboard.pasting
@@ -156,29 +150,11 @@ class InputManager extends SimpleModule
       return false
 
     # handle predefined shortcuts
-    return if @hotkeys.respondTo e
+    return if @editor.hotkeys.respondTo e
 
-    # Check the condictional handlers
-    if e.which of @_keystrokeHandlers
-      result = @_keystrokeHandlers[e.which]['*']?(e)
-      if result
-        @throttledValueChanged()
-        return false
-
-      @editor.selection.startNodes().each (i, node) =>
-        return unless node.nodeType == Node.ELEMENT_NODE
-        handler = @_keystrokeHandlers[e.which]?[node.tagName.toLowerCase()]
-        result = handler?(e, $(node))
-
-        # different result means:
-        # 1. true, handler done, stop browser default action and traverse up
-        # 2. false, stop traverse up
-        # 3. undefined, continue traverse up
-        false if result == true or result == false
-
-      if result
-        @throttledValueChanged()
-        return false
+    if @editor.keystroke.respondTo e
+      @throttledValueChanged()
+      return false
 
     if e.which in @_modifierKeys or e.which in @_arrowKeys
       return
@@ -218,11 +194,3 @@ class InputManager extends SimpleModule
 
   _onInput: (e) ->
     @throttledValueChanged ['oninput']
-
-  addKeystrokeHandler: (key, node, handler) ->
-    @_keystrokeHandlers[key] = {} unless @_keystrokeHandlers[key]
-    @_keystrokeHandlers[key][node] = handler
-
-
-  addShortcut: (keys, handler) ->
-    @hotkeys.add keys, $.proxy(handler, @)

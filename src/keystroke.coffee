@@ -8,9 +8,44 @@ class Keystroke extends SimpleModule
   _init: ->
     @editor = @_module
 
+    # handlers which will be called
+    # when specific key is pressed in specific node
+    @_keystrokeHandlers = {}
+
+    @_initKeystrokeHandlers()
+
+  add: (key, node, handler) ->
+    key = key.toLowerCase()
+    key = @editor.hotkeys.constructor.aliases[key] || key
+    @_keystrokeHandlers[key] = {} unless @_keystrokeHandlers[key]
+    @_keystrokeHandlers[key][node] = handler
+
+  respondTo: (e) ->
+    key = @editor.hotkeys.constructor.keyNameMap[e.which]?.toLowerCase()
+    return unless key
+
+    # Check the condictional handlers
+    if key of @_keystrokeHandlers
+      result = @_keystrokeHandlers[key]['*']?(e)
+
+      unless result
+        @editor.selection.startNodes().each (i, node) =>
+          return unless node.nodeType == Node.ELEMENT_NODE
+          handler = @_keystrokeHandlers[key]?[node.tagName.toLowerCase()]
+          result = handler?(e, $(node))
+
+          # different result means:
+          # 1. true, handler done, stop browser default action and traverse up
+          # 2. false, stop traverse up
+          # 3. undefined, continue traverse up
+          false if result == true or result == false
+
+      return true if result
+
+  _initKeystrokeHandlers: ->
     # safari doesn't support shift + enter default behavior
     if @editor.util.browser.safari
-      @editor.inputManager.addKeystrokeHandler '13', '*', (e) =>
+      @add 'enter', '*', (e) =>
         return unless e.shiftKey
         $blockEl = @editor.selection.blockNodes().last()
         return if $blockEl.is('pre')
@@ -35,15 +70,15 @@ class Keystroke extends SimpleModule
         @editor.selection.setRangeAtStartOf $p
         true
 
-      @editor.inputManager.addKeystrokeHandler '13', 'h1', titleEnterHandler
-      @editor.inputManager.addKeystrokeHandler '13', 'h2', titleEnterHandler
-      @editor.inputManager.addKeystrokeHandler '13', 'h3', titleEnterHandler
-      @editor.inputManager.addKeystrokeHandler '13', 'h4', titleEnterHandler
-      @editor.inputManager.addKeystrokeHandler '13', 'h5', titleEnterHandler
-      @editor.inputManager.addKeystrokeHandler '13', 'h6', titleEnterHandler
+      @add 'enter', 'h1', titleEnterHandler
+      @add 'enter', 'h2', titleEnterHandler
+      @add 'enter', 'h3', titleEnterHandler
+      @add 'enter', 'h4', titleEnterHandler
+      @add 'enter', 'h5', titleEnterHandler
+      @add 'enter', 'h6', titleEnterHandler
 
 
-    @editor.inputManager.addKeystrokeHandler '8', '*', (e) =>
+    @add 'backspace', '*', (e) =>
       # Remove hr
       $rootBlock = @editor.selection.rootNodes().first()
       $prevBlockEl = $rootBlock.prev()
@@ -64,7 +99,7 @@ class Keystroke extends SimpleModule
         null
 
     # press enter in a empty list item
-    @editor.inputManager.addKeystrokeHandler '13', 'li', (e, $node) =>
+    @add 'enter', 'li', (e, $node) =>
       $cloneNode = $node.clone()
       $cloneNode.find('ul, ol').remove()
       return unless @editor.util.isEmptyNode($cloneNode) and
@@ -116,7 +151,7 @@ class Keystroke extends SimpleModule
 
     # press enter in a code block: insert \n instead of br
     # press shift + enter in code block: insert a paragrash after code block
-    @editor.inputManager.addKeystrokeHandler '13', 'pre', (e, $node) =>
+    @add 'enter', 'pre', (e, $node) =>
       e.preventDefault()
       if e.shiftKey
         $p = $('<p/>').append(@editor.util.phBr).insertAfter($node)
@@ -144,7 +179,7 @@ class Keystroke extends SimpleModule
 
     # press enter in the last paragraph of blockquote,
     # just leave the block quote
-    @editor.inputManager.addKeystrokeHandler '13', 'blockquote', (e, $node) =>
+    @add 'enter', 'blockquote', (e, $node) =>
       $closestBlock = @editor.selection.blockNodes().last()
       return unless $closestBlock.is('p') and !$closestBlock.next().length and
         @editor.util.isEmptyNode($closestBlock)
@@ -155,7 +190,7 @@ class Keystroke extends SimpleModule
 
 
     # press delete in a empty li which has a nested list
-    @editor.inputManager.addKeystrokeHandler '8', 'li', (e, $node) =>
+    @add 'backspace', 'li', (e, $node) =>
       $childList = $node.children('ul, ol')
       $prevNode = $node.prev('li')
       return false unless $childList.length > 0 and $prevNode.length > 0
@@ -198,7 +233,7 @@ class Keystroke extends SimpleModule
 
 
     # press delete at start of code block
-    @editor.inputManager.addKeystrokeHandler '8', 'pre', (e, $node) =>
+    @add 'backspace', 'pre', (e, $node) =>
       return unless @editor.selection.rangeAtStartOf $node
       codeStr = $node.html().replace('\n', '<br/>') || @editor.util.phBr
       $newNode = $('<p/>').append(codeStr).insertAfter $node
@@ -209,7 +244,7 @@ class Keystroke extends SimpleModule
 
 
     # press delete at start of blockquote
-    @editor.inputManager.addKeystrokeHandler '8', 'blockquote', (e, $node) =>
+    @add 'backspace', 'blockquote', (e, $node) =>
       return unless @editor.selection.rangeAtStartOf $node
       $firstChild = $node.children().first().unwrap()
       range = document.createRange()

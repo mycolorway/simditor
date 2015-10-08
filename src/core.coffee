@@ -35,6 +35,13 @@ class Simditor extends SimpleModule
     @id = ++ Simditor.count
     @_render()
 
+    if simpleHotkeys
+      @hotkeys = simpleHotkeys
+        el: @body
+    else
+      throw new Error 'simditor: simple-hotkeys is required.'
+      return
+
     if @opts.upload and simpleUploader
       uploadOpts = if typeof @opts.upload == 'object' then @opts.upload else {}
       @uploader = simpleUploader(uploadOpts)

@@ -10,7 +10,7 @@ class Indentation extends SimpleModule
     @editor = @_module
 
     # Tab to indent
-    @editor.inputManager.addKeystrokeHandler '9', '*', (e) =>
+    @editor.keystroke.add 'tab', '*', (e) =>
       codeButton = @editor.toolbar.findButton 'code'
       return unless @opts.tabIndent or (codeButton and codeButton.active)
 

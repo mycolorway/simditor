@@ -90,7 +90,7 @@ class Button extends SimpleModule
 
 
     if @shortcut?
-      @editor.inputManager.addShortcut @shortcut, (e) =>
+      @editor.hotkeys.add @shortcut, (e) =>
         @el.mousedown()
         false
 

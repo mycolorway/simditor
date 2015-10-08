@@ -58,18 +58,18 @@ class TableButton extends Button
         .removeClass('active')
 
     # press up arrow in td
-    @editor.inputManager.addKeystrokeHandler '38', 'td', (e, $node) =>
+    @editor.keystroke.add 'up', 'td', (e, $node) =>
       @_tdNav($node, 'up')
       true
-    @editor.inputManager.addKeystrokeHandler '38', 'th', (e, $node) =>
+    @editor.keystroke.add 'up', 'th', (e, $node) =>
       @_tdNav($node, 'up')
       true
 
     # press down arrow in td
-    @editor.inputManager.addKeystrokeHandler '40', 'td', (e, $node) =>
+    @editor.keystroke.add 'down', 'td', (e, $node) =>
       @_tdNav($node, 'down')
       true
-    @editor.inputManager.addKeystrokeHandler '40', 'th', (e, $node) =>
+    @editor.keystroke.add 'down', 'th', (e, $node) =>
       @_tdNav($node, 'down')
       true
 
@@ -182,19 +182,19 @@ class TableButton extends Button
       false
 
   _initShortcuts: ->
-    @editor.inputManager.addShortcut 'ctrl+alt+up', (e) =>
+    @editor.hotkeys.add 'ctrl+alt+up', (e) =>
       @editMenu.find('.menu-item[data-param=insertRowAbove]').click()
       false
 
-    @editor.inputManager.addShortcut 'ctrl+alt+down', (e) =>
+    @editor.hotkeys.add 'ctrl+alt+down', (e) =>
       @editMenu.find('.menu-item[data-param=insertRowBelow]').click()
       false
 
-    @editor.inputManager.addShortcut 'ctrl+alt+left', (e) =>
+    @editor.hotkeys.add 'ctrl+alt+left', (e) =>
       @editMenu.find('.menu-item[data-param=insertColLeft]').click()
       false
 
-    @editor.inputManager.addShortcut 'ctrl+alt+right', (e) =>
+    @editor.hotkeys.add 'ctrl+alt+right', (e) =>
       @editMenu.find('.menu-item[data-param=insertColRight]').click()
       false
 

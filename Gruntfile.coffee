@@ -48,7 +48,7 @@ module.exports = (grunt) ->
         dest: 'site/assets/scripts/'
         ext: '.js'
 
-      muduleSpec:
+      moduleSpec:
         expand: true
         flatten: true
         src: 'spec/src/*.coffee'
@@ -260,7 +260,7 @@ module.exports = (grunt) ->
 
   grunt.registerTask 'default', ['site', 'express', 'jasmine:test:build', 'watch']
   grunt.registerTask 'site', ['sass', 'coffee', 'umd', 'copy:vendor', 'copy:scripts', 'copy:styles', 'usebanner', 'jekyll']
-  grunt.registerTask 'test', ['sass', 'coffee', 'umd', 'jasmine']
+  grunt.registerTask 'test', ['coffee:moduleSpec', 'coffee:buttonSpec', 'jasmine']
   grunt.registerTask 'package', ['clean:package', 'copy:package', 'uglify:simditor', 'compress']
 
   grunt.registerTask 'fonticons', ['curl']

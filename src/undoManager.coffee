@@ -26,12 +26,12 @@ class UndoManager extends SimpleModule
       redoShortcut = 'shift+ctrl+z'
 
 
-    @editor.inputManager.addShortcut undoShortcut, (e) =>
+    @editor.hotkeys.add undoShortcut, (e) =>
       e.preventDefault()
       @undo()
       false
 
-    @editor.inputManager.addShortcut redoShortcut, (e) =>
+    @editor.hotkeys.add redoShortcut, (e) =>
       e.preventDefault()
       @redo()
       false
