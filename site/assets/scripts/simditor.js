@@ -467,7 +467,7 @@ Formatter = (function(superClass) {
 
   Formatter.prototype._init = function() {
     this.editor = this._module;
-    this._allowedTags = $.merge(['br', 'span', 'a', 'img', 'b', 'strong', 'i', 'u', 'font', 'p', 'ul', 'ol', 'li', 'blockquote', 'pre', 'code', 'h1', 'h2', 'h3', 'h4', 'hr'], this.opts.allowedTags);
+    this._allowedTags = $.merge(['br', 'span', 'a', 'img', 'b', 'strong', 'i', 'strike', 'u', 'font', 'p', 'ul', 'ol', 'li', 'blockquote', 'pre', 'code', 'h1', 'h2', 'h3', 'h4', 'hr'], this.opts.allowedTags);
     this._allowedAttributes = $.extend({
       img: ['src', 'alt', 'width', 'height', 'data-non-image'],
       a: ['href', 'target'],
@@ -476,6 +476,11 @@ Formatter = (function(superClass) {
     }, this.opts.allowedAttributes);
     this._allowedStyles = $.extend({
       span: ['color'],
+      b: ['color'],
+      i: ['color'],
+      strong: ['color'],
+      strike: ['color'],
+      u: ['color'],
       p: ['margin-left', 'text-align'],
       h1: ['margin-left', 'text-align'],
       h2: ['margin-left', 'text-align'],
