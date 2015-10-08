@@ -29,7 +29,7 @@
       expect(parseInt($p1.css('margin-left'))).toBe(0);
       return expect(parseInt($p2.css('margin-left'))).toBe(0);
     });
-    return it('should indent list when pressing tab in ul', function() {
+    it('should indent list when pressing tab in ul', function() {
       var $li, $li1, $li2, $ul, range;
       editor = spec.generateSimditor({
         content: '<ul>\n  <li>item 1</li>\n  <li>item 2</li>\n  <li>item 3</li>\n</ul>'
@@ -51,6 +51,20 @@
       editor.indentation.indent(true);
       expect($li1.parentsUntil(editor.body, 'ul').length).toBe(1);
       return expect($li2.parentsUntil(editor.body, 'ul').length).toBe(1);
+    });
+    return it('should insert two spaces while pressing tab in code block', function() {
+      var $pre, range;
+      editor = spec.generateSimditor({
+        content: '<pre><code>var test = 1;</code></pre>',
+        toolbar: ['code']
+      });
+      editor.focus();
+      $pre = editor.body.find('> pre');
+      range = document.createRange();
+      editor.selection.setRangeAtStartOf($pre, range);
+      expect($pre.html()).toBe('var test = 1;');
+      editor.indentation.indent();
+      return expect($pre.html()).toBe('&nbsp;&nbsp;var test = 1;');
     });
   });
 

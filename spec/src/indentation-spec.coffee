@@ -59,3 +59,19 @@ describe 'A Simditor instance with indentation manager', ->
     editor.indentation.indent(true)
     expect($li1.parentsUntil(editor.body, 'ul').length).toBe(1)
     expect($li2.parentsUntil(editor.body, 'ul').length).toBe(1)
+
+  it 'should insert two spaces while pressing tab in code block', ->
+    editor = spec.generateSimditor
+      content: '''
+        <pre><code>var test = 1;</code></pre>
+      '''
+      toolbar: ['code']
+    editor.focus()
+
+    $pre = editor.body.find '> pre'
+    range = document.createRange()
+    editor.selection.setRangeAtStartOf $pre, range
+
+    expect($pre.html()).toBe('var test = 1;')
+    editor.indentation.indent()
+    expect($pre.html()).toBe('&nbsp;&nbsp;var test = 1;')
