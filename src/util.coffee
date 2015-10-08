@@ -187,7 +187,6 @@ class Util extends SimpleModule
       return unless timeoutID
       clearTimeout timeoutID
       call()
-      console.log throttled
 
     throttled
 

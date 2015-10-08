@@ -175,14 +175,6 @@ class ImageButton extends Button
       $img = file.img
       return unless $img.hasClass('uploading') and $img.parent().length > 0
 
-      $img.removeData 'file'
-      $img.removeClass 'uploading'
-        .removeClass 'loading'
-
-      $mask = $img.data('mask')
-      $mask.remove() if $mask
-      $img.removeData 'mask'
-
       # in case mime type of response isnt correct
       if typeof result != 'object'
         try
@@ -194,9 +186,18 @@ class ImageButton extends Button
       if result.success == false
         msg = result.msg || @_t('uploadFailed')
         alert msg
-        $img.attr 'src', @defaultImage
+        img_path = @defaultImage
       else
-        $img.attr 'src', result.file_path
+        img_path = result.file_path
+
+      @loadImage $img, img_path, =>
+        $img.removeData 'file'
+        $img.removeClass 'uploading'
+        .removeClass 'loading'
+
+        $mask = $img.data('mask')
+        $mask.remove() if $mask
+        $img.removeData 'mask'
 
       if @popover.active
         @popover.srcEl.prop('disabled', false)
@@ -223,15 +224,15 @@ class ImageButton extends Button
       $img = file.img
       return unless $img.hasClass('uploading') and $img.parent().length > 0
 
-      $img.removeData 'file'
-      $img.removeClass 'uploading'
+      @loadImage $img, @defaultImage, =>
+        $img.removeData 'file'
+        $img.removeClass 'uploading'
         .removeClass 'loading'
 
-      $mask = $img.data('mask')
-      $mask.remove() if $mask
-      $img.removeData 'mask'
+        $mask = $img.data('mask')
+        $mask.remove() if $mask
+        $img.removeData 'mask'
 
-      $img.attr 'src', @defaultImage
       if @popover.active
         @popover.srcEl.prop('disabled', false)
         @popover.srcEl.val @defaultImage
@@ -251,7 +252,7 @@ class ImageButton extends Button
       $mask.css({
         top: imgOffset.top - wrapperOffset.top
         left: imgOffset.left - wrapperOffset.left
-        width: $img.width(),
+        width: $img.width()
         height: $img.height()
       }).show()
 
@@ -291,10 +292,10 @@ class ImageButton extends Button
         $mask.remove()
         $img.removeData('mask')
 
-      callback(img)
+      callback(img) if $.isFunction(callback)
 
     img.onerror = ->
-      callback(false)
+      callback(false) if $.isFunction(callback)
       $mask.remove()
       $img.removeData('mask')
         .removeClass('loading')

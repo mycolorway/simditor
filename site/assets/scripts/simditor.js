@@ -1772,8 +1772,7 @@ Util = (function(superClass) {
         return;
       }
       clearTimeout(timeoutID);
-      call();
-      return console.log(throttled);
+      return call();
     };
     return throttled;
   };
@@ -4160,7 +4159,7 @@ ImageButton = (function(superClass) {
     this.editor.uploader.on('uploadprogress', uploadProgress);
     this.editor.uploader.on('uploadsuccess', (function(_this) {
       return function(e, file, result) {
-        var $img, $mask, msg;
+        var $img, img_path, msg;
         if (!file.inline) {
           return;
         }
@@ -4168,13 +4167,6 @@ ImageButton = (function(superClass) {
         if (!($img.hasClass('uploading') && $img.parent().length > 0)) {
           return;
         }
-        $img.removeData('file');
-        $img.removeClass('uploading').removeClass('loading');
-        $mask = $img.data('mask');
-        if ($mask) {
-          $mask.remove();
-        }
-        $img.removeData('mask');
         if (typeof result !== 'object') {
           try {
             result = $.parseJSON(result);
@@ -4188,10 +4180,20 @@ ImageButton = (function(superClass) {
         if (result.success === false) {
           msg = result.msg || _this._t('uploadFailed');
           alert(msg);
-          $img.attr('src', _this.defaultImage);
+          img_path = _this.defaultImage;
         } else {
-          $img.attr('src', result.file_path);
+          img_path = result.file_path;
         }
+        _this.loadImage($img, img_path, function() {
+          var $mask;
+          $img.removeData('file');
+          $img.removeClass('uploading').removeClass('loading');
+          $mask = $img.data('mask');
+          if ($mask) {
+            $mask.remove();
+          }
+          return $img.removeData('mask');
+        });
         if (_this.popover.active) {
           _this.popover.srcEl.prop('disabled', false);
           _this.popover.srcEl.val(result.file_path);
@@ -4204,7 +4206,7 @@ ImageButton = (function(superClass) {
     })(this));
     return this.editor.uploader.on('uploaderror', (function(_this) {
       return function(e, file, xhr) {
-        var $img, $mask, msg, result;
+        var $img, msg, result;
         if (!file.inline) {
           return;
         }
@@ -4225,14 +4227,16 @@ ImageButton = (function(superClass) {
         if (!($img.hasClass('uploading') && $img.parent().length > 0)) {
           return;
         }
-        $img.removeData('file');
-        $img.removeClass('uploading').removeClass('loading');
-        $mask = $img.data('mask');
-        if ($mask) {
-          $mask.remove();
-        }
-        $img.removeData('mask');
-        $img.attr('src', _this.defaultImage);
+        _this.loadImage($img, _this.defaultImage, function() {
+          var $mask;
+          $img.removeData('file');
+          $img.removeClass('uploading').removeClass('loading');
+          $mask = $img.data('mask');
+          if ($mask) {
+            $mask.remove();
+          }
+          return $img.removeData('mask');
+        });
         if (_this.popover.active) {
           _this.popover.srcEl.prop('disabled', false);
           _this.popover.srcEl.val(_this.defaultImage);
@@ -4294,11 +4298,15 @@ ImageButton = (function(superClass) {
           $mask.remove();
           $img.removeData('mask');
         }
-        return callback(img);
+        if ($.isFunction(callback)) {
+          return callback(img);
+        }
       };
     })(this);
     img.onerror = function() {
-      callback(false);
+      if ($.isFunction(callback)) {
+        callback(false);
+      }
       $mask.remove();
       return $img.removeData('mask').removeClass('loading');
     };
