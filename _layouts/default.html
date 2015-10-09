@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <title>{{ page.title }}</title>
+    <meta name="viewport" content="width=device-width,initial-scale=1.0">
+
+    <link rel="shortcut icon" href="{{ page.root }}favicon.ico" type="image/x-icon" />
+    <link rel="icon" href="{{ page.root }}favicon.ico" sizes="32x32" />
+    <link rel="icon" href="{{ page.root }}favicon.ico" sizes="64x64" />
+    <link rel="icon" href="{{ page.root }}favicon.ico" sizes="128x128" />
+
+    <link media="all" rel="stylesheet" type="text/css" href="{{ page.root }}assets/styles/app.css" />
+    <link media="all" rel="stylesheet" type="text/css" href="{{ page.root }}assets/styles/simditor.css" />
+
+    <script type="text/javascript" src="{{ page.root }}assets/scripts/jquery.min.js"></script>
+    <script type="text/javascript" src="{{ page.root }}assets/scripts/mobilecheck.js"></script>
+    <script type="text/javascript">
+        if(mobilecheck()){
+            $('<link/>', {
+                media: 'all',
+                rel: 'stylesheet',
+                type: 'text/css',
+                href: '{{ page.root }}assets/styles/mobile.css'
+            }).appendTo('head')
+        }
+    </script>
+</head>
+<body>
+
+<div class="wrapper">
+    {% include header.html %}
+    {{ content }}
+    {% include footer.html %}
+
+    <a href="https://github.com/mycolorway/simditor" id="link-fork">
+        <img src="{{ page.root }}assets/images/fork.png" alt="Fork me on GitHub" />
+    </a>
+</div>
+
+
+</body>
+</html>

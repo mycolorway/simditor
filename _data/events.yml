@@ -1,0 +1,117 @@
+- name: "valuechanged"
+  params:
+    - name: "e"
+      type: "jQuery Event"
+  description: |
+    Event fires when body content has changed
+
+- name: "selectionchanged"
+  params:
+    - name: "e"
+      type: "jQuery Event"
+  description: |
+    Event fires when cursor position or selected text has changed
+
+- name: "decorate"
+  params:
+    - name: "e"
+      type: "jQuery Event"
+    - name: "$el"
+      type: "jQuery Object"
+  description: |
+    Event fires when pasting content and calling [**setValue**](../docs/doc-method.html#anchor-setValue).
+
+
+    #####Example:
+
+    Some features will insert extra attributes or tags in order to make the element looks nicer. That is "decorating".
+    These elements should never be included when getting the content from the editor.
+
+    ```html
+    <div class="simditor-table"> <!-- extra tags -->
+      <table>...</table>
+      <div class="simditor-resize-handle" contenteditable="false"></div> <!-- extra tags  -->
+    </div>
+    ```
+    When inserting the above table, Simditor needs to call 'decorate' method to create extra tags in 'decorate' event.
+    When getting the content value, it will call 'undecorate' method to remove all extra tags.
+
+    ```coffee
+    class TableButton extends Button
+      constructor: (@editor) ->
+        ...
+
+        @editor.on 'decorate', (e, $el) =>
+          $el.find('table').each (i, table) =>
+            @decorate $(table)
+
+        @editor.on 'undecorate', (e, $el) =>
+          $el.find('table').each (i, table) =>
+            @undecorate $(table)
+
+      ...
+
+      decorate: ($table) ->
+        if $table.parent('.simditor-table').length > 0
+          @undecorate $table
+
+        $table.wrap '<div class="simditor-table"></div>'
+        @initResize $table
+        $table.parent()
+
+      undecorate: ($table) ->
+        return unless $table.parent('.simditor-table').length > 0
+        $table.parent().replaceWith($table)
+    ```
+
+- name: "undecorate"
+  params:
+    - name: "e"
+      type: "jQuery Event"
+    - name: "$el"
+      type: "jQuery Object"
+  description: |
+    Event fires when calling [**getValue**](../docs/doc-method.html#anchor-decorate) and [**sync**](../docs/doc-method.html#anchor-sync).<br />
+    Refer to [decorate](../docs/doc-event.html#anchor-decorate) event
+
+- name: "pasting"
+  params:
+    - name: "e"
+      type: "jQuery Event"
+    - name: "$pasteContent"
+      type: "jQuery Object"
+  description: |
+    Event fires when pasting content into editor.<br />
+    Param `$pasteContent` is the pasted content. You can valid the content and stop paste.
+
+    ######Example:
+
+    ```js
+    // stop paste if the content contains images
+    editor.on 'pasting', (e, $pasteContent) ->
+      if $pasteContent.find("img").length > 0
+        return false
+    ```
+
+- name: "focus"
+  params:
+    - name: "e"
+      type: "jQuery Event"
+  description: |
+    Event fires when textarea is focused.
+
+- name: "blur"
+  params:
+    - name: "e"
+      type: "jQuery Event"
+  description: |
+    Event fires when textarea is blur.
+
+
+- name: "destroy"
+  params:
+    - name: "e"
+      type: "jQuery Event"
+  description: |
+    Event fires when calling destroy method.
+

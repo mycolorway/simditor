@@ -1,0 +1,206 @@
+properties:
+  - name: "name"
+    type: "String"
+    default: "''"
+    description: |
+      该按钮组件的名称，会在按钮的 DOM 元素上增加相应的 class `.toolbar-item-[name]`，并且会用于在 Toolbar 注册，初始化编辑器时，可以在 [toolbar](../docs/doc-config.html#anchor-toolbar) 中配置初始化按钮组件，所以此名称应该区别于其他按钮。
+
+      ```coffee
+      class HelloButton extends SimditorButton
+        name: 'hello'
+
+      editor = new Simditor
+        toolbar: ['hello']
+      ```
+
+  - name: "icon"
+    type: "String"
+    default: "''"
+    description: |
+      按钮显示的图标，Simditor 使用 [Fonticons](http://www.fonticons.com/) 的服务来管理按钮图标，如果该属性为空则显示按钮的 **text** 属性。
+
+      ```coffee
+      # 按钮图标为 .icon-bold
+      class HelloButton extends SimditorButton
+        name: 'hello'
+        icon: 'bold'
+      ```
+
+  - name: "title"
+    type: "String"
+    default: "''"
+    description: |
+      按钮 DOM 元素的 title 属性，鼠标 hover 的时候显示。
+
+  - name: "text"
+    type: "String"
+    default: "''"
+    description: |
+      非图标按钮，用此 **text** 作文字按钮。
+
+  - name: "htmlTag"
+    type: "String"
+    default: "''"
+    description: |
+      单个或多个由逗号分隔的 HTML 标签名称，表示按钮会在编辑器中插入的 HTML 标签，可用于 [status](#anchor-status) 方法中识别按钮的激活状态。
+
+      ```coffee
+      class TitleButton extends SimditorButton
+        name: 'title'
+        title: '标题文字'
+        htmlTag: 'h1, h2, h3, h4'
+      ```
+
+  - name: "disableTag"
+    type: "String"
+    default: "''"
+    description: |
+      单个或多个由逗号分隔的 HTML 标签名称，当光标在这些元素中时，按钮会被禁用，比如在代码和表格中不能使用标题按钮。
+
+      ```coffee
+      class TitleButton extends SimditorButton
+        name: 'title'
+        title: '标题文字'
+        htmlTag: 'h1, h2, h3, h4'
+        disableTag: 'pre, table'
+      ```
+
+  - name: "menu"
+    type: "Boolean / Array"
+    default: "false"
+    description: |
+      配置该属性，按钮会成为菜单按钮。
+
+
+      ```coffee
+      class TitleButton extends SimditorButton
+        name: 'title'
+        title: '标题文字'
+        htmlTag: 'h1'
+        disableTag: 'pre, table'
+        menu: [{
+          name: 'normal'
+          title: '普通文本'
+          text: '普通文本'
+          param: 'p'
+        }, '|', {
+          name: 'h1',
+          title: '标题 1'
+          text: '标题 1'
+          param: 'h1'
+        }]
+      ```
+
+      **menu** 数组中可能是对象或者字符串 `'|'`，后者表示菜单中的分隔线，如果是对象，则有四个属性：`name``title``text``param`，name 用于增加对应的 class，text 和 title 的作用和按钮的属性类似，param 会作为参数传给方法 [command](#anchor-command)。
+
+  - name: "active"
+    type: "Boolean"
+    default: "false"
+    description: |
+      按钮是否处于激活状态。只读，请使用 [setActive](#anchor-setActive) 方法来设置按钮的激活状态。
+
+  - name: "disabled"
+    type: "Boolean"
+    default: "false"
+    description: |
+      按钮是否处于禁用状态。只读，请使用 [setDisabled](#anchor-setActive) 方法来设置按钮的激活状态。
+
+  - name: "needFocus"
+    type: "Boolean"
+    default: "true"
+    description: |
+      如果为 `true` 则表示该按钮必须在鼠标 focus 到编辑器的状态才有效。
+
+  - name: "shortcut"
+    type: "null / String"
+    default: "null"
+    description: |
+      为按钮设置快捷键，结构为功能键和按键的编码用加号连接，比如 `'cmd+99'`，支持的功能键为 `cmd``shift``alt``ctrl`
+
+      ```coffee
+      class BoldButton extends Button
+        name: 'bold'
+        title: '加粗文字'
+
+        ...
+
+        # cmd + b 会对选中文字加粗
+        shortcut: 'cmd+66'
+      ```
+
+
+methods:
+  - name: "setActive"
+    params:
+      - name: "active"
+        type: "Boolean"
+    description: |
+      根据参数设置按钮的激活状态，Button 类做了基本的实现，包括设置 active 属性和按钮样式。
+      当编辑器 blur 的时候该方法会被触发
+
+      ```coffee
+      setActive: (active) ->
+        @active = active
+        @el.toggleClass('active', @active)
+
+      ```
+
+  - name: "setDisabled"
+    params:
+      - name: "disabled"
+        type: "Boolean"
+    description: |
+      根据参数设置按钮的是否禁用，Button 类做了基本的实现，包括设置 disabled 属性和按钮样式
+      当编辑器 blur 的时候该方法会被触发
+
+      ```coffee
+      setDisabled: (disabled) ->
+        @disabled = disabled
+        @el.toggleClass('disabled', @disabled)
+
+      ```
+
+  - name: "status"
+    params:
+      - name: "$node"
+        type: "jQuery Object"
+    description: |
+      该方法在编辑器 [selectionchanged](../docs/doc-event.html#anchor-selectionchanged) 和 [focus](../docs/doc-event.html#anchor-focus) 发生时，在 Toolbar 类中被多次调用，去更新按钮的状态。
+
+      参数 $node 是光标所在位置冒泡遍历所有的父元素直到编辑区域的最外层 DOM，也就是 editor.body，但不包括它。
+
+      所以可以根据参数 $node 和属性 htmlTag disableTag 来更新按钮状态。
+
+      下面是 Button 类的基本实现
+
+
+      ```coffee
+      status: ($node) ->
+        @setDisabled $node.is(@disableTag) if $node?
+        return true if @disabled
+
+        @setActive $node.is(@htmlTag) if $node?
+        @active
+
+      ```
+
+  - name: "command"
+    params:
+      - name: "param"
+        type: "any"
+    description: |
+      点击按钮会执行的操作，通常是修改编辑的内容。在 Button 类中这是一个抽象方法，需要各按钮组件自己实现。
+
+      如果是菜单按钮，则参数 param 会是 [menu](#anchor-menu) 配置中的 param
+
+      ```coffee
+      class BoldButton extends Button
+        ...
+
+        command: ->
+          document.execCommand 'bold'
+          @editor.trigger 'valuechanged'
+          @editor.trigger 'selectionchanged'
+      ```
+
+      需要注意的是，如果内容改变了，需要手动触发编辑器的 valuechanged 和 selectionchanged 事件。

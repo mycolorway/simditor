@@ -1,0 +1,11 @@
+
+<header>
+	<h1><a href="{{ page.root }}.">Simditor</a></h1>
+	<p class="desc">An Easy and Fast WYSIWYG Editor</p>
+</header>
+<nav>
+	<a href="{{ page.root }}."{% if page.id == 'demo' %} class="active"{% endif %}>Demo</a>
+	<a href="{{ page.root }}docs/doc-usage.html"{% if page.id contains 'doc' %} class="active"{% endif %}>Docs</a>
+	<a href="{{ page.root }}extension.html"{% if page.id == 'extension' %} class="active"{% endif %}>Extension</a>
+	<a href="https://github.com/mycolorway/simditor/releases"{% if page.id == 'download' %} class="active"{% endif %} target="_blank">Download</a>
+</nav>

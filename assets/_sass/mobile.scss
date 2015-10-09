@@ -1,0 +1,81 @@
+$width:(240px,320px,360px,480px,640px,720px,800px,960px,1024px,1280px);
+
+@mixin respond-to($size,$orientation:portrait){
+  @media screen and (max-device-width: $size) and (min-device-width: $size - 20) {
+    body{
+      @if $size > 480 {
+        width:$size/2;
+      }
+      @else {
+        width: $size;
+      }
+      margin:0 auto;
+
+      .wrapper{
+        width:100%;
+
+        header{
+          padding: 30px 0 20px;
+
+          h1{
+            background-size: 200px auto;
+            background-position: 50px 0;
+            padding-top: 90px;
+            height: 45px;
+            a{
+              background-size: 160px auto;
+              background-position: 10px 0;
+            }
+          }
+          p.desc{
+            font-size: 16px;
+          }
+        }
+
+        footer {
+          margin: 20px 0;
+        }
+
+        #page-demo{
+          width:96%;
+          margin:0 2%;
+        }
+
+        #link-fork{
+          z-index: -1;
+          $w: $size/9;
+          @if $w > 100px { $w:100px };
+          @if $w < 80px  { $w: 80px };
+          width:$w;
+          height: auto;
+          img{
+            max-width: $w;
+            height: auto;
+          }
+        }
+      }
+    }
+    nav{
+      display: none;
+    }
+  }
+}
+
+@each $w in $width {
+  @include respond-to($w);
+}
+
+//iphone5,5s
+@media screen and (device-aspect-ratio: 40/71) and (orientation: landscape) {
+  body{
+    width:568px;
+  }
+}
+
+//iphone<5
+@media screen and (device-aspect-ratio: 2/3) and (orientation: landscape) {
+  body{
+    width:480px;
+  }
+}
+

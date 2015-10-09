@@ -1,0 +1,40 @@
+- name: "setValue"
+  params:
+    - name: "val"
+      type: "String"
+  description: |
+    Set the body content of Simditor. Simditor would format the new content automatically.
+
+- name: "getValue"
+  return:
+    type: "String"
+  description: |
+    Get the body content of Simditor in HTML format.
+
+- name: "sync"
+  return:
+    type: "String"
+  description: |
+    Synchronize the body content of Simditor to the value attribute of the textarea. Return the HTML content of the editor.
+
+- name: "focus"
+  return:
+    type: "jQuery Object"
+  description: |
+    Focus the textarea and trigger 'focus' event.
+
+- name: "blur"
+  return:
+    type: "jQuery Object"
+  description: |
+    Blur the textarea and trigger 'blur' event.
+
+- name: "hidePopover"
+  return:
+    type: "jQuery Object"
+  description: |
+    Hide the popover dialog such as image editing and link dialog.
+
+- name: "destroy"
+  description: |
+    Destroy Simditor, unbind all event and remove all HTML elements created by Simditor.

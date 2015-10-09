@@ -1,0 +1,201 @@
+- name: "textarea"
+  type: "jQuery Object / HTML Element / Selector String"
+  default: "null"
+  description: |
+    The textarea element which Simditor will be created on.
+
+- name: "placeholder"
+  type: "String"
+  default: "''"
+  description: |
+    Placeholder of Simditor. Use the placeholder attribute value of the textarea by default.
+
+- name: "toolbar"
+  type: "Boolean / Array"
+  default: "true"
+  description: |
+    Show toolbar buttons. Accpect an array of buttons that includes：
+
+    ```coffee
+    [
+      'title'
+      'bold'
+      'italic'
+      'underline'
+      'strikethrough'
+      'color'
+      'ol'             # ordered list
+      'ul'             # unordered list
+      'blockquote'
+      'code'           # code block
+      'table'
+      'link'
+      'image'
+      'hr'             # horizontal ruler
+      'indent'
+      'outdent'
+      'alignment'
+    ]
+    ```
+
+- name: "toolbarFloat"
+  type: "Boolean"
+  default: "true"
+  description: |
+    Fixed the toolbar on the top of the browser when scrolling.
+
+- name: "toolbarFloatOffset"
+  type: "Number"
+  default: 0
+  description: |
+    Top offset of the toolbar when fixed
+
+- name: "toolbarHidden"
+  type: "Boolean"
+  default: "false"
+  description: |
+    Hide the toolbar. Can not work together with `toolbarFloat`.
+
+- name: "defaultImage"
+  type: "String"
+  default: "images/image.png"
+  description: |
+    Default image placeholder. Used when inserting pictures in Simditor.
+
+- name: "tabIndent"
+  type: "Boolean"
+  default: "true"
+  description: |
+    Use 'tab' key to make an indent.
+
+- name: "params"
+  type: "Object"
+  default: "{ }"
+  description: |
+    Insert a hidden input in textarea to store params (key-value pairs). Usually used as the default params of the form. It will generate：
+
+    ```html
+    <input type="hidden" name="key" value="val" />
+    ```
+
+- name: "upload"
+  type: "Boolean / Object"
+  default: "false"
+  description: |
+    Accept false or key/value pairs. Extra options for uploading images:
+
+    * `url` upload api url;
+    * `params` extra params sent to the server;
+    * `fileKey` key of the file param;
+    * `connectionCount` how many images can be uploaded simultaneously;
+    * `leaveConfirm` messages will be shown if one leave the page while file is being uploaded;
+
+    Default values of these options
+
+    ```coffee
+    editor = new Simditor
+      textarea: $('#editor')
+      upload:
+        url: ''
+        params: null
+        fileKey: 'upload_file'
+        connectionCount: 3
+        leaveConfirm: 'Uploading is in progress, are you sure to leave this page?'
+    ```
+
+    JSON response after uploading complete:
+
+    ```coffee
+    {
+      "success": true/false,
+      "msg": "error message", # optional
+      "file_path": "[real file path]"
+    }
+    ```
+
+- name: "pasteImage"
+  type: "Boolean"
+  default: "false"
+  description: |
+    Support uploading by pasting images from the clipboard. Work together with `upload` and only supported by Firefox and Chrome.
+
+- name: "imageButton"
+  type: "Array/String"
+  default: "['upload', 'external']"
+  description: |
+    Insert images by uploading from the local computer or external links. If both are enabled, Simditor will show a drop-down menu when click the image button.
+
+- name: "allowedTags"
+  type: "Array"
+  default: "null"
+  description: |
+    Tags that are allowed in Simditor.
+    Default whitelist:
+
+    ```coffee
+    ['br', 'a', 'img', 'b', 'strong', 'i', 'u', 'font', 'p', 'ul', 'ol', 'li', 'blockquote', 'pre', 'h1', 'h2', 'h3', 'h4', 'hr']
+    ```
+
+    Note that custom whitelist will be merged into the default one.
+
+- name: "allowedAttributes"
+  type: "Array"
+  default: "null"
+  description: |
+    Whitelist of tag attributes. `style` attribute whitelist is defined in `allowedStyles`. Default whitelist:
+
+    ```coffee
+    img: ['src', 'alt', 'width', 'height', 'data-non-image']
+    a: ['href', 'target']
+    font: ['color']
+    code: ['class']
+    ```
+
+    Note that custom whitelist will be merged into the default one.
+
+- name: "allowedStyles"
+  type: "Array"
+  default: "null"
+  description: |
+    Inline style whitelist. Default whitelist:
+
+    ```coffee
+    p: ['margin-left', 'text-align']
+    h1: ['margin-left']
+    h2: ['margin-left']
+    h3: ['margin-left']
+    h4: ['margin-left']
+    ```
+
+    Note that custom whitelist will be merged into the default one.
+
+- name: 'codeLanguages'
+  type: 'Array'
+  default: 'null'
+  description: |
+    A list of programming languages supported by code block. Default list:
+
+    ```coffee
+    [
+      { name: 'Bash', value: 'bash' }
+      { name: 'C++', value: 'c++' }
+      { name: 'C#', value: 'cs' }
+      { name: 'CSS', value: 'css' }
+      { name: 'Erlang', value: 'erlang' }
+      { name: 'Less', value: 'less' }
+      { name: 'Sass', value: 'sass' }
+      { name: 'Diff', value: 'diff' }
+      { name: 'CoffeeScript', value: 'coffeescript' }
+      { name: 'HTML,XML', value: 'html' }
+      { name: 'JSON', value: 'json' }
+      { name: 'Java', value: 'java' }
+      { name: 'JavaScript', value: 'js' }
+      { name: 'Markdown', value: 'markdown' }
+      { name: 'Objective C', value: 'oc' }
+      { name: 'PHP', value: 'php' }
+      { name: 'Perl', value: 'parl' }
+      { name: 'Python', value: 'python' }
+      { name: 'Ruby', value: 'ruby' }
+      { name: 'SQL', value: 'sql'}
+    ]
+    ```

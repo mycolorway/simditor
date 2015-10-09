@@ -14,7 +14,7 @@
   }
 }(this, function ($, SimpleModule, simpleHotkeys, simpleUploader) {
 
-var AlignmentButton, BlockquoteButton, BoldButton, Button, CodeButton, CodePopover, ColorButton, Formatter, HrButton, ImageButton, ImagePopover, IndentButton, Indentation, InputManager, ItalicButton, Keystroke, LinkButton, LinkPopover, ListButton, OrderListButton, OutdentButton, Popover, Selection, Simditor, StrikethroughButton, TableButton, TitleButton, Toolbar, UnderlineButton, UndoManager, UnorderListButton, Util,
+var AlignmentButton, BlockquoteButton, BoldButton, Button, Clipboard, CodeButton, CodePopover, ColorButton, Formatter, HrButton, ImageButton, ImagePopover, IndentButton, Indentation, InputManager, ItalicButton, Keystroke, LinkButton, LinkPopover, ListButton, OrderListButton, OutdentButton, Popover, Selection, Simditor, StrikethroughButton, TableButton, TitleButton, Toolbar, UnderlineButton, UndoManager, UnorderListButton, Util,
   extend = function(child, parent) { for (var key in parent) { if (hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
   hasProp = {}.hasOwnProperty,
   indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; },
@@ -467,7 +467,7 @@ Formatter = (function(superClass) {
 
   Formatter.prototype._init = function() {
     this.editor = this._module;
-    this._allowedTags = $.merge(['br', 'span', 'a', 'img', 'b', 'strong', 'i', 'u', 'font', 'p', 'ul', 'ol', 'li', 'blockquote', 'pre', 'code', 'h1', 'h2', 'h3', 'h4', 'hr'], this.opts.allowedTags);
+    this._allowedTags = $.merge(['br', 'span', 'a', 'img', 'b', 'strong', 'i', 'strike', 'u', 'font', 'p', 'ul', 'ol', 'li', 'blockquote', 'pre', 'code', 'h1', 'h2', 'h3', 'h4', 'hr'], this.opts.allowedTags);
     this._allowedAttributes = $.extend({
       img: ['src', 'alt', 'width', 'height', 'data-non-image'],
       a: ['href', 'target'],
@@ -476,6 +476,11 @@ Formatter = (function(superClass) {
     }, this.opts.allowedAttributes);
     this._allowedStyles = $.extend({
       span: ['color'],
+      b: ['color'],
+      i: ['color'],
+      strong: ['color'],
+      strike: ['color'],
+      u: ['color'],
       p: ['margin-left', 'text-align'],
       h1: ['margin-left', 'text-align'],
       h2: ['margin-left', 'text-align'],
@@ -753,16 +758,12 @@ InputManager = (function(superClass) {
 
   InputManager.pluginName = 'InputManager';
 
-  InputManager.prototype.opts = {
-    pasteImage: false
-  };
-
   InputManager.prototype._modifierKeys = [16, 17, 18, 91, 93, 224];
 
   InputManager.prototype._arrowKeys = [37, 38, 39, 40];
 
   InputManager.prototype._init = function() {
-    var submitKey;
+    var selectAllKey, submitKey;
     this.editor = this._module;
     this.throttledValueChanged = this.editor.util.throttle((function(_this) {
       return function(params) {
@@ -776,36 +777,39 @@ InputManager = (function(superClass) {
         return _this.editor.trigger('selectionchanged');
       };
     })(this), 50);
-    if (this.opts.pasteImage && typeof this.opts.pasteImage !== 'string') {
-      this.opts.pasteImage = 'inline';
-    }
-    this._keystrokeHandlers = {};
-    this.hotkeys = simpleHotkeys({
-      el: this.editor.body
-    });
-    this._pasteArea = $('<div/>').css({
-      width: '1px',
-      height: '1px',
-      overflow: 'hidden',
-      position: 'fixed',
-      right: '0',
-      bottom: '100px'
-    }).attr({
-      tabIndex: '-1',
-      contentEditable: true
-    }).addClass('simditor-paste-area').appendTo(this.editor.el);
     $(document).on('selectionchange.simditor' + this.editor.id, (function(_this) {
       return function(e) {
-        if (!_this.focused) {
+        var triggerEvent;
+        if (!(_this.focused && !_this.editor.clipboard.pasting)) {
           return;
         }
-        return _this.throttledSelectionChanged();
+        triggerEvent = function() {
+          if (_this._selectionTimer) {
+            clearTimeout(_this._selectionTimer);
+            _this._selectionTimer = null;
+          }
+          if (_this.editor.selection._selection.rangeCount > 0) {
+            return _this.throttledSelectionChanged();
+          } else {
+            return _this._selectionTimer = setTimeout(function() {
+              _this._selectionTimer = null;
+              if (_this.focused) {
+                return triggerEvent();
+              }
+            }, 10);
+          }
+        };
+        return triggerEvent();
       };
     })(this));
     this.editor.on('valuechanged', (function(_this) {
       return function() {
+        var $rootBlocks;
         _this.lastCaretPosition = null;
-        if (_this.focused && !_this.editor.selection.blockNodes().length) {
+        $rootBlocks = _this.editor.body.children().filter(function(i, node) {
+          return _this.editor.util.isBlockNode(node);
+        });
+        if (_this.focused && $rootBlocks.length === 0) {
           _this.editor.selection.save();
           _this.editor.formatter.format();
           _this.editor.selection.restore();
@@ -834,23 +838,24 @@ InputManager = (function(superClass) {
         }
       };
     })(this));
-    this.editor.body.on('keydown', $.proxy(this._onKeyDown, this)).on('keypress', $.proxy(this._onKeyPress, this)).on('keyup', $.proxy(this._onKeyUp, this)).on('mouseup', $.proxy(this._onMouseUp, this)).on('focus', $.proxy(this._onFocus, this)).on('blur', $.proxy(this._onBlur, this)).on('paste', $.proxy(this._onPaste, this)).on('drop', $.proxy(this._onDrop, this)).on('input', $.proxy(this._onInput, this));
+    this.editor.body.on('keydown', $.proxy(this._onKeyDown, this)).on('keypress', $.proxy(this._onKeyPress, this)).on('keyup', $.proxy(this._onKeyUp, this)).on('mouseup', $.proxy(this._onMouseUp, this)).on('focus', $.proxy(this._onFocus, this)).on('blur', $.proxy(this._onBlur, this)).on('drop', $.proxy(this._onDrop, this)).on('input', $.proxy(this._onInput, this));
     if (this.editor.util.browser.firefox) {
-      this.addShortcut('cmd+left', (function(_this) {
+      this.editor.hotkeys.add('cmd+left', (function(_this) {
         return function(e) {
           e.preventDefault();
           _this.editor.selection._selection.modify('move', 'backward', 'lineboundary');
           return false;
         };
       })(this));
-      this.addShortcut('cmd+right', (function(_this) {
+      this.editor.hotkeys.add('cmd+right', (function(_this) {
         return function(e) {
           e.preventDefault();
           _this.editor.selection._selection.modify('move', 'forward', 'lineboundary');
           return false;
         };
       })(this));
-      this.addShortcut((this.editor.util.os.mac ? 'cmd+a' : 'ctrl+a'), (function(_this) {
+      selectAllKey = this.editor.util.os.mac ? 'cmd+a' : 'ctrl+a';
+      this.editor.hotkeys.add(selectAllKey, (function(_this) {
         return function(e) {
           var $children, firstBlock, lastBlock, range;
           $children = _this.editor.body.children();
@@ -868,7 +873,7 @@ InputManager = (function(superClass) {
       })(this));
     }
     submitKey = this.editor.util.os.mac ? 'cmd+enter' : 'ctrl+enter';
-    this.addShortcut(submitKey, (function(_this) {
+    this.editor.hotkeys.add(submitKey, (function(_this) {
       return function(e) {
         _this.editor.el.closest('form').find('button:submit').click();
         return false;
@@ -884,6 +889,9 @@ InputManager = (function(superClass) {
   };
 
   InputManager.prototype._onFocus = function(e) {
+    if (this.editor.clipboard.pasting) {
+      return;
+    }
     this.editor.el.addClass('focus').removeClass('error');
     this.focused = true;
     this.lastCaretPosition = null;
@@ -899,6 +907,9 @@ InputManager = (function(superClass) {
 
   InputManager.prototype._onBlur = function(e) {
     var ref;
+    if (this.editor.clipboard.pasting) {
+      return;
+    }
     this.editor.el.removeClass('focus');
     this.editor.sync();
     this.focused = false;
@@ -913,36 +924,16 @@ InputManager = (function(superClass) {
   };
 
   InputManager.prototype._onKeyDown = function(e) {
-    var base, ref, ref1, result;
+    var ref, ref1;
     if (this.editor.triggerHandler(e) === false) {
       return false;
     }
-    if (this.hotkeys.respondTo(e)) {
+    if (this.editor.hotkeys.respondTo(e)) {
       return;
     }
-    if (e.which in this._keystrokeHandlers) {
-      result = typeof (base = this._keystrokeHandlers[e.which])['*'] === "function" ? base['*'](e) : void 0;
-      if (result) {
-        this.throttledValueChanged();
-        return false;
-      }
-      this.editor.selection.startNodes().each((function(_this) {
-        return function(i, node) {
-          var handler, ref;
-          if (node.nodeType !== Node.ELEMENT_NODE) {
-            return;
-          }
-          handler = (ref = _this._keystrokeHandlers[e.which]) != null ? ref[node.tagName.toLowerCase()] : void 0;
-          result = typeof handler === "function" ? handler(e, $(node)) : void 0;
-          if (result === true || result === false) {
-            return false;
-          }
-        };
-      })(this));
-      if (result) {
-        this.throttledValueChanged();
-        return false;
-      }
+    if (this.editor.keystroke.respondTo(e)) {
+      this.throttledValueChanged();
+      return false;
     }
     if ((ref = e.which, indexOf.call(this._modifierKeys, ref) >= 0) || (ref1 = e.which, indexOf.call(this._arrowKeys, ref1) >= 0)) {
       return;
@@ -978,169 +969,6 @@ InputManager = (function(superClass) {
     }
   };
 
-  InputManager.prototype._onPaste = function(e) {
-    var $blockEl, cleanPaste, imageFile, pasteContent, pasteItem, processPasteContent, range, ref, uploadOpt;
-    if (this.editor.triggerHandler(e) === false) {
-      return false;
-    }
-    range = this.editor.selection.deleteRangeContents();
-    if (!range.collapsed) {
-      range.collapse(true);
-    }
-    this.editor.selection.range(range);
-    $blockEl = this.editor.selection.blockNodes().last();
-    cleanPaste = $blockEl.is('pre, table');
-    if (e.originalEvent.clipboardData && e.originalEvent.clipboardData.items && e.originalEvent.clipboardData.items.length > 0) {
-      pasteItem = e.originalEvent.clipboardData.items[0];
-      if (/^image\//.test(pasteItem.type) && !cleanPaste) {
-        imageFile = pasteItem.getAsFile();
-        if (!((imageFile != null) && this.opts.pasteImage)) {
-          return;
-        }
-        if (!imageFile.name) {
-          imageFile.name = "Clipboard Image.png";
-        }
-        uploadOpt = {};
-        uploadOpt[this.opts.pasteImage] = true;
-        if ((ref = this.editor.uploader) != null) {
-          ref.upload(imageFile, uploadOpt);
-        }
-        return false;
-      }
-    }
-    processPasteContent = (function(_this) {
-      return function(pasteContent) {
-        var $img, blob, children, insertPosition, k, l, lastLine, len, len1, len2, len3, len4, line, lines, m, node, o, q, ref1, ref2, ref3;
-        if (_this.editor.triggerHandler('pasting', [pasteContent]) === false) {
-          return;
-        }
-        if (!pasteContent) {
-          return;
-        } else if (cleanPaste) {
-          if ($blockEl.is('table')) {
-            lines = pasteContent.split('\n');
-            lastLine = lines.pop();
-            for (k = 0, len = lines.length; k < len; k++) {
-              line = lines[k];
-              _this.editor.selection.insertNode(document.createTextNode(line));
-              _this.editor.selection.insertNode($('<br/>'));
-            }
-            _this.editor.selection.insertNode(document.createTextNode(lastLine));
-          } else {
-            pasteContent = $('<div/>').text(pasteContent);
-            ref1 = pasteContent.contents();
-            for (l = 0, len1 = ref1.length; l < len1; l++) {
-              node = ref1[l];
-              _this.editor.selection.insertNode($(node)[0], range);
-            }
-          }
-        } else if ($blockEl.is(_this.editor.body)) {
-          for (m = 0, len2 = pasteContent.length; m < len2; m++) {
-            node = pasteContent[m];
-            _this.editor.selection.insertNode(node, range);
-          }
-        } else if (pasteContent.length < 1) {
-          return;
-        } else if (pasteContent.length === 1) {
-          if (pasteContent.is('p')) {
-            children = pasteContent.contents();
-            if (children.length === 1 && children.is('img')) {
-              $img = children;
-              if (/^data:image/.test($img.attr('src'))) {
-                if (!_this.opts.pasteImage) {
-                  return;
-                }
-                blob = _this.editor.util.dataURLtoBlob($img.attr("src"));
-                blob.name = "Clipboard Image.png";
-                uploadOpt = {};
-                uploadOpt[_this.opts.pasteImage] = true;
-                if ((ref2 = _this.editor.uploader) != null) {
-                  ref2.upload(blob, uploadOpt);
-                }
-                return;
-              } else if ($img.is('img[src^="webkit-fake-url://"]')) {
-                return;
-              }
-            }
-            for (o = 0, len3 = children.length; o < len3; o++) {
-              node = children[o];
-              _this.editor.selection.insertNode(node, range);
-            }
-          } else if ($blockEl.is('p') && _this.editor.util.isEmptyNode($blockEl)) {
-            $blockEl.replaceWith(pasteContent);
-            _this.editor.selection.setRangeAtEndOf(pasteContent, range);
-          } else if (pasteContent.is('ul, ol')) {
-            if (pasteContent.find('li').length === 1) {
-              pasteContent = $('<div/>').text(pasteContent.text());
-              ref3 = pasteContent.contents();
-              for (q = 0, len4 = ref3.length; q < len4; q++) {
-                node = ref3[q];
-                _this.editor.selection.insertNode($(node)[0], range);
-              }
-            } else if ($blockEl.is('li')) {
-              $blockEl.parent().after(pasteContent);
-              _this.editor.selection.setRangeAtEndOf(pasteContent, range);
-            } else {
-              $blockEl.after(pasteContent);
-              _this.editor.selection.setRangeAtEndOf(pasteContent, range);
-            }
-          } else {
-            $blockEl.after(pasteContent);
-            _this.editor.selection.setRangeAtEndOf(pasteContent, range);
-          }
-        } else {
-          if ($blockEl.is('li')) {
-            $blockEl = $blockEl.parent();
-          }
-          if (_this.editor.selection.rangeAtStartOf($blockEl, range)) {
-            insertPosition = 'before';
-          } else if (_this.editor.selection.rangeAtEndOf($blockEl, range)) {
-            insertPosition = 'after';
-          } else {
-            _this.editor.selection.breakBlockEl($blockEl, range);
-            insertPosition = 'before';
-          }
-          $blockEl[insertPosition](pasteContent);
-          _this.editor.selection.setRangeAtEndOf(pasteContent.last(), range);
-        }
-        return _this.throttledValueChanged();
-      };
-    })(this);
-    if (cleanPaste) {
-      e.preventDefault();
-      if (this.editor.util.browser.msie) {
-        pasteContent = window.clipboardData.getData('Text');
-      } else {
-        pasteContent = e.originalEvent.clipboardData.getData('text/plain');
-      }
-      return processPasteContent(pasteContent);
-    } else {
-      this.editor.selection.save(range);
-      this._pasteArea.focus();
-      if (this.editor.util.browser.msie && this.editor.util.browser.version === 10) {
-        e.preventDefault();
-        this._pasteArea.html(window.clipboardData.getData('Text'));
-      }
-      return setTimeout((function(_this) {
-        return function() {
-          if (_this._pasteArea.is(':empty')) {
-            pasteContent = null;
-          } else {
-            pasteContent = $('<div/>').append(_this._pasteArea.contents());
-            pasteContent.find('table colgroup').remove();
-            _this.editor.formatter.format(pasteContent);
-            _this.editor.formatter.decorate(pasteContent);
-            _this.editor.formatter.beautify(pasteContent.children());
-            pasteContent = pasteContent.contents();
-          }
-          _this._pasteArea.empty();
-          range = _this.editor.selection.restore();
-          return processPasteContent(pasteContent);
-        };
-      })(this), 10);
-    }
-  };
-
   InputManager.prototype._onDrop = function(e) {
     if (this.editor.triggerHandler(e) === false) {
       return false;
@@ -1150,17 +978,6 @@ InputManager = (function(superClass) {
 
   InputManager.prototype._onInput = function(e) {
     return this.throttledValueChanged(['oninput']);
-  };
-
-  InputManager.prototype.addKeystrokeHandler = function(key, node, handler) {
-    if (!this._keystrokeHandlers[key]) {
-      this._keystrokeHandlers[key] = {};
-    }
-    return this._keystrokeHandlers[key][node] = handler;
-  };
-
-  InputManager.prototype.addShortcut = function(keys, handler) {
-    return this.hotkeys.add(keys, $.proxy(handler, this));
   };
 
   return InputManager;
@@ -1177,10 +994,53 @@ Keystroke = (function(superClass) {
   Keystroke.pluginName = 'Keystroke';
 
   Keystroke.prototype._init = function() {
-    var titleEnterHandler;
     this.editor = this._module;
+    this._keystrokeHandlers = {};
+    return this._initKeystrokeHandlers();
+  };
+
+  Keystroke.prototype.add = function(key, node, handler) {
+    key = key.toLowerCase();
+    key = this.editor.hotkeys.constructor.aliases[key] || key;
+    if (!this._keystrokeHandlers[key]) {
+      this._keystrokeHandlers[key] = {};
+    }
+    return this._keystrokeHandlers[key][node] = handler;
+  };
+
+  Keystroke.prototype.respondTo = function(e) {
+    var base, key, ref, result;
+    key = (ref = this.editor.hotkeys.constructor.keyNameMap[e.which]) != null ? ref.toLowerCase() : void 0;
+    if (!key) {
+      return;
+    }
+    if (key in this._keystrokeHandlers) {
+      result = typeof (base = this._keystrokeHandlers[key])['*'] === "function" ? base['*'](e) : void 0;
+      if (!result) {
+        this.editor.selection.startNodes().each((function(_this) {
+          return function(i, node) {
+            var handler, ref1;
+            if (node.nodeType !== Node.ELEMENT_NODE) {
+              return;
+            }
+            handler = (ref1 = _this._keystrokeHandlers[key]) != null ? ref1[node.tagName.toLowerCase()] : void 0;
+            result = typeof handler === "function" ? handler(e, $(node)) : void 0;
+            if (result === true || result === false) {
+              return false;
+            }
+          };
+        })(this));
+      }
+      if (result) {
+        return true;
+      }
+    }
+  };
+
+  Keystroke.prototype._initKeystrokeHandlers = function() {
+    var titleEnterHandler;
     if (this.editor.util.browser.safari) {
-      this.editor.inputManager.addKeystrokeHandler('13', '*', (function(_this) {
+      this.add('enter', '*', (function(_this) {
         return function(e) {
           var $blockEl, $br;
           if (!e.shiftKey) {
@@ -1214,14 +1074,14 @@ Keystroke = (function(superClass) {
           return true;
         };
       })(this);
-      this.editor.inputManager.addKeystrokeHandler('13', 'h1', titleEnterHandler);
-      this.editor.inputManager.addKeystrokeHandler('13', 'h2', titleEnterHandler);
-      this.editor.inputManager.addKeystrokeHandler('13', 'h3', titleEnterHandler);
-      this.editor.inputManager.addKeystrokeHandler('13', 'h4', titleEnterHandler);
-      this.editor.inputManager.addKeystrokeHandler('13', 'h5', titleEnterHandler);
-      this.editor.inputManager.addKeystrokeHandler('13', 'h6', titleEnterHandler);
+      this.add('enter', 'h1', titleEnterHandler);
+      this.add('enter', 'h2', titleEnterHandler);
+      this.add('enter', 'h3', titleEnterHandler);
+      this.add('enter', 'h4', titleEnterHandler);
+      this.add('enter', 'h5', titleEnterHandler);
+      this.add('enter', 'h6', titleEnterHandler);
     }
-    this.editor.inputManager.addKeystrokeHandler('8', '*', (function(_this) {
+    this.add('backspace', '*', (function(_this) {
       return function(e) {
         var $blockEl, $prevBlockEl, $rootBlock, isWebkit;
         $rootBlock = _this.editor.selection.rootNodes().first();
@@ -1242,7 +1102,7 @@ Keystroke = (function(superClass) {
         }
       };
     })(this));
-    this.editor.inputManager.addKeystrokeHandler('13', 'li', (function(_this) {
+    this.add('enter', 'li', (function(_this) {
       return function(e, $node) {
         var $cloneNode, listEl, newBlockEl, newListEl;
         $cloneNode = $node.clone();
@@ -1288,7 +1148,7 @@ Keystroke = (function(superClass) {
         return true;
       };
     })(this));
-    this.editor.inputManager.addKeystrokeHandler('13', 'pre', (function(_this) {
+    this.add('enter', 'pre', (function(_this) {
       return function(e, $node) {
         var $p, breakNode, range;
         e.preventDefault();
@@ -1314,7 +1174,7 @@ Keystroke = (function(superClass) {
         return true;
       };
     })(this));
-    this.editor.inputManager.addKeystrokeHandler('13', 'blockquote', (function(_this) {
+    this.add('enter', 'blockquote', (function(_this) {
       return function(e, $node) {
         var $closestBlock, range;
         $closestBlock = _this.editor.selection.blockNodes().last();
@@ -1327,7 +1187,7 @@ Keystroke = (function(superClass) {
         return true;
       };
     })(this));
-    this.editor.inputManager.addKeystrokeHandler('8', 'li', (function(_this) {
+    this.add('backspace', 'li', (function(_this) {
       return function(e, $node) {
         var $br, $childList, $newLi, $prevChildList, $prevNode, $textNode, isFF, range, text;
         $childList = $node.children('ul, ol');
@@ -1376,7 +1236,7 @@ Keystroke = (function(superClass) {
         return true;
       };
     })(this));
-    this.editor.inputManager.addKeystrokeHandler('8', 'pre', (function(_this) {
+    this.add('backspace', 'pre', (function(_this) {
       return function(e, $node) {
         var $newNode, codeStr, range;
         if (!_this.editor.selection.rangeAtStartOf($node)) {
@@ -1390,7 +1250,7 @@ Keystroke = (function(superClass) {
         return true;
       };
     })(this));
-    return this.editor.inputManager.addKeystrokeHandler('8', 'blockquote', (function(_this) {
+    return this.add('backspace', 'blockquote', (function(_this) {
       return function(e, $node) {
         var $firstChild, range;
         if (!_this.editor.selection.rangeAtStartOf($node)) {
@@ -1426,7 +1286,7 @@ UndoManager = (function(superClass) {
   UndoManager.prototype._endPosition = null;
 
   UndoManager.prototype._init = function() {
-    var redoShortcut, throttledPushState, undoShortcut;
+    var redoShortcut, undoShortcut;
     this.editor = this._module;
     this._stack = [];
     if (this.editor.util.os.mac) {
@@ -1439,31 +1299,33 @@ UndoManager = (function(superClass) {
       undoShortcut = 'ctrl+z';
       redoShortcut = 'shift+ctrl+z';
     }
-    this.editor.inputManager.addShortcut(undoShortcut, (function(_this) {
+    this.editor.hotkeys.add(undoShortcut, (function(_this) {
       return function(e) {
         e.preventDefault();
         _this.undo();
         return false;
       };
     })(this));
-    this.editor.inputManager.addShortcut(redoShortcut, (function(_this) {
+    this.editor.hotkeys.add(redoShortcut, (function(_this) {
       return function(e) {
         e.preventDefault();
         _this.redo();
         return false;
       };
     })(this));
-    throttledPushState = this.editor.util.throttle((function(_this) {
+    this.throttledPushState = this.editor.util.throttle((function(_this) {
       return function() {
         return _this._pushUndoState();
       };
     })(this), 500);
-    this.editor.on('valuechanged', function(e, src) {
-      if (src === 'undo' || src === 'redo') {
-        return;
-      }
-      return throttledPushState();
-    });
+    this.editor.on('valuechanged', (function(_this) {
+      return function(e, src) {
+        if (src === 'undo' || src === 'redo') {
+          return;
+        }
+        return _this.throttledPushState();
+      };
+    })(this));
     this.editor.on('selectionchanged', (function(_this) {
       return function(e) {
         _this._startPosition = null;
@@ -1564,24 +1426,18 @@ UndoManager = (function(superClass) {
 
   UndoManager.prototype.update = function() {
     var currentState, html;
-    if (this._timer) {
-      return;
-    }
     currentState = this.currentState();
     if (!currentState) {
       return;
     }
     html = this.editor.body.html();
-    if (html !== currentState.html) {
-      return;
-    }
     currentState.html = html;
     return currentState.caret = this.caretPosition();
   };
 
   UndoManager.prototype._getNodeOffset = function(node, index) {
     var $parent, merging, offset;
-    if (index) {
+    if ($.isNumeric(index)) {
       $parent = $(node);
     } else {
       $parent = $(node).parent();
@@ -1589,10 +1445,10 @@ UndoManager = (function(superClass) {
     offset = 0;
     merging = false;
     $parent.contents().each(function(i, child) {
-      if (index === i || node === child) {
+      if (node === child || (index === i && i === 0)) {
         return false;
       }
-      if (child.nodeType === 3) {
+      if (child.nodeType === Node.TEXT_NODE) {
         if (!merging) {
           offset += 1;
           merging = true;
@@ -1600,6 +1456,9 @@ UndoManager = (function(superClass) {
       } else {
         offset += 1;
         merging = false;
+      }
+      if (index - 1 === i) {
+        return false;
       }
       return null;
     });
@@ -1614,7 +1473,8 @@ UndoManager = (function(superClass) {
     range = this.editor.selection.range();
     offset = range[type + "Offset"];
     $nodes = this.editor.selection[type + "Nodes"]();
-    if ((node = $nodes.first()[0]).nodeType === Node.TEXT_NODE) {
+    node = $nodes.first()[0];
+    if (node.nodeType === Node.TEXT_NODE) {
       prevNode = node.previousSibling;
       while (prevNode && prevNode.nodeType === Node.TEXT_NODE) {
         node = prevNode;
@@ -1624,6 +1484,8 @@ UndoManager = (function(superClass) {
       nodes = $nodes.get();
       nodes[0] = node;
       $nodes = $(nodes);
+    } else {
+      offset = this._getNodeOffset(node, offset);
     }
     position = [offset];
     $nodes.each((function(_this) {
@@ -1642,7 +1504,7 @@ UndoManager = (function(superClass) {
       offset = ref[i];
       childNodes = node.childNodes;
       if (offset > childNodes.length - 1) {
-        if (i === position.length - 2 && $(node).is('pre')) {
+        if (i === position.length - 2 && $(node).is('pre:empty')) {
           child = document.createTextNode('');
           node.appendChild(child);
           childNodes = node.childNodes;
@@ -1731,34 +1593,41 @@ Util = (function(superClass) {
   })();
 
   Util.prototype.browser = (function() {
-    var chrome, firefox, ie, ref, ref1, ref2, ref3, safari, ua;
+    var chrome, edge, firefox, ie, ref, ref1, ref2, ref3, ref4, safari, ua;
     ua = navigator.userAgent;
     ie = /(msie|trident)/i.test(ua);
     chrome = /chrome|crios/i.test(ua);
     safari = /safari/i.test(ua) && !chrome;
     firefox = /firefox/i.test(ua);
+    edge = /edge/i.test(ua);
     if (ie) {
       return {
         msie: true,
         version: ((ref = ua.match(/(msie |rv:)(\d+(\.\d+)?)/i)) != null ? ref[2] : void 0) * 1
       };
+    } else if (edge) {
+      return {
+        edge: true,
+        webkit: true,
+        version: ((ref1 = ua.match(/edge\/(\d+(\.\d+)?)/i)) != null ? ref1[1] : void 0) * 1
+      };
     } else if (chrome) {
       return {
         webkit: true,
         chrome: true,
-        version: ((ref1 = ua.match(/(?:chrome|crios)\/(\d+(\.\d+)?)/i)) != null ? ref1[1] : void 0) * 1
+        version: ((ref2 = ua.match(/(?:chrome|crios)\/(\d+(\.\d+)?)/i)) != null ? ref2[1] : void 0) * 1
       };
     } else if (safari) {
       return {
         webkit: true,
         safari: true,
-        version: ((ref2 = ua.match(/version\/(\d+(\.\d+)?)/i)) != null ? ref2[1] : void 0) * 1
+        version: ((ref3 = ua.match(/version\/(\d+(\.\d+)?)/i)) != null ? ref3[1] : void 0) * 1
       };
     } else if (firefox) {
       return {
         mozilla: true,
         firefox: true,
-        version: ((ref3 = ua.match(/firefox\/(\d+(\.\d+)?)/i)) != null ? ref3[1] : void 0) * 1
+        version: ((ref4 = ua.match(/firefox\/(\d+(\.\d+)?)/i)) != null ? ref4[1] : void 0) * 1
       };
     } else {
       return {};
@@ -1898,7 +1767,7 @@ Util = (function(superClass) {
       ctx = null;
       return args = null;
     };
-    return throttled = function() {
+    throttled = function() {
       var delta;
       ctx = this;
       args = arguments;
@@ -1912,6 +1781,14 @@ Util = (function(superClass) {
       }
       return rtn;
     };
+    throttled.clear = function() {
+      if (!timeoutID) {
+        return;
+      }
+      clearTimeout(timeoutID);
+      return call();
+    };
+    return throttled;
   };
 
   Util.prototype.formatHTML = function(html) {
@@ -2114,7 +1991,7 @@ Indentation = (function(superClass) {
 
   Indentation.prototype._init = function() {
     this.editor = this._module;
-    return this.editor.inputManager.addKeystrokeHandler('9', '*', (function(_this) {
+    return this.editor.keystroke.add('tab', '*', (function(_this) {
       return function(e) {
         var codeButton;
         codeButton = _this.editor.toolbar.findButton('code');
@@ -2175,7 +2052,7 @@ Indentation = (function(superClass) {
       if (!($pre.is($blockEl) || $pre.closest('pre').is($blockEl))) {
         return;
       }
-      this.indentText(range);
+      this.indentText(this.editor.selection.range());
     } else if ($blockEl.is('li')) {
       $parentLi = $blockEl.prev('li');
       if ($parentLi.length < 1) {
@@ -2293,6 +2170,217 @@ Indentation = (function(superClass) {
 
 })(SimpleModule);
 
+Clipboard = (function(superClass) {
+  extend(Clipboard, superClass);
+
+  function Clipboard() {
+    return Clipboard.__super__.constructor.apply(this, arguments);
+  }
+
+  Clipboard.pluginName = 'Clipboard';
+
+  Clipboard.prototype.opts = {
+    pasteImage: false
+  };
+
+  Clipboard.prototype._init = function() {
+    this.editor = this._module;
+    if (this.opts.pasteImage && typeof this.opts.pasteImage !== 'string') {
+      this.opts.pasteImage = 'inline';
+    }
+    return this.editor.body.on('paste', (function(_this) {
+      return function(e) {
+        var $blockEl, isPlainText, range;
+        if (_this.editor.triggerHandler(e) === false) {
+          return false;
+        }
+        range = _this.editor.selection.deleteRangeContents();
+        if (!range.collapsed) {
+          range.collapse(true);
+        }
+        _this.editor.selection.range(range);
+        $blockEl = _this.editor.selection.blockNodes().last();
+        isPlainText = $blockEl.is('pre, table');
+        if (!isPlainText && _this._processPasteByClipboardApi(e)) {
+          return false;
+        }
+        if (_this._pasteBin) {
+          return false;
+        }
+        _this.editor.inputManager.throttledValueChanged.clear();
+        _this.editor.inputManager.throttledSelectionChanged.clear();
+        _this.editor.undoManager.throttledPushState.clear();
+        _this.pasting = true;
+        return _this._getPasteContent(isPlainText, function(pasteContent) {
+          _this._processPasteContent(isPlainText, $blockEl, pasteContent);
+          return _this.pasting = false;
+        });
+      };
+    })(this));
+  };
+
+  Clipboard.prototype._processPasteByClipboardApi = function(e) {
+    var imageFile, pasteItem, ref, uploadOpt;
+    if (this.editor.util.browser.edge) {
+      return;
+    }
+    if (e.originalEvent.clipboardData && e.originalEvent.clipboardData.items && e.originalEvent.clipboardData.items.length > 0) {
+      pasteItem = e.originalEvent.clipboardData.items[0];
+      if (/^image\//.test(pasteItem.type)) {
+        imageFile = pasteItem.getAsFile();
+        if (!((imageFile != null) && this.opts.pasteImage)) {
+          return;
+        }
+        if (!imageFile.name) {
+          imageFile.name = "Clipboard Image.png";
+        }
+        if (this.editor.triggerHandler('pasting', [imageFile]) === false) {
+          return;
+        }
+        uploadOpt = {};
+        uploadOpt[this.opts.pasteImage] = true;
+        if ((ref = this.editor.uploader) != null) {
+          ref.upload(imageFile, uploadOpt);
+        }
+        return true;
+      }
+    }
+  };
+
+  Clipboard.prototype._getPasteContent = function(isPlainText, callback) {
+    var state;
+    this._pasteBin = $('<div contenteditable="true" />').addClass('simditor-paste-bin').attr('tabIndex', '-1').appendTo(this.editor.el);
+    state = {
+      html: this.editor.body.html(),
+      caret: this.editor.undoManager.caretPosition()
+    };
+    this._pasteBin.focus();
+    return setTimeout((function(_this) {
+      return function() {
+        var pasteContent;
+        _this.editor.hidePopover();
+        _this.editor.body.html(state.html);
+        _this.editor.undoManager.caretPosition(state.caret);
+        _this.editor.body.focus();
+        _this.editor.selection._reset();
+        if (isPlainText) {
+          pasteContent = _this.editor.formatter.clearHtml(_this._pasteBin.html(), true);
+        } else {
+          pasteContent = $('<div/>').append(_this._pasteBin.contents());
+          pasteContent.find('table colgroup').remove();
+          _this.editor.formatter.format(pasteContent);
+          _this.editor.formatter.decorate(pasteContent);
+          _this.editor.formatter.beautify(pasteContent.children());
+          pasteContent = pasteContent.contents();
+        }
+        _this._pasteBin.remove();
+        _this._pasteBin = null;
+        return callback(pasteContent);
+      };
+    })(this), 0);
+  };
+
+  Clipboard.prototype._processPasteContent = function(isPlainText, $blockEl, pasteContent) {
+    var $img, blob, children, insertPosition, k, l, lastLine, len, len1, len2, len3, len4, line, lines, m, node, o, q, ref, ref1, ref2, uploadOpt;
+    if (this.editor.triggerHandler('pasting', [pasteContent]) === false) {
+      return;
+    }
+    if (!pasteContent) {
+      return;
+    } else if (isPlainText) {
+      if ($blockEl.is('table')) {
+        lines = pasteContent.split('\n');
+        lastLine = lines.pop();
+        for (k = 0, len = lines.length; k < len; k++) {
+          line = lines[k];
+          this.editor.selection.insertNode(document.createTextNode(line));
+          this.editor.selection.insertNode($('<br/>'));
+        }
+        this.editor.selection.insertNode(document.createTextNode(lastLine));
+      } else {
+        pasteContent = $('<div/>').text(pasteContent);
+        ref = pasteContent.contents();
+        for (l = 0, len1 = ref.length; l < len1; l++) {
+          node = ref[l];
+          this.editor.selection.insertNode($(node)[0]);
+        }
+      }
+    } else if ($blockEl.is(this.editor.body)) {
+      for (m = 0, len2 = pasteContent.length; m < len2; m++) {
+        node = pasteContent[m];
+        this.editor.selection.insertNode(node);
+      }
+    } else if (pasteContent.length < 1) {
+      return;
+    } else if (pasteContent.length === 1) {
+      if (pasteContent.is('p')) {
+        children = pasteContent.contents();
+        if (children.length === 1 && children.is('img')) {
+          $img = children;
+          if (/^data:image/.test($img.attr('src'))) {
+            if (!this.opts.pasteImage) {
+              return;
+            }
+            blob = this.editor.util.dataURLtoBlob($img.attr("src"));
+            blob.name = "Clipboard Image.png";
+            uploadOpt = {};
+            uploadOpt[this.opts.pasteImage] = true;
+            if ((ref1 = this.editor.uploader) != null) {
+              ref1.upload(blob, uploadOpt);
+            }
+            return;
+          } else if ($img.is('img[src^="webkit-fake-url://"]')) {
+            return;
+          }
+        }
+        for (o = 0, len3 = children.length; o < len3; o++) {
+          node = children[o];
+          this.editor.selection.insertNode(node);
+        }
+      } else if ($blockEl.is('p') && this.editor.util.isEmptyNode($blockEl)) {
+        $blockEl.replaceWith(pasteContent);
+        this.editor.selection.setRangeAtEndOf(pasteContent);
+      } else if (pasteContent.is('ul, ol')) {
+        if (pasteContent.find('li').length === 1) {
+          pasteContent = $('<div/>').text(pasteContent.text());
+          ref2 = pasteContent.contents();
+          for (q = 0, len4 = ref2.length; q < len4; q++) {
+            node = ref2[q];
+            this.editor.selection.insertNode($(node)[0]);
+          }
+        } else if ($blockEl.is('li')) {
+          $blockEl.parent().after(pasteContent);
+          this.editor.selection.setRangeAtEndOf(pasteContent);
+        } else {
+          $blockEl.after(pasteContent);
+          this.editor.selection.setRangeAtEndOf(pasteContent);
+        }
+      } else {
+        $blockEl.after(pasteContent);
+        this.editor.selection.setRangeAtEndOf(pasteContent);
+      }
+    } else {
+      if ($blockEl.is('li')) {
+        $blockEl = $blockEl.parent();
+      }
+      if (this.editor.selection.rangeAtStartOf($blockEl)) {
+        insertPosition = 'before';
+      } else if (this.editor.selection.rangeAtEndOf($blockEl)) {
+        insertPosition = 'after';
+      } else {
+        this.editor.selection.breakBlockEl($blockEl);
+        insertPosition = 'before';
+      }
+      $blockEl[insertPosition](pasteContent);
+      this.editor.selection.setRangeAtEndOf(pasteContent.last());
+    }
+    return this.editor.inputManager.throttledValueChanged();
+  };
+
+  return Clipboard;
+
+})(SimpleModule);
+
 Simditor = (function(superClass) {
   extend(Simditor, superClass);
 
@@ -2315,6 +2403,8 @@ Simditor = (function(superClass) {
   Simditor.connect(Toolbar);
 
   Simditor.connect(Indentation);
+
+  Simditor.connect(Clipboard);
 
   Simditor.count = 0;
 
@@ -2341,6 +2431,14 @@ Simditor = (function(superClass) {
     }
     this.id = ++Simditor.count;
     this._render();
+    if (simpleHotkeys) {
+      this.hotkeys = simpleHotkeys({
+        el: this.body
+      });
+    } else {
+      throw new Error('simditor: simple-hotkeys is required.');
+      return;
+    }
     if (this.opts.upload && simpleUploader) {
       uploadOpts = typeof this.opts.upload === 'object' ? this.opts.upload : {};
       this.uploader = simpleUploader(uploadOpts);
@@ -2465,6 +2563,7 @@ Simditor = (function(superClass) {
   };
 
   Simditor.prototype.focus = function() {
+    var $blockEl, range;
     if (!(this.body.is(':visible') && this.body.is('[contenteditable]'))) {
       this.el.find('textarea:visible').focus();
       return;
@@ -2472,6 +2571,12 @@ Simditor = (function(superClass) {
     if (this.inputManager.lastCaretPosition) {
       return this.undoManager.caretPosition(this.inputManager.lastCaretPosition);
     } else {
+      $blockEl = this.body.children().last();
+      if (!$blockEl.is('p')) {
+        $blockEl = $('<p/>').append(this.util.phBr).appendTo(this.body);
+      }
+      range = document.createRange();
+      this.selection.setRangeAtEndOf($blockEl, range);
       return this.body.focus();
     }
   };
@@ -2693,7 +2798,7 @@ Button = (function(superClass) {
       return function() {
         var editorActive;
         editorActive = _this.editor.body.is(':visible') && _this.editor.body.is('[contenteditable]');
-        if (!editorActive) {
+        if (!(editorActive && !_this.editor.clipboard.pasting)) {
           return;
         }
         _this.setActive(false);
@@ -2701,7 +2806,7 @@ Button = (function(superClass) {
       };
     })(this));
     if (this.shortcut != null) {
-      this.editor.inputManager.addShortcut(this.shortcut, (function(_this) {
+      this.editor.hotkeys.add(this.shortcut, (function(_this) {
         return function(e) {
           _this.el.mousedown();
           return false;
@@ -3420,6 +3525,9 @@ BlockquoteButton = (function(superClass) {
   BlockquoteButton.prototype.command = function() {
     var $rootNodes, clearCache, nodeCache;
     $rootNodes = this.editor.selection.rootNodes();
+    $rootNodes = $rootNodes.filter(function(i, node) {
+      return !$(node).parent().is('blockquote');
+    });
     this.editor.selection.save();
     nodeCache = [];
     clearCache = (function(_this) {
@@ -3532,10 +3640,10 @@ CodeButton = (function(superClass) {
   };
 
   CodeButton.prototype.command = function() {
-    var $rootNodes, clearCache, nodeCache, pres;
+    var $rootNodes, clearCache, nodeCache, resultNodes;
     $rootNodes = this.editor.selection.rootNodes();
     nodeCache = [];
-    pres = [];
+    resultNodes = [];
     clearCache = (function(_this) {
       return function() {
         var $pre;
@@ -3543,17 +3651,18 @@ CodeButton = (function(superClass) {
           return;
         }
         $pre = $("<" + _this.htmlTag + "/>").insertBefore(nodeCache[0]).text(_this.editor.formatter.clearHtml(nodeCache));
-        pres.push($pre[0]);
+        resultNodes.push($pre[0]);
         return nodeCache.length = 0;
       };
     })(this);
     $rootNodes.each((function(_this) {
       return function(i, node) {
-        var $node;
+        var $node, $p;
         $node = $(node);
         if ($node.is(_this.htmlTag)) {
           clearCache();
-          return $('<p/>').append($node.html().replace('\n', '<br/>')).replaceAll($node);
+          $p = $('<p/>').append($node.html().replace('\n', '<br/>')).replaceAll($node);
+          return resultNodes.push($p[0]);
         } else if ($node.is(_this.disableTag) || _this.editor.util.isDecoratedNode($node) || $node.is('blockquote')) {
           return clearCache();
         } else {
@@ -3562,7 +3671,7 @@ CodeButton = (function(superClass) {
       };
     })(this));
     clearCache();
-    this.editor.selection.setRangeAtEndOf($(pres).last());
+    this.editor.selection.setRangeAtEndOf($(resultNodes).last());
     return this.editor.trigger('valuechanged');
   };
 
@@ -3743,7 +3852,7 @@ LinkButton = (function(superClass) {
         target: '_blank',
         text: linkText || this._t('linkText')
       });
-      if (this.editor.selection.blockNodes().length === 1) {
+      if (this.editor.selection.blockNodes().length > 0) {
         range.insertNode($link[0]);
       } else {
         $newBlock = $('<p/>').append($link);
@@ -4072,7 +4181,7 @@ ImageButton = (function(superClass) {
     this.editor.uploader.on('uploadprogress', uploadProgress);
     this.editor.uploader.on('uploadsuccess', (function(_this) {
       return function(e, file, result) {
-        var $img, $mask, msg;
+        var $img, img_path, msg;
         if (!file.inline) {
           return;
         }
@@ -4080,13 +4189,6 @@ ImageButton = (function(superClass) {
         if (!($img.hasClass('uploading') && $img.parent().length > 0)) {
           return;
         }
-        $img.removeData('file');
-        $img.removeClass('uploading').removeClass('loading');
-        $mask = $img.data('mask');
-        if ($mask) {
-          $mask.remove();
-        }
-        $img.removeData('mask');
         if (typeof result !== 'object') {
           try {
             result = $.parseJSON(result);
@@ -4100,10 +4202,20 @@ ImageButton = (function(superClass) {
         if (result.success === false) {
           msg = result.msg || _this._t('uploadFailed');
           alert(msg);
-          $img.attr('src', _this.defaultImage);
+          img_path = _this.defaultImage;
         } else {
-          $img.attr('src', result.file_path);
+          img_path = result.file_path;
         }
+        _this.loadImage($img, img_path, function() {
+          var $mask;
+          $img.removeData('file');
+          $img.removeClass('uploading').removeClass('loading');
+          $mask = $img.data('mask');
+          if ($mask) {
+            $mask.remove();
+          }
+          return $img.removeData('mask');
+        });
         if (_this.popover.active) {
           _this.popover.srcEl.prop('disabled', false);
           _this.popover.srcEl.val(result.file_path);
@@ -4116,7 +4228,7 @@ ImageButton = (function(superClass) {
     })(this));
     return this.editor.uploader.on('uploaderror', (function(_this) {
       return function(e, file, xhr) {
-        var $img, $mask, msg, result;
+        var $img, msg, result;
         if (!file.inline) {
           return;
         }
@@ -4137,14 +4249,16 @@ ImageButton = (function(superClass) {
         if (!($img.hasClass('uploading') && $img.parent().length > 0)) {
           return;
         }
-        $img.removeData('file');
-        $img.removeClass('uploading').removeClass('loading');
-        $mask = $img.data('mask');
-        if ($mask) {
-          $mask.remove();
-        }
-        $img.removeData('mask');
-        $img.attr('src', _this.defaultImage);
+        _this.loadImage($img, _this.defaultImage, function() {
+          var $mask;
+          $img.removeData('file');
+          $img.removeClass('uploading').removeClass('loading');
+          $mask = $img.data('mask');
+          if ($mask) {
+            $mask.remove();
+          }
+          return $img.removeData('mask');
+        });
         if (_this.popover.active) {
           _this.popover.srcEl.prop('disabled', false);
           _this.popover.srcEl.val(_this.defaultImage);
@@ -4206,11 +4320,15 @@ ImageButton = (function(superClass) {
           $mask.remove();
           $img.removeData('mask');
         }
-        return callback(img);
+        if ($.isFunction(callback)) {
+          return callback(img);
+        }
       };
     })(this);
     img.onerror = function() {
-      callback(false);
+      if ($.isFunction(callback)) {
+        callback(false);
+      }
       $mask.remove();
       return $img.removeData('mask').removeClass('loading');
     };
@@ -4664,25 +4782,25 @@ TableButton = (function(superClass) {
         return _this.editor.body.find('.simditor-table td, .simditor-table th').removeClass('active');
       };
     })(this));
-    this.editor.inputManager.addKeystrokeHandler('38', 'td', (function(_this) {
+    this.editor.keystroke.add('up', 'td', (function(_this) {
       return function(e, $node) {
         _this._tdNav($node, 'up');
         return true;
       };
     })(this));
-    this.editor.inputManager.addKeystrokeHandler('38', 'th', (function(_this) {
+    this.editor.keystroke.add('up', 'th', (function(_this) {
       return function(e, $node) {
         _this._tdNav($node, 'up');
         return true;
       };
     })(this));
-    this.editor.inputManager.addKeystrokeHandler('40', 'td', (function(_this) {
+    this.editor.keystroke.add('down', 'td', (function(_this) {
       return function(e, $node) {
         _this._tdNav($node, 'down');
         return true;
       };
     })(this));
-    return this.editor.inputManager.addKeystrokeHandler('40', 'th', (function(_this) {
+    return this.editor.keystroke.add('down', 'th', (function(_this) {
       return function(e, $node) {
         _this._tdNav($node, 'down');
         return true;
@@ -4810,25 +4928,25 @@ TableButton = (function(superClass) {
   };
 
   TableButton.prototype._initShortcuts = function() {
-    this.editor.inputManager.addShortcut('ctrl+alt+up', (function(_this) {
+    this.editor.hotkeys.add('ctrl+alt+up', (function(_this) {
       return function(e) {
         _this.editMenu.find('.menu-item[data-param=insertRowAbove]').click();
         return false;
       };
     })(this));
-    this.editor.inputManager.addShortcut('ctrl+alt+down', (function(_this) {
+    this.editor.hotkeys.add('ctrl+alt+down', (function(_this) {
       return function(e) {
         _this.editMenu.find('.menu-item[data-param=insertRowBelow]').click();
         return false;
       };
     })(this));
-    this.editor.inputManager.addShortcut('ctrl+alt+left', (function(_this) {
+    this.editor.hotkeys.add('ctrl+alt+left', (function(_this) {
       return function(e) {
         _this.editMenu.find('.menu-item[data-param=insertColLeft]').click();
         return false;
       };
     })(this));
-    return this.editor.inputManager.addShortcut('ctrl+alt+right', (function(_this) {
+    return this.editor.hotkeys.add('ctrl+alt+right', (function(_this) {
       return function(e) {
         _this.editMenu.find('.menu-item[data-param=insertColRight]').click();
         return false;

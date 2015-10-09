@@ -1,0 +1,20 @@
+<aside>
+	<ul>
+		<li{% if page.id == 'doc-usage' %} class="active"{% endif %}>
+			<i class="icon simditor-icon simditor-icon-caret-right"></i>
+			<a href="{{ page.root }}docs/doc-usage.html">How to use</a>
+		</li>
+		<li{% if page.id == 'doc-config' %} class="active"{% endif %}>
+			<i class="icon simditor-icon simditor-icon-caret-right"></i>
+			<a href="{{ page.root }}docs/doc-config.html">Options</a>
+		</li>
+		<li{% if page.id == 'doc-method' %} class="active"{% endif %}>
+			<i class="icon simditor-icon simditor-icon-caret-right"></i>
+			<a href="{{ page.root }}docs/doc-method.html">Methods</a>
+		</li>
+		<li{% if page.id == 'doc-event' %} class="active"{% endif %}>
+			<i class="icon simditor-icon simditor-icon-caret-right"></i>
+			<a href="{{ page.root }}docs/doc-event.html">Events</a>
+		</li>
+	</ul>
+</aside>
