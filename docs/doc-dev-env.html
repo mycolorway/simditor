@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <title>Installation - Simditor</title>
+    <meta name="viewport" content="width=device-width,initial-scale=1.0">
+
+    <link rel="shortcut icon" href="../favicon.ico" type="image/x-icon" />
+    <link rel="icon" href="../favicon.ico" sizes="32x32" />
+    <link rel="icon" href="../favicon.ico" sizes="64x64" />
+    <link rel="icon" href="../favicon.ico" sizes="128x128" />
+
+    <link media="all" rel="stylesheet" type="text/css" href="../assets/styles/app.css" />
+    <link media="all" rel="stylesheet" type="text/css" href="../assets/styles/simditor.css" />
+
+    <script type="text/javascript" src="../assets/scripts/jquery.min.js"></script>
+    <script type="text/javascript" src="../assets/scripts/mobilecheck.js"></script>
+    <script type="text/javascript">
+        if(mobilecheck()){
+            $('<link/>', {
+                media: 'all',
+                rel: 'stylesheet',
+                type: 'text/css',
+                href: '../assets/styles/mobile.css'
+            }).appendTo('head')
+        }
+    </script>
+</head>
+<body>
+
+<div class="wrapper">
+    
+<header>
+	<h1><a href="../.">Simditor</a></h1>
+	<p class="desc">An Easy and Fast WYSIWYG Editor</p>
+</header>
+<nav>
+	<a href="../.">Demo</a>
+	<a href="../docs/doc-usage.html" class="active">Docs</a>
+	<a href="../extension.html">Extension</a>
+	<a href="https://github.com/mycolorway/simditor/releases" target="_blank">Download</a>
+</nav>
+
+    <section class="page-doc page-sidebar" id="page-doc-dev-env">
+	<aside>
+	<ul>
+		<li>
+			<i class="icon simditor-icon simditor-icon-caret-right"></i>
+			<a href="../docs/doc-usage.html">How to use</a>
+		</li>
+		<li>
+			<i class="icon simditor-icon simditor-icon-caret-right"></i>
+			<a href="../docs/doc-config.html">Options</a>
+		</li>
+		<li>
+			<i class="icon simditor-icon simditor-icon-caret-right"></i>
+			<a href="../docs/doc-method.html">Methods</a>
+		</li>
+		<li>
+			<i class="icon simditor-icon simditor-icon-caret-right"></i>
+			<a href="../docs/doc-event.html">Events</a>
+		</li>
+	</ul>
+</aside>
+
+	<article class="editor-style">
+		<h1>Install Source Code</h1>
+
+<p>If you want to install the source code and build the project locally, simply follow the steps below.</p>
+
+<p>First, <a href="https://help.github.com/articles/fork-a-repo">fork</a> Simditor and clone it from Github</p>
+
+<p><img src="http://pic.yupoo.com/farthinker_v/DFeVxRCs/custom.jpg" alt="Fork Simditor"></p>
+<div class="highlight"><pre><code class="language-bash" data-lang="bash"><span class="nv">$ </span>git clone git@github.com:<span class="o">[</span>your username<span class="o">]</span>/simditor.git
+</code></pre></div>
+<h1>Install Gem Dependencies</h1>
+
+<p>We use <a href="http://bundler.io/">Bundler</a> to manage the gem dependencies：</p>
+
+<ul>
+<li><a href="https://github.com/nex3/sass">sass</a>：Compile SCSS file to CSS.</li>
+<li><a href="https://github.com/github/pages-gem">github-pages</a>: Install <a href="http://jekyllrb.com/">Jekyll</a> which is used by <a href="https://pages.github.com/">Github Pages</a> locally to produce Simditor site.</li>
+</ul>
+
+<p>Make sure that you have ruby installed in your computer first.</p>
+
+<p>Install Bundler:</p>
+<div class="highlight"><pre><code class="language-bash" data-lang="bash"><span class="nv">$ </span>gem install bundler
+</code></pre></div>
+<p>Change to Simditor directory, install gems:</p>
+<div class="highlight"><pre><code class="language-bash" data-lang="bash"><span class="nv">$ </span><span class="nb">cd </span>simditor
+<span class="nv">$ </span>bundle install
+</code></pre></div>
+<h1>Install Grunt</h1>
+
+<p>Simditor uses <a href="http://gruntjs.com/">Grunt</a> as the task runner to run tasks such as auto-compiling and watching files.</p>
+
+<p>Grunt needs to be installed by npm. To have npm working, first need to install <a href="https://nodejs.org/">Node.js</a>.</p>
+
+<p>Install Grunt&#39;s command line interface (CLI) globally:</p>
+<div class="highlight"><pre><code class="language-bash" data-lang="bash"><span class="nv">$ </span>sudo npm install -g grunt-cli
+</code></pre></div>
+<p>Install grunt:</p>
+<div class="highlight"><pre><code class="language-bash" data-lang="bash"><span class="nv">$ </span>npm install
+</code></pre></div>
+<h1>Install Bower Dependencies</h1>
+
+<p>Simditor uses <a href="http://bower.io/">Bower</a> to manage front-end libraries:</p>
+
+<p>Install bower：</p>
+<div class="highlight"><pre><code class="language-bash" data-lang="bash">npm install -g bower
+</code></pre></div>
+<p>Install bower dependencies:</p>
+<div class="highlight"><pre><code class="language-bash" data-lang="bash">bower install
+</code></pre></div>
+<h1>Run Project</h1>
+
+<p>Run project with grunt:</p>
+<div class="highlight"><pre><code class="language-bash" data-lang="bash"><span class="nv">$ </span>grunt
+</code></pre></div>
+<p>Now you can visit the homepage in <code>http://localhost:3000/demo.html</code>.
+Every time you change the source code of Simditor, Grunt will automatically re-compile the project,
+so you can simply test your code by refreshing the page.</p>
+
+<p>To test the uploading feature, add a upload param to the url: <code>http://localhost:3000/demo.html?upload</code></p>
+
+	</article>
+</section>
+
+
+    
+<footer>
+	&copy; <a href="http://tower.im">彩程设计</a>
+</footer>
+
+
+    <a href="https://github.com/mycolorway/simditor" id="link-fork">
+        <img src="../assets/images/fork.png" alt="Fork me on GitHub" />
+    </a>
+</div>
+
+
+</body>
+</html>
