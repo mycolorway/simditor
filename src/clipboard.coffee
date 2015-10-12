@@ -13,26 +13,29 @@ class Clipboard extends SimpleModule
       @opts.pasteImage = 'inline'
 
     @editor.body.on 'paste', (e) =>
+      return if @pasting or @_pasteBin
+
       if @editor.triggerHandler(e) == false
         return false
 
       range = @editor.selection.deleteRangeContents()
-      range.collapse(true) unless range.collapsed
-      @editor.selection.range range
-      $blockEl = @editor.selection.blockNodes().last()
-      isPlainText = $blockEl.is 'pre, table'
+      if @editor.body.html()
+        range.collapse(true) unless range.collapsed
+      else
+        @editor.formatter.format()
+        @editor.selection.setRangeAtStartOf @editor.body.find('p:first')
 
-      return false if !isPlainText and @_processPasteByClipboardApi(e)
-
-      return false if @_pasteBin
+      return false if @_processPasteByClipboardApi(e)
 
       @editor.inputManager.throttledValueChanged.clear()
       @editor.inputManager.throttledSelectionChanged.clear()
       @editor.undoManager.throttledPushState.clear()
 
       @pasting = true
-      @_getPasteContent isPlainText, (pasteContent) =>
-        @_processPasteContent isPlainText, $blockEl, pasteContent
+      @_getPasteContent (pasteContent) =>
+        @_processPasteContent pasteContent
+        @_pasteInBlockEl = null
+        @_pastePlainText = null
         @pasting = false
 
   _processPasteByClipboardApi: (e) ->
@@ -58,7 +61,7 @@ class Clipboard extends SimpleModule
         @editor.uploader?.upload(imageFile, uploadOpt)
         return true
 
-  _getPasteContent: (isPlainText, callback) ->
+  _getPasteContent: (callback) ->
     @_pasteBin = $ '<div contenteditable="true" />'
       .addClass 'simditor-paste-bin'
       .attr 'tabIndex', '-1'
@@ -75,9 +78,13 @@ class Clipboard extends SimpleModule
       @editor.body.html state.html
       @editor.undoManager.caretPosition state.caret
       @editor.body.focus()
-      @editor.selection._reset()
+      @editor.selection.reset()
+      @editor.selection.range()
 
-      if isPlainText
+      @_pasteInBlockEl = @editor.selection.blockNodes().last()
+      @_pastePlainText = @_pasteInBlockEl.is 'pre, table'
+
+      if @_pastePlainText
         pasteContent = @editor.formatter.clearHtml @_pasteBin.html(), true
       else
         pasteContent = $('<div/>').append(@_pasteBin.contents())
@@ -92,12 +99,13 @@ class Clipboard extends SimpleModule
       callback pasteContent
     , 0
 
-  _processPasteContent: (isPlainText, $blockEl, pasteContent) ->
+  _processPasteContent: (pasteContent) ->
     return if @editor.triggerHandler('pasting', [pasteContent]) == false
+    $blockEl = @_pasteInBlockEl
 
     if !pasteContent
       return
-    else if isPlainText
+    else if @_pastePlainText
       if $blockEl.is('table')
         lines = pasteContent.split('\n')
         lastLine = lines.pop()

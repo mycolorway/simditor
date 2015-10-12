@@ -22,13 +22,13 @@ class Selection extends SimpleModule
     @_selection = document.getSelection()
 
     @editor.on 'selectionchanged', (e) =>
-      @_reset()
+      @reset()
       @_range = @_selection.getRangeAt 0
 
     @editor.on 'blur', (e) =>
       @clear()
 
-  _reset: ->
+  reset: ->
     @_range = null
     @_startNodes = null
     @_endNodes = null
@@ -42,7 +42,7 @@ class Selection extends SimpleModule
       @_selection.removeAllRanges()
     catch e
 
-    @_reset()
+    @reset()
 
   range: (range) ->
     if range
