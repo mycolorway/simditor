@@ -22,7 +22,7 @@ editor.setValue 'hello world'
   {% for item in site.data.methods %}
     <dt id="anchor-{{ item.name }}">
       <!--<span class="icon simditor-icon simditor-icon-caret-down"></span>-->
-      <span class="name">{{ item.name }}</span>
+      <a href="#anchor-{{ item.name }}" class="name">{{ item.name }}</a>
       <span class="params">
         {% for param in item.params %}
           <span class="param">
