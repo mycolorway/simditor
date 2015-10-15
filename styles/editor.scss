@@ -1,6 +1,7 @@
 @charset "UTF-8";
 
 $simditor-button-height: 40px;
+$simditor-button-width: 46px;
 
 .simditor {
   position: relative;
@@ -9,7 +10,6 @@ $simditor-button-height: 40px;
   .simditor-wrapper {
     position: relative;
     background: #ffffff;
-    overflow: hidden;
 
     & > textarea {
       display: none !important;
@@ -143,34 +143,29 @@ $simditor-button-height: 40px;
       padding: 0 0 0 6px;
       list-style: none;
 
-      &:after {
-        content:"";
-        display:table;
-        clear:both;
-      }
-
       & > li {
         position: relative;
-        float: left;
+        display: inline-block;
+        font-size: 0;
 
         & > span.separator {
-          display: block;
-          float: left;
+          display: inline-block;
           background: #cfcfcf;
           width: 1px;
           height: 18px;
           margin: ($simditor-button-height - 18px) / 2 15px;
+          vertical-align: middle;
         }
 
         & > .toolbar-item {
-          display: block;
-          float: left;
-          width: 46px;
+          display: inline-block;
+          width: $simditor-button-width;
           height: $simditor-button-height;
           outline: none;
           color: #333333;
           font-size: 15px;
           line-height: $simditor-button-height;
+          vertical-align: middle;
           text-align: center;
           text-decoration: none;
 
@@ -245,9 +240,9 @@ $simditor-button-height: 40px;
         &.menu-on {
           .toolbar-item {
             position: relative;
-            z-index: 21;
+            z-index: 20;
             background: #ffffff;
-            box-shadow: 0 -3px 3px rgba(0,0,0,0.2);
+            box-shadow: 0 1px 4px rgba(0,0,0,0.3);
 
             span {
               opacity: 1;
@@ -266,10 +261,21 @@ $simditor-button-height: 40px;
       position: absolute;
       top: $simditor-button-height;
       left: 0;
-      z-index: 20;
+      z-index: 21;
       background: #ffffff;
       text-align: left;
-      box-shadow: 0 0 3px rgba(0,0,0,0.2);
+      box-shadow: 0 0 4px rgba(0,0,0,0.3);
+
+      &:before {
+        content: '';
+        display: block;
+        width: $simditor-button-width;
+        height: 4px;
+        background: #ffffff;
+        position: absolute;
+        top: -3px;
+        left: 0;
+      }
 
       ul {
         min-width: 160px;
@@ -374,6 +380,7 @@ $simditor-button-height: 40px;
       &.toolbar-menu-table {
         .menu-create-table {
           background: #ffffff;
+          padding: 1px;
 
           table {
             border: none;
@@ -382,19 +389,19 @@ $simditor-button-height: 40px;
             table-layout: fixed;
 
             td {
-              height: 16px;
               padding: 0;
-              border: 2px solid #ffffff;
-              background: #f3f3f3;
               cursor: pointer;
 
               &:before {
                 width: 16px;
+                height: 16px;
+                border: 1px solid #ffffff;
+                background: #f3f3f3;
                 display: block;
                 content: ''
               }
 
-              &.selected {
+              &.selected:before {
                 background: #cfcfcf;
               }
             }
@@ -514,10 +521,6 @@ $simditor-button-height: 40px;
   }
 
   &.simditor-mobile {
-    .simditor-toolbar > ul > li > .toolbar-item {
-      width: 46px;
-    }
-
     .simditor-wrapper.toolbar-floating .simditor-toolbar {
         position: absolute;
         top: 0;

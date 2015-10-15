@@ -145,7 +145,6 @@
 .simditor .simditor-wrapper {
   position: relative;
   background: #ffffff;
-  overflow: hidden;
 }
 .simditor .simditor-wrapper > textarea {
   display: none !important;
@@ -261,32 +260,28 @@
   padding: 0 0 0 6px;
   list-style: none;
 }
-.simditor .simditor-toolbar > ul:after {
-  content: "";
-  display: table;
-  clear: both;
-}
 .simditor .simditor-toolbar > ul > li {
   position: relative;
-  float: left;
+  display: inline-block;
+  font-size: 0;
 }
 .simditor .simditor-toolbar > ul > li > span.separator {
-  display: block;
-  float: left;
+  display: inline-block;
   background: #cfcfcf;
   width: 1px;
   height: 18px;
   margin: 11px 15px;
+  vertical-align: middle;
 }
 .simditor .simditor-toolbar > ul > li > .toolbar-item {
-  display: block;
-  float: left;
+  display: inline-block;
   width: 46px;
   height: 40px;
   outline: none;
   color: #333333;
   font-size: 15px;
   line-height: 40px;
+  vertical-align: middle;
   text-align: center;
   text-decoration: none;
 }
@@ -344,9 +339,9 @@
 }
 .simditor .simditor-toolbar > ul > li.menu-on .toolbar-item {
   position: relative;
-  z-index: 21;
+  z-index: 20;
   background: #ffffff;
-  box-shadow: 0 -3px 3px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.3);
 }
 .simditor .simditor-toolbar > ul > li.menu-on .toolbar-item span {
   opacity: 1;
@@ -359,10 +354,20 @@
   position: absolute;
   top: 40px;
   left: 0;
-  z-index: 20;
+  z-index: 21;
   background: #ffffff;
   text-align: left;
-  box-shadow: 0 0 3px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 0 4px rgba(0, 0, 0, 0.3);
+}
+.simditor .simditor-toolbar .toolbar-menu:before {
+  content: '';
+  display: block;
+  width: 46px;
+  height: 4px;
+  background: #ffffff;
+  position: absolute;
+  top: -3px;
+  left: 0;
 }
 .simditor .simditor-toolbar .toolbar-menu ul {
   min-width: 160px;
@@ -458,6 +463,7 @@
 }
 .simditor .simditor-toolbar .toolbar-menu.toolbar-menu-table .menu-create-table {
   background: #ffffff;
+  padding: 1px;
 }
 .simditor .simditor-toolbar .toolbar-menu.toolbar-menu-table .menu-create-table table {
   border: none;
@@ -466,18 +472,18 @@
   table-layout: fixed;
 }
 .simditor .simditor-toolbar .toolbar-menu.toolbar-menu-table .menu-create-table table td {
-  height: 16px;
   padding: 0;
-  border: 2px solid #ffffff;
-  background: #f3f3f3;
   cursor: pointer;
 }
 .simditor .simditor-toolbar .toolbar-menu.toolbar-menu-table .menu-create-table table td:before {
   width: 16px;
+  height: 16px;
+  border: 1px solid #ffffff;
+  background: #f3f3f3;
   display: block;
   content: "";
 }
-.simditor .simditor-toolbar .toolbar-menu.toolbar-menu-table .menu-create-table table td.selected {
+.simditor .simditor-toolbar .toolbar-menu.toolbar-menu-table .menu-create-table table td.selected:before {
   background: #cfcfcf;
 }
 .simditor .simditor-toolbar .toolbar-menu.toolbar-menu-table .menu-edit-table {
@@ -566,9 +572,6 @@
   opacity: 0;
   height: 100%;
   width: 28px;
-}
-.simditor.simditor-mobile .simditor-toolbar > ul > li > .toolbar-item {
-  width: 46px;
 }
 .simditor.simditor-mobile .simditor-wrapper.toolbar-floating .simditor-toolbar {
   position: absolute;
