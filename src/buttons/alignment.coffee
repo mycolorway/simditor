@@ -55,5 +55,6 @@ class AlignmentButton extends Button
       'text-align': if align == 'left' then '' else align
 
     @editor.trigger 'valuechanged'
+    @editor.inputManager.throttledSelectionChanged()
 
 Simditor.Toolbar.addButton AlignmentButton

@@ -32,14 +32,18 @@
       button = editor.toolbar.list.find('.toolbar-item-alignment').data('button');
       button.command("right");
       expect($p1.css('text-align')).toBe('right');
-      return expect($p2.css('text-align')).toBe('right');
+      expect($p2.css('text-align')).toBe('right');
+      expect(button.el.hasClass('active')).toBe(true);
+      return expect(button.el.hasClass('align-right')).toBe(true);
     });
     it("can align to center", function() {
       var button;
       button = editor.toolbar.list.find('.toolbar-item-alignment').data('button');
       button.command("center");
       expect($p1.css('text-align')).toBe('center');
-      return expect($p2.css('text-align')).toBe('center');
+      expect($p2.css('text-align')).toBe('center');
+      expect(button.el.hasClass('active')).toBe(true);
+      return expect(button.el.hasClass('align-center')).toBe(true);
     });
     return it("can align to left", function() {
       var button, leftValues;
@@ -47,7 +51,9 @@
       button = editor.toolbar.list.find('.toolbar-item-alignment').data('button');
       button.command("left");
       expect(leftValues).toContain($p1.css('text-align'));
-      return expect(leftValues).toContain($p2.css('text-align'));
+      expect(leftValues).toContain($p2.css('text-align'));
+      expect(button.el.hasClass('active')).toBe(false);
+      return expect(button.el.hasClass('align-left')).toBe(true);
     });
   });
 

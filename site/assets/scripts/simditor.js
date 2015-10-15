@@ -5330,7 +5330,8 @@ AlignmentButton = (function(superClass) {
     this.nodes.css({
       'text-align': align === 'left' ? '' : align
     });
-    return this.editor.trigger('valuechanged');
+    this.editor.trigger('valuechanged');
+    return this.editor.inputManager.throttledSelectionChanged();
   };
 
   return AlignmentButton;
