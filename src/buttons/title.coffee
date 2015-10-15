@@ -3,7 +3,7 @@ class TitleButton extends Button
 
   name: 'title'
 
-  htmlTag: 'h1, h2, h3, h4'
+  htmlTag: 'h1, h2, h3, h4, h5'
 
   disableTag: 'pre, table'
 
@@ -39,12 +39,13 @@ class TitleButton extends Button
     super active
 
     param ||= @node[0].tagName.toLowerCase() if active
-    @el.removeClass 'active-p active-h1 active-h2 active-h3'
+    @el.removeClass 'active-p active-h1 active-h2 active-h3 active-h4 active-h5'
     @el.addClass('active active-' + param) if active
 
   command: (param) ->
     $rootNodes = @editor.selection.rootNodes()
     @editor.selection.save()
+
 
     $rootNodes.each (i, node) =>
       $node = $ node

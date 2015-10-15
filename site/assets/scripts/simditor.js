@@ -1684,7 +1684,7 @@ Util = (function(superClass) {
     return $(node).is('[class^="simditor-"]');
   };
 
-  Util.prototype.blockNodes = ["div", "p", "ul", "ol", "li", "blockquote", "hr", "pre", "h1", "h2", "h3", "h4", "table"];
+  Util.prototype.blockNodes = ["div", "p", "ul", "ol", "li", "blockquote", "hr", "pre", "h1", "h2", "h3", "h4", "h5", "table"];
 
   Util.prototype.isBlockNode = function(node) {
     node = $(node)[0];
@@ -3092,7 +3092,7 @@ TitleButton = (function(superClass) {
 
   TitleButton.prototype.name = 'title';
 
-  TitleButton.prototype.htmlTag = 'h1, h2, h3, h4';
+  TitleButton.prototype.htmlTag = 'h1, h2, h3, h4, h5';
 
   TitleButton.prototype.disableTag = 'pre, table';
 
@@ -3132,7 +3132,7 @@ TitleButton = (function(superClass) {
     if (active) {
       param || (param = this.node[0].tagName.toLowerCase());
     }
-    this.el.removeClass('active-p active-h1 active-h2 active-h3');
+    this.el.removeClass('active-p active-h1 active-h2 active-h3 active-h4 active-h5');
     if (active) {
       return this.el.addClass('active active-' + param);
     }
