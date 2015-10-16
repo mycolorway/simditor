@@ -14,4 +14,4 @@ Demo and docs can be found [here](http://simditor.tower.im/).
 
 ### IMPORTANT NOTICE
 
-If you want to submit issues, please make sure you can reproduce the issue and please attach enough debug information(OS, browser, Simditor vertion, error message, steps to reproduce the issue or a live demo), or I'll probably close the issue :(
+If you want to submit issues, please make sure you can reproduce the issue and please attach enough debug information(OS, browser, Simditor version, error message, steps to reproduce the issue or a live demo), or I'll probably close the issue directly :(
