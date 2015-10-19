@@ -67,6 +67,7 @@ class Clipboard extends SimpleModule
       .attr 'tabIndex', '-1'
       .appendTo @editor.el
 
+    @editor.undoManager.resetCaretPosition()
     state =
       html: @editor.body.html()
       caret: @editor.undoManager.caretPosition()

@@ -45,14 +45,16 @@ class UndoManager extends SimpleModule
       @throttledPushState()
 
     @editor.on 'selectionchanged', (e) =>
-      @_startPosition = null
-      @_endPosition = null
-
+      @resetCaretPosition()
       @update()
 
     @editor.on 'blur', (e) =>
-      @_startPosition = null
-      @_endPosition = null
+      @resetCaretPosition()
+
+
+  resetCaretPosition: ->
+    @_startPosition = null
+    @_endPosition = null
 
   startPosition: ->
     if @editor.selection._range

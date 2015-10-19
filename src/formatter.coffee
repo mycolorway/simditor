@@ -115,6 +115,7 @@ class Formatter extends SimpleModule
         if !blockNode or blockNode.is('ul, ol')
           blockNode = $('<p/>').insertBefore(node)
         blockNode.append(node)
+        blockNode.append(@editor.util.phBr) if @editor.util.isEmptyNode(blockNode)
 
     $el
 
