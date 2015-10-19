@@ -30,6 +30,8 @@ class Clipboard extends SimpleModule
       @editor.inputManager.throttledValueChanged.clear()
       @editor.inputManager.throttledSelectionChanged.clear()
       @editor.undoManager.throttledPushState.clear()
+      @editor.selection.reset()
+      @editor.undoManager.resetCaretPosition()
 
       @pasting = true
       @_getPasteContent (pasteContent) =>
@@ -67,7 +69,6 @@ class Clipboard extends SimpleModule
       .attr 'tabIndex', '-1'
       .appendTo @editor.el
 
-    @editor.undoManager.resetCaretPosition()
     state =
       html: @editor.body.html()
       caret: @editor.undoManager.caretPosition()

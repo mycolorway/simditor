@@ -876,19 +876,12 @@ InputManager = (function(superClass) {
       })(this));
     }
     submitKey = this.editor.util.os.mac ? 'cmd+enter' : 'ctrl+enter';
-    this.editor.hotkeys.add(submitKey, (function(_this) {
+    return this.editor.hotkeys.add(submitKey, (function(_this) {
       return function(e) {
         _this.editor.el.closest('form').find('button:submit').click();
         return false;
       };
     })(this));
-    if (this.editor.textarea.attr('autofocus')) {
-      return setTimeout((function(_this) {
-        return function() {
-          return _this.editor.focus();
-        };
-      })(this), 0);
-    }
   };
 
   InputManager.prototype._onFocus = function(e) {
@@ -897,9 +890,20 @@ InputManager = (function(superClass) {
     }
     this.editor.el.addClass('focus').removeClass('error');
     this.focused = true;
-    this.lastCaretPosition = null;
     return setTimeout((function(_this) {
       return function() {
+        var $blockEl, range;
+        range = _this.editor.selection._selection.getRangeAt(0);
+        if (range.startContainer === _this.editor.body[0]) {
+          if (_this.lastCaretPosition) {
+            _this.editor.undoManager.caretPosition(_this.lastCaretPosition);
+          } else {
+            $blockEl = _this.body.children.first();
+            range = document.createRange();
+            _this.selection.setRangeAtStartOf($blockEl, range);
+          }
+        }
+        _this.lastCaretPosition = null;
         _this.editor.triggerHandler('focus');
         if (!_this.editor.util.support.onselectionchange) {
           return _this.throttledSelectionChanged();
@@ -1548,7 +1552,11 @@ UndoManager = (function(superClass) {
         endOffset = caret.start[caret.start.length - 1];
       }
       if (!startContainer || !endContainer) {
-        throw new Error('simditor: invalid caret state');
+        if (typeof console !== "undefined" && console !== null) {
+          if (typeof console.warn === "function") {
+            console.warn('simditor: invalid caret state');
+          }
+        }
         return;
       }
       range = document.createRange();
@@ -2218,6 +2226,8 @@ Clipboard = (function(superClass) {
         _this.editor.inputManager.throttledValueChanged.clear();
         _this.editor.inputManager.throttledSelectionChanged.clear();
         _this.editor.undoManager.throttledPushState.clear();
+        _this.editor.selection.reset();
+        _this.editor.undoManager.resetCaretPosition();
         _this.pasting = true;
         return _this._getPasteContent(function(pasteContent) {
           _this._processPasteContent(pasteContent);
@@ -2260,7 +2270,6 @@ Clipboard = (function(superClass) {
   Clipboard.prototype._getPasteContent = function(callback) {
     var state;
     this._pasteBin = $('<div contenteditable="true" />').addClass('simditor-paste-bin').attr('tabIndex', '-1').appendTo(this.editor.el);
-    this.editor.undoManager.resetCaretPosition();
     state = {
       html: this.editor.body.html(),
       caret: this.editor.undoManager.caretPosition()
@@ -2478,7 +2487,10 @@ Simditor = (function(superClass) {
             return _this._placeholder();
           });
         }
-        return _this.setValue(_this.textarea.val().trim() || '');
+        _this.setValue(_this.textarea.val().trim() || '');
+        if (_this.textarea.attr('autofocus')) {
+          return _this.focus();
+        }
       };
     })(this));
     if (this.util.browser.mozilla) {
@@ -2584,15 +2596,15 @@ Simditor = (function(superClass) {
       return;
     }
     if (this.inputManager.lastCaretPosition) {
-      return this.undoManager.caretPosition(this.inputManager.lastCaretPosition);
+      this.undoManager.caretPosition(this.inputManager.lastCaretPosition);
+      return this.inputManager.lastCaretPosition = null;
     } else {
       $blockEl = this.body.children().last();
       if (!$blockEl.is('p')) {
         $blockEl = $('<p/>').append(this.util.phBr).appendTo(this.body);
       }
       range = document.createRange();
-      this.selection.setRangeAtEndOf($blockEl, range);
-      return this.body.focus();
+      return this.selection.setRangeAtEndOf($blockEl, range);
     }
   };
 

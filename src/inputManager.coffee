@@ -113,20 +113,25 @@ class InputManager extends SimpleModule
         .click()
       false
 
-    if @editor.textarea.attr 'autofocus'
-      setTimeout =>
-        @editor.focus()
-      , 0
-
   _onFocus: (e) ->
     return if @editor.clipboard.pasting
 
     @editor.el.addClass('focus')
       .removeClass('error')
     @focused = true
-    @lastCaretPosition = null
 
     setTimeout =>
+      # FIX: Tab to focus in Firefox will lose correct caret position
+      range = @editor.selection._selection.getRangeAt(0)
+      if range.startContainer == @editor.body[0]
+        if @lastCaretPosition
+          @editor.undoManager.caretPosition @lastCaretPosition
+        else
+          $blockEl = @body.children.first()
+          range = document.createRange()
+          @selection.setRangeAtStartOf $blockEl, range
+
+      @lastCaretPosition = null
       @editor.triggerHandler 'focus'
       @throttledSelectionChanged() unless @editor.util.support.onselectionchange
     , 0

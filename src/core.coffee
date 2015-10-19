@@ -61,6 +61,9 @@ class Simditor extends SimpleModule
 
       @setValue @textarea.val().trim() || ''
 
+      if @textarea.attr 'autofocus'
+        @focus()
+
     # Disable the resizing of `img` and `table`
     if @util.browser.mozilla
       @util.reflow()
@@ -166,13 +169,13 @@ class Simditor extends SimpleModule
 
     if @inputManager.lastCaretPosition
       @undoManager.caretPosition @inputManager.lastCaretPosition
+      @inputManager.lastCaretPosition = null
     else
       $blockEl = @body.children().last()
       unless $blockEl.is('p')
         $blockEl = $('<p/>').append(@util.phBr).appendTo(@body)
       range = document.createRange()
       @selection.setRangeAtEndOf $blockEl, range
-      @body.focus()
 
   blur: ->
     if @body.is(':visible') and @body.is('[contenteditable]')
