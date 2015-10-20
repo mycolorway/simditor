@@ -11,6 +11,7 @@
       editor.focus();
       $p = editor.body.find('> p');
       editor.selection.setRangeAtStartOf($p);
+      editor.inputManager.focused = true;
       return editor.trigger('selectionchanged');
     });
     afterEach(function() {

@@ -19,6 +19,7 @@ describe 'Simditor alignment button', ->
     editor.selection.setRangeAtEndOf $p2, range
     range.setStart $p1[0], 0
     editor.selection.range range
+    editor.inputManager.focused = true
     editor.trigger 'selectionchanged'
 
   afterEach ->

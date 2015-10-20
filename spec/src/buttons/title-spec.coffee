@@ -12,6 +12,7 @@ describe 'Simditor title button', ->
 
     $p = editor.body.find('> p')
     editor.selection.setRangeAtStartOf $p
+    editor.inputManager.focused = true
     editor.trigger 'selectionchanged'
 
   afterEach ->

@@ -24,6 +24,7 @@ describe 'Simditor code button', ->
     range.setStart($p[0], 0)
     range.setEnd($p[0], 0)
     editor.selection.range range
+    editor.inputManager.focused = true
     button.command()
     editor.trigger 'selectionchanged'
 

@@ -23,6 +23,7 @@
       range.setStart($p[0], 0);
       range.setEnd($p[0], 0);
       editor.selection.range(range);
+      editor.inputManager.focused = true;
       button.command();
       editor.trigger('selectionchanged');
       expect(editor.getValue()).toBe('<pre><code>var test = 1;</code></pre>');

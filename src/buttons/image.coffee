@@ -199,14 +199,13 @@ class ImageButton extends Button
         $mask.remove() if $mask
         $img.removeData 'mask'
 
+        @editor.trigger 'valuechanged'
+        if @editor.body.find('img.uploading').length < 1
+          @editor.uploader.trigger 'uploadready', [file, result]
+
       if @popover.active
         @popover.srcEl.prop('disabled', false)
         @popover.srcEl.val result.file_path
-
-      @editor.trigger 'valuechanged'
-      if @editor.body.find('img.uploading').length < 1
-        @editor.uploader.trigger 'uploadready', [file, result]
-
 
     @editor.uploader.on 'uploaderror', (e, file, xhr) =>
       return unless file.inline

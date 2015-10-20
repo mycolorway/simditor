@@ -4241,15 +4241,15 @@ ImageButton = (function(superClass) {
           if ($mask) {
             $mask.remove();
           }
-          return $img.removeData('mask');
+          $img.removeData('mask');
+          _this.editor.trigger('valuechanged');
+          if (_this.editor.body.find('img.uploading').length < 1) {
+            return _this.editor.uploader.trigger('uploadready', [file, result]);
+          }
         });
         if (_this.popover.active) {
           _this.popover.srcEl.prop('disabled', false);
-          _this.popover.srcEl.val(result.file_path);
-        }
-        _this.editor.trigger('valuechanged');
-        if (_this.editor.body.find('img.uploading').length < 1) {
-          return _this.editor.uploader.trigger('uploadready', [file, result]);
+          return _this.popover.srcEl.val(result.file_path);
         }
       };
     })(this));

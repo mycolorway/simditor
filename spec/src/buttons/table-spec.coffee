@@ -18,6 +18,7 @@ describe 'Simditor table button', ->
     expect($button.length).toBe(1)
     expect(editor.body.find('table').length).toBe(0)
 
+    editor.inputManager.focused = true
     editor.trigger 'selectionchanged'
     $button.mousedown()
     $('.menu-create-table td').eq(2).mousedown()

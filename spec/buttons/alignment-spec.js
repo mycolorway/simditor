@@ -18,6 +18,7 @@
       editor.selection.setRangeAtEndOf($p2, range);
       range.setStart($p1[0], 0);
       editor.selection.range(range);
+      editor.inputManager.focused = true;
       return editor.trigger('selectionchanged');
     });
     afterEach(function() {

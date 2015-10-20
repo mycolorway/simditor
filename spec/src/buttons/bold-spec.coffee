@@ -15,8 +15,7 @@ describe 'Simditor bold button', ->
   it 'should set selection bold after clicking', ->
     editor.focus()
 
-    $button = editor.toolbar.list.find('.toolbar-item-bold')
-    expect($button.length).toBe(1)
+    button = editor.toolbar.findButton('bold')
 
     $p = editor.body.find 'p:first'
     $text = $p.contents().first()
@@ -24,7 +23,8 @@ describe 'Simditor bold button', ->
     range.setStart($text[0], 0)
     range.setEnd($text[0], 4)
     editor.selection.range range
-    $button.mousedown()
+
+    button.command()
 
     $b = $p.find('b')
     expect($b.length).toBe(1)
@@ -41,8 +41,8 @@ describe 'Simditor bold button', ->
     range.setStart $b[0], 1
     range.setEnd $b[0], 1
     editor.selection.range range
+    editor.inputManager.focused = true
     editor.trigger 'selectionchanged'
 
-    $button = editor.toolbar.list.find('.toolbar-item-bold')
-    button = $button.data 'button'
+    button = editor.toolbar.findButton('bold')
     expect(button.active).toBe(true)
