@@ -44,6 +44,12 @@ Simditor.i18n =
     'alignLeft': '居左'
     'alignRight': '居右'
     'selectLanguage': '选择程序语言'
+    'fontScale': '字体大小'
+    'fontScaleXLarge': '超大字体'
+    'fontScaleLarge': '大号字体'
+    'fontScaleNormal': '正常大小'
+    'fontScaleSmall': '小号字体'
+    'fontScaleXSmall': '超小字体'
 
   'en-US':
     'blockquote': 'Block Quote'
@@ -89,3 +95,9 @@ Simditor.i18n =
     'alignLeft': 'Align Left'
     'alignRight': 'Align Right'
     'selectLanguage': 'Select Language'
+    'fontScale': 'Font Size'
+    'fontScaleXLarge': 'X Large Size'
+    'fontScaleLarge': 'Large Size'
+    'fontScaleNormal': 'Normal Size'
+    'fontScaleSmall': 'Small Size'
+    'fontScaleXSmall': 'X Small Size'

@@ -14,7 +14,7 @@
   }
 }(this, function ($, SimpleModule, simpleHotkeys, simpleUploader) {
 
-var AlignmentButton, BlockquoteButton, BoldButton, Button, Clipboard, CodeButton, CodePopover, ColorButton, Formatter, HrButton, ImageButton, ImagePopover, IndentButton, Indentation, InputManager, ItalicButton, Keystroke, LinkButton, LinkPopover, ListButton, OrderListButton, OutdentButton, Popover, Selection, Simditor, StrikethroughButton, TableButton, TitleButton, Toolbar, UnderlineButton, UndoManager, UnorderListButton, Util,
+var AlignmentButton, BlockquoteButton, BoldButton, Button, Clipboard, CodeButton, CodePopover, ColorButton, FontScaleButton, Formatter, HrButton, ImageButton, ImagePopover, IndentButton, Indentation, InputManager, ItalicButton, Keystroke, LinkButton, LinkPopover, ListButton, OrderListButton, OutdentButton, Popover, Selection, Simditor, StrikethroughButton, TableButton, TitleButton, Toolbar, UnderlineButton, UndoManager, UnorderListButton, Util,
   extend = function(child, parent) { for (var key in parent) { if (hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
   hasProp = {}.hasOwnProperty,
   indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; },
@@ -475,7 +475,7 @@ Formatter = (function(superClass) {
       code: ['class']
     }, this.opts.allowedAttributes);
     this._allowedStyles = $.extend({
-      span: ['color'],
+      span: ['color', 'font-size'],
       b: ['color'],
       i: ['color'],
       strong: ['color'],
@@ -2685,7 +2685,13 @@ Simditor.i18n = {
     'alignCenter': '居中',
     'alignLeft': '居左',
     'alignRight': '居右',
-    'selectLanguage': '选择程序语言'
+    'selectLanguage': '选择程序语言',
+    'fontScale': '字体大小',
+    'fontScaleXLarge': '超大字体',
+    'fontScaleLarge': '大号字体',
+    'fontScaleNormal': '正常大小',
+    'fontScaleSmall': '小号字体',
+    'fontScaleXSmall': '超小字体'
   },
   'en-US': {
     'blockquote': 'Block Quote',
@@ -2730,7 +2736,13 @@ Simditor.i18n = {
     'alignCenter': 'Align Center',
     'alignLeft': 'Align Left',
     'alignRight': 'Align Right',
-    'selectLanguage': 'Select Language'
+    'selectLanguage': 'Select Language',
+    'fontScale': 'Font Size',
+    'fontScaleXLarge': 'X Large Size',
+    'fontScaleLarge': 'Large Size',
+    'fontScaleNormal': 'Normal Size',
+    'fontScaleSmall': 'Small Size',
+    'fontScaleXSmall': 'X Small Size'
   }
 };
 
@@ -3180,6 +3192,89 @@ TitleButton = (function(superClass) {
 })(Button);
 
 Simditor.Toolbar.addButton(TitleButton);
+
+FontScaleButton = (function(superClass) {
+  extend(FontScaleButton, superClass);
+
+  function FontScaleButton() {
+    return FontScaleButton.__super__.constructor.apply(this, arguments);
+  }
+
+  FontScaleButton.prototype.name = 'fontScale';
+
+  FontScaleButton.prototype.icon = 'font';
+
+  FontScaleButton.prototype.disableTag = 'pre';
+
+  FontScaleButton.prototype.htmlTag = 'span';
+
+  FontScaleButton.prototype._init = function() {
+    this.menu = [
+      {
+        name: '150%',
+        text: this._t('fontScaleXLarge'),
+        param: '5'
+      }, {
+        name: '125%',
+        text: this._t('fontScaleLarge'),
+        param: '4'
+      }, {
+        name: '100%',
+        text: this._t('fontScaleNormal'),
+        param: '3'
+      }, {
+        name: '75%',
+        text: this._t('fontScaleSmall'),
+        param: '2'
+      }, {
+        name: '50%',
+        text: this._t('fontScaleXSmall'),
+        param: '1'
+      }
+    ];
+    return FontScaleButton.__super__._init.call(this);
+  };
+
+  FontScaleButton.prototype._activeStatus = function() {
+    var range;
+    range = this.editor.selection.range();
+    this.setActive($(range.startContainer).parents('span[style*="font-size"]').length > 0);
+    return this.active;
+  };
+
+  FontScaleButton.prototype.command = function(param) {
+    var range, sizeMap;
+    range = this.editor.selection.range();
+    if (range.collapsed) {
+      return;
+    }
+    document.execCommand('styleWithCSS', false, true);
+    document.execCommand('fontSize', false, param);
+    document.execCommand('styleWithCSS', false, false);
+    sizeMap = {
+      'x-large': '1.5em',
+      'large': '1.25em',
+      'small': '.75em',
+      'x-small': '.5em'
+    };
+    this.editor.body.find('span[style*="font-size"]').each(function() {
+      var $span, size;
+      $span = $(this);
+      size = this.style.fontSize;
+      if (/large|x-large|small|x-small/.test(size)) {
+        return $span.css('fontSize', sizeMap[size]);
+      } else if (size === 'medium') {
+        return $span.replaceWith($span.contents());
+      }
+    });
+    return this.editor.trigger('valuechanged');
+  };
+
+  return FontScaleButton;
+
+})(Button);
+
+Simditor.Toolbar.addButton(FontScaleButton);
 
 BoldButton = (function(superClass) {
   extend(BoldButton, superClass);
