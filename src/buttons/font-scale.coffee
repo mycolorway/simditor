@@ -9,6 +9,12 @@ class FontScaleButton extends Button
 
   htmlTag: 'span'
 
+  sizeMap:
+    'x-large': '1.5em'
+    'large': '1.25em'
+    'small': '.75em'
+    'x-small': '.5em'
+
   _init: ->
     @menu = [{
       name: '150%'
@@ -35,7 +41,12 @@ class FontScaleButton extends Button
 
   _activeStatus: ->
     range = @editor.selection.range()
-    @setActive $(range.startContainer).parents('span[style*="font-size"]').length > 0
+    startNodes = @editor.selection.startNodes()
+    endNodes = @editor.selection.endNodes()
+    startNode = startNodes.filter('span[style*="font-size"]')
+    endNode = endNodes.filter('span[style*="font-size"]')
+    active = startNodes.length > 0 and endNodes.length > 0 and startNode.is(endNode)
+    @setActive active
     @active
 
   command: (param)->
@@ -47,18 +58,12 @@ class FontScaleButton extends Button
     document.execCommand 'fontSize', false, param
     document.execCommand 'styleWithCSS', false, false
 
-    sizeMap =
-      'x-large': '1.5em'
-      'large': '1.25em'
-      'small': '.75em'
-      'x-small': '.5em'
-
-    @editor.body.find('span[style*="font-size"]').each ->
-      $span = $ @
-      size = @style.fontSize
+    @editor.selection.nodes().find('span[style*="font-size"]').each (i, n) =>
+      $span = $(n)
+      size = n.style.fontSize
 
       if /large|x-large|small|x-small/.test(size)
-        $span.css('fontSize', sizeMap[size])
+        $span.css('fontSize', @sizeMap[size])
       else if size is 'medium'
         $span.replaceWith $span.contents()
 

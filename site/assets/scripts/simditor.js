@@ -3208,6 +3208,13 @@ FontScaleButton = (function(superClass) {
 
   FontScaleButton.prototype.htmlTag = 'span';
 
+  FontScaleButton.prototype.sizeMap = {
+    'x-large': '1.5em',
+    'large': '1.25em',
+    'small': '.75em',
+    'x-small': '.5em'
+  };
+
   FontScaleButton.prototype._init = function() {
     this.menu = [
       {
@@ -3236,14 +3243,19 @@ FontScaleButton = (function(superClass) {
   };
 
   FontScaleButton.prototype._activeStatus = function() {
-    var range;
+    var active, endNode, endNodes, range, startNode, startNodes;
     range = this.editor.selection.range();
-    this.setActive($(range.startContainer).parents('span[style*="font-size"]').length > 0);
+    startNodes = this.editor.selection.startNodes();
+    endNodes = this.editor.selection.endNodes();
+    startNode = startNodes.filter('span[style*="font-size"]');
+    endNode = endNodes.filter('span[style*="font-size"]');
+    active = startNodes.length > 0 && endNodes.length > 0 && startNode.is(endNode);
+    this.setActive(active);
     return this.active;
   };
 
   FontScaleButton.prototype.command = function(param) {
-    var range, sizeMap;
+    var range;
     range = this.editor.selection.range();
     if (range.collapsed) {
       return;
@@ -3251,22 +3263,18 @@ FontScaleButton = (function(superClass) {
     document.execCommand('styleWithCSS', false, true);
     document.execCommand('fontSize', false, param);
     document.execCommand('styleWithCSS', false, false);
-    sizeMap = {
-      'x-large': '1.5em',
-      'large': '1.25em',
-      'small': '.75em',
-      'x-small': '.5em'
-    };
-    this.editor.body.find('span[style*="font-size"]').each(function() {
-      var $span, size;
-      $span = $(this);
-      size = this.style.fontSize;
-      if (/large|x-large|small|x-small/.test(size)) {
-        return $span.css('fontSize', sizeMap[size]);
-      } else if (size === 'medium') {
-        return $span.replaceWith($span.contents());
-      }
-    });
+    this.editor.selection.nodes().find('span[style*="font-size"]').each((function(_this) {
+      return function(i, n) {
+        var $span, size;
+        $span = $(n);
+        size = n.style.fontSize;
+        if (/large|x-large|small|x-small/.test(size)) {
+          return $span.css('fontSize', _this.sizeMap[size]);
+        } else if (size === 'medium') {
+          return $span.replaceWith($span.contents());
+        }
+      };
+    })(this));
     return this.editor.trigger('valuechanged');
   };
 

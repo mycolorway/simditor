@@ -25,7 +25,7 @@ module.exports = (grunt) ->
             'src/buttons/button.coffee'
             'src/buttons/popover.coffee'
             'src/buttons/title.coffee'
-            'src/buttons/fontScale.coffee'
+            'src/buttons/font-scale.coffee'
             'src/buttons/bold.coffee'
             'src/buttons/italic.coffee'
             'src/buttons/underline.coffee'
