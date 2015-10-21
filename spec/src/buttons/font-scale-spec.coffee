@@ -15,17 +15,16 @@ describe 'Simditor fontScale button', ->
   it 'should set selection bold after clicking', ->
     editor.focus()
 
-    $button = editor.toolbar.list.find('.toolbar-item-fontScale')
-    expect($button.length).toBe(1)
-
     $p = editor.body.find 'p:first'
     $text = $p.contents().first()
     range = document.createRange()
     range.setStart($text[0], 0)
     range.setEnd($text[0], 10)
     editor.selection.range range
+    editor.inputManager.focused = true
+    editor.trigger 'selectionchanged'
 
-    button = $button.data 'button'
+    button = editor.toolbar.findButton('fontScale')
     button.menuEl.find('.menu-item:first').click()
 
     $span = $p.find('span[style*="font-size"]')
@@ -43,8 +42,8 @@ describe 'Simditor fontScale button', ->
     range.setStart $span[0], 1
     range.setEnd $span[0], 1
     editor.selection.range range
+    editor.inputManager.focused = true
     editor.trigger 'selectionchanged'
 
-    $button = editor.toolbar.list.find('.toolbar-item-fontScale')
-    button = $button.data 'button'
+    button = editor.toolbar.findButton('fontScale')
     expect(button.active).toBe(true)
