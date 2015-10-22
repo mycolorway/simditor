@@ -12,7 +12,7 @@ describe 'Simditor fontScale button', ->
     spec.destroySimditor()
     editor = null
 
-  it 'should set selection bold after clicking', ->
+  it 'should set selection font scaled after click menu', ->
     editor.focus()
 
     $p = editor.body.find 'p:first'

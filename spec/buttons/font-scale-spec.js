@@ -12,7 +12,7 @@
       spec.destroySimditor();
       return editor = null;
     });
-    it('should set selection bold after clicking', function() {
+    it('should set selection font scaled after click menu', function() {
       var $p, $span, $text, button, range;
       editor.focus();
       $p = editor.body.find('p:first');
