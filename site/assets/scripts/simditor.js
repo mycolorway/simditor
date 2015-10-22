@@ -3255,7 +3255,7 @@ FontScaleButton = (function(superClass) {
   };
 
   FontScaleButton.prototype.command = function(param) {
-    var range;
+    var $scales, containerNode, range;
     range = this.editor.selection.range();
     if (range.collapsed) {
       return;
@@ -3263,7 +3263,15 @@ FontScaleButton = (function(superClass) {
     document.execCommand('styleWithCSS', false, true);
     document.execCommand('fontSize', false, param);
     document.execCommand('styleWithCSS', false, false);
-    this.editor.selection.nodes().find('span[style*="font-size"]').each((function(_this) {
+    this.editor.selection.reset();
+    this.editor.selection.range();
+    containerNode = this.editor.selection.containerNode();
+    if (containerNode[0].nodeType === Node.TEXT_NODE) {
+      $scales = containerNode.closest('span[style*="font-size"]');
+    } else {
+      $scales = containerNode.find('span[style*="font-size"]');
+    }
+    $scales.each((function(_this) {
       return function(i, n) {
         var $span, size;
         $span = $(n);

@@ -57,8 +57,17 @@ class FontScaleButton extends Button
     document.execCommand 'styleWithCSS', false, true
     document.execCommand 'fontSize', false, param
     document.execCommand 'styleWithCSS', false, false
+    @editor.selection.reset()
+    @editor.selection.range()
 
-    @editor.selection.nodes().find('span[style*="font-size"]').each (i, n) =>
+    containerNode = @editor.selection.containerNode()
+
+    if containerNode[0].nodeType is Node.TEXT_NODE
+      $scales = containerNode.closest('span[style*="font-size"]')
+    else
+      $scales = containerNode.find('span[style*="font-size"]')
+
+    $scales.each (i, n) =>
       $span = $(n)
       size = n.style.fontSize
 
