@@ -23,6 +23,7 @@
       'italic'
       'underline'
       'strikethrough'
+      'fontScale'
       'color'
       'ol'             # ordered list
       'ul'             # unordered list
@@ -133,7 +134,7 @@
     Default whitelist:
 
     ```coffee
-    ['br', 'a', 'img', 'b', 'strong', 'i', 'u', 'font', 'p', 'ul', 'ol', 'li', 'blockquote', 'pre', 'h1', 'h2', 'h3', 'h4', 'hr']
+    ['br', 'span', 'a', 'img', 'b', 'strong', 'i', 'strike', 'u', 'font', 'p', 'ul', 'ol', 'li', 'blockquote', 'pre', 'code', 'h1', 'h2', 'h3', 'h4', 'hr']
     ```
 
     Note that custom whitelist will be merged into the default one.
@@ -160,11 +161,17 @@
     Inline style whitelist. Default whitelist:
 
     ```coffee
+    span: ['color', 'font-size']
+    b: ['color']
+    i: ['color']
+    strong: ['color']
+    strike: ['color']
+    u: ['color']
     p: ['margin-left', 'text-align']
-    h1: ['margin-left']
-    h2: ['margin-left']
-    h3: ['margin-left']
-    h4: ['margin-left']
+    h1: ['margin-left', 'text-align']
+    h2: ['margin-left', 'text-align']
+    h3: ['margin-left', 'text-align']
+    h4: ['margin-left', 'text-align']
     ```
 
     Note that custom whitelist will be merged into the default one.

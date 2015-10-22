@@ -26,7 +26,7 @@ class Formatter extends SimpleModule
     , @opts.allowedAttributes
 
     @_allowedStyles = $.extend
-      span: ['color']
+      span: ['color', 'font-size']
       b: ['color']
       i: ['color']
       strong: ['color']
