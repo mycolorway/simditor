@@ -127,9 +127,9 @@ class InputManager extends SimpleModule
         if @lastCaretPosition
           @editor.undoManager.caretPosition @lastCaretPosition
         else
-          $blockEl = @body.children.first()
+          $blockEl = @editor.body.children().first()
           range = document.createRange()
-          @selection.setRangeAtStartOf $blockEl, range
+          @editor.selection.setRangeAtStartOf $blockEl, range
 
       @lastCaretPosition = null
       @editor.triggerHandler 'focus'

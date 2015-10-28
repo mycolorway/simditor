@@ -898,9 +898,9 @@ InputManager = (function(superClass) {
           if (_this.lastCaretPosition) {
             _this.editor.undoManager.caretPosition(_this.lastCaretPosition);
           } else {
-            $blockEl = _this.body.children.first();
+            $blockEl = _this.editor.body.children().first();
             range = document.createRange();
-            _this.selection.setRangeAtStartOf($blockEl, range);
+            _this.editor.selection.setRangeAtStartOf($blockEl, range);
           }
         }
         _this.lastCaretPosition = null;
@@ -1324,7 +1324,7 @@ UndoManager = (function(superClass) {
       return function() {
         return _this._pushUndoState();
       };
-    })(this), 500);
+    })(this), 2000);
     this.editor.on('valuechanged', (function(_this) {
       return function(e, src) {
         if (src === 'undo' || src === 'redo') {
@@ -1335,8 +1335,14 @@ UndoManager = (function(superClass) {
     })(this));
     this.editor.on('selectionchanged', (function(_this) {
       return function(e) {
-        _this.resetCaretPosition();
-        return _this.update();
+        return _this.resetCaretPosition();
+      };
+    })(this));
+    this.editor.on('focus', (function(_this) {
+      return function(e) {
+        if (_this._stack.length === 0) {
+          return _this._pushUndoState();
+        }
       };
     })(this));
     return this.editor.on('blur', (function(_this) {
@@ -1375,19 +1381,18 @@ UndoManager = (function(superClass) {
   };
 
   UndoManager.prototype._pushUndoState = function() {
-    var currentState, html;
+    var caret;
     if (this.editor.triggerHandler('pushundostate') === false) {
       return;
     }
-    currentState = this.currentState();
-    html = this.editor.body.html();
-    if (currentState && currentState.html === html) {
+    caret = this.caretPosition();
+    if (!caret.start) {
       return;
     }
     this._index += 1;
     this._stack.length = this._index;
     this._stack.push({
-      html: html,
+      html: this.editor.body.html(),
       caret: this.caretPosition()
     });
     if (this._stack.length > this._capacity) {
