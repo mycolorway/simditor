@@ -51,10 +51,10 @@ class Toolbar extends SimpleModule
         @editor.placeholderEl.css 'top', toolbarHeight
         true
 
-      $(window).on 'resize.simditor-' + @editor.id, (e) ->
-        floatInitialized = null
-
       floatInitialized = null
+      $(window).on 'resize.simditor-' + @editor.id, (e) ->
+        floatInitialized = initToolbarFloat()
+
       $(window).on 'scroll.simditor-' + @editor.id, (e) =>
         return unless @wrapper.is(':visible')
         topEdge = @editor.wrapper.offset().top

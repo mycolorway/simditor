@@ -1913,11 +1913,10 @@ Toolbar = (function(superClass) {
           return true;
         };
       })(this);
-      $(window).on('resize.simditor-' + this.editor.id, function(e) {
-        var floatInitialized;
-        return floatInitialized = null;
-      });
       floatInitialized = null;
+      $(window).on('resize.simditor-' + this.editor.id, function(e) {
+        return floatInitialized = initToolbarFloat();
+      });
       $(window).on('scroll.simditor-' + this.editor.id, (function(_this) {
         return function(e) {
           var bottomEdge, scrollTop, topEdge;
