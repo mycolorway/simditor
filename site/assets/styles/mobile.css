@@ -38,11 +38,11 @@
     max-width: 80px;
     height: auto;
   }
-
   nav {
     display: none;
   }
 }
+
 @media screen and (max-device-width: 320px) and (min-device-width: 300px) {
   body {
     width: 320px;
@@ -83,11 +83,11 @@
     max-width: 80px;
     height: auto;
   }
-
   nav {
     display: none;
   }
 }
+
 @media screen and (max-device-width: 360px) and (min-device-width: 340px) {
   body {
     width: 360px;
@@ -128,14 +128,14 @@
     max-width: 80px;
     height: auto;
   }
-
   nav {
     display: none;
   }
 }
+
 @media screen and (max-device-width: 480px) and (min-device-width: 460px) {
   body {
-    width: 480px;
+    width: 240px;
     margin: 0 auto;
   }
   body .wrapper {
@@ -173,11 +173,11 @@
     max-width: 80px;
     height: auto;
   }
-
   nav {
     display: none;
   }
 }
+
 @media screen and (max-device-width: 640px) and (min-device-width: 620px) {
   body {
     width: 320px;
@@ -218,11 +218,11 @@
     max-width: 80px;
     height: auto;
   }
-
   nav {
     display: none;
   }
 }
+
 @media screen and (max-device-width: 720px) and (min-device-width: 700px) {
   body {
     width: 360px;
@@ -263,11 +263,11 @@
     max-width: 80px;
     height: auto;
   }
-
   nav {
     display: none;
   }
 }
+
 @media screen and (max-device-width: 800px) and (min-device-width: 780px) {
   body {
     width: 400px;
@@ -308,11 +308,11 @@
     max-width: 88.88889px;
     height: auto;
   }
-
   nav {
     display: none;
   }
 }
+
 @media screen and (max-device-width: 960px) and (min-device-width: 940px) {
   body {
     width: 480px;
@@ -353,11 +353,11 @@
     max-width: 100px;
     height: auto;
   }
-
   nav {
     display: none;
   }
 }
+
 @media screen and (max-device-width: 1024px) and (min-device-width: 1004px) {
   body {
     width: 512px;
@@ -398,11 +398,11 @@
     max-width: 100px;
     height: auto;
   }
-
   nav {
     display: none;
   }
 }
+
 @media screen and (max-device-width: 1280px) and (min-device-width: 1260px) {
   body {
     width: 640px;
@@ -443,17 +443,18 @@
     max-width: 100px;
     height: auto;
   }
-
   nav {
     display: none;
   }
 }
-@media screen and (device-aspect-ratio: 40 / 71) and (orientation: landscape) {
+
+@media screen and (device-aspect-ratio: 40/71) and (orientation: landscape) {
   body {
     width: 568px;
   }
 }
-@media screen and (device-aspect-ratio: 2 / 3) and (orientation: landscape) {
+
+@media screen and (device-aspect-ratio: 2/3) and (orientation: landscape) {
   body {
     width: 480px;
   }

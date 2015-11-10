@@ -371,15 +371,19 @@ a {
   text-decoration: none;
   color: #4298BA;
 }
+
 a:visited {
   color: #4298BA;
 }
+
 a:hover {
   color: #0F769F;
 }
+
 a:active {
   color: #9E792E;
 }
+
 a:hover, a:active {
   outline: 0;
 }
@@ -389,9 +393,11 @@ a:hover, a:active {
   width: 960px;
   margin: 0 auto;
 }
+
 .wrapper header {
   padding: 50px 0 15px;
 }
+
 .wrapper header h1 {
   width: 300px;
   margin: 0 auto;
@@ -401,12 +407,14 @@ a:hover, a:active {
   background-repeat: no-repeat;
   background-size: 264px 107px;
 }
-@media all and (-webkit-min-device-pixel-ratio: 1.5), all and (-o-min-device-pixel-ratio: 3 / 2), all and (min--moz-device-pixel-ratio: 1.5), all and (min-device-pixel-ratio: 1.5) {
+
+@media all and (-webkit-min-device-pixel-ratio: 1.5), all and (-o-min-device-pixel-ratio: 3/2), all and (min--moz-device-pixel-ratio: 1.5), all and (min-device-pixel-ratio: 1.5) {
   .wrapper header h1 {
     background-image: url("../images/logo@2x.png");
     background-size: 264px 107px;
   }
 }
+
 .wrapper header h1 a {
   display: block;
   width: 180px;
@@ -423,48 +431,59 @@ a:hover, a:active {
   background-repeat: no-repeat;
   background-size: 171px 39px;
 }
-@media all and (-webkit-min-device-pixel-ratio: 1.5), all and (-o-min-device-pixel-ratio: 3 / 2), all and (min--moz-device-pixel-ratio: 1.5), all and (min-device-pixel-ratio: 1.5) {
+
+@media all and (-webkit-min-device-pixel-ratio: 1.5), all and (-o-min-device-pixel-ratio: 3/2), all and (min--moz-device-pixel-ratio: 1.5), all and (min-device-pixel-ratio: 1.5) {
   .wrapper header h1 a {
     background-image: url("../images/title@2x.png");
     background-size: 171px 39px;
   }
 }
+
 .wrapper header .desc {
   font-size: 19px;
   color: #9ba5a9;
   text-align: center;
 }
+
 .wrapper nav {
   text-align: center;
   padding: 26px 0;
 }
+
 .wrapper nav a {
   padding: 0 25px;
   font-size: 16px;
   color: #4f838f;
   line-height: 20px;
 }
+
 .wrapper nav a:hover {
   color: #666666;
 }
+
 .wrapper nav a.active {
   color: #000000;
 }
+
 .wrapper section {
   border-top: 2px solid #dee7ec;
 }
+
 .wrapper footer {
   font-size: 14px;
   margin: 40px 0;
   color: #999999;
   text-align: center;
 }
+
 .wrapper footer a {
   color: #999999;
 }
+
 .wrapper footer a:hover {
   text-decoration: underline;
 }
+
 .wrapper #link-fork {
   display: block;
   width: 133px;
@@ -478,9 +497,11 @@ a:hover, a:active {
 section#page-demo {
   border-top: none;
 }
+
 section#page-demo .simditor {
   box-shadow: 0 8px 40px rgba(0, 0, 0, 0.15);
 }
+
 section#page-demo #preview {
   min-height: 100px;
   padding: 15px;
@@ -493,6 +514,7 @@ section.page-sidebar {
   position: relative;
   margin: 0 0 30px 0;
 }
+
 section.page-sidebar aside {
   width: 180px;
   padding: 50px 0 0 0;
@@ -500,13 +522,16 @@ section.page-sidebar aside {
   top: 0;
   left: 0;
 }
+
 section.page-sidebar aside ul {
   padding: 0 10px 0 60px;
 }
+
 section.page-sidebar aside ul li {
   margin: 0 0 30px 0;
   position: relative;
 }
+
 section.page-sidebar aside ul li .icon {
   display: none;
   width: 10px;
@@ -517,20 +542,25 @@ section.page-sidebar aside ul li .icon {
   top: 0;
   left: -18px;
 }
+
 section.page-sidebar aside ul li a {
   line-height: 20px;
   font-size: 18px;
   color: #a3afb2;
 }
+
 section.page-sidebar aside ul li a:hover {
   color: #666666;
 }
+
 section.page-sidebar aside ul li.active .icon {
   display: block;
 }
+
 section.page-sidebar aside ul li.active a {
   color: #000000;
 }
+
 section.page-sidebar article {
   padding: 40px 20px 10px 60px;
   margin: 0 0 0 180px;
@@ -541,30 +571,36 @@ section.page-sidebar article {
 section#page-download {
   min-height: 400px;
 }
+
 section#page-download .version {
   border-bottom: 1px solid #dfdfdf;
 }
+
 section#page-download .version .title {
   padding: 15px 15px;
   cursor: pointer;
 }
+
 section#page-download .version .title .icon {
   display: inline-block;
   width: 12px;
   line-height: 30px;
   font-size: 20px;
 }
+
 section#page-download .version .title .name {
   font-size: 20px;
   line-height: 30px;
   font-weight: bold;
   margin: 0 20px;
 }
+
 section#page-download .version .title .date {
   font-size: 16px;
   line-height: 30px;
   color: #aaaaaa;
 }
+
 section#page-download .version .title .btn-download {
   display: inline-block;
   float: right;
@@ -575,18 +611,22 @@ section#page-download .version .title .btn-download {
   background: #aaaaaa;
   border-radius: 3px;
 }
+
 section#page-download .version .title .btn-download:hover {
   background: #bbbbbb;
 }
+
 section#page-download .version .release-notes {
   display: none;
   margin: 10px 0 25px 0;
   padding: 0 50px;
   list-style: disc outside none;
 }
+
 section#page-download .version .release-notes li {
   margin: 0 0 10px 0;
 }
+
 section#page-download .version.expand .release-notes {
   display: block;
 }
@@ -598,21 +638,28 @@ section.page-doc dt {
   margin-bottom: 10px;
   padding-top: 20px;
 }
+
 section.page-doc dt:first-child {
   border-top: none;
   margin-top: 0;
   padding-top: 0;
 }
-section.page-doc dt > a, section.page-doc dt > span {
+
+section.page-doc dt > a,
+section.page-doc dt > span {
   margin-left: 10px;
 }
-section.page-doc dt > a:first-child, section.page-doc dt > span:first-child {
+
+section.page-doc dt > a:first-child,
+section.page-doc dt > span:first-child {
   margin-left: 0;
 }
+
 section.page-doc dt .name {
   font-size: 1.2em;
   font-weight: bold;
 }
+
 section.page-doc dt .param-type,
 section.page-doc dt .type {
   background-color: #efefef;
@@ -621,31 +668,39 @@ section.page-doc dt .type {
   font-size: 0.8em;
   vertical-align: text-top;
 }
+
 section.page-doc dt .default {
   color: #aaa;
   font-size: 0.8em;
 }
+
 section.page-doc dt .params:before {
   content: "(";
 }
+
 section.page-doc dt .params:after {
   content: ")";
 }
+
 section.page-doc dt .params .param:after {
   content: ",";
   margin: 0 6px 0 3px;
 }
+
 section.page-doc dt .params .param:last-child:after {
   content: "";
   margin: 0;
 }
+
 section.page-doc dt .return {
   font-size: 0.8em;
   color: green;
 }
+
 section.page-doc dd {
   display: none;
 }
+
 section.page-doc dd.expand {
   display: block;
 }
@@ -654,6 +709,7 @@ section.page-doc dd.expand {
 section#page-extension article {
   padding: 40px 130px 10px;
 }
+
 section#page-extension article #btn-submit-extension {
   margin: 20px 0 0 0;
   display: inline-block;
@@ -662,6 +718,7 @@ section#page-extension article #btn-submit-extension {
   border: 1px solid #cccccc;
   border-radius: 4px;
 }
+
 section#page-extension article #btn-submit-extension:hover {
   border-color: #aaaaaa;
   background: #f3f3f3;
