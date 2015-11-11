@@ -123,13 +123,12 @@ class InputManager extends SimpleModule
     setTimeout =>
       # FIX: Tab to focus in Firefox will lose correct caret position
       range = @editor.selection._selection.getRangeAt(0)
-      if range.startContainer == @editor.body[0]
-        if @lastCaretPosition
-          @editor.undoManager.caretPosition @lastCaretPosition
-        else
-          $blockEl = @editor.body.children().first()
-          range = document.createRange()
-          @editor.selection.setRangeAtStartOf $blockEl, range
+      if @lastCaretPosition
+        @editor.undoManager.caretPosition @lastCaretPosition
+      else if range.startContainer == @editor.body[0]
+        $blockEl = @body.children.first()
+        range = document.createRange()
+        @selection.setRangeAtStartOf $blockEl, range
 
       @lastCaretPosition = null
       @editor.triggerHandler 'focus'

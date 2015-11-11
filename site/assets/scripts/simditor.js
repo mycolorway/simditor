@@ -894,14 +894,12 @@ InputManager = (function(superClass) {
       return function() {
         var $blockEl, range;
         range = _this.editor.selection._selection.getRangeAt(0);
-        if (range.startContainer === _this.editor.body[0]) {
-          if (_this.lastCaretPosition) {
-            _this.editor.undoManager.caretPosition(_this.lastCaretPosition);
-          } else {
-            $blockEl = _this.editor.body.children().first();
-            range = document.createRange();
-            _this.editor.selection.setRangeAtStartOf($blockEl, range);
-          }
+        if (_this.lastCaretPosition) {
+          _this.editor.undoManager.caretPosition(_this.lastCaretPosition);
+        } else if (range.startContainer === _this.editor.body[0]) {
+          $blockEl = _this.body.children.first();
+          range = document.createRange();
+          _this.selection.setRangeAtStartOf($blockEl, range);
         }
         _this.lastCaretPosition = null;
         _this.editor.triggerHandler('focus');
