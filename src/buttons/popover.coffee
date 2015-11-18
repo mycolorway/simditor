@@ -20,9 +20,6 @@ class Popover extends SimpleModule
       .data('popover', @)
     @render()
 
-    #@editor.on 'blur.popover', =>
-      #@target.addClass('selected') if @active and @target?
-
     @el.on 'mouseenter', (e) =>
       @el.addClass 'hover'
     @el.on 'mouseleave', (e) =>
@@ -30,10 +27,23 @@ class Popover extends SimpleModule
 
   render: ->
 
+  _initLabelWidth: ->
+    $fields = @el.find '.settings-field'
+    return unless $fields.length > 0
+
+    @_labelWidth = 0
+    $fields.each (i, field) =>
+      $field = $ field
+      $label = $field.find 'label'
+      return unless $label.length > 0
+      @_labelWidth = Math.max @_labelWidth, $label.width()
+
+    $fields.find('label').width @_labelWidth
+
   show: ($target, position = 'bottom') ->
     return unless $target?
 
-    #hide other popovers
+    # hide other popovers
     @el.siblings('.simditor-popover').each (i, popover) ->
       popover = $(popover).data('popover')
       popover.hide() if popover.active
@@ -50,6 +60,8 @@ class Popover extends SimpleModule
       @el.css({
         left: -9999
       }).show()
+
+      @_initLabelWidth() unless @_labelWidth
 
       @editor.util.reflow()
       @refresh(position)

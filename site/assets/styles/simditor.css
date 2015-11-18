@@ -539,7 +539,7 @@
   font-size: 12px;
 }
 .simditor .simditor-popover .settings-field input[type=text].image-size {
-  width: 60px;
+  width: 83px;
 }
 .simditor .simditor-popover .settings-field .times {
   display: inline-block;
@@ -564,6 +564,7 @@
   position: relative;
   display: inline-block;
   overflow: hidden;
+  vertical-align: middle;
 }
 .simditor .simditor-popover.image-popover .btn-upload input[type=file] {
   position: absolute;

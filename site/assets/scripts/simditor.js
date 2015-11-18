@@ -2675,9 +2675,11 @@ Simditor.i18n = {
     'outdent': '向左缩进',
     'italic': '斜体文字',
     'link': '插入链接',
-    'text': '文本',
     'linkText': '链接文字',
-    'linkUrl': '地址',
+    'linkUrl': '链接地址',
+    'linkTarget': '打开方式',
+    'openLinkInCurrentWindow': '在新窗口中打开',
+    'openLinkInNewWindow': '在当前窗口中打开',
     'removeLink': '移除链接',
     'ol': '有序列表',
     'ul': '无序列表',
@@ -2726,9 +2728,11 @@ Simditor.i18n = {
     'outdent': 'Outdent',
     'italic': 'Italic',
     'link': 'Insert Link',
-    'text': 'Text',
-    'linkText': 'Link Text',
-    'linkUrl': 'Link Url',
+    'linkText': 'Text',
+    'linkUrl': 'Url',
+    'linkTarget': 'Target',
+    'openLinkInCurrentWindow': 'Open link in current window',
+    'openLinkInNewWindow': 'Open link in new window',
     'removeLink': 'Remove Link',
     'ol': 'Ordered List',
     'ul': 'Unordered List',
@@ -3035,6 +3039,27 @@ Popover = (function(superClass) {
 
   Popover.prototype.render = function() {};
 
+  Popover.prototype._initLabelWidth = function() {
+    var $fields;
+    $fields = this.el.find('.settings-field');
+    if (!($fields.length > 0)) {
+      return;
+    }
+    this._labelWidth = 0;
+    $fields.each((function(_this) {
+      return function(i, field) {
+        var $field, $label;
+        $field = $(field);
+        $label = $field.find('label');
+        if (!($label.length > 0)) {
+          return;
+        }
+        return _this._labelWidth = Math.max(_this._labelWidth, $label.width());
+      };
+    })(this));
+    return $fields.find('label').width(this._labelWidth);
+  };
+
   Popover.prototype.show = function($target, position) {
     if (position == null) {
       position = 'bottom';
@@ -3060,6 +3085,9 @@ Popover = (function(superClass) {
       this.el.css({
         left: -9999
       }).show();
+      if (!this._labelWidth) {
+        this._initLabelWidth();
+      }
       this.editor.util.reflow();
       this.refresh(position);
       return this.trigger('popovershow');
@@ -4038,17 +4066,19 @@ LinkPopover = (function(superClass) {
 
   LinkPopover.prototype.render = function() {
     var tpl;
-    tpl = "<div class=\"link-settings\">\n  <div class=\"settings-field\">\n    <label>" + (this._t('text')) + "</label>\n    <input class=\"link-text\" type=\"text\"/>\n    <a class=\"btn-unlink\" href=\"javascript:;\" title=\"" + (this._t('removeLink')) + "\"\n      tabindex=\"-1\">\n      <span class=\"simditor-icon simditor-icon-unlink\"></span>\n    </a>\n  </div>\n  <div class=\"settings-field\">\n    <label>" + (this._t('linkUrl')) + "</label>\n    <input class=\"link-url\" type=\"text\"/>\n  </div>\n</div>";
+    tpl = "<div class=\"link-settings\">\n  <div class=\"settings-field\">\n    <label>" + (this._t('linkText')) + "</label>\n    <input class=\"link-text\" type=\"text\"/>\n    <a class=\"btn-unlink\" href=\"javascript:;\" title=\"" + (this._t('removeLink')) + "\"\n      tabindex=\"-1\">\n      <span class=\"simditor-icon simditor-icon-unlink\"></span>\n    </a>\n  </div>\n  <div class=\"settings-field\">\n    <label>" + (this._t('linkUrl')) + "</label>\n    <input class=\"link-url\" type=\"text\"/>\n  </div>\n  <div class=\"settings-field\">\n    <label>" + (this._t('linkTarget')) + "</label>\n    <select class=\"link-target\">\n      <option value=\"_blank\">" + (this._t('openLinkInNewWindow')) + " (_blank)</option>\n      <option value=\"_self\">" + (this._t('openLinkInCurrentWindow')) + " (_self)</option>\n    </select>\n  </div>\n</div>";
     this.el.addClass('link-popover').append(tpl);
     this.textEl = this.el.find('.link-text');
     this.urlEl = this.el.find('.link-url');
     this.unlinkEl = this.el.find('.btn-unlink');
+    this.selectTarget = this.el.find('.link-target');
     this.textEl.on('keyup', (function(_this) {
       return function(e) {
         if (e.which === 13) {
           return;
         }
-        return _this.target.text(_this.textEl.val());
+        _this.target.text(_this.textEl.val());
+        return _this.editor.inputManager.throttledValueChanged();
       };
     })(this));
     this.urlEl.on('keyup', (function(_this) {
@@ -4061,7 +4091,8 @@ LinkPopover = (function(superClass) {
         if (!(/https?:\/\/|^\//ig.test(val) || !val)) {
           val = 'http://' + val;
         }
-        return _this.target.attr('href', val);
+        _this.target.attr('href', val);
+        return _this.editor.inputManager.throttledValueChanged();
       };
     })(this));
     $([this.urlEl[0], this.textEl[0]]).on('keydown', (function(_this) {
@@ -4072,11 +4103,11 @@ LinkPopover = (function(superClass) {
           range = document.createRange();
           _this.editor.selection.setRangeAfter(_this.target, range);
           _this.hide();
-          return _this.editor.trigger('valuechanged');
+          return _this.editor.inputManager.throttledValueChanged();
         }
       };
     })(this));
-    return this.unlinkEl.on('click', (function(_this) {
+    this.unlinkEl.on('click', (function(_this) {
       return function(e) {
         var range, txtNode;
         txtNode = document.createTextNode(_this.target.text());
@@ -4084,7 +4115,13 @@ LinkPopover = (function(superClass) {
         _this.hide();
         range = document.createRange();
         _this.editor.selection.setRangeAfter(txtNode, range);
-        return _this.editor.trigger('valuechanged');
+        return _this.editor.inputManager.throttledValueChanged();
+      };
+    })(this));
+    return this.selectTarget.on('change', (function(_this) {
+      return function(e) {
+        _this.target.attr('target', _this.selectTarget.val());
+        return _this.editor.inputManager.throttledValueChanged();
       };
     })(this));
   };
