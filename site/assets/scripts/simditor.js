@@ -598,7 +598,7 @@ Formatter = (function(superClass) {
   };
 
   Formatter.prototype.cleanNode = function(node, recursive) {
-    var $childImg, $node, $p, $td, allowedAttributes, attr, contents, isDecoration, k, l, len, len1, n, ref, ref1, text, textNode;
+    var $blockEls, $childImg, $node, $p, $td, allowedAttributes, attr, contents, isDecoration, k, l, len, len1, n, ref, ref1, text, textNode;
     $node = $(node);
     if (!($node.length > 0)) {
       return;
@@ -620,6 +620,14 @@ Formatter = (function(superClass) {
         $node.replaceWith($childImg);
         $node = $childImg;
         contents = null;
+      }
+      if ($node.is('td') && ($blockEls = $node.find(this.editor.util.blockNodes.join(','))).length > 0) {
+        $blockEls.each((function(_this) {
+          return function(i, blockEl) {
+            return $(blockEl).contents().unwrap();
+          };
+        })(this));
+        contents = $node.contents();
       }
       if ($node.is('img') && $node.hasClass('uploading')) {
         $node.remove();
@@ -5097,10 +5105,23 @@ TableButton = (function(superClass) {
   };
 
   TableButton.prototype.decorate = function($table) {
+    var $headRow, $tbody, $thead;
     if ($table.parent('.simditor-table').length > 0) {
       this.undecorate($table);
     }
     $table.wrap('<div class="simditor-table"></div>');
+    if ($table.find('thead').length < 1) {
+      $thead = $('<thead />');
+      $headRow = $table.find('tr').first();
+      $thead.append($headRow);
+      this._changeCellTag($headRow, 'th');
+      $tbody = $table.find('tbody');
+      if ($tbody.length > 0) {
+        $tbody.before($thead);
+      } else {
+        $table.prepend($thead);
+      }
+    }
     this.initResize($table);
     return $table.parent();
   };

@@ -203,6 +203,20 @@ class TableButton extends Button
       @undecorate $table
 
     $table.wrap '<div class="simditor-table"></div>'
+
+    # table must have a thead
+    if $table.find('thead').length < 1
+      $thead = $('<thead />')
+      $headRow = $table.find('tr').first()
+      $thead.append $headRow
+      @_changeCellTag $headRow, 'th'
+
+      $tbody = $table.find 'tbody'
+      if $tbody.length > 0
+        $tbody.before $thead
+      else
+        $table.prepend $thead
+
     @initResize $table
     $table.parent()
 

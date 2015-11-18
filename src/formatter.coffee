@@ -142,6 +142,12 @@ class Formatter extends SimpleModule
         $node = $childImg
         contents = null
 
+      # block el inside td is not allowed
+      if $node.is('td') and ($blockEls = $node.find(@editor.util.blockNodes.join(','))).length > 0
+        $blockEls.each (i, blockEl) =>
+          $(blockEl).contents().unwrap()
+        contents = $node.contents()
+
       # exclude uploading img
       if $node.is('img') and $node.hasClass('uploading')
         $node.remove()
