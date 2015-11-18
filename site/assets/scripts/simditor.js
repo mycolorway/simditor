@@ -1464,7 +1464,7 @@ UndoManager = (function(superClass) {
         return false;
       }
       if (child.nodeType === Node.TEXT_NODE) {
-        if (!merging) {
+        if (!merging && child.nodeValue.length > 0) {
           offset += 1;
           merging = true;
         }

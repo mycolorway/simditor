@@ -153,7 +153,7 @@ class UndoManager extends SimpleModule
       return false if node == child or index == i == 0
 
       if child.nodeType == Node.TEXT_NODE
-        if !merging
+        if !merging and child.nodeValue.length > 0
           offset += 1
           merging = true
       else
