@@ -529,27 +529,27 @@
   line-height: 25px;
 }
 .simditor .simditor-popover .settings-field label {
-  margin: 0 8px 0 0;
-  float: left;
+  display: inline-block;
+  margin: 0 5px 0 0;
 }
 .simditor .simditor-popover .settings-field input[type=text] {
-  float: left;
+  display: inline-block;
   width: 200px;
   box-sizing: border-box;
   font-size: 12px;
 }
 .simditor .simditor-popover .settings-field input[type=text].image-size {
-  width: 87px;
+  width: 60px;
 }
 .simditor .simditor-popover .settings-field .times {
-  float: left;
+  display: inline-block;
   width: 26px;
   font-size: 12px;
   text-align: center;
 }
 .simditor .simditor-popover.link-popover .btn-unlink, .simditor .simditor-popover.image-popover .btn-upload, .simditor .simditor-popover.image-popover .btn-restore {
-  float: left;
-  margin: 0 0 0 8px;
+  display: inline-block;
+  margin: 0 0 0 5px;
   color: #333333;
   font-size: 14px;
   outline: 0;

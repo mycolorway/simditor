@@ -463,23 +463,23 @@ $simditor-button-width: 46px;
       line-height: 25px;
 
       label {
-        margin: 0 8px 0 0;
-        float: left;
+        display: inline-block;
+        margin: 0 5px 0 0;
       }
 
       input[type=text] {
-        float: left;
+        display: inline-block;
         width: 200px;
         box-sizing: border-box;
         font-size: 12px;
 
         &.image-size {
-          width: 87px;
+          width: 60px;
         }
       }
 
       .times {
-        float: left;
+        display: inline-block;
         width: 26px;
         font-size: 12px;
         text-align: center;
@@ -489,8 +489,8 @@ $simditor-button-width: 46px;
     &.link-popover .btn-unlink,
     &.image-popover .btn-upload,
     &.image-popover .btn-restore {
-      float: left;
-      margin: 0 0 0 8px;
+      display: inline-block;
+      margin: 0 0 0 5px;
       color: #333333;
       font-size: 14px;
       outline: 0;

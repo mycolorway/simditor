@@ -26,7 +26,7 @@ class Selection extends SimpleModule
       @_range = @_selection.getRangeAt 0
 
     @editor.on 'blur', (e) =>
-      @clear()
+      @reset()
 
   reset: ->
     @_range = null
