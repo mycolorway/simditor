@@ -25,9 +25,22 @@ class CodeButton extends Button
     @popover = new CodePopover
       button: @
 
+  _checkMode: ->
+    range = @editor.selection.range()
+
+    if ($blockNodes = $(range.cloneContents()).find(@editor.util.blockNodes.join(','))) > 0 or
+        (range.collapsed and @editor.selection.startNodes().filter('code').length == 0)
+      @inlineMode = false
+      @htmlTag = 'pre'
+    else
+      @inlineMode = true
+      @htmlTag = 'code'
+
   _status: ->
+    @_checkMode()
     super()
 
+    return if @inlineMode
     if @active
       @popover.show(@node)
     else
@@ -48,6 +61,12 @@ class CodeButton extends Button
       .removeAttr('data-lang')
 
   command: ->
+    if @inlineMode
+      @_inlineCommand()
+    else
+      @_blockCommand()
+
+  _blockCommand: ->
     $rootNodes = @editor.selection.rootNodes()
     nodeCache = []
     resultNodes = []
@@ -77,6 +96,25 @@ class CodeButton extends Button
 
     @editor.selection.setRangeAtEndOf $(resultNodes).last()
     @editor.trigger 'valuechanged'
+
+  _inlineCommand: ->
+    range = @editor.selection.range()
+
+    if @active
+      range.selectNodeContents @node[0]
+      @editor.selection.save range
+      @node.contents().unwrap()
+      @editor.selection.restore()
+    else
+      $contents = $ range.extractContents()
+      $code = $ "<#{@htmlTag}/>"
+        .append $contents.contents()
+      range.insertNode $code[0]
+      range.selectNodeContents $code[0]
+      @editor.selection.range range
+
+    @editor.trigger 'valuechanged'
+
 
 
 class CodePopover extends Popover

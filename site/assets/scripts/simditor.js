@@ -3786,8 +3786,24 @@ CodeButton = (function(superClass) {
     });
   };
 
+  CodeButton.prototype._checkMode = function() {
+    var $blockNodes, range;
+    range = this.editor.selection.range();
+    if (($blockNodes = $(range.cloneContents()).find(this.editor.util.blockNodes.join(','))) > 0 || (range.collapsed && this.editor.selection.startNodes().filter('code').length === 0)) {
+      this.inlineMode = false;
+      return this.htmlTag = 'pre';
+    } else {
+      this.inlineMode = true;
+      return this.htmlTag = 'code';
+    }
+  };
+
   CodeButton.prototype._status = function() {
+    this._checkMode();
     CodeButton.__super__._status.call(this);
+    if (this.inlineMode) {
+      return;
+    }
     if (this.active) {
       return this.popover.show(this.node);
     } else {
@@ -3818,6 +3834,14 @@ CodeButton = (function(superClass) {
   };
 
   CodeButton.prototype.command = function() {
+    if (this.inlineMode) {
+      return this._inlineCommand();
+    } else {
+      return this._blockCommand();
+    }
+  };
+
+  CodeButton.prototype._blockCommand = function() {
     var $rootNodes, clearCache, nodeCache, resultNodes;
     $rootNodes = this.editor.selection.rootNodes();
     nodeCache = [];
@@ -3850,6 +3874,24 @@ CodeButton = (function(superClass) {
     })(this));
     clearCache();
     this.editor.selection.setRangeAtEndOf($(resultNodes).last());
+    return this.editor.trigger('valuechanged');
+  };
+
+  CodeButton.prototype._inlineCommand = function() {
+    var $code, $contents, range;
+    range = this.editor.selection.range();
+    if (this.active) {
+      range.selectNodeContents(this.node[0]);
+      this.editor.selection.save(range);
+      this.node.contents().unwrap();
+      this.editor.selection.restore();
+    } else {
+      $contents = $(range.extractContents());
+      $code = $("<" + this.htmlTag + "/>").append($contents.contents());
+      range.insertNode($code[0]);
+      range.selectNodeContents($code[0]);
+      this.editor.selection.range(range);
+    }
     return this.editor.trigger('valuechanged');
   };
 
