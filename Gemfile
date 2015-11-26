@@ -1,9 +1,4 @@
-if ENV['CIRCLECI']
-  source 'https://rubygems.org'
-else
-  source 'http://ruby.taobao.org'
-end
+source 'https://rubygems.org'
 
 gem 'github-pages'
 gem 'sass'
-
