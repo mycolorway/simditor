@@ -77,7 +77,7 @@ class Clipboard extends SimpleModule
 
     setTimeout =>
       @editor.hidePopover()
-      @editor.body.html state.html
+      @editor.body.get(0).innerHTML = state.html
       @editor.undoManager.caretPosition state.caret
       @editor.body.focus()
       @editor.selection.reset()

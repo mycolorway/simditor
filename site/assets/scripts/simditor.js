@@ -1425,7 +1425,7 @@ UndoManager = (function(superClass) {
     this.editor.hidePopover();
     this._index -= 1;
     state = this._stack[this._index];
-    this.editor.body.html(state.html);
+    this.editor.body.get(0).innerHTML = state.html;
     this.caretPosition(state.caret);
     this.editor.body.find('.selected').removeClass('selected');
     this.editor.sync();
@@ -1440,7 +1440,7 @@ UndoManager = (function(superClass) {
     this.editor.hidePopover();
     this._index += 1;
     state = this._stack[this._index];
-    this.editor.body.html(state.html);
+    this.editor.body.get(0).innerHTML = state.html;
     this.caretPosition(state.caret);
     this.editor.body.find('.selected').removeClass('selected');
     this.editor.sync();
@@ -2291,7 +2291,7 @@ Clipboard = (function(superClass) {
       return function() {
         var pasteContent;
         _this.editor.hidePopover();
-        _this.editor.body.html(state.html);
+        _this.editor.body.get(0).innerHTML = state.html;
         _this.editor.undoManager.caretPosition(state.caret);
         _this.editor.body.focus();
         _this.editor.selection.reset();
@@ -2564,7 +2564,7 @@ Simditor = (function(superClass) {
   Simditor.prototype.setValue = function(val) {
     this.hidePopover();
     this.textarea.val(val);
-    this.body.html(val);
+    this.body.get(0).innerHTML = val;
     this.formatter.format();
     this.formatter.decorate();
     this.util.reflow(this.body);

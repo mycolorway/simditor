@@ -109,7 +109,7 @@ class UndoManager extends SimpleModule
     @_index -= 1
 
     state = @_stack[@_index]
-    @editor.body.html state.html
+    @editor.body.get(0).innerHTML = state.html
     @caretPosition state.caret
     @editor.body.find('.selected').removeClass('selected')
     @editor.sync()
@@ -124,7 +124,7 @@ class UndoManager extends SimpleModule
     @_index += 1
 
     state = @_stack[@_index]
-    @editor.body.html state.html
+    @editor.body.get(0).innerHTML = state.html
     @caretPosition state.caret
     @editor.body.find('.selected').removeClass('selected')
     @editor.sync()

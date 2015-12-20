@@ -122,7 +122,7 @@ class Simditor extends SimpleModule
   setValue: (val) ->
     @hidePopover()
     @textarea.val val
-    @body.html val
+    @body.get(0).innerHTML = val
 
     @formatter.format()
     @formatter.decorate()
