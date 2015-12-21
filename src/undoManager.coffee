@@ -46,7 +46,7 @@ class UndoManager extends SimpleModule
 
     @editor.on 'selectionchanged', (e) =>
       @resetCaretPosition()
-      # @update()
+      @update()
 
     @editor.on 'focus', (e) =>
       @_pushUndoState() if @_stack.length == 0
@@ -76,10 +76,6 @@ class UndoManager extends SimpleModule
 
   _pushUndoState: ->
     return if @editor.triggerHandler('pushundostate') == false
-
-    # currentState = @currentState()
-    # html = @editor.body.html()
-    # return if currentState and currentState.html == html
 
     caret = @caretPosition()
     return unless caret.start
@@ -135,10 +131,7 @@ class UndoManager extends SimpleModule
     currentState = @currentState()
     return unless currentState
 
-    html = @editor.body.html()
-    # return unless html == currentState.html
-
-    currentState.html = html
+    currentState.html = @editor.body.html()
     currentState.caret = @caretPosition()
 
   _getNodeOffset: (node, index) ->

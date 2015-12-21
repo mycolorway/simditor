@@ -1343,7 +1343,8 @@ UndoManager = (function(superClass) {
     })(this));
     this.editor.on('selectionchanged', (function(_this) {
       return function(e) {
-        return _this.resetCaretPosition();
+        _this.resetCaretPosition();
+        return _this.update();
       };
     })(this));
     this.editor.on('focus', (function(_this) {
@@ -1448,13 +1449,12 @@ UndoManager = (function(superClass) {
   };
 
   UndoManager.prototype.update = function() {
-    var currentState, html;
+    var currentState;
     currentState = this.currentState();
     if (!currentState) {
       return;
     }
-    html = this.editor.body.html();
-    currentState.html = html;
+    currentState.html = this.editor.body.html();
     return currentState.caret = this.caretPosition();
   };
 
@@ -2607,6 +2607,7 @@ Simditor = (function(superClass) {
       this.el.find('textarea:visible').focus();
       return;
     }
+    console.log(this.inputManager.lastCaretPosition);
     if (this.inputManager.lastCaretPosition) {
       this.undoManager.caretPosition(this.inputManager.lastCaretPosition);
       return this.inputManager.lastCaretPosition = null;

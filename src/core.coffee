@@ -167,6 +167,7 @@ class Simditor extends SimpleModule
       @el.find('textarea:visible').focus()
       return
 
+    console.log @inputManager.lastCaretPosition
     if @inputManager.lastCaretPosition
       @undoManager.caretPosition @inputManager.lastCaretPosition
       @inputManager.lastCaretPosition = null
