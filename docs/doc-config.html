@@ -68,7 +68,7 @@
 		<h1>Options</h1>
 
 <p>You can customize Simditor by passing optional options when initializing Simditor.
-Here are all the optional options and their default values:</p>
+Here are some optional options and their default values:</p>
 <div class="highlight"><pre><code class="language-coffee" data-lang="coffee"><span class="nv">editor = </span><span class="k">new</span> <span class="nx">Simditor</span>
   <span class="nv">textarea: </span><span class="kc">null</span>
   <span class="nv">placeholder: </span><span class="s">&#39;&#39;</span>
@@ -81,6 +81,7 @@ Here are all the optional options and their default values:</p>
   <span class="nv">toolbarFloatOffset: </span><span class="mi">0</span>
   <span class="nv">toolbarHidden: </span><span class="kc">false</span>
   <span class="nv">pasteImage: </span><span class="kc">false</span>
+  <span class="nv">cleanPaste: </span><span class="kc">false</span>
 </code></pre></div>
 <dl class="doc-configs">
   
@@ -120,6 +121,7 @@ Here are all the optional options and their default values:</p>
   <span class="s">&#39;italic&#39;</span>
   <span class="s">&#39;underline&#39;</span>
   <span class="s">&#39;strikethrough&#39;</span>
+  <span class="s">&#39;fontScale&#39;</span>
   <span class="s">&#39;color&#39;</span>
   <span class="s">&#39;ol&#39;</span>             <span class="c1"># ordered list</span>
   <span class="s">&#39;ul&#39;</span>             <span class="c1"># unordered list</span>
@@ -250,6 +252,17 @@ Here are all the optional options and their default values:</p>
 
     </dd>
   
+    <dt id="anchor-cleanPaste">
+      <!--<span class="icon simditor-icon simditor-icon-caret-down"></span>-->
+      <a href="#anchor-cleanPaste" class="name">cleanPaste</a>
+      <span class="type">Boolean</span>
+      <span class="default">default: false</span>
+    </dt>
+    <dd class="expand">
+      <p>Remove all styles in paste content automatically.</p>
+
+    </dd>
+  
     <dt id="anchor-imageButton">
       <!--<span class="icon simditor-icon simditor-icon-caret-down"></span>-->
       <a href="#anchor-imageButton" class="name">imageButton</a>
@@ -270,7 +283,7 @@ Here are all the optional options and their default values:</p>
     <dd class="expand">
       <p>Tags that are allowed in Simditor.
 Default whitelist:</p>
-<div class="highlight"><pre><code class="language-coffee" data-lang="coffee"><span class="p">[</span><span class="s">&#39;br&#39;</span><span class="p">,</span> <span class="s">&#39;a&#39;</span><span class="p">,</span> <span class="s">&#39;img&#39;</span><span class="p">,</span> <span class="s">&#39;b&#39;</span><span class="p">,</span> <span class="s">&#39;strong&#39;</span><span class="p">,</span> <span class="s">&#39;i&#39;</span><span class="p">,</span> <span class="s">&#39;u&#39;</span><span class="p">,</span> <span class="s">&#39;font&#39;</span><span class="p">,</span> <span class="s">&#39;p&#39;</span><span class="p">,</span> <span class="s">&#39;ul&#39;</span><span class="p">,</span> <span class="s">&#39;ol&#39;</span><span class="p">,</span> <span class="s">&#39;li&#39;</span><span class="p">,</span> <span class="s">&#39;blockquote&#39;</span><span class="p">,</span> <span class="s">&#39;pre&#39;</span><span class="p">,</span> <span class="s">&#39;h1&#39;</span><span class="p">,</span> <span class="s">&#39;h2&#39;</span><span class="p">,</span> <span class="s">&#39;h3&#39;</span><span class="p">,</span> <span class="s">&#39;h4&#39;</span><span class="p">,</span> <span class="s">&#39;hr&#39;</span><span class="p">]</span>
+<div class="highlight"><pre><code class="language-coffee" data-lang="coffee"><span class="p">[</span><span class="s">&#39;br&#39;</span><span class="p">,</span> <span class="s">&#39;span&#39;</span><span class="p">,</span> <span class="s">&#39;a&#39;</span><span class="p">,</span> <span class="s">&#39;img&#39;</span><span class="p">,</span> <span class="s">&#39;b&#39;</span><span class="p">,</span> <span class="s">&#39;strong&#39;</span><span class="p">,</span> <span class="s">&#39;i&#39;</span><span class="p">,</span> <span class="s">&#39;strike&#39;</span><span class="p">,</span> <span class="s">&#39;u&#39;</span><span class="p">,</span> <span class="s">&#39;font&#39;</span><span class="p">,</span> <span class="s">&#39;p&#39;</span><span class="p">,</span> <span class="s">&#39;ul&#39;</span><span class="p">,</span> <span class="s">&#39;ol&#39;</span><span class="p">,</span> <span class="s">&#39;li&#39;</span><span class="p">,</span> <span class="s">&#39;blockquote&#39;</span><span class="p">,</span> <span class="s">&#39;pre&#39;</span><span class="p">,</span> <span class="s">&#39;code&#39;</span><span class="p">,</span> <span class="s">&#39;h1&#39;</span><span class="p">,</span> <span class="s">&#39;h2&#39;</span><span class="p">,</span> <span class="s">&#39;h3&#39;</span><span class="p">,</span> <span class="s">&#39;h4&#39;</span><span class="p">,</span> <span class="s">&#39;hr&#39;</span><span class="p">]</span>
 </code></pre></div>
 <p>Note that custom whitelist will be merged into the default one.</p>
 
@@ -301,11 +314,17 @@ Default whitelist:</p>
     </dt>
     <dd class="expand">
       <p>Inline style whitelist. Default whitelist:</p>
-<div class="highlight"><pre><code class="language-coffee" data-lang="coffee"><span class="nv">p: </span><span class="p">[</span><span class="s">&#39;margin-left&#39;</span><span class="p">,</span> <span class="s">&#39;text-align&#39;</span><span class="p">]</span>
-<span class="nv">h1: </span><span class="p">[</span><span class="s">&#39;margin-left&#39;</span><span class="p">]</span>
-<span class="nv">h2: </span><span class="p">[</span><span class="s">&#39;margin-left&#39;</span><span class="p">]</span>
-<span class="nv">h3: </span><span class="p">[</span><span class="s">&#39;margin-left&#39;</span><span class="p">]</span>
-<span class="nv">h4: </span><span class="p">[</span><span class="s">&#39;margin-left&#39;</span><span class="p">]</span>
+<div class="highlight"><pre><code class="language-coffee" data-lang="coffee"><span class="nv">span: </span><span class="p">[</span><span class="s">&#39;color&#39;</span><span class="p">,</span> <span class="s">&#39;font-size&#39;</span><span class="p">]</span>
+<span class="nv">b: </span><span class="p">[</span><span class="s">&#39;color&#39;</span><span class="p">]</span>
+<span class="nv">i: </span><span class="p">[</span><span class="s">&#39;color&#39;</span><span class="p">]</span>
+<span class="nv">strong: </span><span class="p">[</span><span class="s">&#39;color&#39;</span><span class="p">]</span>
+<span class="nv">strike: </span><span class="p">[</span><span class="s">&#39;color&#39;</span><span class="p">]</span>
+<span class="nv">u: </span><span class="p">[</span><span class="s">&#39;color&#39;</span><span class="p">]</span>
+<span class="nv">p: </span><span class="p">[</span><span class="s">&#39;margin-left&#39;</span><span class="p">,</span> <span class="s">&#39;text-align&#39;</span><span class="p">]</span>
+<span class="nv">h1: </span><span class="p">[</span><span class="s">&#39;margin-left&#39;</span><span class="p">,</span> <span class="s">&#39;text-align&#39;</span><span class="p">]</span>
+<span class="nv">h2: </span><span class="p">[</span><span class="s">&#39;margin-left&#39;</span><span class="p">,</span> <span class="s">&#39;text-align&#39;</span><span class="p">]</span>
+<span class="nv">h3: </span><span class="p">[</span><span class="s">&#39;margin-left&#39;</span><span class="p">,</span> <span class="s">&#39;text-align&#39;</span><span class="p">]</span>
+<span class="nv">h4: </span><span class="p">[</span><span class="s">&#39;margin-left&#39;</span><span class="p">,</span> <span class="s">&#39;text-align&#39;</span><span class="p">]</span>
 </code></pre></div>
 <p>Note that custom whitelist will be merged into the default one.</p>
 

@@ -1,12 +1,12 @@
 (function (root, factory) {
   if (typeof define === 'function' && define.amd) {
-    // AMD. Register as an anonymous module.
-    define('simple-module', ["jquery"], function ($) {
-      return (root.returnExportsGlobal = factory($));
+    // AMD. Register as an anonymous module unless amdModuleId is set
+    define('simple-module', ["jquery"], function (a0) {
+      return (root['Module'] = factory(a0));
     });
   } else if (typeof exports === 'object') {
     // Node. Does not work with strict CommonJS, but
-    // only CommonJS-like enviroments that support module.exports,
+    // only CommonJS-like environments that support module.exports,
     // like Node.
     module.exports = factory(require("jquery"));
   } else {
@@ -15,11 +15,11 @@
 }(this, function ($) {
 
 var Module,
-  __slice = [].slice;
+  slice = [].slice;
 
 Module = (function() {
   Module.extend = function(obj) {
-    var key, val, _ref;
+    var key, ref, val;
     if (!((obj != null) && typeof obj === 'object')) {
       return;
     }
@@ -29,11 +29,11 @@ Module = (function() {
         this[key] = val;
       }
     }
-    return (_ref = obj.extended) != null ? _ref.call(this) : void 0;
+    return (ref = obj.extended) != null ? ref.call(this) : void 0;
   };
 
   Module.include = function(obj) {
-    var key, val, _ref;
+    var key, ref, val;
     if (!((obj != null) && typeof obj === 'object')) {
       return;
     }
@@ -43,7 +43,7 @@ Module = (function() {
         this.prototype[key] = val;
       }
     }
-    return (_ref = obj.included) != null ? _ref.call(this) : void 0;
+    return (ref = obj.included) != null ? ref.call(this) : void 0;
   };
 
   Module.connect = function(cls) {
@@ -67,29 +67,29 @@ Module = (function() {
   Module.prototype.opts = {};
 
   function Module(opts) {
-    var cls, instance, instances, name, _base, _i, _len;
+    var base, cls, i, instance, instances, len, name;
     this.opts = $.extend({}, this.opts, opts);
-    (_base = this.constructor)._connectedClasses || (_base._connectedClasses = []);
+    (base = this.constructor)._connectedClasses || (base._connectedClasses = []);
     instances = (function() {
-      var _i, _len, _ref, _results;
-      _ref = this.constructor._connectedClasses;
-      _results = [];
-      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-        cls = _ref[_i];
+      var i, len, ref, results;
+      ref = this.constructor._connectedClasses;
+      results = [];
+      for (i = 0, len = ref.length; i < len; i++) {
+        cls = ref[i];
         name = cls.pluginName.charAt(0).toLowerCase() + cls.pluginName.slice(1);
         if (cls.prototype._connected) {
           cls.prototype._module = this;
         }
-        _results.push(this[name] = new cls());
+        results.push(this[name] = new cls());
       }
-      return _results;
+      return results;
     }).call(this);
     if (this._connected) {
       this.opts = $.extend({}, this.opts, this._module.opts);
     } else {
       this._init();
-      for (_i = 0, _len = instances.length; _i < _len; _i++) {
-        instance = instances[_i];
+      for (i = 0, len = instances.length; i < len; i++) {
+        instance = instances[i];
         if (typeof instance._init === "function") {
           instance._init();
         }
@@ -101,49 +101,49 @@ Module = (function() {
   Module.prototype._init = function() {};
 
   Module.prototype.on = function() {
-    var args, _ref;
-    args = 1 <= arguments.length ? __slice.call(arguments, 0) : [];
-    (_ref = $(this)).on.apply(_ref, args);
+    var args, ref;
+    args = 1 <= arguments.length ? slice.call(arguments, 0) : [];
+    (ref = $(this)).on.apply(ref, args);
     return this;
   };
 
   Module.prototype.one = function() {
-    var args, _ref;
-    args = 1 <= arguments.length ? __slice.call(arguments, 0) : [];
-    (_ref = $(this)).one.apply(_ref, args);
+    var args, ref;
+    args = 1 <= arguments.length ? slice.call(arguments, 0) : [];
+    (ref = $(this)).one.apply(ref, args);
     return this;
   };
 
   Module.prototype.off = function() {
-    var args, _ref;
-    args = 1 <= arguments.length ? __slice.call(arguments, 0) : [];
-    (_ref = $(this)).off.apply(_ref, args);
+    var args, ref;
+    args = 1 <= arguments.length ? slice.call(arguments, 0) : [];
+    (ref = $(this)).off.apply(ref, args);
     return this;
   };
 
   Module.prototype.trigger = function() {
-    var args, _ref;
-    args = 1 <= arguments.length ? __slice.call(arguments, 0) : [];
-    (_ref = $(this)).trigger.apply(_ref, args);
+    var args, ref;
+    args = 1 <= arguments.length ? slice.call(arguments, 0) : [];
+    (ref = $(this)).trigger.apply(ref, args);
     return this;
   };
 
   Module.prototype.triggerHandler = function() {
-    var args, _ref;
-    args = 1 <= arguments.length ? __slice.call(arguments, 0) : [];
-    return (_ref = $(this)).triggerHandler.apply(_ref, args);
+    var args, ref;
+    args = 1 <= arguments.length ? slice.call(arguments, 0) : [];
+    return (ref = $(this)).triggerHandler.apply(ref, args);
   };
 
   Module.prototype._t = function() {
-    var args, _ref;
-    args = 1 <= arguments.length ? __slice.call(arguments, 0) : [];
-    return (_ref = this.constructor)._t.apply(_ref, args);
+    var args, ref;
+    args = 1 <= arguments.length ? slice.call(arguments, 0) : [];
+    return (ref = this.constructor)._t.apply(ref, args);
   };
 
   Module._t = function() {
-    var args, key, result, _ref;
-    key = arguments[0], args = 2 <= arguments.length ? __slice.call(arguments, 1) : [];
-    result = ((_ref = this.i18n[this.locale]) != null ? _ref[key] : void 0) || '';
+    var args, key, ref, result;
+    key = arguments[0], args = 2 <= arguments.length ? slice.call(arguments, 1) : [];
+    result = ((ref = this.i18n[this.locale]) != null ? ref[key] : void 0) || '';
     if (!(args.length > 0)) {
       return result;
     }
@@ -167,8 +167,6 @@ Module = (function() {
 
 })();
 
-
 return Module;
-
 
 }));
