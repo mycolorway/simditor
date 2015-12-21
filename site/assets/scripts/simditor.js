@@ -2607,7 +2607,6 @@ Simditor = (function(superClass) {
       this.el.find('textarea:visible').focus();
       return;
     }
-    console.log(this.inputManager.lastCaretPosition);
     if (this.inputManager.lastCaretPosition) {
       this.undoManager.caretPosition(this.inputManager.lastCaretPosition);
       return this.inputManager.lastCaretPosition = null;
