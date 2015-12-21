@@ -120,6 +120,12 @@
   description: |
     Support uploading by pasting images from the clipboard. Work together with `upload` and only supported by Firefox and Chrome.
 
+- name: "cleanPaste"
+  type: "Boolean"
+  default: "false"
+  description: |
+    Remove all styles in paste content automatically.
+
 - name: "imageButton"
   type: "Array/String"
   default: "['upload', 'external']"

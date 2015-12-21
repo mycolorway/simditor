@@ -5,6 +5,7 @@ class Clipboard extends SimpleModule
 
   opts:
     pasteImage: false
+    cleanPaste: false
 
   _init: ->
     @editor = @_module
@@ -84,7 +85,7 @@ class Clipboard extends SimpleModule
       @editor.selection.range()
 
       @_pasteInBlockEl = @editor.selection.blockNodes().last()
-      @_pastePlainText = @_pasteInBlockEl.is 'pre, table'
+      @_pastePlainText = @opts.cleanPaste || @_pasteInBlockEl.is('pre, table')
 
       if @_pastePlainText
         pasteContent = @editor.formatter.clearHtml @_pasteBin.html(), true

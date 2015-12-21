@@ -8,7 +8,7 @@ root: ../
 #Options
 
 You can customize Simditor by passing optional options when initializing Simditor.
-Here are all the optional options and their default values:
+Here are some optional options and their default values:
 
 ```coffee
 editor = new Simditor
@@ -23,6 +23,7 @@ editor = new Simditor
   toolbarFloatOffset: 0
   toolbarHidden: false
   pasteImage: false
+  cleanPaste: false
 ```
 
 

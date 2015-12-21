@@ -2206,7 +2206,8 @@ Clipboard = (function(superClass) {
   Clipboard.pluginName = 'Clipboard';
 
   Clipboard.prototype.opts = {
-    pasteImage: false
+    pasteImage: false,
+    cleanPaste: false
   };
 
   Clipboard.prototype._init = function() {
@@ -2297,7 +2298,7 @@ Clipboard = (function(superClass) {
         _this.editor.selection.reset();
         _this.editor.selection.range();
         _this._pasteInBlockEl = _this.editor.selection.blockNodes().last();
-        _this._pastePlainText = _this._pasteInBlockEl.is('pre, table');
+        _this._pastePlainText = _this.opts.cleanPaste || _this._pasteInBlockEl.is('pre, table');
         if (_this._pastePlainText) {
           pasteContent = _this.editor.formatter.clearHtml(_this._pasteBin.html(), true);
         } else {
