@@ -10,7 +10,7 @@ class Toolbar extends SimpleModule
     toolbarFloatOffset: 0
 
   _tpl:
-    wrapper: '<div class="simditor-toolbar"><ul></ul></div>'
+    wrapper: '<div class="simditor-toolbar-wrap"><div class="simditor-toolbar"><ul></ul></div></div>'
     separator: '<li><span class="separator"></span></li>'
 
   _init: ->
@@ -90,7 +90,7 @@ class Toolbar extends SimpleModule
         continue
 
       unless @constructor.buttons[name]
-        throw new Error "simditor: invalid toolbar button #{name}"
+        console.warn "simditor: invalid toolbar button #{name}"
         continue
 
       @buttons.push new @constructor.buttons[name]

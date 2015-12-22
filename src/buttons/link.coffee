@@ -17,7 +17,9 @@ class LinkButton extends Button
   _status: ->
     super()
 
-    if @active and !@editor.selection.rangeAtEndOf(@node)
+    if @active and @node?.is('[rel=nofollow]')
+      @setLink()
+    else if @active and !@editor.selection.rangeAtEndOf(@node)
       @popover.show @node
     else
       @popover.hide()
@@ -33,7 +35,7 @@ class LinkButton extends Button
       $contents = $(range.extractContents())
       linkText = @editor.formatter.clearHtml($contents.contents(), false)
       $link = $('<a/>', {
-        href: 'http://www.example.com',
+        href: '',
         target: '_blank',
         text: linkText || @_t('linkText')
       })
@@ -57,6 +59,13 @@ class LinkButton extends Button
     @editor.selection.range range
     @editor.trigger 'valuechanged'
 
+  setLink: ->
+    text = @node.text()
+    href = @node.attr('href')
+    if href isnt text
+      text = 'http://' + text if text and !/https?:\/\/|^\//ig.test(text)
+      @node.attr('href', text)
+
 
 class LinkPopover extends Popover
 
@@ -75,7 +84,8 @@ class LinkPopover extends Popover
         <label>#{ @_t 'linkUrl' }</label>
         <input class="link-url" type="text"/>
       </div>
-      <div class="settings-field">
+      <!-- Do not use this feature -->
+      <div class="settings-field" style="display: none">
         <label>#{ @_t 'linkTarget'}</label>
         <select class="link-target">
           <option value="_blank">#{ @_t 'openLinkInNewWindow' } (_blank)</option>

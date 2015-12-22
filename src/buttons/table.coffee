@@ -232,45 +232,45 @@ class TableButton extends Button
         <ul>
           <li>
             <a tabindex="-1" unselectable="on" class="menu-item"
-              href="javascript:;" data-param="deleteRow">
+              data-param="deleteRow">
               <span>#{ @_t 'deleteRow' }</span>
             </a>
           </li>
           <li>
             <a tabindex="-1" unselectable="on" class="menu-item"
-              href="javascript:;" data-param="insertRowAbove">
+              data-param="insertRowAbove">
               <span>#{ @_t 'insertRowAbove' } ( Ctrl + Alt + ↑ )</span>
             </a>
           </li>
           <li>
             <a tabindex="-1" unselectable="on" class="menu-item"
-              href="javascript:;" data-param="insertRowBelow">
+              data-param="insertRowBelow">
               <span>#{ @_t 'insertRowBelow' } ( Ctrl + Alt + ↓ )</span>
             </a>
           </li>
           <li><span class="separator"></span></li>
           <li>
             <a tabindex="-1" unselectable="on" class="menu-item"
-              href="javascript:;" data-param="deleteCol">
+              data-param="deleteCol">
               <span>#{ @_t 'deleteColumn' }</span>
             </a>
           </li>
           <li>
             <a tabindex="-1" unselectable="on" class="menu-item"
-              href="javascript:;" data-param="insertColLeft">
+              data-param="insertColLeft">
               <span>#{ @_t 'insertColumnLeft' } ( Ctrl + Alt + ← )</span>
             </a>
           </li>
           <li>
             <a tabindex="-1" unselectable="on" class="menu-item"
-              href="javascript:;" data-param="insertColRight">
+              data-param="insertColRight">
               <span>#{ @_t 'insertColumnRight' } ( Ctrl + Alt + → )</span>
             </a>
           </li>
           <li><span class="separator"></span></li>
           <li>
             <a tabindex="-1" unselectable="on" class="menu-item"
-              href="javascript:;" data-param="deleteTable">
+              data-param="deleteTable">
               <span>#{ @_t 'deleteTable' }</span>
             </a>
           </li>
