@@ -34,7 +34,7 @@ class ColorButton extends Button
       $link = $(e.currentTarget)
 
       if $link.hasClass 'font-color-default'
-        $p = @editor.body.find 'p, li'
+        $p = @editor.body.children()
         return unless $p.length > 0
         rgb = window.getComputedStyle($p[0], null).getPropertyValue('color')
         hex = @_convertRgbToHex rgb
