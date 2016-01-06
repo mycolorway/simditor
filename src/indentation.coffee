@@ -91,8 +91,17 @@ class Indentation extends SimpleModule
     true
 
   indentText: (range) ->
-    text = range.toString().replace /^(?=.+)/mg, '\u00A0\u00A0'
-    textNode = document.createTextNode(text || '\u00A0\u00A0')
+    _codeIndentWidth = this.opts.codeIndentWidth
+
+    if (parseInt _codeIndentWidth) is _codeIndentWidth
+      _codeIndent = ''
+      for i in [1.._codeIndentWidth]
+        _codeIndent += '\u00A0'
+    else
+      _codeIndent = '\u00A0\u00A0'
+
+    text = range.toString().replace /^(?=.+)/mg, _codeIndent
+    textNode = document.createTextNode(text || _codeIndent)
     range.deleteContents()
     range.insertNode textNode
 
