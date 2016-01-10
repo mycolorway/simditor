@@ -13,6 +13,7 @@ class Simditor extends SimpleModule
   @count: 0
 
   opts:
+    codeIndentWidth: 2
     textarea: null
     placeholder: ''
     defaultImage: 'images/image.png'
