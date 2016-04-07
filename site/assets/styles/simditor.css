@@ -155,7 +155,7 @@
   display: none !important;
   width: 100%;
   box-sizing: border-box;
-  font-family: 'monaco';
+  font-family: monaco;
   font-size: 16px;
   line-height: 1.6;
   border: none;
@@ -172,7 +172,7 @@
   z-index: 0;
   padding: 22px 15px;
   font-size: 16px;
-  font-family: 'Microsoft Yahei', arial, sans-serif;
+  font-family: arial, sans-serif;
   line-height: 1.5;
   color: #999999;
   background: transparent;
@@ -590,7 +590,7 @@
 
 .simditor .simditor-body, .editor-style {
   font-size: 16px;
-  font-family: 'Microsoft Yahei', arial, sans-serif;
+  font-family: arial, sans-serif;
   line-height: 1.6;
   color: #333;
   outline: none;
@@ -697,16 +697,12 @@
   margin: 15px 0;
   display: block;
   line-height: 18px;
-  border: 1px solid rgba(0,0,0,.1);
-  background: #f7f8f9;
-  background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADwAAAA8AgMAAABHkjHhAAAACVBMVEWAgIBaWlo+Pj7rTFvWAAAAA3RSTlMHCAw+VhR4AAAA+klEQVQoz4WSMW7EQAhFPxKWNh2FCx+HkaZI6RRb5DYbyVfIJXLKDCFoMbaTKSw/8ZnPAPjaH2xgZcUNUDADD7D9LtDBCLZ45fbkvo/30K8yeI64pPwl6znd/3n/Oe93P3ho9qeh72btTFzqkz0rsJle8Zr81OLEwZ1dv/713uWqvu2pl+k0fy7MWtj9r/tN5q/02z89qa/L4Dc2LvM93kezPfXlME/O86EbY/V9GB9ePX8G1/6W+/9h1dq/HGfTfzT3j/xNo7522Bfnqe5jO/fvhVthlfk434v3iO9zG/UOphyPeinPl1J8Gtaa7xPTa/Dk+RIs4deMvwGvcGsmsCvJ0AAAAABJRU5ErkJggg==);
-  border-radius: 3px;
+  background: #F0F0F0;
   font-size: 13px;
   font-family: 'monaco', 'Consolas', "Liberation Mono", Courier, monospace;
   white-space: pre;
   word-wrap: normal;
   overflow-x: auto;
-  color: #4d4e53;
 }
 .simditor .simditor-body pre code, .editor-style pre code {
   display: block;
