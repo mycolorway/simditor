@@ -144,7 +144,8 @@ Uploader = (function(superClass) {
       contentType: false,
       type: 'POST',
       headers: {
-        'X-File-Name': encodeURIComponent(file.name)
+        'X-File-Name': encodeURIComponent(file.name),
+        'Access-Control-Allow-Origin': '*'
       },
       xhr: function() {
         var req;
