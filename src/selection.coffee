@@ -66,7 +66,7 @@ class Selection extends SimpleModule
         startNodes.unshift @_range.startContainer
         $(startNodes)
 
-    @_startNodes
+    @_startNodes || []
 
   endNodes: ->
     if @_range
