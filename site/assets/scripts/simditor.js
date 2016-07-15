@@ -3790,7 +3790,7 @@ CodeButton = (function(superClass) {
   CodeButton.prototype._checkMode = function() {
     var $blockNodes, range;
     range = this.editor.selection.range();
-    if (($blockNodes = $(range.cloneContents()).find(this.editor.util.blockNodes.join(','))) > 0 || (range.collapsed && this.editor.selection.startNodes().filter('code').length === 0)) {
+    if (($blockNodes = $(range.cloneContents()).find(this.editor.util.blockNodes.join(','))).length > 0 || (range.collapsed && this.editor.selection.startNodes().filter('code').length === 0)) {
       this.inlineMode = false;
       return this.htmlTag = 'pre';
     } else {

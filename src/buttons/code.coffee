@@ -28,7 +28,7 @@ class CodeButton extends Button
   _checkMode: ->
     range = @editor.selection.range()
 
-    if ($blockNodes = $(range.cloneContents()).find(@editor.util.blockNodes.join(','))) > 0 or
+    if ($blockNodes = $(range.cloneContents()).find(@editor.util.blockNodes.join(','))).length > 0 or
         (range.collapsed and @editor.selection.startNodes().filter('code').length == 0)
       @inlineMode = false
       @htmlTag = 'pre'
