@@ -16,7 +16,6 @@ class LinkButton extends Button
 
   _status: ->
     super()
-
     if @active and @node?.is('[rel=nofollow]')
       @setLink()
     else if @active and !@editor.selection.rangeAtEndOf(@node)
@@ -71,26 +70,23 @@ class LinkPopover extends Popover
 
   render: ->
     tpl = """
-    <div class="link-settings">
-      <div class="settings-field">
-        <label>#{ @_t 'linkText' }</label>
-        <input class="link-text" type="text"/>
-        <a class="btn-unlink" href="javascript:;" title="#{ @_t 'removeLink' }"
-          tabindex="-1">
-          <span class="simditor-icon simditor-icon-unlink"></span>
-        </a>
-      </div>
-      <div class="settings-field">
-        <label>#{ @_t 'linkUrl' }</label>
-        <input class="link-url" type="text"/>
-      </div>
-      <!-- Do not use this feature -->
-      <div class="settings-field" style="display: none">
-        <label>#{ @_t 'linkTarget'}</label>
-        <select class="link-target">
-          <option value="_blank">#{ @_t 'openLinkInNewWindow' } (_blank)</option>
-          <option value="_self">#{ @_t 'openLinkInCurrentWindow' } (_self)</option>
-        </select>
+    <div class="popover link-settings">
+      <header class="popover-header">
+        <h3 class="popover-title">#{ @_t 'linkTextTitle' }</h3>
+        <a class="popover-close-handler icon icon-remove"></a>
+      </header>
+      <div class="popover-content">
+        <div class="item">
+          <input class="link-text form-control" type="text" placeholder="#{ @_t 'linkText' }"/>
+        </div>
+        <div class="item">
+          <textarea class="link-url form-control" type="text" placeholder="#{ @_t 'linkUrl' }"></textarea>
+        </div>
+        <div class="item">
+          <button type='submit' class="btn btn-primary btn-confirm disabled">
+            #{ @_t 'linkUrlSubmit' }
+          </button>
+        </div>
       </div>
     </div>
     """
@@ -100,6 +96,8 @@ class LinkPopover extends Popover
     @urlEl = @el.find '.link-url'
     @unlinkEl = @el.find '.btn-unlink'
     @selectTarget = @el.find '.link-target'
+    @confirm = @el.find '.btn-confirm'
+    @close = @el.find '.popover-close-handler'
 
     @textEl.on 'keyup', (e) =>
       return if e.which == 13
@@ -108,12 +106,9 @@ class LinkPopover extends Popover
 
     @urlEl.on 'keyup', (e) =>
       return if e.which == 13
-
       val = @urlEl.val()
       val = 'http://' + val unless /https?:\/\/|^\//ig.test(val) or !val
-
-      @target.attr 'href', val
-      @editor.inputManager.throttledValueChanged()
+      @confirm[if val then 'removeClass' else 'addClass']('disabled')
 
     $([@urlEl[0], @textEl[0]]).on 'keydown', (e) =>
       if e.which == 13 or e.which == 27 or
@@ -135,12 +130,36 @@ class LinkPopover extends Popover
 
     @selectTarget.on 'change', (e) =>
       @target.attr 'target', @selectTarget.val()
+      # @editor.inputManager.throttledValueChanged()
+
+    @confirm.on 'click', (e) =>
+      return if e.which == 13
+      return @urlEl.trigger('focus') if @confirm.hasClass('disabled')
+
+      val = @urlEl.val()
+
+      val = 'http://' + val unless /https?:\/\/|^\//ig.test(val) or !val
+      @confirm[if val then 'removeClass' else 'addClass']('disabled')
+
+      @target.attr 'href', val
       @editor.inputManager.throttledValueChanged()
+      @active = true
+      @hide()
+
+    @close.on 'click', (e) =>
+      text = if @val then @textEl.val() else ''
+      @target.text text
+      @active = true
+      @hide()
 
   show: (args...) ->
     super args...
     @textEl.val @target.text()
-    @urlEl.val @target.attr('href')
+    @val = @target.attr('href')
+    @urlEl.val @val
+    @confirm[if @val then 'removeClass' else 'addClass'] 'disabled'
+
+    @active = false
 
 
 
