@@ -26,7 +26,10 @@ class ItalicButton extends Button
     @active
 
   command: ->
+    # Use span[style] instead of <i>
+    document.execCommand 'styleWithCSS', false, true
     document.execCommand 'italic'
+    document.execCommand 'styleWithCSS', false, false
     unless @editor.util.support.oninput
       @editor.trigger 'valuechanged'
 

@@ -475,7 +475,7 @@ Formatter = (function(superClass) {
       code: ['class']
     }, this.opts.allowedAttributes);
     this._allowedStyles = $.extend({
-      span: ['color', 'font-size'],
+      span: ['color', 'font-size', 'font-style'],
       b: ['color'],
       i: ['color'],
       strong: ['color'],
@@ -3416,7 +3416,9 @@ ItalicButton = (function(superClass) {
   };
 
   ItalicButton.prototype.command = function() {
+    document.execCommand('styleWithCSS', false, true);
     document.execCommand('italic');
+    document.execCommand('styleWithCSS', false, false);
     if (!this.editor.util.support.oninput) {
       this.editor.trigger('valuechanged');
     }
