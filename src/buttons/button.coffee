@@ -2,11 +2,9 @@
 class Button extends SimpleModule
 
   _tpl:
-    item: '<li><a tabindex="-1" unselectable="on" class="toolbar-item" \
-      href="javascript:;"><span></span></a></li>'
+    item: '<li><a tabindex="-1" unselectable="on" class="toolbar-item"><span></span></a></li>'
     menuWrapper: '<div class="toolbar-menu"></div>'
-    menuItem: '<li><a tabindex="-1" unselectable="on" class="menu-item" \
-      href="javascript:;"><span></span></a></li>'
+    menuItem: '<li><a tabindex="-1" unselectable="on" class="menu-item"><span></span></a></li>'
     separator: '<li><span class="separator"></span></li>'
 
   name: ''
