@@ -15,14 +15,14 @@ class ColorButton extends Button
   renderMenu: ->
     $('''
     <ul class="color-list">
-      <li><a href="javascript:;" class="font-color font-color-1"></a></li>
-      <li><a href="javascript:;" class="font-color font-color-2"></a></li>
-      <li><a href="javascript:;" class="font-color font-color-3"></a></li>
-      <li><a href="javascript:;" class="font-color font-color-4"></a></li>
-      <li><a href="javascript:;" class="font-color font-color-5"></a></li>
-      <li><a href="javascript:;" class="font-color font-color-6"></a></li>
-      <li><a href="javascript:;" class="font-color font-color-7"></a></li>
-      <li><a href="javascript:;" class="font-color font-color-default"></a></li>
+      <li><a class="font-color font-color-1"></a></li>
+      <li><a class="font-color font-color-2"></a></li>
+      <li><a class="font-color font-color-3"></a></li>
+      <li><a class="font-color font-color-4"></a></li>
+      <li><a class="font-color font-color-5"></a></li>
+      <li><a class="font-color font-color-6"></a></li>
+      <li><a class="font-color font-color-7"></a></li>
+      <li><a class="font-color font-color-default"></a></li>
     </ul>
     ''').appendTo(@menuWrapper)
 
@@ -34,7 +34,7 @@ class ColorButton extends Button
       $link = $(e.currentTarget)
 
       if $link.hasClass 'font-color-default'
-        $p = @editor.body.find 'p, li'
+        $p = @editor.body.children()
         return unless $p.length > 0
         rgb = window.getComputedStyle($p[0], null).getPropertyValue('color')
         hex = @_convertRgbToHex rgb

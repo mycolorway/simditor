@@ -16,8 +16,9 @@ class LinkButton extends Button
 
   _status: ->
     super()
-
-    if @active and !@editor.selection.rangeAtEndOf(@node)
+    if @active and @node?.is('[rel=nofollow]')
+      @setLink()
+    else if @active and !@editor.selection.rangeAtEndOf(@node)
       @popover.show @node
     else
       @popover.hide()
@@ -32,19 +33,19 @@ class LinkButton extends Button
     else
       $contents = $(range.extractContents())
       linkText = @editor.formatter.clearHtml($contents.contents(), false)
-      $link = $('<a/>', {
-        href: 'http://www.example.com',
+      @$link = $('<a/>', {
+        href: '',
         target: '_blank',
         text: linkText || @_t('linkText')
       })
 
       if @editor.selection.blockNodes().length > 0
-        range.insertNode $link[0]
+        range.insertNode @$link[0]
       else
-        $newBlock = $('<p/>').append($link)
+        $newBlock = $('<p/>').append(@$link)
         range.insertNode $newBlock[0]
 
-      range.selectNodeContents $link[0]
+      range.selectNodeContents @$link[0]
 
       @popover.one 'popovershow', =>
         if linkText
@@ -57,30 +58,35 @@ class LinkButton extends Button
     @editor.selection.range range
     @editor.trigger 'valuechanged'
 
+  setLink: ->
+    text = @node.text()
+    href = @node.attr('href')
+    if href isnt text
+      text = 'http://' + text if text and !/https?:\/\/|^\//ig.test(text)
+      @node.attr('href', text)
+
 
 class LinkPopover extends Popover
 
   render: ->
     tpl = """
-    <div class="link-settings">
-      <div class="settings-field">
-        <label>#{ @_t 'linkText' }</label>
-        <input class="link-text" type="text"/>
-        <a class="btn-unlink" href="javascript:;" title="#{ @_t 'removeLink' }"
-          tabindex="-1">
-          <span class="simditor-icon simditor-icon-unlink"></span>
-        </a>
-      </div>
-      <div class="settings-field">
-        <label>#{ @_t 'linkUrl' }</label>
-        <input class="link-url" type="text"/>
-      </div>
-      <div class="settings-field">
-        <label>#{ @_t 'linkTarget'}</label>
-        <select class="link-target">
-          <option value="_blank">#{ @_t 'openLinkInNewWindow' } (_blank)</option>
-          <option value="_self">#{ @_t 'openLinkInCurrentWindow' } (_self)</option>
-        </select>
+    <div class="popover link-settings">
+      <header class="popover-header">
+        <h3 class="popover-title">#{ @_t 'linkTextTitle' }</h3>
+        <a class="popover-close-handler icon icon-remove"></a>
+      </header>
+      <div class="popover-content">
+        <div class="item">
+          <input class="link-text form-control" type="text" placeholder="#{ @_t 'linkText' }"/>
+        </div>
+        <div class="item">
+          <textarea class="link-url form-control" type="text" placeholder="#{ @_t 'linkUrl' }"></textarea>
+        </div>
+        <div class="item">
+          <button type='submit' class="btn btn-primary btn-confirm disabled">
+            #{ @_t 'linkUrlSubmit' }
+          </button>
+        </div>
       </div>
     </div>
     """
@@ -90,20 +96,18 @@ class LinkPopover extends Popover
     @urlEl = @el.find '.link-url'
     @unlinkEl = @el.find '.btn-unlink'
     @selectTarget = @el.find '.link-target'
+    @confirm = @el.find '.btn-confirm'
+    @close = @el.find '.popover-close-handler'
 
     @textEl.on 'keyup', (e) =>
       return if e.which == 13
       @target.text @textEl.val()
       @editor.inputManager.throttledValueChanged()
+      @checkButtonStatus()
 
     @urlEl.on 'keyup', (e) =>
       return if e.which == 13
-
-      val = @urlEl.val()
-      val = 'http://' + val unless /https?:\/\/|^\//ig.test(val) or !val
-
-      @target.attr 'href', val
-      @editor.inputManager.throttledValueChanged()
+      @checkButtonStatus()
 
     $([@urlEl[0], @textEl[0]]).on 'keydown', (e) =>
       if e.which == 13 or e.which == 27 or
@@ -125,12 +129,47 @@ class LinkPopover extends Popover
 
     @selectTarget.on 'change', (e) =>
       @target.attr 'target', @selectTarget.val()
+      # @editor.inputManager.throttledValueChanged()
+
+    @confirm.on 'click', (e) =>
+      return if e.which == 13
+      if @confirm.hasClass('disabled')
+        if @textEl.val()
+          @urlEl.trigger('focus')
+        else
+          @textEl.trigger('focus')
+        return
+      @checkButtonStatus()
+      @target.attr 'href', @urlEl.val()
       @editor.inputManager.throttledValueChanged()
+      @active = true
+      @hide()
+
+    @close.on 'click', (e) =>
+      text = if @val then @textEl.val() else ''
+      @target.text text
+      @editor.inputManager.throttledValueChanged()
+      unless text and @urlEl.val()
+        @button.node.remove()
+      @active = true
+      @hide()
+
+  checkButtonStatus: (val1, val2)->
+    val1 or= @textEl.val()
+    val2 or= @urlEl.val()
+    val2 = 'http://' + val2 unless /https?:\/\/|^\//ig.test(val2) or !val2
+
+    @confirm[if val1 and val2 then 'removeClass' else 'addClass']('disabled')
 
   show: (args...) ->
     super args...
-    @textEl.val @target.text()
-    @urlEl.val @target.attr('href')
+    val1 = @target.text()
+    @textEl.val val1
+    @val = @target.attr('href')
+    @urlEl.val @val
+    @checkButtonStatus(val1, @val)
+
+    @active = false
 
 
 
