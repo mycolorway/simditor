@@ -33,19 +33,19 @@ class LinkButton extends Button
     else
       $contents = $(range.extractContents())
       linkText = @editor.formatter.clearHtml($contents.contents(), false)
-      $link = $('<a/>', {
+      @$link = $('<a/>', {
         href: '',
         target: '_blank',
         text: linkText || @_t('linkText')
       })
 
       if @editor.selection.blockNodes().length > 0
-        range.insertNode $link[0]
+        range.insertNode @$link[0]
       else
-        $newBlock = $('<p/>').append($link)
+        $newBlock = $('<p/>').append(@$link)
         range.insertNode $newBlock[0]
 
-      range.selectNodeContents $link[0]
+      range.selectNodeContents @$link[0]
 
       @popover.one 'popovershow', =>
         if linkText
@@ -103,12 +103,11 @@ class LinkPopover extends Popover
       return if e.which == 13
       @target.text @textEl.val()
       @editor.inputManager.throttledValueChanged()
+      @checkButtonStatus()
 
     @urlEl.on 'keyup', (e) =>
       return if e.which == 13
-      val = @urlEl.val()
-      val = 'http://' + val unless /https?:\/\/|^\//ig.test(val) or !val
-      @confirm[if val then 'removeClass' else 'addClass']('disabled')
+      @checkButtonStatus()
 
     $([@urlEl[0], @textEl[0]]).on 'keydown', (e) =>
       if e.which == 13 or e.which == 27 or
@@ -134,14 +133,14 @@ class LinkPopover extends Popover
 
     @confirm.on 'click', (e) =>
       return if e.which == 13
-      return @urlEl.trigger('focus') if @confirm.hasClass('disabled')
-
-      val = @urlEl.val()
-
-      val = 'http://' + val unless /https?:\/\/|^\//ig.test(val) or !val
-      @confirm[if val then 'removeClass' else 'addClass']('disabled')
-
-      @target.attr 'href', val
+      if @confirm.hasClass('disabled')
+        if @textEl.val()
+          @urlEl.trigger('focus')
+        else
+          @textEl.trigger('focus')
+        return
+      @checkButtonStatus()
+      @target.attr 'href', @urlEl.val()
       @editor.inputManager.throttledValueChanged()
       @active = true
       @hide()
@@ -149,15 +148,26 @@ class LinkPopover extends Popover
     @close.on 'click', (e) =>
       text = if @val then @textEl.val() else ''
       @target.text text
+      @editor.inputManager.throttledValueChanged()
+      unless text and @urlEl.val()
+        @button.node.remove()
       @active = true
       @hide()
 
+  checkButtonStatus: (val1, val2)->
+    val1 or= @textEl.val()
+    val2 or= @urlEl.val()
+    val2 = 'http://' + val2 unless /https?:\/\/|^\//ig.test(val2) or !val2
+
+    @confirm[if val1 and val2 then 'removeClass' else 'addClass']('disabled')
+
   show: (args...) ->
     super args...
-    @textEl.val @target.text()
+    val1 = @target.text()
+    @textEl.val val1
     @val = @target.attr('href')
     @urlEl.val @val
-    @confirm[if @val then 'removeClass' else 'addClass'] 'disabled'
+    @checkButtonStatus(val1, @val)
 
     @active = false
 
