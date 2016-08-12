@@ -139,8 +139,12 @@ class LinkPopover extends Popover
         else
           @textEl.trigger('focus')
         return
+      val = @urlEl.val()
+      val = 'http://' + val unless /https?:\/\/|^\//ig.test(val) or !val
+
       @checkButtonStatus()
-      @target.attr 'href', @urlEl.val()
+      @target.attr 'href', val
+      @target.text @textEl.val()
       @editor.inputManager.throttledValueChanged()
       @active = true
       @hide()
