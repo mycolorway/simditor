@@ -604,8 +604,9 @@ Formatter = (function(superClass) {
       return;
     }
     if ($node[0].nodeType === 3) {
-      text = $node.text().replace(/(\r\n|\n|\r)/gm, '');
+      text = $node.text().replace(/^[\r\n]+|[\r\n]$/gm, '');
       if (text) {
+        text = text.replace(/(\r\n|\n|\r)/gm, ' ');
         textNode = document.createTextNode(text);
         $node.replaceWith(textNode);
       } else {
