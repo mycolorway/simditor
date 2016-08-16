@@ -55,6 +55,16 @@ class Toolbar extends SimpleModule
       $(window).on 'resize.simditor-' + @editor.id, (e) ->
         floatInitialized = initToolbarFloat()
 
+      @observer = new MutationObserver (mutations) ->
+        floatInitialized = initToolbarFloat()
+      observeConfig =
+        attributes: true
+        attributeFilter: ['style', 'class']
+      observeTarget = @wrapper.parent()
+      while observeTarget.length > 0
+        @observer.observe observeTarget[0], observeConfig
+        observeTarget = observeTarget.parent()
+
       $(window).on 'scroll.simditor-' + @editor.id, (e) =>
         return unless @wrapper.is(':visible')
         topEdge = @editor.wrapper.offset().top
@@ -75,6 +85,8 @@ class Toolbar extends SimpleModule
 
     @editor.on 'destroy', =>
       @buttons.length = 0
+      if @observer
+        @observer.disconnect()
 
     $(document).on "mousedown.simditor-#{@editor.id}", (e) =>
       @list.find('li.menu-on').removeClass('menu-on')

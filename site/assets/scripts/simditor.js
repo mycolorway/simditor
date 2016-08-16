@@ -1884,7 +1884,7 @@ Toolbar = (function(superClass) {
   };
 
   Toolbar.prototype._init = function() {
-    var floatInitialized, initToolbarFloat, toolbarHeight;
+    var floatInitialized, initToolbarFloat, observeConfig, observeTarget, toolbarHeight;
     this.editor = this._module;
     if (!this.opts.toolbar) {
       return;
@@ -1926,6 +1926,18 @@ Toolbar = (function(superClass) {
       $(window).on('resize.simditor-' + this.editor.id, function(e) {
         return floatInitialized = initToolbarFloat();
       });
+      this.observer = new MutationObserver(function(mutations) {
+        return floatInitialized = initToolbarFloat();
+      });
+      observeConfig = {
+        attributes: true,
+        attributeFilter: ['style', 'class']
+      };
+      observeTarget = this.wrapper.parent();
+      while (observeTarget.length > 0) {
+        this.observer.observe(observeTarget[0], observeConfig);
+        observeTarget = observeTarget.parent();
+      }
       $(window).on('scroll.simditor-' + this.editor.id, (function(_this) {
         return function(e) {
           var bottomEdge, scrollTop, topEdge;
@@ -1952,7 +1964,10 @@ Toolbar = (function(superClass) {
     }
     this.editor.on('destroy', (function(_this) {
       return function() {
-        return _this.buttons.length = 0;
+        _this.buttons.length = 0;
+        if (_this.observer) {
+          return _this.observer.disconnect();
+        }
       };
     })(this));
     return $(document).on("mousedown.simditor-" + this.editor.id, (function(_this) {
