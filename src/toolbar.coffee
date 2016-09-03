@@ -90,7 +90,7 @@ class Toolbar extends SimpleModule
         continue
 
       unless @constructor.buttons[name]
-        throw new Error "simditor: invalid toolbar button #{name}"
+        console.error "simditor: invalid toolbar button #{name}"
         continue
 
       @buttons.push new @constructor.buttons[name]

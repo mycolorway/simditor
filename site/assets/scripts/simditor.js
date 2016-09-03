@@ -1974,7 +1974,7 @@ Toolbar = (function(superClass) {
         continue;
       }
       if (!this.constructor.buttons[name]) {
-        throw new Error("simditor: invalid toolbar button " + name);
+        console.error("simditor: invalid toolbar button " + name);
         continue;
       }
       this.buttons.push(new this.constructor.buttons[name]({
@@ -2679,8 +2679,8 @@ Simditor.i18n = {
     'linkText': '链接文字',
     'linkUrl': '链接地址',
     'linkTarget': '打开方式',
-    'openLinkInCurrentWindow': '在新窗口中打开',
-    'openLinkInNewWindow': '在当前窗口中打开',
+    'openLinkInCurrentWindow': '在当前窗口中打开',
+    'openLinkInNewWindow': '在新窗口中打开',
     'removeLink': '移除链接',
     'ol': '有序列表',
     'ul': '无序列表',
