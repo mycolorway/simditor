@@ -475,7 +475,7 @@ Formatter = (function(superClass) {
       code: ['class']
     }, this.opts.allowedAttributes);
     this._allowedStyles = $.extend({
-      span: ['color', 'font-size'],
+      span: ['color', 'font-size', 'font-style'],
       b: ['color'],
       i: ['color'],
       strong: ['color'],
@@ -604,8 +604,9 @@ Formatter = (function(superClass) {
       return;
     }
     if ($node[0].nodeType === 3) {
-      text = $node.text().replace(/(\r\n|\n|\r)/gm, '');
+      text = $node.text().replace(/^[\r\n]+|[\r\n]$/gm, '');
       if (text) {
+        text = text.replace(/(\r\n|\n|\r)/gm, ' ');
         textNode = document.createTextNode(text);
         $node.replaceWith(textNode);
       } else {
@@ -901,8 +902,8 @@ InputManager = (function(superClass) {
     return setTimeout((function(_this) {
       return function() {
         var $blockEl, range;
-        range = _this.editor.selection._selection.getRangeAt(0);
-        if (range.startContainer === _this.editor.body[0]) {
+        range = _this.editor.selection.range();
+        if (range && range.startContainer === _this.editor.body[0]) {
           if (_this.lastCaretPosition) {
             _this.editor.undoManager.caretPosition(_this.lastCaretPosition);
           } else {
@@ -1883,7 +1884,7 @@ Toolbar = (function(superClass) {
   };
 
   Toolbar.prototype._init = function() {
-    var floatInitialized, initToolbarFloat, toolbarHeight;
+    var floatInitialized, initToolbarFloat, observeConfig, observeTarget, toolbarHeight;
     this.editor = this._module;
     if (!this.opts.toolbar) {
       return;
@@ -1925,6 +1926,18 @@ Toolbar = (function(superClass) {
       $(window).on('resize.simditor-' + this.editor.id, function(e) {
         return floatInitialized = initToolbarFloat();
       });
+      this.observer = new MutationObserver(function(mutations) {
+        return floatInitialized = initToolbarFloat();
+      });
+      observeConfig = {
+        attributes: true,
+        attributeFilter: ['style', 'class']
+      };
+      observeTarget = this.wrapper.parent();
+      while (observeTarget.length > 0) {
+        this.observer.observe(observeTarget[0], observeConfig);
+        observeTarget = observeTarget.parent();
+      }
       $(window).on('scroll.simditor-' + this.editor.id, (function(_this) {
         return function(e) {
           var bottomEdge, scrollTop, topEdge;
@@ -1951,7 +1964,10 @@ Toolbar = (function(superClass) {
     }
     this.editor.on('destroy', (function(_this) {
       return function() {
-        return _this.buttons.length = 0;
+        _this.buttons.length = 0;
+        if (_this.observer) {
+          return _this.observer.disconnect();
+        }
       };
     })(this));
     return $(document).on("mousedown.simditor-" + this.editor.id, (function(_this) {
@@ -2679,8 +2695,8 @@ Simditor.i18n = {
     'linkText': '链接文字',
     'linkUrl': '链接地址',
     'linkTarget': '打开方式',
-    'openLinkInCurrentWindow': '在新窗口中打开',
-    'openLinkInNewWindow': '在当前窗口中打开',
+    'openLinkInCurrentWindow': '在当前窗口中打开',
+    'openLinkInNewWindow': '在新窗口中打开',
     'removeLink': '移除链接',
     'ol': '有序列表',
     'ul': '无序列表',
@@ -3416,7 +3432,9 @@ ItalicButton = (function(superClass) {
   };
 
   ItalicButton.prototype.command = function() {
+    document.execCommand('styleWithCSS', false, true);
     document.execCommand('italic');
+    document.execCommand('styleWithCSS', false, false);
     if (!this.editor.util.support.oninput) {
       this.editor.trigger('valuechanged');
     }
@@ -3790,7 +3808,7 @@ CodeButton = (function(superClass) {
   CodeButton.prototype._checkMode = function() {
     var $blockNodes, range;
     range = this.editor.selection.range();
-    if (($blockNodes = $(range.cloneContents()).find(this.editor.util.blockNodes.join(','))) > 0 || (range.collapsed && this.editor.selection.startNodes().filter('code').length === 0)) {
+    if (($blockNodes = $(range.cloneContents()).find(this.editor.util.blockNodes.join(','))).length > 0 || (range.collapsed && this.editor.selection.startNodes().filter('code').length === 0)) {
       this.inlineMode = false;
       return this.htmlTag = 'pre';
     } else {

@@ -26,7 +26,7 @@ class Formatter extends SimpleModule
     , @opts.allowedAttributes
 
     @_allowedStyles = $.extend
-      span: ['color', 'font-size']
+      span: ['color', 'font-size', 'font-style']
       b: ['color']
       i: ['color']
       strong: ['color']
@@ -124,8 +124,9 @@ class Formatter extends SimpleModule
     return unless $node.length > 0
 
     if $node[0].nodeType == 3
-      text = $node.text().replace(/(\r\n|\n|\r)/gm, '')
+      text = $node.text().replace(/^[\r\n]+|[\r\n]$/gm, '');
       if text
+        text = text.replace(/(\r\n|\n|\r)/gm, ' ')
         textNode = document.createTextNode text
         $node.replaceWith textNode
       else
