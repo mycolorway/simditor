@@ -20,6 +20,12 @@ class LinkButton extends Button
       @setLink()
     else if @active and !@editor.selection.rangeAtEndOf(@node)
       @popover.show @node
+      if @node.attr('href') isnt ""
+        @popoverStatus = 3
+      else if @withLinkText
+        @popoverStatus = 2
+      else
+        @popoverStatus = 1
     else
       @popover.hide()
 
@@ -51,9 +57,11 @@ class LinkButton extends Button
         if linkText
           @popover.urlEl.focus()
           @popover.urlEl[0].select()
+          @withLinkText = true
         else
           @popover.textEl.focus()
           @popover.textEl[0].select()
+          @withLinkText = false
 
     @editor.selection.range range
     @editor.trigger 'valuechanged'
@@ -118,19 +126,6 @@ class LinkPopover extends Popover
         @hide()
         @editor.inputManager.throttledValueChanged()
 
-    @unlinkEl.on 'click', (e) =>
-      txtNode = document.createTextNode @target.text()
-      @target.replaceWith txtNode
-      @hide()
-
-      range = document.createRange()
-      @editor.selection.setRangeAfter txtNode, range
-      @editor.inputManager.throttledValueChanged()
-
-    @selectTarget.on 'change', (e) =>
-      @target.attr 'target', @selectTarget.val()
-      # @editor.inputManager.throttledValueChanged()
-
     @confirm.on 'click', (e) =>
       return if e.which == 13
       if @confirm.hasClass('disabled')
@@ -150,11 +145,14 @@ class LinkPopover extends Popover
       @hide()
 
     @close.on 'click', (e) =>
-      text = if @val then @textEl.val() else ''
-      @target.text text
       @editor.inputManager.throttledValueChanged()
-      unless text and @urlEl.val()
-        @button.node.remove()
+      switch @button.popoverStatus
+        when 1
+          @button.node.remove()
+        when 2
+          txtNode = document.createTextNode @target.text()
+          @target.replaceWith txtNode
+
       @active = true
       @hide()
 
