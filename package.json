@@ -1,21 +1,24 @@
 {
-  "name": "simditor",
-  "version": "2.3.6",
-  "description": "A simple online editor",
-  "keywords": "editor simditor",
-  "repository": {
-    "type": "git",
-    "url": "git@github.com:mycolorway/simditor.git"
-  },
-  "author": "farthinker <farthinker@gmail.com>",
-  "license": "MIT",
-  "bugs": {
-    "url": "https://github.com/mycolorway/simditor/issues"
-  },
+  "name": "simditor-new",
+  "version": "1.0.1",
+  "description": "A simple online editor, It's base on https://github.com/mycolorway/simditor",
+  "main": "lib/simditor.js",
   "scripts": {
     "test": "grunt test --verbose"
   },
-  "main": "lib/simditor.js",
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:shinygang/simditor.git"
+  },
+  "keywords": [
+    "editor",
+    "simditor"
+  ],
+  "author": "shinygang",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/shinygang/simditor/issues"
+  },
   "homepage": "http://simditor.tower.im",
   "dependencies": {
     "jquery": "~2.1.4",
