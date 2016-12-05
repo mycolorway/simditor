@@ -4331,7 +4331,7 @@ ImageButton = (function(superClass) {
           type: 'file',
           title: _this._t('uploadImage'),
           multiple: true,
-          accept: 'image/*'
+          accept: 'image/gif,image/jpeg,image/jpg,image/png,image/svg'
         }).appendTo($uploadItem);
       };
     })(this);
@@ -4727,7 +4727,7 @@ ImagePopover = (function(superClass) {
           type: 'file',
           title: _this._t('uploadImage'),
           multiple: true,
-          accept: 'image/*'
+          accept: 'image/gif,image/jpeg,image/jpg,image/png,image/svg'
         }).appendTo($uploadBtn);
       };
     })(this);
