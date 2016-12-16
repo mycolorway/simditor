@@ -17,7 +17,9 @@ class LinkButton extends Button
   _status: ->
     super()
 
-    if @active and !@editor.selection.rangeAtEndOf(@node)
+    if @active and @node?.is('[rel=nofollow]')
+      @setLink()
+    else if @active and !@editor.selection.rangeAtEndOf(@node)
       @popover.show @node
     else
       @popover.hide()
@@ -56,6 +58,12 @@ class LinkButton extends Button
 
     @editor.selection.range range
     @editor.trigger 'valuechanged'
+
+  setLink: ->
+    text = @node.text()
+    text = 'http://' + text unless /https?:\/\/|^\//ig.test(text) or !text
+    href = @node.attr('href')
+    @node.attr('href', text) if href isnt text
 
 
 class LinkPopover extends Popover
