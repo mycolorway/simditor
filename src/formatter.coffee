@@ -203,7 +203,8 @@ class Formatter extends SimpleModule
     styles = {}
     for style in styleStr.split(';')
       style = $.trim style
-      pair = style.split(':')
+      idx = style.indexOf(':')
+      pair = [style.slice(0, idx), style.slice(idx + 1)]
       continue unless pair.length = 2
       styles[$.trim(pair[0])] = $.trim(pair[1]) if pair[0] in allowedStyles
 
