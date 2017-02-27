@@ -20,7 +20,7 @@ class Formatter extends SimpleModule
 
     @_allowedAttributes = $.extend
       img: ['src', 'alt', 'width', 'height', 'data-non-image']
-      a: ['href', 'target']
+      a: ['href', 'target', 'rel']
       font: ['color']
       code: ['class']
     , @opts.allowedAttributes

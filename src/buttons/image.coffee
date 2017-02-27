@@ -104,7 +104,7 @@ class ImageButton extends Button
         type: 'file'
         title: @_t('uploadImage')
         multiple: true
-        accept: 'image/*'
+        accept: 'image/gif, image/png, image/jpeg, image/bmp, image/webp'
       .appendTo($uploadItem)
 
     createInput()

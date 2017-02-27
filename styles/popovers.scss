@@ -1,0 +1,125 @@
+.popover {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 250px;
+  max-width: none;
+  z-index: 106;
+  padding: 0;
+  text-align: left;
+  border: 1px solid rgba(0, 0, 0,0);
+  background-color: #fff;
+  &.top     { margin-top: 0; }
+  &.right   { margin-left: 0; }
+  &.bottom  { margin-top: 0; }
+  &.left    { margin-left: 0; }
+  box-shadow: 0 5px 10px rgba(0,0,0,.2);
+
+  > .arrow {
+    &,
+    &:after {
+      display: none;
+    }
+  }
+  .popover-title {
+    padding: 0;
+    background: none;
+    border: 0 none;
+    text-align: center;
+    font-size: 15px;
+    font-weight: bold;
+    line-height: 30px;
+  }
+
+  .popover-header {
+    padding: 10px 15px;
+    border-bottom: 1px solid rgba(238, 238, 238, 1);;
+    margin: 0px 15px;
+  }
+
+  .popover-close-handler {
+    position: absolute;
+    top: 15px;
+  }
+
+  .popover-close-handler {
+    right: 15px;
+    &:before {
+      content: '\f000';
+    }
+  }
+
+  .popover-content {
+    padding: 15px;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+
+    .item {
+      position: relative;
+      margin-bottom: 15px;
+      font-size: 14px;
+
+      &:last-child {
+        margin-bottom: 0;
+      }
+    }
+
+    &.no-padding {
+      padding: 0;
+    }
+
+    .form-control {
+      width: 200px;
+      height: auto;
+      margin: 0;
+      line-height: 20px;
+      padding: 8px;
+      border-radius: 2px;
+      border: 1px solid #D9D9D9;
+      font-size: 14px;
+
+      &:focus {
+        border-color: #a6a6a6;
+        box-shadow: none;
+        outline: 0;
+      }
+    }
+    textarea.form-control {
+      resize: vertical;
+      width: 100%;
+      box-sizing: border-box;
+      resize: none;
+      outline: none;
+    }
+    .btn {
+      width: 100%;
+      display: inline-block;
+      padding: 8px 12px;
+      margin-bottom: 0;
+      font-size: 14px;
+      line-height: 20px;
+      color: #383838;
+      text-align: center;
+      vertical-align: middle;
+      cursor: pointer;
+      border: 1px solid #d9d9d9;
+      border-radius: 3px;
+      background-color: #ffffff;
+      white-space: nowrap;
+      opacity: 1;
+
+      &:focus {
+        box-shadow: none;
+        outline: 0;
+      }
+    }
+    .btn-primary {
+      color: #fff;
+      background-color: #03a9f4;
+      border-color: #03a9f4;
+    }
+    .disabled {
+      opacity: .65;
+    }
+  }
+}
