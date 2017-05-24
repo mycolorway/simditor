@@ -35,8 +35,8 @@ class Simditor extends SimpleModule
     @id = ++ Simditor.count
     @_render()
 
-    if simpleHotkeys
-      @hotkeys = simpleHotkeys
+    if simple.hotkeys
+      @hotkeys = simple.hotkeys
         el: @body
     else
       throw new Error 'simditor: simple-hotkeys is required.'
@@ -206,3 +206,9 @@ class Simditor extends SimpleModule
     $(document).off '.simditor-' + @id
     $(window).off '.simditor-' + @id
     @off()
+
+  disabled: () ->
+    @toolbar.wrapper.remove()
+    @body.removeAttr('contenteditable')
+    @el.addClass('disabled')
+    @blur()

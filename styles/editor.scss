@@ -2,7 +2,12 @@
 
 $simditor-button-height: 40px;
 $simditor-button-width: 46px;
-
+.simditor.disabled {
+  border: none;
+  .simditor-body {
+    cursor: default;
+  }
+}
 .simditor {
   position: relative;
   border: 1px solid #c9d8db;
