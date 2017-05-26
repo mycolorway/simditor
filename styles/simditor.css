@@ -1,7 +1,7 @@
 /*!
 * Simditor v2.3.6
 * http://simditor.tower.im/
-* 2015-12-21
+* 2017-05-26
 */
 @font-face {
   font-family: 'Simditor';
@@ -143,6 +143,13 @@
   content: '\f01e';
 }
 
+.simditor.disabled {
+  border: none;
+}
+.simditor.disabled .simditor-body {
+  cursor: default;
+}
+
 .simditor {
   position: relative;
   border: 1px solid #c9d8db;
@@ -207,6 +214,7 @@
   position: relative;
   z-index: 1;
   background: transparent;
+  overflow: auto;
 }
 .simditor .simditor-body a.selected {
   background: #b3d4fd;

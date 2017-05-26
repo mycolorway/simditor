@@ -19,6 +19,7 @@ class Simditor extends SimpleModule
     params: {}
     upload: false
     indentWidth: 40
+    height: false
 
   _init: ->
     @textarea = $(@opts.textarea)
@@ -35,16 +36,16 @@ class Simditor extends SimpleModule
     @id = ++ Simditor.count
     @_render()
 
-    if simpleHotkeys
-      @hotkeys = simpleHotkeys
+    if simpleHotkeys or simple.hotkeys
+      @hotkeys = simpleHotkeys || simple.hotkeys
         el: @body
     else
       throw new Error 'simditor: simple-hotkeys is required.'
       return
 
-    if @opts.upload and simpleUploader
+    if @opts.upload and (simpleUploader or simple.uploader)
       uploadOpts = if typeof @opts.upload == 'object' then @opts.upload else {}
-      @uploader = simpleUploader(uploadOpts)
+      @uploader = simpleUploader(uploadOpts) || simple.uploader(uploadOpts)
 
     form = @textarea.closest 'form'
     if form.length
@@ -93,6 +94,9 @@ class Simditor extends SimpleModule
     @wrapper.append(@textarea)
     @textarea.data('simditor', @).blur()
     @body.attr 'tabindex', @textarea.attr('tabindex')
+
+    if @opts.height
+      @body.css('height',@opts.height);
 
     if @util.os.mac
       @el.addClass 'simditor-mac'
@@ -206,3 +210,14 @@ class Simditor extends SimpleModule
     $(document).off '.simditor-' + @id
     $(window).off '.simditor-' + @id
     @off()
+
+  disabled: () ->
+    @toolbar.wrapper.remove()
+    @body.removeAttr('contenteditable')
+    @el.addClass('disabled')
+    @blur()
+
+  setHeight: (height) ->
+    unless !height
+      return
+    @body.css({height:height})
