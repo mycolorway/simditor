@@ -212,3 +212,8 @@ class Simditor extends SimpleModule
     @body.removeAttr('contenteditable')
     @el.addClass('disabled')
     @blur()
+
+  setHeight: (height) ->
+    unless !height
+      return
+    @body.css({height:height,overflow:'auto'})
