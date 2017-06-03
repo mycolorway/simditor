@@ -158,5 +158,5 @@ Simditor.i18n =
     'fontScaleLarge': 'Tamanho grande'
     'fontScaleNormal': 'Tamanho normal'
     'fontScaleSmall': 'Tamanho pequeno'
-    'fontScaleXSmall': 'X Tamanho pequeno'
+    'fontScaleXSmall': 'Tamanho extra pequeno'
     
