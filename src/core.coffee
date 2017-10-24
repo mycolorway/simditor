@@ -48,6 +48,13 @@ class Simditor extends SimpleModule
 
     form = @textarea.closest 'form'
     if form.length
+      form.on 'submit', (e) ->
+        unsavedImages = form.find('.simditor [src^="data:"], ' + '.simditor [src^="blob:"]')
+        if 0 == unsavedImages.length
+          return
+        unsavedImages.css 'border', '1px solid red'
+        alert '红框标记的图片上传失败了。请重新上传这些图片后再保存'
+        false
       form.on 'submit.simditor-' + @id, =>
         @sync()
       form.on 'reset.simditor-' + @id, =>
