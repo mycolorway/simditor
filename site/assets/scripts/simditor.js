@@ -10,7 +10,7 @@
     // like Node.
     module.exports = factory(require("jquery"),require("simple-module"),require("simple-hotkeys"),require("simple-uploader"));
   } else {
-    root['Simditor'] = factory(root["jQuery"],root["SimpleModule"],root["simple.hotkeys"],root["simple.uploader"]);
+    root['Simditor'] = factory(jQuery,SimpleModule,simple.hotkeys,simple.uploader);
   }
 }(this, function ($, SimpleModule, simpleHotkeys, simpleUploader) {
 

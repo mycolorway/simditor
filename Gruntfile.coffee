@@ -94,6 +94,7 @@ module.exports = (grunt) ->
           global:
             items: ['jQuery', 'SimpleModule', 'simple.hotkeys', 'simple.uploader']
             prefix: ''
+            suffix: ''
 
     copy:
       vendor:
@@ -199,7 +200,7 @@ module.exports = (grunt) ->
         options:
           banner: '''/*!
  * Simditor v<%= pkg.version %>
- * http://simditor.tower.im/
+ * https://github.com/biallo/simditor
  * <%= grunt.template.today("yyyy-mm-dd") %>
  */'''
         files:
