@@ -35,8 +35,8 @@ class Simditor extends SimpleModule
     @id = ++ Simditor.count
     @_render()
 
-    if simpleHotkeys
-      @hotkeys = simpleHotkeys
+    if simple.hotkeys
+      @hotkeys = simple.hotkeys
         el: @body
     else
       throw new Error 'simditor: simple-hotkeys is required.'
