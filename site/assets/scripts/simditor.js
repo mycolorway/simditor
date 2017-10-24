@@ -3560,8 +3560,8 @@ ColorButton = (function(superClass) {
           textNode = document.createTextNode(_this._t('coloredText'));
           range.insertNode(textNode);
           range.selectNodeContents(textNode);
-          _this.editor.selection.range(range);
         }
+        _this.editor.selection.range(range);
         document.execCommand('styleWithCSS', false, true);
         document.execCommand('foreColor', false, hex);
         document.execCommand('styleWithCSS', false, false);
