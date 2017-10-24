@@ -4069,7 +4069,7 @@ LinkButton = (function(superClass) {
       $contents = $(range.extractContents());
       linkText = this.editor.formatter.clearHtml($contents.contents(), false);
       $link = $('<a/>', {
-        href: 'http://www.example.com',
+        href: '',
         target: '_blank',
         text: linkText || this._t('linkText')
       });
