@@ -218,7 +218,7 @@ class ImageButton extends Button
         catch e
           msg = @_t('uploadError')
 
-        alert msg
+        # alert msg
 
       $img = file.img
       return unless $img.hasClass('uploading') and $img.parent().length > 0

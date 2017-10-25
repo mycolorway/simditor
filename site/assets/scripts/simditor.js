@@ -2491,8 +2491,8 @@ Simditor = (function(superClass) {
     }
     this.id = ++Simditor.count;
     this._render();
-    if (simple.hotkeys) {
-      this.hotkeys = simple.hotkeys({
+    if (simpleHotkeys) {
+      this.hotkeys = simpleHotkeys({
         el: this.body
       });
     } else {
@@ -2842,8 +2842,11 @@ Button = (function(superClass) {
         var exceed, noFocus, param;
         e.preventDefault();
         noFocus = _this.needFocus && !_this.editor.inputManager.focused;
-        if (_this.el.hasClass('disabled') || noFocus) {
+        if (_this.el.hasClass('disabled')) {
           return false;
+        }
+        if (noFocus) {
+          _this.editor.focus();
         }
         if (_this.menu) {
           _this.wrapper.toggleClass('menu-on').siblings('li').removeClass('menu-on');
@@ -4506,7 +4509,6 @@ ImageButton = (function(superClass) {
             e = _error;
             msg = _this._t('uploadError');
           }
-          alert(msg);
         }
         $img = file.img;
         if (!($img.hasClass('uploading') && $img.parent().length > 0)) {
