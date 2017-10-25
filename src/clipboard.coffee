@@ -87,8 +87,6 @@ class Clipboard extends SimpleModule
       @_pasteInBlockEl = @editor.selection.blockNodes().last()
       @_pastePlainText = @opts.cleanPaste || @_pasteInBlockEl.is('pre, table')
 
-      console.log '@_pasteBin', @_pasteBin.html(), @_pasteBin.contents()
-
       if @_pastePlainText
         pasteContent = @editor.formatter.clearHtml @_pasteBin.html(), true
       else
