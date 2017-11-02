@@ -28,6 +28,10 @@ class Selection extends SimpleModule
     @editor.on 'blur', (e) =>
       @reset()
 
+    @editor.on 'focus', (e) =>
+      @reset()
+      @_range = @_selection.getRangeAt 0
+
   reset: ->
     @_range = null
     @_startNodes = null

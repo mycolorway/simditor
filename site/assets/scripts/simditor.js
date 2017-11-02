@@ -52,9 +52,15 @@ Selection = (function(superClass) {
         return _this._range = _this._selection.getRangeAt(0);
       };
     })(this));
-    return this.editor.on('blur', (function(_this) {
+    this.editor.on('blur', (function(_this) {
       return function(e) {
         return _this.reset();
+      };
+    })(this));
+    return this.editor.on('focus', (function(_this) {
+      return function(e) {
+        _this.reset();
+        return _this._range = _this._selection.getRangeAt(0);
       };
     })(this));
   };
