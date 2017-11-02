@@ -593,6 +593,10 @@ $simditor-button-width: 46px;
     padding: 0 0 0 40px;
     line-height: 1.6;
 
+    li {
+      list-style-type: inherit;
+    }
+
     ul, ol {
       padding-left: 30px;
     }
