@@ -4903,7 +4903,9 @@ IndentButton = (function(superClass) {
   IndentButton.prototype.icon = 'indent';
 
   IndentButton.prototype._init = function() {
-    this.title = this._t(this.name) + ' (Tab)';
+    var hotkey;
+    hotkey = this.editor.opts.tabIndent === false ? '' : ' (Tab)';
+    this.title = this._t(this.name) + hotkey;
     return IndentButton.__super__._init.call(this);
   };
 
@@ -4931,7 +4933,9 @@ OutdentButton = (function(superClass) {
   OutdentButton.prototype.icon = 'outdent';
 
   OutdentButton.prototype._init = function() {
-    this.title = this._t(this.name) + ' (Shift + Tab)';
+    var hotkey;
+    hotkey = this.editor.opts.tabIndent === false ? '' : ' (Shift + Tab)';
+    this.title = this._t(this.name) + hotkey;
     return OutdentButton.__super__._init.call(this);
   };
 
