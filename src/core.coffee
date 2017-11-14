@@ -46,20 +46,6 @@ class Simditor extends SimpleModule
       uploadOpts = if typeof @opts.upload == 'object' then @opts.upload else {}
       @uploader = simpleUploader(uploadOpts)
 
-    form = @textarea.closest 'form'
-    if form.length
-      form.on 'submit', (e) ->
-        unsavedImages = form.find('.simditor [src^="data:"], ' + '.simditor [src^="blob:"]')
-        if 0 == unsavedImages.length
-          return
-        unsavedImages.css 'border', '1px solid red'
-        alert '红框标记的图片上传失败了。请重新上传这些图片后再保存'
-        false
-      form.on 'submit.simditor-' + @id, =>
-        @sync()
-      form.on 'reset.simditor-' + @id, =>
-        @setValue ''
-
     # set default value after all plugins are connected
     @on 'initialized', =>
       if @opts.placeholder
@@ -78,6 +64,22 @@ class Simditor extends SimpleModule
         document.execCommand 'enableObjectResizing', false, false
         document.execCommand 'enableInlineTableEditing', false, false
       catch e
+
+    form = @textarea.closest 'form'
+    if form.length
+      uploadAgain = @_t('uploadAgain')
+      form.on 'submit', (e) ->
+        unsavedImages = form.find('.simditor [src^="data:"], ' + '.simditor [src^="blob:"]')
+        if 0 == unsavedImages.length
+          return
+        unsavedImages.css 'border', '1px solid red'
+        # 红框标记的图片上传失败了，请重新上传这些图片后再保存
+        alert uploadAgain
+        false
+      form.on 'submit.simditor-' + @id, =>
+        @sync()
+      form.on 'reset.simditor-' + @id, =>
+        @setValue ''
 
   _tpl:"""
     <div class="simditor">

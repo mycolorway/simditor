@@ -1,10 +1,9 @@
 {
   "name": "simditor",
   "version": "2.3.7",
-  "homepage": "https://github.com/biallo/simditor",
+  "homepage": "http://simditor.tower.im/",
   "authors": [
-    "farthinker <farthinker@gmail.com>",
-    "biallo <bialloworld@gmail.com>"
+    "farthinker <farthinker@gmail.com>"
   ],
   "description": "A simple online editor",
   "main": [

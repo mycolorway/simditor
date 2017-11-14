@@ -200,7 +200,7 @@ module.exports = (grunt) ->
         options:
           banner: '''/*!
  * Simditor v<%= pkg.version %>
- * https://github.com/biallo/simditor
+ * http://simditor.tower.im/
  * <%= grunt.template.today("yyyy-mm-dd") %>
  */'''
         files:
