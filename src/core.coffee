@@ -65,22 +65,6 @@ class Simditor extends SimpleModule
         document.execCommand 'enableInlineTableEditing', false, false
       catch e
 
-    form = @textarea.closest 'form'
-    if form.length
-      uploadAgain = @_t('uploadAgain')
-      form.on 'submit', (e) ->
-        unsavedImages = form.find('.simditor [src^="data:"], ' + '.simditor [src^="blob:"]')
-        if 0 == unsavedImages.length
-          return
-        unsavedImages.css 'border', '1px solid red'
-        # 红框标记的图片上传失败了，请重新上传这些图片后再保存
-        alert uploadAgain
-        false
-      form.on 'submit.simditor-' + @id, =>
-        @sync()
-      form.on 'reset.simditor-' + @id, =>
-        @setValue ''
-
   _tpl:"""
     <div class="simditor">
       <div class="simditor-wrapper">
