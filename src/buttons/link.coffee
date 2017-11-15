@@ -33,7 +33,7 @@ class LinkButton extends Button
       $contents = $(range.extractContents())
       linkText = @editor.formatter.clearHtml($contents.contents(), false)
       $link = $('<a/>', {
-        href: 'http://www.example.com',
+        href: '',
         target: '_blank',
         text: linkText || @_t('linkText')
       })

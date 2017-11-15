@@ -91,6 +91,7 @@ class Clipboard extends SimpleModule
         pasteContent = @editor.formatter.clearHtml @_pasteBin.html(), true
       else
         pasteContent = $('<div/>').append(@_pasteBin.contents())
+        pasteContent.find('style').remove() # clear style tag
         pasteContent.find('table colgroup').remove() # clear table cols width
         @editor.formatter.format pasteContent
         @editor.formatter.decorate pasteContent
@@ -140,6 +141,28 @@ class Clipboard extends SimpleModule
             uploadOpt = {}
             uploadOpt[@opts.pasteImage] = true
             @editor.uploader?.upload(blob, uploadOpt)
+            return
+
+          else if new RegExp('^blob:' + location.origin + '/').test($img.attr('src'))
+            return unless @opts.pasteImage
+            uploadOpt = {}
+            uploadOpt[@opts.pasteImage] = true
+            dataURLtoBlob = @editor.util.dataURLtoBlob
+            uploader = @editor.uploader
+            img = new Image
+
+            img.onload = ->
+              canvas = document.createElement('canvas')
+              canvas.width = img.naturalWidth
+              canvas.height = img.naturalHeight
+              canvas.getContext('2d').drawImage img, 0, 0
+              blob = dataURLtoBlob(canvas.toDataURL('image/png'))
+              blob.name = 'Clipboard Image.png'
+              if uploader != null
+                uploader.upload blob, uploadOpt
+              return
+
+            img.src = $img.attr('src')
             return
 
           # cannot paste image in safari

@@ -53,6 +53,9 @@ class FontScaleButton extends Button
     range = @editor.selection.range()
     return if range.collapsed
 
+    # 为了搜狗解决浏览器的兼容性问题
+    @editor.selection.range range
+
     # Use span[style] instead of font[size]
     document.execCommand 'styleWithCSS', false, true
     document.execCommand 'fontSize', false, param

@@ -104,7 +104,7 @@ class ImageButton extends Button
         type: 'file'
         title: @_t('uploadImage')
         multiple: true
-        accept: 'image/*'
+        accept: 'image/gif,image/jpeg,image/jpg,image/png,image/svg'
       .appendTo($uploadItem)
 
     createInput()
@@ -218,7 +218,7 @@ class ImageButton extends Button
         catch e
           msg = @_t('uploadError')
 
-        alert msg
+        # alert msg
 
       $img = file.img
       return unless $img.hasClass('uploading') and $img.parent().length > 0
@@ -450,7 +450,7 @@ class ImagePopover extends Popover
         type: 'file'
         title: @_t('uploadImage')
         multiple: true
-        accept: 'image/*'
+        accept: 'image/gif,image/jpeg,image/jpg,image/png,image/svg'
       .appendTo($uploadBtn)
 
     createInput()

@@ -1,7 +1,7 @@
 /*!
-* Simditor v2.3.6
+* Simditor v2.3.7
 * http://simditor.tower.im/
-* 2015-12-21
+* 2017-11-14
 */
 @font-face {
   font-family: 'Simditor';
@@ -660,6 +660,9 @@
   margin: 15px 0;
   padding: 0 0 0 40px;
   line-height: 1.6;
+}
+.simditor .simditor-body ul li, .simditor .simditor-body ol li, .editor-style ul li, .editor-style ol li {
+  list-style-type: inherit;
 }
 .simditor .simditor-body ul ul, .simditor .simditor-body ul ol, .simditor .simditor-body ol ul, .simditor .simditor-body ol ol, .editor-style ul ul, .editor-style ul ol, .editor-style ol ul, .editor-style ol ol {
   padding-left: 30px;
