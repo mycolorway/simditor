@@ -481,7 +481,7 @@ Formatter = (function(superClass) {
       code: ['class']
     }, this.opts.allowedAttributes);
     this._allowedStyles = $.extend({
-      span: ['color'],
+      span: ['color', 'font-size'],
       b: ['color'],
       i: ['color'],
       strong: ['color'],
@@ -705,7 +705,10 @@ Formatter = (function(superClass) {
       style = ref[k];
       style = $.trim(style);
       pair = style.split(':');
-      if (!(pair.length = 2)) {
+      if (pair.length !== 2) {
+        continue;
+      }
+      if (pair[0] === 'font-size' && parseInt(pair[1], 10) < 12) {
         continue;
       }
       if (ref1 = pair[0], indexOf.call(allowedStyles, ref1) >= 0) {

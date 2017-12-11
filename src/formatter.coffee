@@ -26,7 +26,7 @@ class Formatter extends SimpleModule
     , @opts.allowedAttributes
 
     @_allowedStyles = $.extend
-      span: ['color']
+      span: ['color', 'font-size']
       b: ['color']
       i: ['color']
       strong: ['color']
@@ -204,7 +204,10 @@ class Formatter extends SimpleModule
     for style in styleStr.split(';')
       style = $.trim style
       pair = style.split(':')
-      continue unless pair.length = 2
+
+      continue unless pair.length == 2
+      continue if pair[0] == 'font-size' and parseInt(pair[1], 10) < 12
+      
       styles[$.trim(pair[0])] = $.trim(pair[1]) if pair[0] in allowedStyles
 
     $node.css styles if Object.keys(styles).length > 0
