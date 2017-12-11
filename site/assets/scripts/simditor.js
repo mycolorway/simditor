@@ -481,7 +481,7 @@ Formatter = (function(superClass) {
       code: ['class']
     }, this.opts.allowedAttributes);
     this._allowedStyles = $.extend({
-      span: ['color', 'font-size'],
+      span: ['color'],
       b: ['color'],
       i: ['color'],
       strong: ['color'],
