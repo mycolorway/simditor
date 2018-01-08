@@ -708,8 +708,10 @@ Formatter = (function(superClass) {
       if (pair.length !== 2) {
         continue;
       }
-      if (pair[0] === 'font-size' && parseInt(pair[1], 10) < 12) {
-        continue;
+      if (pair[0] === 'font-size' && pair[1].indexOf('px') > 0) {
+        if (parseInt(pair[1], 10) < 12) {
+          continue;
+        }
       }
       if (ref1 = pair[0], indexOf.call(allowedStyles, ref1) >= 0) {
         styles[$.trim(pair[0])] = $.trim(pair[1]);
