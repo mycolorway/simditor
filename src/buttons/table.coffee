@@ -20,7 +20,7 @@ class TableButton extends Button
     )
     $.extend @editor.formatter._allowedAttributes,
       td: ['rowspan', 'colspan'],
-      col: ['width']
+      col: ['style']
     $.extend @editor.formatter._allowedStyles,
       td: ['text-align']
       th: ['text-align']
@@ -330,11 +330,14 @@ class TableButton extends Button
     $table
 
   refreshTableWidth: ($table)->
-    tableWidth = $table.width()
-    cols = $table.find('col')
-    $table.find('thead tr th').each (i, td) ->
-      $col = cols.eq(i)
-      $col.attr 'width', ($(td).outerWidth() / tableWidth * 100) + '%'
+    # 解决无法在第一时间获取粘贴 table 宽度的问题
+    setTimeout =>
+      tableWidth = $table.width()
+      cols = $table.find('col')
+      $table.find('thead tr th').each (i, td) ->
+        $col = cols.eq(i)
+        $col.attr 'width', ($(td).outerWidth() / tableWidth * 100) + '%'
+    , 0
 
   setActive: (active) ->
     super active

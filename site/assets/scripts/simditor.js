@@ -2329,23 +2329,11 @@ Clipboard = (function(superClass) {
   };
 
   Clipboard.prototype._processPasteContent = function(pasteContent) {
-    var $blockEl, $img, blob, children, dataURLtoBlob, img, insertPosition, isTitle, k, l, lastLine, len, len1, len2, len3, len4, line, lines, m, node, o, q, ref, ref1, ref2, uploadOpt, uploader;
+    var $blockEl, $img, blob, children, dataURLtoBlob, img, insertPosition, k, l, lastLine, len, len1, len2, len3, len4, line, lines, m, node, o, q, ref, ref1, ref2, uploadOpt, uploader;
     if (this.editor.triggerHandler('pasting', [pasteContent]) === false) {
       return;
     }
     $blockEl = this._pasteInBlockEl;
-    isTitle = (function() {
-      var i, titles;
-      titles = ['h1', 'h2', 'h3', 'h4', 'h5'];
-      i = 0;
-      while (i < titles.length) {
-        if ($blockEl.is(titles[i])) {
-          return true;
-        }
-        i++;
-      }
-      return false;
-    })();
     if (!pasteContent) {
       return;
     } else if (this._pastePlainText) {
@@ -2376,7 +2364,7 @@ Clipboard = (function(superClass) {
     } else if (pasteContent.length === 1) {
       if (pasteContent.is('p')) {
         children = pasteContent.contents();
-        if (isTitle) {
+        if ($blockEl.is('h1, h2, h3, h4, h5')) {
           if (children.length) {
             children.css('font-size', '');
           }
@@ -5012,7 +5000,7 @@ TableButton = (function(superClass) {
     $.merge(this.editor.formatter._allowedTags, ['thead', 'th', 'tbody', 'tr', 'td', 'colgroup', 'col']);
     $.extend(this.editor.formatter._allowedAttributes, {
       td: ['rowspan', 'colspan'],
-      col: ['width']
+      col: ['style']
     });
     $.extend(this.editor.formatter._allowedStyles, {
       td: ['text-align'],
@@ -5330,14 +5318,18 @@ TableButton = (function(superClass) {
   };
 
   TableButton.prototype.refreshTableWidth = function($table) {
-    var cols, tableWidth;
-    tableWidth = $table.width();
-    cols = $table.find('col');
-    return $table.find('thead tr th').each(function(i, td) {
-      var $col;
-      $col = cols.eq(i);
-      return $col.attr('width', ($(td).outerWidth() / tableWidth * 100) + '%');
-    });
+    return setTimeout((function(_this) {
+      return function() {
+        var cols, tableWidth;
+        tableWidth = $table.width();
+        cols = $table.find('col');
+        return $table.find('thead tr th').each(function(i, td) {
+          var $col;
+          $col = cols.eq(i);
+          return $col.attr('width', ($(td).outerWidth() / tableWidth * 100) + '%');
+        });
+      };
+    })(this), 0);
   };
 
   TableButton.prototype.setActive = function(active) {

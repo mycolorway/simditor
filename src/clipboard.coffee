@@ -87,6 +87,7 @@ class Clipboard extends SimpleModule
       @_pasteInBlockEl = @editor.selection.blockNodes().last()
       @_pastePlainText = @opts.cleanPaste || @_pasteInBlockEl.is('pre, table')
 
+
       if @_pastePlainText
         pasteContent = @editor.formatter.clearHtml @_pasteBin.html(), true
       else
@@ -107,15 +108,6 @@ class Clipboard extends SimpleModule
     return if @editor.triggerHandler('pasting', [pasteContent]) == false
     $blockEl = @_pasteInBlockEl
 
-    isTitle = do ->
-      titles = ['h1', 'h2', 'h3', 'h4', 'h5']
-      i = 0
-      while i < titles.length
-        if $blockEl.is(titles[i])
-          return true
-        i++
-      false
-
     if !pasteContent
       return
     else if @_pastePlainText
@@ -134,11 +126,11 @@ class Clipboard extends SimpleModule
       @editor.selection.insertNode(node) for node in pasteContent
     else if pasteContent.length < 1
       return
-    else if pasteContent.length == 1
+    else if pasteContent.length == 1 
       if pasteContent.is('p')
         children = pasteContent.contents()
 
-        if isTitle
+        if $blockEl.is 'h1, h2, h3, h4, h5'
           if children.length
             children.css('font-size', '')
 
