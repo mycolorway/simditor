@@ -2329,11 +2329,23 @@ Clipboard = (function(superClass) {
   };
 
   Clipboard.prototype._processPasteContent = function(pasteContent) {
-    var $blockEl, $img, blob, children, dataURLtoBlob, img, insertPosition, k, l, lastLine, len, len1, len2, len3, len4, line, lines, m, node, o, q, ref, ref1, ref2, uploadOpt, uploader;
+    var $blockEl, $img, blob, children, dataURLtoBlob, img, insertPosition, isTitle, k, l, lastLine, len, len1, len2, len3, len4, line, lines, m, node, o, q, ref, ref1, ref2, uploadOpt, uploader;
     if (this.editor.triggerHandler('pasting', [pasteContent]) === false) {
       return;
     }
     $blockEl = this._pasteInBlockEl;
+    isTitle = (function() {
+      var i, titles;
+      titles = ['h1', 'h2', 'h3', 'h4', 'h5'];
+      i = 0;
+      while (i < titles.length) {
+        if ($blockEl.is(titles[i])) {
+          return true;
+        }
+        i++;
+      }
+      return false;
+    })();
     if (!pasteContent) {
       return;
     } else if (this._pastePlainText) {
@@ -2364,6 +2376,11 @@ Clipboard = (function(superClass) {
     } else if (pasteContent.length === 1) {
       if (pasteContent.is('p')) {
         children = pasteContent.contents();
+        if (isTitle) {
+          if (children.length) {
+            children.css('font-size', '');
+          }
+        }
         if (children.length === 1 && children.is('img')) {
           $img = children;
           if (/^data:image/.test($img.attr('src'))) {
@@ -3270,9 +3287,9 @@ FontScaleButton = (function(superClass) {
 
   FontScaleButton.prototype.icon = 'font';
 
-  FontScaleButton.prototype.disableTag = 'pre';
-
   FontScaleButton.prototype.htmlTag = 'span';
+
+  FontScaleButton.prototype.disableTag = 'pre, h1, h2, h3, h4, h5';
 
   FontScaleButton.prototype.sizeMap = {
     'x-large': '1.5em',

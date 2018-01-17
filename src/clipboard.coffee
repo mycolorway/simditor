@@ -107,6 +107,15 @@ class Clipboard extends SimpleModule
     return if @editor.triggerHandler('pasting', [pasteContent]) == false
     $blockEl = @_pasteInBlockEl
 
+    isTitle = do ->
+      titles = ['h1', 'h2', 'h3', 'h4', 'h5']
+      i = 0
+      while i < titles.length
+        if $blockEl.is(titles[i])
+          return true
+        i++
+      false
+
     if !pasteContent
       return
     else if @_pastePlainText
@@ -128,6 +137,10 @@ class Clipboard extends SimpleModule
     else if pasteContent.length == 1
       if pasteContent.is('p')
         children = pasteContent.contents()
+
+        if isTitle
+          if children.length
+            children.css('font-size', '')
 
         if children.length == 1 and children.is('img')
           $img = children

@@ -5,9 +5,9 @@ class FontScaleButton extends Button
 
   icon: 'font'
 
-  disableTag: 'pre'
-
   htmlTag: 'span'
+
+  disableTag: 'pre, h1, h2, h3, h4, h5'
 
   sizeMap:
     'x-large': '1.5em'
@@ -43,8 +43,10 @@ class FontScaleButton extends Button
     range = @editor.selection.range()
     startNodes = @editor.selection.startNodes()
     endNodes = @editor.selection.endNodes()
+    
     startNode = startNodes.filter('span[style*="font-size"]')
     endNode = endNodes.filter('span[style*="font-size"]')
+
     active = startNodes.length > 0 and endNodes.length > 0 and startNode.is(endNode)
     @setActive active
     @active
