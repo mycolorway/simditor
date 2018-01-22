@@ -99,6 +99,7 @@ class TableButton extends Button
 
   initResize: ($table) ->
     $wrapper = $table.parent '.simditor-table'
+    $editor = @editor
 
     $colgroup = $table.find 'colgroup'
     if $colgroup.length < 1
@@ -175,6 +176,7 @@ class TableButton extends Button
         $handle.css 'left', startHandleLeft + deltaX
 
       $(document).one 'mouseup.simditor-resize-table', (e) ->
+        $editor.sync()
         $(document).off '.simditor-resize-table'
         $wrapper.removeClass 'resizing'
 
