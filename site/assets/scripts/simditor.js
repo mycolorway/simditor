@@ -5000,7 +5000,7 @@ TableButton = (function(superClass) {
     $.merge(this.editor.formatter._allowedTags, ['thead', 'th', 'tbody', 'tr', 'td', 'colgroup', 'col']);
     $.extend(this.editor.formatter._allowedAttributes, {
       td: ['rowspan', 'colspan'],
-      col: ['style']
+      col: ['width']
     });
     $.extend(this.editor.formatter._allowedStyles, {
       td: ['text-align'],

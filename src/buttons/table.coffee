@@ -20,7 +20,7 @@ class TableButton extends Button
     )
     $.extend @editor.formatter._allowedAttributes,
       td: ['rowspan', 'colspan'],
-      col: ['style']
+      col: ['width']
     $.extend @editor.formatter._allowedStyles,
       td: ['text-align']
       th: ['text-align']
