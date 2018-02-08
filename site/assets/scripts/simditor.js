@@ -5007,6 +5007,7 @@ TableButton = (function(superClass) {
       th: ['text-align']
     });
     this._initShortcuts();
+    this._initResize();
     this.editor.on('decorate', (function(_this) {
       return function(e, $el) {
         return $el.find('table').each(function(i, table) {
@@ -5106,25 +5107,14 @@ TableButton = (function(superClass) {
     return $prevTr;
   };
 
-  TableButton.prototype.initResize = function($table) {
-    var $colgroup, $editor, $resizeHandle, $wrapper;
-    $wrapper = $table.parent('.simditor-table');
+  TableButton.prototype._initResize = function() {
+    var $editor;
     $editor = this.editor;
-    $colgroup = $table.find('colgroup');
-    if ($colgroup.length < 1) {
-      $colgroup = $('<colgroup/>').prependTo($table);
-      $table.find('thead tr th').each(function(i, td) {
-        var $col;
-        return $col = $('<col/>').appendTo($colgroup);
-      });
-      this.refreshTableWidth($table);
-    }
-    $resizeHandle = $('<div />', {
-      "class": 'simditor-resize-handle',
-      contenteditable: 'false'
-    }).appendTo($wrapper);
-    $wrapper.on('mousemove', 'td, th', function(e) {
-      var $col, $td, index, ref, ref1, x;
+    $(document).on('mousemove.simditor-table', '.simditor-table td, .simditor-table th', function(e) {
+      var $col, $colgroup, $resizeHandle, $td, $wrapper, index, ref, ref1, x;
+      $wrapper = $(this).parents('.simditor-table');
+      $resizeHandle = $wrapper.find('.simditor-resize-handle');
+      $colgroup = $wrapper.find('colgroup');
       if ($wrapper.hasClass('resizing')) {
         return;
       }
@@ -5149,11 +5139,12 @@ TableButton = (function(superClass) {
       }
       return $resizeHandle.css('left', $td.position().left + $td.outerWidth() - 5).data('td', $td).data('col', $col).show();
     });
-    $wrapper.on('mouseleave', function(e) {
-      return $resizeHandle.hide();
+    $(document).on('mouseleave.simditor-table', '.simditor-table', function(e) {
+      return $(this).find('.simditor-resize-handle').hide();
     });
-    return $wrapper.on('mousedown', '.simditor-resize-handle', function(e) {
-      var $handle, $leftCol, $leftTd, $rightCol, $rightTd, minWidth, startHandleLeft, startLeftWidth, startRightWidth, startX, tableWidth;
+    return $(document).on('mousedown.simditor-resize-handle', '.simditor-resize-handle', function(e) {
+      var $handle, $leftCol, $leftTd, $rightCol, $rightTd, $wrapper, minWidth, startHandleLeft, startLeftWidth, startRightWidth, startX, tableWidth;
+      $wrapper = $(this).parent('.simditor-table');
       $handle = $(e.currentTarget);
       $leftTd = $handle.data('td');
       $leftCol = $handle.data('col');
@@ -5221,11 +5212,13 @@ TableButton = (function(superClass) {
   };
 
   TableButton.prototype.decorate = function($table) {
-    var $headRow, $tbody, $thead;
+    var $colgroup, $headRow, $resizeHandle, $tbody, $thead, $wrapper;
     if ($table.parent('.simditor-table').length > 0) {
       this.undecorate($table);
     }
     $table.wrap('<div class="simditor-table"></div>');
+    $wrapper = $table.parent('.simditor-table');
+    $colgroup = $table.find('colgroup');
     if ($table.find('thead').length < 1) {
       $thead = $('<thead />');
       $headRow = $table.find('tr').first();
@@ -5238,7 +5231,18 @@ TableButton = (function(superClass) {
         $table.prepend($thead);
       }
     }
-    this.initResize($table);
+    if ($colgroup.length < 1) {
+      $colgroup = $('<colgroup/>').prependTo($table);
+      $table.find('thead tr th').each(function(i, td) {
+        var $col;
+        return $col = $('<col/>').appendTo($colgroup);
+      });
+      this.refreshTableWidth($table);
+    }
+    $resizeHandle = $('<div />', {
+      "class": 'simditor-resize-handle',
+      contenteditable: 'false'
+    }).appendTo($wrapper);
     return $table.parent();
   };
 
