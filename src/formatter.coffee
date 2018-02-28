@@ -156,16 +156,21 @@ class Formatter extends SimpleModule
       # and `href` `target` on `a` tag
       unless isDecoration
         allowedAttributes = @_allowedAttributes[$node[0].tagName.toLowerCase()]
-
         for attr in $.makeArray($node[0].attributes)
           continue if attr.name == 'style'
           unless allowedAttributes? and (attr.name in allowedAttributes)
             $node.removeAttr(attr.name)
 
         @_cleanNodeStyles $node
+        
+        if $node.is('span')
+          if $node[0].attributes.length == 0
+            $node.contents().first().unwrap()
 
-        if $node.is('span') and $node[0].attributes.length == 0
-          $node.contents().first().unwrap()
+          # 避免在粘贴时出现大量无用的 span 标签
+          if $node[0].style.length == 2 && $node[0].style.color == 'rgb(51, 51, 51)' && $node[0].style.fontSize == '16px'
+            $node.contents().unwrap()
+
     else if $node[0].nodeType == 1 and !$node.is ':empty'
       if $node.is('div, article, dl, header, footer, tr')
         $node.append('<br/>')
