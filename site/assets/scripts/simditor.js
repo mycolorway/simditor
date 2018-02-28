@@ -651,8 +651,13 @@ Formatter = (function(superClass) {
           }
         }
         this._cleanNodeStyles($node);
-        if ($node.is('span') && $node[0].attributes.length === 0) {
-          $node.contents().first().unwrap();
+        if ($node.is('span')) {
+          if ($node[0].attributes.length === 0) {
+            $node.contents().first().unwrap();
+          }
+          if ($node[0].style.length === 2 && $node[0].style.color === 'rgb(51, 51, 51)' && $node[0].style.fontSize === '16px') {
+            $node.contents().unwrap();
+          }
         }
       }
     } else if ($node[0].nodeType === 1 && !$node.is(':empty')) {

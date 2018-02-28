@@ -87,7 +87,6 @@ class Clipboard extends SimpleModule
       @_pasteInBlockEl = @editor.selection.blockNodes().last()
       @_pastePlainText = @opts.cleanPaste || @_pasteInBlockEl.is('pre, table')
 
-
       if @_pastePlainText
         pasteContent = @editor.formatter.clearHtml @_pasteBin.html(), true
       else
@@ -173,7 +172,7 @@ class Clipboard extends SimpleModule
           # cannot paste image in safari
           else if $img.is('img[src^="webkit-fake-url://"]')
             return
-
+        
         @editor.selection.insertNode(node) for node in children
 
       else if $blockEl.is('p') and @editor.util.isEmptyNode $blockEl
