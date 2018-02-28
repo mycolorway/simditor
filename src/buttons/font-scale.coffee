@@ -79,7 +79,11 @@ class FontScaleButton extends Button
       if /large|x-large|small|x-small/.test(size)
         $span.css('fontSize', @sizeMap[size])
       else if size is 'medium'
-        $span.replaceWith $span.contents()
+        # 避免错误的清除掉其它样式
+        if $span[0].style.length > 1
+          $span.css('fontSize', '')
+        else
+          $span.replaceWith $span.contents()
 
     @editor.trigger 'valuechanged'
 

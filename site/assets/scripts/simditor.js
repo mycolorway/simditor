@@ -3356,7 +3356,11 @@ FontScaleButton = (function(superClass) {
         if (/large|x-large|small|x-small/.test(size)) {
           return $span.css('fontSize', _this.sizeMap[size]);
         } else if (size === 'medium') {
-          return $span.replaceWith($span.contents());
+          if ($span[0].style.length > 1) {
+            return $span.css('fontSize', '');
+          } else {
+            return $span.replaceWith($span.contents());
+          }
         }
       };
     })(this));
