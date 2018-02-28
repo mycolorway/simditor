@@ -18,14 +18,17 @@ class TableButton extends Button
       @editor.formatter._allowedTags,
       ['thead', 'th', 'tbody', 'tr', 'td', 'colgroup', 'col']
     )
+
     $.extend @editor.formatter._allowedAttributes,
       td: ['rowspan', 'colspan'],
       col: ['width']
+
     $.extend @editor.formatter._allowedStyles,
       td: ['text-align']
       th: ['text-align']
 
     @_initShortcuts()
+    @_initResize()
 
     @editor.on 'decorate', (e, $el) =>
       $el.find('table').each (i, table) =>
@@ -52,7 +55,6 @@ class TableButton extends Button
       $container.closest('td, th', @editor.body)
         .addClass('active')
 
-
     @editor.on 'blur.table', (e) =>
       @editor.body.find('.simditor-table td, .simditor-table th')
         .removeClass('active')
@@ -61,6 +63,7 @@ class TableButton extends Button
     @editor.keystroke.add 'up', 'td', (e, $node) =>
       @_tdNav($node, 'up')
       true
+
     @editor.keystroke.add 'up', 'th', (e, $node) =>
       @_tdNav($node, 'up')
       true
@@ -69,6 +72,7 @@ class TableButton extends Button
     @editor.keystroke.add 'down', 'td', (e, $node) =>
       @_tdNav($node, 'down')
       true
+
     @editor.keystroke.add 'down', 'th', (e, $node) =>
       @_tdNav($node, 'down')
       true
@@ -97,26 +101,16 @@ class TableButton extends Button
       $prevTr = $tr.parent('tbody').prev('thead').find('tr')
     $prevTr
 
-  initResize: ($table) ->
-    $wrapper = $table.parent '.simditor-table'
+  _initResize: ->
     $editor = @editor
 
-    $colgroup = $table.find 'colgroup'
-    if $colgroup.length < 1
-      $colgroup = $('<colgroup/>').prependTo $table
-      $table.find('thead tr th').each (i, td) ->
-        $col = $('<col/>').appendTo $colgroup
+    $(document).on 'mousemove.simditor-table', '.simditor-table td, .simditor-table th', (e) ->
+      $wrapper = $(@).parents '.simditor-table'
+      $resizeHandle = $wrapper.find '.simditor-resize-handle'
+      $colgroup = $wrapper.find 'colgroup'
 
-      @refreshTableWidth $table
+      return if $wrapper.hasClass 'resizing'
 
-
-    $resizeHandle = $ '<div />',
-      class: 'simditor-resize-handle'
-      contenteditable: 'false'
-    .appendTo($wrapper)
-
-    $wrapper.on 'mousemove', 'td, th', (e) ->
-      return if $wrapper.hasClass('resizing')
       $td = $(e.currentTarget)
       x = e.pageX - $(e.currentTarget).offset().left
       $td = $td.prev() if x < 5 and $td.prev().length > 0
@@ -142,10 +136,11 @@ class TableButton extends Button
         .data('col', $col)
         .show()
 
-    $wrapper.on 'mouseleave', (e) ->
-      $resizeHandle.hide()
+    $(document).on 'mouseleave.simditor-table', '.simditor-table', (e) ->
+      $(@).find('.simditor-resize-handle').hide()
 
-    $wrapper.on 'mousedown', '.simditor-resize-handle', (e) ->
+    $(document).on 'mousedown.simditor-resize-handle', '.simditor-resize-handle', (e) ->
+      $wrapper = $(@).parent('.simditor-table')
       $handle = $(e.currentTarget)
       $leftTd = $handle.data 'td'
       $leftCol = $handle.data 'col'
@@ -206,6 +201,9 @@ class TableButton extends Button
 
     $table.wrap '<div class="simditor-table"></div>'
 
+    $wrapper = $table.parent '.simditor-table'
+    $colgroup = $table.find 'colgroup'
+
     # table must have a thead
     if $table.find('thead').length < 1
       $thead = $('<thead />')
@@ -219,7 +217,18 @@ class TableButton extends Button
       else
         $table.prepend $thead
 
-    @initResize $table
+    if $colgroup.length < 1
+      $colgroup = $('<colgroup/>').prependTo $table
+      $table.find('thead tr th').each (i, td) ->
+        $col = $('<col/>').appendTo $colgroup
+
+      @refreshTableWidth $table
+
+    $resizeHandle = $ '<div />',
+      class: 'simditor-resize-handle'
+      contenteditable: 'false'
+    .appendTo($wrapper)
+
     $table.parent()
 
   undecorate: ($table) ->
