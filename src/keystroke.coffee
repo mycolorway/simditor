@@ -143,7 +143,11 @@ class Keystroke extends SimpleModule
       if $node.prev('li').length
         $node.remove()
       else
-        listEl.remove()
+        # 兼容从其它地方拷贝过来的嵌套列表格式
+        if $node.prev('ul').length || $node.prev('ol').length
+          $node.remove()
+        else
+          listEl.remove()
 
       @editor.selection.setRangeAtStartOf newBlockEl
       true

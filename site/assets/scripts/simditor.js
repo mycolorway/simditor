@@ -1173,7 +1173,11 @@ Keystroke = (function(superClass) {
         if ($node.prev('li').length) {
           $node.remove();
         } else {
-          listEl.remove();
+          if ($node.prev('ul').length || $node.prev('ol').length) {
+            $node.remove();
+          } else {
+            listEl.remove();
+          }
         }
         _this.editor.selection.setRangeAtStartOf(newBlockEl);
         return true;
