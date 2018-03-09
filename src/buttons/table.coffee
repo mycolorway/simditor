@@ -46,10 +46,6 @@ class TableButton extends Button
       $container = @editor.selection.containerNode()
 
       if range.collapsed and $container.is('.simditor-table')
-        if @editor.selection.rangeAtStartOf $container
-          $container = $container.find('th:first')
-        else
-          $container = $container.find('td:last')
         @editor.selection.setRangeAtEndOf $container
 
       $container.closest('td, th', @editor.body)

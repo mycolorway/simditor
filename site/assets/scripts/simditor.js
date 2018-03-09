@@ -335,6 +335,9 @@ Selection = (function(superClass) {
     }
     $node = $(node);
     node = $node[0];
+    if (!node) {
+      return;
+    }
     if ($node.is('pre')) {
       contents = $node.contents();
       if (contents.length > 0) {
@@ -1124,12 +1127,35 @@ Keystroke = (function(superClass) {
           return true;
         }
         $blockEl = _this.editor.selection.blockNodes().last();
+        if ($blockEl.is('.simditor-resize-handle') && $rootBlock.is('.simditor-table')) {
+          e.preventDefault();
+          $rootBlock.remove();
+          _this.editor.selection.setRangeAtEndOf($prevBlockEl);
+        }
+        if ($prevBlockEl.is('.simditor-table') && !$blockEl.is('table') && _this.editor.util.isEmptyNode($blockEl)) {
+          e.preventDefault();
+          $blockEl.remove();
+          _this.editor.selection.setRangeAtEndOf($prevBlockEl);
+        }
         isWebkit = _this.editor.util.browser.webkit;
         if (isWebkit && _this.editor.selection.rangeAtStartOf($blockEl)) {
           _this.editor.selection.save();
           _this.editor.formatter.cleanNode($blockEl, true);
           _this.editor.selection.restore();
           return null;
+        }
+      };
+    })(this));
+    this.add('enter', 'div', (function(_this) {
+      return function(e, $node) {
+        var $blockEl, $p;
+        if ($node.is('.simditor-table')) {
+          $blockEl = _this.editor.selection.blockNodes().last();
+          if ($blockEl.is('.simditor-resize-handle')) {
+            e.preventDefault();
+            $p = $('<p/>').append(_this.editor.util.phBr).insertAfter($node);
+            return _this.editor.selection.setRangeAtStartOf($p);
+          }
         }
       };
     })(this));
@@ -5045,11 +5071,6 @@ TableButton = (function(superClass) {
         }
         $container = _this.editor.selection.containerNode();
         if (range.collapsed && $container.is('.simditor-table')) {
-          if (_this.editor.selection.rangeAtStartOf($container)) {
-            $container = $container.find('th:first');
-          } else {
-            $container = $container.find('td:last');
-          }
           _this.editor.selection.setRangeAtEndOf($container);
         }
         return $container.closest('td, th', _this.editor.body).addClass('active');

@@ -241,6 +241,7 @@ class Selection extends SimpleModule
     # TODO: need refactor
     $node = $(node)
     node = $node[0]
+    return unless node
 
     if $node.is('pre')
       contents = $node.contents()
