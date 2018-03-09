@@ -1,5 +1,5 @@
 /*!
-* Simditor v2.3.12
+* Simditor v2.3.13
 * http://simditor.tower.im/
 * 2018-03-09
 */
