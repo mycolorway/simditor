@@ -27,11 +27,11 @@ class Formatter extends SimpleModule
 
     @_allowedStyles = $.extend
       span: ['color', 'font-size']
-      b: ['color']
-      i: ['color']
-      strong: ['color']
-      strike: ['color']
-      u: ['color']
+      b: ['color', 'font-size']
+      i: ['color', 'font-size']
+      strong: ['color', 'font-size']
+      strike: ['color', 'font-size']
+      u: ['color', 'font-size']
       p: ['margin-left', 'text-align']
       h1: ['margin-left', 'text-align']
       h2: ['margin-left', 'text-align']
