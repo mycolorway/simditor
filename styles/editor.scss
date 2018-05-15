@@ -632,6 +632,8 @@ $simditor-button-width: 46px;
     border-radius: 3px;
     font-size: 13px;
     font-family: 'monaco', 'Consolas', "Liberation Mono", Courier, monospace;
+    word-break: break-all;
+    word-wrap: break-word;
   }
 
   pre {

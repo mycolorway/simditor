@@ -1,7 +1,7 @@
 /*!
-* Simditor v2.3.14
+* Simditor v2.3.15
 * http://simditor.tower.im/
-* 2018-05-09
+* 2018-05-15
 */
 @font-face {
   font-family: 'Simditor';
@@ -692,6 +692,8 @@
   border-radius: 3px;
   font-size: 13px;
   font-family: 'monaco', 'Consolas', "Liberation Mono", Courier, monospace;
+  word-break: break-all;
+  word-wrap: break-word;
 }
 .simditor .simditor-body pre, .editor-style pre {
   padding: 10px 5px 10px 10px;
