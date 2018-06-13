@@ -1573,7 +1573,7 @@ UndoManager = (function(superClass) {
       offset = ref[i];
       childNodes = node.childNodes;
       if (offset > childNodes.length - 1) {
-        if (i === position.length - 2 && $(node).is('pre:empty')) {
+        if (i === position.length - 2 && $(node).is(':empty')) {
           child = document.createTextNode('');
           node.appendChild(child);
           childNodes = node.childNodes;
@@ -2371,7 +2371,8 @@ Clipboard = (function(superClass) {
     $blockEl = this._pasteInBlockEl;
     if (!pasteContent) {
       return;
-    } else if (this._pastePlainText) {
+    }
+    if (this._pastePlainText) {
       if ($blockEl.is('table')) {
         lines = pasteContent.split('\n');
         lastLine = lines.pop();

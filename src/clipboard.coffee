@@ -35,6 +35,7 @@ class Clipboard extends SimpleModule
       @editor.undoManager.resetCaretPosition()
 
       @pasting = true
+
       @_getPasteContent (pasteContent) =>
         @_processPasteContent pasteContent
         @_pasteInBlockEl = null
@@ -109,7 +110,8 @@ class Clipboard extends SimpleModule
 
     if !pasteContent
       return
-    else if @_pastePlainText
+    
+    if @_pastePlainText
       if $blockEl.is('table')
         lines = pasteContent.split('\n')
         lastLine = lines.pop()
@@ -125,7 +127,7 @@ class Clipboard extends SimpleModule
       @editor.selection.insertNode(node) for node in pasteContent
     else if pasteContent.length < 1
       return
-    else if pasteContent.length == 1 
+    else if pasteContent.length == 1
       if pasteContent.is('p')
         children = pasteContent.contents()
 
@@ -172,7 +174,7 @@ class Clipboard extends SimpleModule
           # cannot paste image in safari
           else if $img.is('img[src^="webkit-fake-url://"]')
             return
-        
+
         @editor.selection.insertNode(node) for node in children
 
       else if $blockEl.is('p') and @editor.util.isEmptyNode $blockEl
