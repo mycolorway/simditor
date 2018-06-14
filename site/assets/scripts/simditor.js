@@ -1223,13 +1223,11 @@ Keystroke = (function(superClass) {
         range.deleteContents();
         if (!_this.editor.util.browser.msie && _this.editor.selection.rangeAtEndOf($node)) {
           breakNode = document.createTextNode('\n\n');
-          range.insertNode(breakNode);
-          range.setEnd(breakNode, 1);
         } else {
           breakNode = document.createTextNode('\n');
-          range.insertNode(breakNode);
-          range.setStartAfter(breakNode);
         }
+        range.insertNode(breakNode);
+        range.setEnd(breakNode, 1);
         range.collapse(false);
         _this.editor.selection.range(range);
         return true;
@@ -1573,7 +1571,7 @@ UndoManager = (function(superClass) {
       offset = ref[i];
       childNodes = node.childNodes;
       if (offset > childNodes.length - 1) {
-        if (i === position.length - 2 && $(node).is('pre:empty')) {
+        if (i === position.length - 2 && $(node).is(':empty')) {
           child = document.createTextNode('');
           node.appendChild(child);
           childNodes = node.childNodes;
@@ -2371,7 +2369,8 @@ Clipboard = (function(superClass) {
     $blockEl = this._pasteInBlockEl;
     if (!pasteContent) {
       return;
-    } else if (this._pastePlainText) {
+    }
+    if (this._pastePlainText) {
       if ($blockEl.is('table')) {
         lines = pasteContent.split('\n');
         lastLine = lines.pop();

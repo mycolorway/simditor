@@ -194,13 +194,11 @@ class Keystroke extends SimpleModule
 
       if !@editor.util.browser.msie && @editor.selection.rangeAtEndOf $node
         breakNode = document.createTextNode('\n\n')
-        range.insertNode breakNode
-        range.setEnd breakNode, 1
       else
         breakNode = document.createTextNode('\n')
-        range.insertNode breakNode
-        range.setStartAfter breakNode
-
+      
+      range.insertNode breakNode
+      range.setEnd breakNode, 1
       range.collapse(false)
       @editor.selection.range range
       true
