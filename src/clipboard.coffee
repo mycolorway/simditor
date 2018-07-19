@@ -94,9 +94,11 @@ class Clipboard extends SimpleModule
         pasteContent = $('<div/>').append(@_pasteBin.contents())
         pasteContent.find('style').remove() # clear style tag
         pasteContent.find('table colgroup').remove() # clear table cols width
+        @_cleanPasteFontSize pasteContent
         @editor.formatter.format pasteContent
         @editor.formatter.decorate pasteContent
         @editor.formatter.beautify pasteContent.children()
+
         pasteContent = pasteContent.contents()
 
       @_pasteBin.remove()
@@ -209,3 +211,20 @@ class Clipboard extends SimpleModule
       @editor.selection.setRangeAtEndOf(pasteContent.last())
 
     @editor.inputManager.throttledValueChanged()
+
+  _cleanPasteFontSize: (node) ->
+    $node = $(node)
+    return unless $node.length > 0
+
+    sizeMap = [ 
+      '1.5em'
+      '1.25em'
+      '0.75em'
+      '0.5em'
+    ]
+
+    $node.find('[style*="font-size"]')
+      .map (i, el) ->
+        $el = $(el)
+        if $.inArray($el.css('font-size'), sizeMap) < 0
+          $el.css('font-size', '')

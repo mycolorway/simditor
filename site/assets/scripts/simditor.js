@@ -2349,6 +2349,7 @@ Clipboard = (function(superClass) {
           pasteContent = $('<div/>').append(_this._pasteBin.contents());
           pasteContent.find('style').remove();
           pasteContent.find('table colgroup').remove();
+          _this._cleanPasteFontSize(pasteContent);
           _this.editor.formatter.format(pasteContent);
           _this.editor.formatter.decorate(pasteContent);
           _this.editor.formatter.beautify(pasteContent.children());
@@ -2486,6 +2487,22 @@ Clipboard = (function(superClass) {
       this.editor.selection.setRangeAtEndOf(pasteContent.last());
     }
     return this.editor.inputManager.throttledValueChanged();
+  };
+
+  Clipboard.prototype._cleanPasteFontSize = function(node) {
+    var $node, sizeMap;
+    $node = $(node);
+    if (!($node.length > 0)) {
+      return;
+    }
+    sizeMap = ['1.5em', '1.25em', '0.75em', '0.5em'];
+    return $node.find('[style*="font-size"]').map(function(i, el) {
+      var $el;
+      $el = $(el);
+      if ($.inArray($el.css('font-size'), sizeMap) < 0) {
+        return $el.css('font-size', '');
+      }
+    });
   };
 
   return Clipboard;
