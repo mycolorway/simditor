@@ -1,7 +1,7 @@
 /*!
-* Simditor v2.3.15
+* Simditor v2.3.19
 * http://simditor.tower.im/
-* 2018-05-15
+* 2018-08-14
 */
 (function (root, factory) {
   if (typeof define === 'function' && define.amd) {
@@ -1228,13 +1228,11 @@ Keystroke = (function(superClass) {
         range.deleteContents();
         if (!_this.editor.util.browser.msie && _this.editor.selection.rangeAtEndOf($node)) {
           breakNode = document.createTextNode('\n\n');
-          range.insertNode(breakNode);
-          range.setEnd(breakNode, 1);
         } else {
           breakNode = document.createTextNode('\n');
-          range.insertNode(breakNode);
-          range.setStartAfter(breakNode);
         }
+        range.insertNode(breakNode);
+        range.setEnd(breakNode, 1);
         range.collapse(false);
         _this.editor.selection.range(range);
         return true;
@@ -1578,7 +1576,7 @@ UndoManager = (function(superClass) {
       offset = ref[i];
       childNodes = node.childNodes;
       if (offset > childNodes.length - 1) {
-        if (i === position.length - 2 && $(node).is('pre:empty')) {
+        if (i === position.length - 2 && $(node).is(':empty')) {
           child = document.createTextNode('');
           node.appendChild(child);
           childNodes = node.childNodes;
@@ -2356,6 +2354,7 @@ Clipboard = (function(superClass) {
           pasteContent = $('<div/>').append(_this._pasteBin.contents());
           pasteContent.find('style').remove();
           pasteContent.find('table colgroup').remove();
+          _this._cleanPasteFontSize(pasteContent);
           _this.editor.formatter.format(pasteContent);
           _this.editor.formatter.decorate(pasteContent);
           _this.editor.formatter.beautify(pasteContent.children());
@@ -2376,7 +2375,8 @@ Clipboard = (function(superClass) {
     $blockEl = this._pasteInBlockEl;
     if (!pasteContent) {
       return;
-    } else if (this._pastePlainText) {
+    }
+    if (this._pastePlainText) {
       if ($blockEl.is('table')) {
         lines = pasteContent.split('\n');
         lastLine = lines.pop();
@@ -2492,6 +2492,22 @@ Clipboard = (function(superClass) {
       this.editor.selection.setRangeAtEndOf(pasteContent.last());
     }
     return this.editor.inputManager.throttledValueChanged();
+  };
+
+  Clipboard.prototype._cleanPasteFontSize = function(node) {
+    var $node, sizeMap;
+    $node = $(node);
+    if (!($node.length > 0)) {
+      return;
+    }
+    sizeMap = ['1.5em', '1.25em', '0.75em', '0.5em'];
+    return $node.find('[style*="font-size"]').map(function(i, el) {
+      var $el;
+      $el = $(el);
+      if ($.inArray($el.css('font-size'), sizeMap) < 0) {
+        return $el.css('font-size', '');
+      }
+    });
   };
 
   return Clipboard;
@@ -4206,7 +4222,7 @@ LinkPopover = (function(superClass) {
           return;
         }
         val = _this.urlEl.val();
-        if (!(/https?:\/\/|^\//ig.test(val) || !val)) {
+        if (!(/^(http|https|ftp|ftps|file)?:\/\/|^(mailto|tel)?:|^\//ig.test(val) || !val)) {
           val = 'http://' + val;
         }
         _this.target.attr('href', val);
