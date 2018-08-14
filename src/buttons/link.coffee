@@ -100,7 +100,7 @@ class LinkPopover extends Popover
       return if e.which == 13
 
       val = @urlEl.val()
-      val = 'http://' + val unless /https?:\/\/|^\//ig.test(val) or !val
+      val = 'http://' + val unless /^(http|https|ftp|ftps|file)?:\/\/|^\//ig.test(val) or !val
 
       @target.attr 'href', val
       @editor.inputManager.throttledValueChanged()

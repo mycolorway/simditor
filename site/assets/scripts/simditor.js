@@ -4217,7 +4217,7 @@ LinkPopover = (function(superClass) {
           return;
         }
         val = _this.urlEl.val();
-        if (!(/https?:\/\/|^\//ig.test(val) || !val)) {
+        if (!(/^(http|https|ftp|ftps|file)?:\/\/|^\//ig.test(val) || !val)) {
           val = 'http://' + val;
         }
         _this.target.attr('href', val);
