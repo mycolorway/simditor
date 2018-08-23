@@ -905,6 +905,7 @@ InputManager = (function(superClass) {
     submitKey = this.editor.util.os.mac ? 'cmd+enter' : 'ctrl+enter';
     return this.editor.hotkeys.add(submitKey, (function(_this) {
       return function(e) {
+        _this.editor.sync();
         _this.editor.el.closest('form').find('button:submit').click();
         return false;
       };
