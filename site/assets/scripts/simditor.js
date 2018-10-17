@@ -3152,7 +3152,7 @@ Popover = (function(superClass) {
     }
     this.el.siblings('.simditor-popover').each(function(i, popover) {
       popover = $(popover).data('popover');
-      if (popover.active) {
+      if (popover && popover.active) {
         return popover.hide();
       }
     });
@@ -4484,7 +4484,7 @@ ImageButton = (function(superClass) {
         return;
       }
       $img = $mask.data('img');
-      if (!($img.hasClass('uploading') && $img.parent().length > 0)) {
+      if (!($img && $img.hasClass('uploading') && $img.parent().length > 0)) {
         $mask.remove();
         return;
       }

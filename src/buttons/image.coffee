@@ -158,7 +158,7 @@ class ImageButton extends Button
       return unless $mask
 
       $img = $mask.data('img')
-      unless $img.hasClass('uploading') and $img.parent().length > 0
+      unless $img && $img.hasClass('uploading') && $img.parent().length > 0
         $mask.remove()
         return
 
