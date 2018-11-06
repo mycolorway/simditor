@@ -6,7 +6,8 @@ class IndentButton extends Button
   icon: 'indent'
 
   _init: ->
-    @title = @_t(@name) + ' (Tab)'
+    hotkey = if @editor.opts.tabIndent == false then '' else ' (Tab)'
+    @title = @_t(@name) + hotkey
     super()
 
   _status: ->

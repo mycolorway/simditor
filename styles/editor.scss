@@ -593,6 +593,10 @@ $simditor-button-width: 46px;
     padding: 0 0 0 40px;
     line-height: 1.6;
 
+    li {
+      list-style-type: inherit;
+    }
+
     ul, ol {
       padding-left: 30px;
     }
@@ -628,6 +632,8 @@ $simditor-button-width: 46px;
     border-radius: 3px;
     font-size: 13px;
     font-family: 'monaco', 'Consolas', "Liberation Mono", Courier, monospace;
+    word-break: break-all;
+    word-wrap: break-word;
   }
 
   pre {

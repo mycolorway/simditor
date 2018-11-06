@@ -50,7 +50,9 @@ class ColorButton extends Button
         textNode = document.createTextNode(@_t('coloredText'))
         range.insertNode textNode
         range.selectNodeContents textNode
-        @editor.selection.range range
+      
+      # 为了搜狗解决浏览器的兼容性问题
+      @editor.selection.range range
 
       # Use span[style] instead of font[color]
       document.execCommand 'styleWithCSS', false, true

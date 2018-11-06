@@ -33,7 +33,7 @@ class LinkButton extends Button
       $contents = $(range.extractContents())
       linkText = @editor.formatter.clearHtml($contents.contents(), false)
       $link = $('<a/>', {
-        href: 'http://www.example.com',
+        href: '',
         target: '_blank',
         text: linkText || @_t('linkText')
       })
@@ -100,7 +100,7 @@ class LinkPopover extends Popover
       return if e.which == 13
 
       val = @urlEl.val()
-      val = 'http://' + val unless /https?:\/\/|^\//ig.test(val) or !val
+      val = 'http://' + val unless /^(http|https|ftp|ftps|file)?:\/\/|^(mailto|tel)?:|^\//ig.test(val) or !val
 
       @target.attr 'href', val
       @editor.inputManager.throttledValueChanged()

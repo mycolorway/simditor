@@ -656,6 +656,9 @@
   padding: 0 0 0 40px;
   line-height: 1.6;
 }
+.simditor .simditor-body ul li, .simditor .simditor-body ol li, .editor-style ul li, .editor-style ol li {
+  list-style-type: inherit;
+}
 .simditor .simditor-body ul ul, .simditor .simditor-body ul ol, .simditor .simditor-body ol ul, .simditor .simditor-body ol ol, .editor-style ul ul, .editor-style ul ol, .editor-style ol ul, .editor-style ol ol {
   padding-left: 30px;
 }
@@ -684,6 +687,8 @@
   border-radius: 3px;
   font-size: 13px;
   font-family: 'monaco', 'Consolas', "Liberation Mono", Courier, monospace;
+  word-break: break-all;
+  word-wrap: break-word;
 }
 .simditor .simditor-body pre, .editor-style pre {
   padding: 10px 5px 10px 10px;

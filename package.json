@@ -1,6 +1,6 @@
 {
   "name": "simditor",
-  "version": "2.3.6",
+  "version": "2.3.21",
   "description": "A simple online editor",
   "keywords": "editor simditor",
   "repository": {
@@ -16,6 +16,11 @@
     "test": "grunt test --verbose"
   },
   "main": "lib/simditor.js",
+  "files": [
+    "lib",
+    "src",
+    "styles"
+  ],
   "homepage": "http://simditor.tower.im",
   "dependencies": {
     "jquery": "~2.1.4",

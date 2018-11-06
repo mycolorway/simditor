@@ -89,21 +89,46 @@ class Keystroke extends SimpleModule
         @editor.selection.restore()
         return true
 
-      # fix the span bug in webkit browsers
       $blockEl = @editor.selection.blockNodes().last()
+
+      # 删除 simditor-table
+      if $blockEl.is('.simditor-resize-handle') and $rootBlock.is('.simditor-table')
+        e.preventDefault()
+        $rootBlock.remove()
+        @editor.selection.setRangeAtEndOf $prevBlockEl
+
+      
+      # 在 simditor-table 之后的元素执行删除时，避免删除 simditor-resize-handle
+      if $prevBlockEl.is('.simditor-table') and !$blockEl.is('table') and @editor.util.isEmptyNode($blockEl)
+        e.preventDefault()
+        $blockEl.remove()
+        @editor.selection.setRangeAtEndOf $prevBlockEl
+
+      # fix the span bug in webkit browsers
       isWebkit = @editor.util.browser.webkit
       if isWebkit and @editor.selection.rangeAtStartOf $blockEl
         @editor.selection.save()
         @editor.formatter.cleanNode $blockEl, true
         @editor.selection.restore()
         null
+    
+
+    @add 'enter', 'div', (e, $node) =>
+      # press enter in the simditor-table
+      if $node.is('.simditor-table')
+        $blockEl = @editor.selection.blockNodes().last()
+
+        if $blockEl.is('.simditor-resize-handle')
+          e.preventDefault()
+          $p = $('<p/>').append(@editor.util.phBr).insertAfter($node)
+          @editor.selection.setRangeAtStartOf $p
+
 
     # press enter in a empty list item
     @add 'enter', 'li', (e, $node) =>
       $cloneNode = $node.clone()
       $cloneNode.find('ul, ol').remove()
-      return unless @editor.util.isEmptyNode($cloneNode) and
-        $node.is(@editor.selection.blockNodes().last())
+      return unless @editor.util.isEmptyNode($cloneNode) and $node.is(@editor.selection.blockNodes().last())
       listEl = $node.parent()
 
       # item in the middle of list
@@ -143,7 +168,11 @@ class Keystroke extends SimpleModule
       if $node.prev('li').length
         $node.remove()
       else
-        listEl.remove()
+        # 兼容从其它地方拷贝过来的嵌套列表格式
+        if $node.prev('ul').length || $node.prev('ol').length
+          $node.remove()
+        else
+          listEl.remove()
 
       @editor.selection.setRangeAtStartOf newBlockEl
       true
@@ -165,13 +194,11 @@ class Keystroke extends SimpleModule
 
       if !@editor.util.browser.msie && @editor.selection.rangeAtEndOf $node
         breakNode = document.createTextNode('\n\n')
-        range.insertNode breakNode
-        range.setEnd breakNode, 1
       else
         breakNode = document.createTextNode('\n')
-        range.insertNode breakNode
-        range.setStartAfter breakNode
-
+      
+      range.insertNode breakNode
+      range.setEnd breakNode, 1
       range.collapse(false)
       @editor.selection.range range
       true

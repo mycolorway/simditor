@@ -189,9 +189,10 @@ class UndoManager extends SimpleModule
 
     for offset, i in position[0...position.length - 1]
       childNodes = node.childNodes
+
       if offset > childNodes.length - 1
-        # when pre is empty, the text node will be lost
-        if i == position.length - 2 and $(node).is('pre:empty')
+        # when node is empty, the text node will be lost
+        if i == position.length - 2 and $(node).is(':empty')
           child = document.createTextNode ''
           node.appendChild child
           childNodes = node.childNodes

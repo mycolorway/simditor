@@ -35,6 +35,7 @@ class Clipboard extends SimpleModule
       @editor.undoManager.resetCaretPosition()
 
       @pasting = true
+
       @_getPasteContent (pasteContent) =>
         @_processPasteContent pasteContent
         @_pasteInBlockEl = null
@@ -91,10 +92,13 @@ class Clipboard extends SimpleModule
         pasteContent = @editor.formatter.clearHtml @_pasteBin.html(), true
       else
         pasteContent = $('<div/>').append(@_pasteBin.contents())
+        pasteContent.find('style').remove() # clear style tag
         pasteContent.find('table colgroup').remove() # clear table cols width
+        @_cleanPasteFontSize pasteContent
         @editor.formatter.format pasteContent
         @editor.formatter.decorate pasteContent
         @editor.formatter.beautify pasteContent.children()
+
         pasteContent = pasteContent.contents()
 
       @_pasteBin.remove()
@@ -108,7 +112,8 @@ class Clipboard extends SimpleModule
 
     if !pasteContent
       return
-    else if @_pastePlainText
+    
+    if @_pastePlainText
       if $blockEl.is('table')
         lines = pasteContent.split('\n')
         lastLine = lines.pop()
@@ -128,6 +133,10 @@ class Clipboard extends SimpleModule
       if pasteContent.is('p')
         children = pasteContent.contents()
 
+        if $blockEl.is 'h1, h2, h3, h4, h5'
+          if children.length
+            children.css('font-size', '')
+
         if children.length == 1 and children.is('img')
           $img = children
 
@@ -140,6 +149,28 @@ class Clipboard extends SimpleModule
             uploadOpt = {}
             uploadOpt[@opts.pasteImage] = true
             @editor.uploader?.upload(blob, uploadOpt)
+            return
+
+          else if new RegExp('^blob:' + location.origin + '/').test($img.attr('src'))
+            return unless @opts.pasteImage
+            uploadOpt = {}
+            uploadOpt[@opts.pasteImage] = true
+            dataURLtoBlob = @editor.util.dataURLtoBlob
+            uploader = @editor.uploader
+            img = new Image
+
+            img.onload = ->
+              canvas = document.createElement('canvas')
+              canvas.width = img.naturalWidth
+              canvas.height = img.naturalHeight
+              canvas.getContext('2d').drawImage img, 0, 0
+              blob = dataURLtoBlob(canvas.toDataURL('image/png'))
+              blob.name = 'Clipboard Image.png'
+              if uploader != null
+                uploader.upload blob, uploadOpt
+              return
+
+            img.src = $img.attr('src')
             return
 
           # cannot paste image in safari
@@ -180,3 +211,20 @@ class Clipboard extends SimpleModule
       @editor.selection.setRangeAtEndOf(pasteContent.last())
 
     @editor.inputManager.throttledValueChanged()
+
+  _cleanPasteFontSize: (node) ->
+    $node = $(node)
+    return unless $node.length > 0
+
+    sizeMap = [ 
+      '1.5em'
+      '1.25em'
+      '0.75em'
+      '0.5em'
+    ]
+
+    $node.find('[style*="font-size"]')
+      .map (i, el) ->
+        $el = $(el)
+        if $.inArray($el.css('font-size'), sizeMap) < 0
+          $el.css('font-size', '')

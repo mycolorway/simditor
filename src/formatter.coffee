@@ -27,11 +27,11 @@ class Formatter extends SimpleModule
 
     @_allowedStyles = $.extend
       span: ['color', 'font-size']
-      b: ['color']
-      i: ['color']
-      strong: ['color']
-      strike: ['color']
-      u: ['color']
+      b: ['color', 'font-size']
+      i: ['color', 'font-size']
+      strong: ['color', 'font-size']
+      strike: ['color', 'font-size']
+      u: ['color', 'font-size']
       p: ['margin-left', 'text-align']
       h1: ['margin-left', 'text-align']
       h2: ['margin-left', 'text-align']
@@ -156,16 +156,21 @@ class Formatter extends SimpleModule
       # and `href` `target` on `a` tag
       unless isDecoration
         allowedAttributes = @_allowedAttributes[$node[0].tagName.toLowerCase()]
-
         for attr in $.makeArray($node[0].attributes)
           continue if attr.name == 'style'
           unless allowedAttributes? and (attr.name in allowedAttributes)
             $node.removeAttr(attr.name)
 
         @_cleanNodeStyles $node
+        
+        if $node.is('span')
+          if $node[0].attributes.length == 0
+            $node.contents().first().unwrap()
 
-        if $node.is('span') and $node[0].attributes.length == 0
-          $node.contents().first().unwrap()
+          # 避免在粘贴时出现大量无用的 span 标签
+          if $node[0].style.length == 2 && $node[0].style.color == 'rgb(51, 51, 51)' && $node[0].style.fontSize == '16px'
+            $node.contents().unwrap()
+
     else if $node[0].nodeType == 1 and !$node.is ':empty'
       if $node.is('div, article, dl, header, footer, tr')
         $node.append('<br/>')
@@ -206,6 +211,9 @@ class Formatter extends SimpleModule
       idx = style.indexOf(':')
       pair = [style.slice(0, idx), style.slice(idx + 1)]
       continue unless pair.length = 2
+
+      if pair[0] == 'font-size' and pair[1].indexOf('px') > 0
+        continue if parseInt(pair[1], 10) < 12
       styles[$.trim(pair[0])] = $.trim(pair[1]) if pair[0] in allowedStyles
 
     $node.css styles if Object.keys(styles).length > 0

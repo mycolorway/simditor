@@ -94,6 +94,7 @@ module.exports = (grunt) ->
           global:
             items: ['jQuery', 'SimpleModule', 'simple.hotkeys', 'simple.uploader']
             prefix: ''
+            suffix: ''
 
     copy:
       vendor:
