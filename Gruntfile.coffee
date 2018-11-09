@@ -88,18 +88,18 @@ module.exports = (grunt) ->
         objectToExport: 'Simditor'
         globalAlias: 'Simditor'
         deps:
-          'default': ['$', 'SimpleModule', 'simpleHotkeys', 'simpleUploader']
-          amd: ['jquery', 'simple-module', 'simple-hotkeys', 'simple-uploader']
-          cjs: ['jquery', 'simple-module', 'simple-hotkeys', 'simple-uploader']
+          'default': ['$', 'SimpleModule', 'simpleHotkeys', 'simpleUploader', 'DOMPurify']
+          amd: ['jquery', 'simple-module', 'simple-hotkeys', 'simple-uploader', 'dompurify']
+          cjs: ['jquery', 'simple-module', 'simple-hotkeys', 'simple-uploader', 'dompurify']
           global:
-            items: ['jQuery', 'SimpleModule', 'simple.hotkeys', 'simple.uploader']
+            items: ['jQuery', 'SimpleModule', 'simple.hotkeys', 'simple.uploader', 'window.DOMPurify']
             prefix: ''
             suffix: ''
 
     copy:
       vendor:
         files: [{
-          src: 'vendor/bower/jquery/dist/jquery.min.js',
+          src: 'node_modules/jquery/dist/jquery.min.js',
           dest: 'site/assets/scripts/jquery.min.js'
         }]
       styles:
@@ -109,14 +109,17 @@ module.exports = (grunt) ->
         }]
       scripts:
         files: [{
-          src: 'vendor/bower/simple-module/lib/module.js',
+          src: 'node_modules/simple-module/lib/module.js',
           dest: 'site/assets/scripts/module.js'
         }, {
-          src: 'vendor/bower/simple-uploader/lib/uploader.js',
+          src: 'node_modules/simple-uploader/lib/uploader.js',
           dest: 'site/assets/scripts/uploader.js'
         }, {
-          src: 'vendor/bower/simple-hotkeys/lib/hotkeys.js',
+          src: 'node_modules/simple-hotkeys/lib/hotkeys.js',
           dest: 'site/assets/scripts/hotkeys.js'
+        }, {
+          src: 'node_modules/dompurify/dist/purify.js',
+          dest: 'site/assets/scripts/dompurify.js'
         }, {
           src: 'lib/simditor.js',
           dest: 'site/assets/scripts/simditor.js'
@@ -129,17 +132,20 @@ module.exports = (grunt) ->
           src: 'lib/*',
           dest: 'package/scripts/'
         }, {
-          src: 'vendor/bower/jquery/dist/jquery.min.js',
+          src: 'node_modules/jquery/dist/jquery.min.js',
           dest: 'package/scripts/jquery.min.js'
         }, {
-          src: 'vendor/bower/simple-module/lib/module.js',
+          src: 'node_modules/simple-module/lib/module.js',
           dest: 'package/scripts/module.js'
         }, {
-          src: 'vendor/bower/simple-uploader/lib/uploader.js',
+          src: 'node_modules/simple-uploader/lib/uploader.js',
           dest: 'package/scripts/uploader.js'
         }, {
-          src: 'vendor/bower/simple-hotkeys/lib/hotkeys.js',
+          src: 'node_modules/simple-hotkeys/lib/hotkeys.js',
           dest: 'package/scripts/hotkeys.js'
+        }, {
+          src: 'node_modules/dompurify/dist/purify.js',
+          dest: 'package/scripts/dompurify.js'
         }, {
           expand: true,
           flatten: true
@@ -234,10 +240,11 @@ module.exports = (grunt) ->
             'spec/buttons/*.js'
           ]
           vendor: [
-            'vendor/bower/jquery/dist/jquery.min.js'
-            'vendor/bower/simple-module/lib/module.js'
-            'vendor/bower/simple-uploader/lib/uploader.js'
-            'vendor/bower/simple-hotkeys/lib/hotkeys.js'
+            'node_modules/jquery/dist/jquery.min.js'
+            'node_modules/simple-module/lib/module.js'
+            'node_modules/simple-uploader/lib/uploader.js'
+            'node_modules/simple-hotkeys/lib/hotkeys.js'
+            'node_modules/dompurify/dist/purify.js'
           ]
 
     curl:

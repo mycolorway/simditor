@@ -79,7 +79,7 @@ class Clipboard extends SimpleModule
 
     setTimeout =>
       @editor.hidePopover()
-      @editor.body.get(0).innerHTML = state.html
+      @editor.body.get(0).innerHTML = if DOMPurify then DOMPurify.sanitize(state.html) else state.html
       @editor.undoManager.caretPosition state.caret
       @editor.body.focus()
       @editor.selection.reset()
@@ -112,7 +112,7 @@ class Clipboard extends SimpleModule
 
     if !pasteContent
       return
-    
+
     if @_pastePlainText
       if $blockEl.is('table')
         lines = pasteContent.split('\n')
@@ -216,7 +216,7 @@ class Clipboard extends SimpleModule
     $node = $(node)
     return unless $node.length > 0
 
-    sizeMap = [ 
+    sizeMap = [
       '1.5em'
       '1.25em'
       '0.75em'

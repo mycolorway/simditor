@@ -115,7 +115,7 @@ class Simditor extends SimpleModule
   setValue: (val) ->
     @hidePopover()
     @textarea.val val
-    @body.get(0).innerHTML = val
+    @body.get(0).innerHTML = if DOMPurify then DOMPurify.sanitize(val) else val
 
     @formatter.format()
     @formatter.decorate()

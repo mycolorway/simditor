@@ -40,7 +40,7 @@ $ bundle install
 ```
 
 
-#Install Grunt
+#Install Dependencies
 
 Simditor uses [Grunt](http://gruntjs.com/) as the task runner to run tasks such as auto-compiling and watching files.
 
@@ -52,29 +52,11 @@ Install Grunt's command line interface (CLI) globally:
 $ sudo npm install -g grunt-cli
 ```
 
-Install grunt:
+Install grunt and other dependencies:
 
 ```bash
-$ npm install
+$ npm i
 ```
-
-
-#Install Bower Dependencies
-
-Simditor uses [Bower](http://bower.io/) to manage front-end libraries:
-
-Install bower：
-
-```bash
-npm install -g bower
-```
-
-Install bower dependencies:
-
-```bash
-bower install
-```
-
 
 #Run Project
 

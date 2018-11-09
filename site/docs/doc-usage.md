@@ -7,10 +7,9 @@ root: ../
 
 #Download
 
-Click [Here](https://github.com/mycolorway/simditor/releases) to download the zip file. You can also install Simditor by bower and npm :
+Click [Here](https://github.com/mycolorway/simditor/releases) to download the zip file. You can also install Simditor npm:
 
-* `$ npm install simditor`
-* `$ bower install simditor`
+`$ npm install simditor`
 
 
 Import files below into your web application
@@ -22,6 +21,7 @@ Import files below into your web application
 <script type="text/javascript" src="[script path]/module.js"></script>
 <script type="text/javascript" src="[script path]/hotkeys.js"></script>
 <script type="text/javascript" src="[script path]/uploader.js"></script>
+<script type="text/javascript" src="[script path]/dompurify.js"></script>
 <script type="text/javascript" src="[script path]/simditor.js"></script>
 ```
 Note that
@@ -29,6 +29,7 @@ Note that
 * Simditor is based on [jQuery](http://jquery.com) and [module.js](https://github.com/mycolorway/simple-module).
 * [hotkeys.js](https://github.com/mycolorway/simple-hotkeys) is used to bind hotkeys.
 * [uploader.js](https://github.com/mycolorway/simple-uploader) is related to uploading files. You don't need to import this file if you don't want the uploading feature.
+* [dompurify.js](https://github.com/cure53/DOMPurify) is used to purify html tags for preventing xss attacks.
 
 #Using Simditor in your project
 

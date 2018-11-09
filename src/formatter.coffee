@@ -162,7 +162,7 @@ class Formatter extends SimpleModule
             $node.removeAttr(attr.name)
 
         @_cleanNodeStyles $node
-        
+
         if $node.is('span')
           if $node[0].attributes.length == 0
             $node.contents().first().unwrap()
@@ -214,7 +214,7 @@ class Formatter extends SimpleModule
 
       if pair[0] == 'font-size' and pair[1].indexOf('px') > 0
         continue if parseInt(pair[1], 10) < 12
-      
+
       styles[$.trim(pair[0])] = $.trim(pair[1]) if pair[0] in allowedStyles
 
     $node.css styles if Object.keys(styles).length > 0
