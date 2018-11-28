@@ -26,8 +26,8 @@
     "dompurify": "^1.0.8",
     "jquery": "^3.3.1",
     "simple-hotkeys": "^1.0.3",
-    "simple-module": "^3.0.3",
-    "simple-uploader": "^3.0.0"
+    "simple-module": " 2.0.6",
+    "simple-uploader": "2.0.8"
   },
   "devDependencies": {
     "express": "~3.3.4",
