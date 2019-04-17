@@ -2327,7 +2327,7 @@ Clipboard = (function(superClass) {
 
   Clipboard.prototype._getPasteContent = function(callback) {
     var state;
-    this._pasteBin = $('<div contenteditable="true" />').addClass('simditor-paste-bin').attr('tabIndex', '-1').appendTo(this.editor.el);
+    this._pasteBin = $('<div contenteditable="true" />').addClass('simditor-paste-bin').attr('tabIndex', '-1').appendTo('body');
     state = {
       html: this.editor.body.html(),
       caret: this.editor.undoManager.caretPosition()

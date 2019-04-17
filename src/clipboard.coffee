@@ -69,7 +69,7 @@ class Clipboard extends SimpleModule
     @_pasteBin = $ '<div contenteditable="true" />'
       .addClass 'simditor-paste-bin'
       .attr 'tabIndex', '-1'
-      .appendTo @editor.el
+      .appendTo 'body'
 
     state =
       html: @editor.body.html()
