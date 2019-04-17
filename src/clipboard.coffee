@@ -66,9 +66,15 @@ class Clipboard extends SimpleModule
         return true
 
   _getPasteContent: (callback) ->
+    editorOffset = @editor.el.offset()
+    containerOffset = @editor.selection.containerNode()?.offset()
     @_pasteBin = $ '<div contenteditable="true" />'
       .addClass 'simditor-paste-bin'
       .attr 'tabIndex', '-1'
+      .css({
+        top: if containerOffset then containerOffset.top - editorOffset.top else editorOffset.top,
+        left: if containerOffset then containerOffset.left - editorOffset.left else editorOffset.left
+      })
       .appendTo @editor.el
 
     state =

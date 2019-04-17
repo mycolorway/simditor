@@ -2326,8 +2326,13 @@ Clipboard = (function(superClass) {
   };
 
   Clipboard.prototype._getPasteContent = function(callback) {
-    var state;
-    this._pasteBin = $('<div contenteditable="true" />').addClass('simditor-paste-bin').attr('tabIndex', '-1').appendTo(this.editor.el);
+    var containerOffset, editorOffset, ref, state;
+    editorOffset = this.editor.el.offset();
+    containerOffset = (ref = this.editor.selection.containerNode()) != null ? ref.offset() : void 0;
+    this._pasteBin = $('<div contenteditable="true" />').addClass('simditor-paste-bin').attr('tabIndex', '-1').css({
+      top: containerOffset ? containerOffset.top - editorOffset.top : editorOffset.top,
+      left: containerOffset ? containerOffset.left - editorOffset.left : editorOffset.left
+    }).appendTo(this.editor.el);
     state = {
       html: this.editor.body.html(),
       caret: this.editor.undoManager.caretPosition()

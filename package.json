@@ -1,8 +1,7 @@
 {
   "name": "simditor",
-  "version": "2.3.23",
+  "version": "2.3.24",
   "description": "A simple online editor",
-  "keywords": "editor simditor",
   "repository": {
     "type": "git",
     "url": "git@github.com:mycolorway/simditor.git"

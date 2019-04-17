@@ -237,9 +237,7 @@
   box-shadow: 0 0 0 4px #cccccc;
 }
 .simditor .simditor-paste-bin {
-  position: fixed;
-  bottom: 10px;
-  right: 10px;
+  position: absolute;
   width: 1px;
   height: 20px;
   font-size: 1px;
