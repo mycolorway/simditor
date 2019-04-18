@@ -25,10 +25,16 @@ class Clipboard extends SimpleModule
       else
         @editor.formatter.format()
         @editor.selection.setRangeAtStartOf @editor.body.find('p:first')
+        range = @editor.selection._range
 
       return false if @_processPasteByClipboardApi(e)
 
-      @_createPasteBin $(range.commonAncestorContainer)
+      pasteBinAnchor = $('<span>')
+      range.insertNode(pasteBinAnchor[0])
+      @_createPasteBin pasteBinAnchor
+      pasteBinAnchor.remove()
+      range.collapse(true)
+      @editor.selection.range range
 
       @editor.inputManager.throttledValueChanged.clear()
       @editor.inputManager.throttledSelectionChanged.clear()
@@ -68,13 +74,14 @@ class Clipboard extends SimpleModule
         return true
 
   _createPasteBin: (anchorNode) ->
-    containerOffset = anchorNode?.position() || { top: 0, left: 0 }
+    anchorOffset = anchorNode.offset()
+    editorOffset  = @editor.el.offset()
     @_pasteBin = $ '<div contenteditable="true" />'
       .addClass 'simditor-paste-bin'
       .attr 'tabIndex', '-1'
       .css({
-        top: containerOffset.top,
-        left: containerOffset.left
+        top: anchorOffset.top - editorOffset.top
+        left: anchorOffset.left - editorOffset.left
       })
       .appendTo @editor.el
 

@@ -2262,7 +2262,7 @@ Clipboard = (function(superClass) {
     }
     return this.editor.body.on('paste', (function(_this) {
       return function(e) {
-        var range;
+        var pasteBinAnchor, range;
         if (_this.pasting || _this._pasteBin) {
           return;
         }
@@ -2277,11 +2277,17 @@ Clipboard = (function(superClass) {
         } else {
           _this.editor.formatter.format();
           _this.editor.selection.setRangeAtStartOf(_this.editor.body.find('p:first'));
+          range = _this.editor.selection._range;
         }
         if (_this._processPasteByClipboardApi(e)) {
           return false;
         }
-        _this._createPasteBin($(range.commonAncestorContainer));
+        pasteBinAnchor = $('<span>');
+        range.insertNode(pasteBinAnchor[0]);
+        _this._createPasteBin(pasteBinAnchor);
+        pasteBinAnchor.remove();
+        range.collapse(true);
+        _this.editor.selection.range(range);
         _this.editor.inputManager.throttledValueChanged.clear();
         _this.editor.inputManager.throttledSelectionChanged.clear();
         _this.editor.undoManager.throttledPushState.clear();
@@ -2327,14 +2333,12 @@ Clipboard = (function(superClass) {
   };
 
   Clipboard.prototype._createPasteBin = function(anchorNode) {
-    var containerOffset;
-    containerOffset = (anchorNode != null ? anchorNode.position() : void 0) || {
-      top: 0,
-      left: 0
-    };
+    var anchorOffset, editorOffset;
+    anchorOffset = anchorNode.offset();
+    editorOffset = this.editor.el.offset();
     return this._pasteBin = $('<div contenteditable="true" />').addClass('simditor-paste-bin').attr('tabIndex', '-1').css({
-      top: containerOffset.top,
-      left: containerOffset.left
+      top: anchorOffset.top - editorOffset.top,
+      left: anchorOffset.left - editorOffset.left
     }).appendTo(this.editor.el);
   };
 
