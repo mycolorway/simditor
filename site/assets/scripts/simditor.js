@@ -1611,8 +1611,8 @@ UndoManager = (function(superClass) {
       }
       if (!startContainer || !endContainer) {
         if (typeof console !== "undefined" && console !== null) {
-          if (typeof console.warn === "function") {
-            console.warn('simditor: invalid caret state');
+          if (typeof console.info === "function") {
+            console.info('simditor: invalid caret state');
           }
         }
         return;
@@ -2281,6 +2281,7 @@ Clipboard = (function(superClass) {
         if (_this._processPasteByClipboardApi(e)) {
           return false;
         }
+        _this._createPasteBin($(range.commonAncestorContainer));
         _this.editor.inputManager.throttledValueChanged.clear();
         _this.editor.inputManager.throttledSelectionChanged.clear();
         _this.editor.undoManager.throttledPushState.clear();
@@ -2325,14 +2326,20 @@ Clipboard = (function(superClass) {
     }
   };
 
-  Clipboard.prototype._getPasteContent = function(callback) {
-    var containerOffset, editorOffset, ref, state;
-    editorOffset = this.editor.el.offset();
-    containerOffset = (ref = this.editor.selection.containerNode()) != null ? ref.offset() : void 0;
-    this._pasteBin = $('<div contenteditable="true" />').addClass('simditor-paste-bin').attr('tabIndex', '-1').css({
-      top: containerOffset ? containerOffset.top - editorOffset.top : editorOffset.top,
-      left: containerOffset ? containerOffset.left - editorOffset.left : editorOffset.left
+  Clipboard.prototype._createPasteBin = function(anchorNode) {
+    var containerOffset;
+    containerOffset = (anchorNode != null ? anchorNode.position() : void 0) || {
+      top: 0,
+      left: 0
+    };
+    return this._pasteBin = $('<div contenteditable="true" />').addClass('simditor-paste-bin').attr('tabIndex', '-1').css({
+      top: containerOffset.top,
+      left: containerOffset.left
     }).appendTo(this.editor.el);
+  };
+
+  Clipboard.prototype._getPasteContent = function(callback) {
+    var state;
     state = {
       html: this.editor.body.html(),
       caret: this.editor.undoManager.caretPosition()

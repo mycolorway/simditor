@@ -231,7 +231,7 @@ class UndoManager extends SimpleModule
         endOffset = caret.start[caret.start.length - 1]
 
       if !startContainer or !endContainer
-        console?.warn? 'simditor: invalid caret state'
+        console?.info? 'simditor: invalid caret state'
         return
 
       range = document.createRange()

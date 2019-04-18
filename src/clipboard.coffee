@@ -28,6 +28,8 @@ class Clipboard extends SimpleModule
 
       return false if @_processPasteByClipboardApi(e)
 
+      @_createPasteBin $(range.commonAncestorContainer)
+
       @editor.inputManager.throttledValueChanged.clear()
       @editor.inputManager.throttledSelectionChanged.clear()
       @editor.undoManager.throttledPushState.clear()
@@ -65,18 +67,18 @@ class Clipboard extends SimpleModule
         @editor.uploader?.upload(imageFile, uploadOpt)
         return true
 
-  _getPasteContent: (callback) ->
-    editorOffset = @editor.el.offset()
-    containerOffset = @editor.selection.containerNode()?.offset()
+  _createPasteBin: (anchorNode) ->
+    containerOffset = anchorNode?.position() || { top: 0, left: 0 }
     @_pasteBin = $ '<div contenteditable="true" />'
       .addClass 'simditor-paste-bin'
       .attr 'tabIndex', '-1'
       .css({
-        top: if containerOffset then containerOffset.top - editorOffset.top else editorOffset.top,
-        left: if containerOffset then containerOffset.left - editorOffset.left else editorOffset.left
+        top: containerOffset.top,
+        left: containerOffset.left
       })
       .appendTo @editor.el
 
+  _getPasteContent: (callback) ->
     state =
       html: @editor.body.html()
       caret: @editor.undoManager.caretPosition()
