@@ -299,7 +299,7 @@ class ImageButton extends Button
       $img.removeData('mask')
         .removeClass('loading')
 
-    img.src = src
+    img.setAttribute 'src', src
 
   createImage: (name = 'Image') ->
     @editor.focus() unless @editor.inputManager.focused

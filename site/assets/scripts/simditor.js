@@ -4664,7 +4664,7 @@ ImageButton = (function(superClass) {
       $mask.remove();
       return $img.removeData('mask').removeClass('loading');
     };
-    return img.src = src;
+    return img.setAttribute('src', src);
   };
 
   ImageButton.prototype.createImage = function(name) {
