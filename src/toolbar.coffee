@@ -54,7 +54,7 @@ class Toolbar extends SimpleModule
         true
 
       floatInitialized = null
-      $(@opts.toolbarScrollContainer).on 'resize.simditor-' + @editor.id, (e) ->
+      $(window).on 'resize.simditor-' + @editor.id, (e) ->
         floatInitialized = initToolbarFloat()
 
       $(@opts.toolbarScrollContainer).on 'scroll.simditor-' + @editor.id, (e) =>
