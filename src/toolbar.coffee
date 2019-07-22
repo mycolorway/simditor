@@ -8,6 +8,7 @@ class Toolbar extends SimpleModule
     toolbarFloat: true
     toolbarHidden: false
     toolbarFloatOffset: 0
+    toolbarScrollContainer: window
 
   _tpl:
     wrapper: '<div class="simditor-toolbar"><ul></ul></div>'
@@ -34,7 +35,8 @@ class Toolbar extends SimpleModule
       @list.find('.menu-on').removeClass('.menu-on')
 
     if not @opts.toolbarHidden and @opts.toolbarFloat
-      @wrapper.css 'top', @opts.toolbarFloatOffset
+      scrollContainerOffset = if @opts.toolbarScrollContainer == window then {top: 0, left: 0} else $(@opts.toolbarScrollContainer).offset()
+      @wrapper.css 'top', scrollContainerOffset.top + @opts.toolbarFloatOffset
       toolbarHeight = 0
 
       initToolbarFloat = =>
@@ -45,23 +47,30 @@ class Toolbar extends SimpleModule
         @wrapper.css 'left', if @editor.util.os.mobile
           @wrapper.position().left
         else
-          @wrapper.offset().left
+          @wrapper.offset().left - scrollContainerOffset.left
         @wrapper.css 'position', ''
         toolbarHeight = @wrapper.outerHeight()
-        @editor.placeholderEl.css 'top', toolbarHeight
+        @editor.placeholderEl.css 'top', scrollContainerOffset.top
         true
 
       floatInitialized = null
       $(window).on 'resize.simditor-' + @editor.id, (e) ->
         floatInitialized = initToolbarFloat()
 
-      $(window).on 'scroll.simditor-' + @editor.id, (e) =>
+      $(@opts.toolbarScrollContainer).on 'scroll.simditor-' + @editor.id, (e) =>
         return unless @wrapper.is(':visible')
-        topEdge = @editor.wrapper.offset().top
-        bottomEdge = topEdge + @editor.wrapper.outerHeight() - 80
-        scrollTop = $(document).scrollTop() + @opts.toolbarFloatOffset
+        topEdge = if @opts.toolbarScrollContainer == window
+          @editor.wrapper.get(0).getBoundingClientRect().top
+        else
+          @editor.wrapper.offset().top - scrollContainerOffset.top
 
-        if scrollTop <= topEdge or scrollTop >= bottomEdge
+
+        bottomEdge = topEdge + @editor.wrapper.outerHeight() - 80
+
+        # scrollTop = $(document).scrollTop() + @opts.toolbarFloatOffset
+        scrollTop = $(@opts.toolbarScrollContainer).scrollTop() + @opts.toolbarFloatOffset
+
+        if topEdge > 0 or bottomEdge < 0
           @editor.wrapper.removeClass('toolbar-floating')
             .css('padding-top', '')
           if @editor.util.os.mobile
