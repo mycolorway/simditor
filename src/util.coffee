@@ -89,7 +89,7 @@ class Util extends SimpleModule
   isEmptyNode: (node) ->
     $node = $(node)
     $node.is(':empty') or
-      (!$node.text() and !$node.find(':not(br, span, div)').length)
+      (!$node.text() and !$node.find(':not(br, span, div, b, a, strong, i, strike, font, u)').length)
 
   isDecoratedNode: (node) ->
     $(node).is('[class^="simditor-"]')

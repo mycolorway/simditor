@@ -1749,7 +1749,7 @@ Util = (function(superClass) {
   Util.prototype.isEmptyNode = function(node) {
     var $node;
     $node = $(node);
-    return $node.is(':empty') || (!$node.text() && !$node.find(':not(br, span, div)').length);
+    return $node.is(':empty') || (!$node.text() && !$node.find(':not(br, span, div, b, a, strong, i, strike, font, u)').length);
   };
 
   Util.prototype.isDecoratedNode = function(node) {
