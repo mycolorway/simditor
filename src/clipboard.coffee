@@ -51,9 +51,6 @@ class Clipboard extends SimpleModule
         @pasting = false
 
   _processPasteByClipboardApi: (e) ->
-    # clipboard api is buggy in MS Edge
-    return if @editor.util.browser.edge
-
     # paste file in chrome
     if e.originalEvent.clipboardData && e.originalEvent.clipboardData.items &&
         e.originalEvent.clipboardData.items.length > 0

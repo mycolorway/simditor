@@ -190,6 +190,7 @@ module.exports = (grunt) ->
         options:
           server: 'server.js'
           bases: '_site'
+          port: 3001
 
     uglify:
       simditor:

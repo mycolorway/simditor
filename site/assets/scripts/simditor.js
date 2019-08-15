@@ -2311,9 +2311,6 @@ Clipboard = (function(superClass) {
 
   Clipboard.prototype._processPasteByClipboardApi = function(e) {
     var imageFile, pasteItem, ref, uploadOpt;
-    if (this.editor.util.browser.edge) {
-      return;
-    }
     if (e.originalEvent.clipboardData && e.originalEvent.clipboardData.items && e.originalEvent.clipboardData.items.length > 0) {
       pasteItem = e.originalEvent.clipboardData.items[0];
       if (/^image\//.test(pasteItem.type)) {
