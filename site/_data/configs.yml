@@ -212,3 +212,8 @@
       { name: 'SQL', value: 'sql'}
     ]
     ```
+- name: 'autolink'
+  type: 'Boolean'
+  default: 'false'
+  description: |
+    When using getValue() method, this option will decide wheather to find url links in the editor, and replace the text with an <a> tag. Keep it text by default.

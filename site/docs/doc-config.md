@@ -24,6 +24,7 @@ editor = new Simditor
   toolbarHidden: false
   pasteImage: false
   cleanPaste: false
+  autolink: false
 ```
 
 
