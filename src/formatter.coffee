@@ -124,7 +124,7 @@ class Formatter extends SimpleModule
     return unless $node.length > 0
 
     if $node[0].nodeType == 3
-      text = $node.text().replace(/(\r\n|\n|\r)/gm, '')
+      text = $node.text().trim().replace(/(\r\n|\n|\r)/gm, '')
       if text
         textNode = document.createTextNode text
         $node.replaceWith textNode
