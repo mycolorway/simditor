@@ -22,7 +22,7 @@
   ],
   "homepage": "http://simditor.tower.im",
   "dependencies": {
-    "dompurify": "^1.0.8",
+    "dompurify": "^2.0.3",
     "jquery": "^3.4.1",
     "simple-hotkeys": "^1.0.3",
     "simple-module": "^3.0.3",
