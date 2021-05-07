@@ -30,7 +30,7 @@
   },
   "devDependencies": {
     "express": "~3.3.4",
-    "grunt": "0.x",
+    "grunt": "1.x",
     "grunt-banner": "0.3.x",
     "grunt-contrib-clean": "0.x",
     "grunt-contrib-coffee": "0.x",
