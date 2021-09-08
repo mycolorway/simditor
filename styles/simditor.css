@@ -1,7 +1,7 @@
 /*!
-* Simditor v2.3.21
+* Simditor v2.3.27
 * http://simditor.tower.im/
-* 2018-10-17
+* 2019-08-15
 */
 @font-face {
   font-family: 'Simditor';
@@ -242,9 +242,7 @@
   box-shadow: 0 0 0 4px #cccccc;
 }
 .simditor .simditor-paste-bin {
-  position: fixed;
-  bottom: 10px;
-  right: 10px;
+  position: absolute;
   width: 1px;
   height: 20px;
   font-size: 1px;

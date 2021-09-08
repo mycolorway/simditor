@@ -44,7 +44,7 @@ Uploader = (function(superClass) {
         _this.files.splice($.inArray(file, _this.files), 1);
         if (_this.queue.length > 0 && _this.files.length < _this.opts.connectionCount) {
           return _this.upload(_this.queue.shift());
-        } else {
+        } else if (_this.files.length === 0) {
           return _this.uploading = false;
         }
       };

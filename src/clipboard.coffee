@@ -25,8 +25,16 @@ class Clipboard extends SimpleModule
       else
         @editor.formatter.format()
         @editor.selection.setRangeAtStartOf @editor.body.find('p:first')
+        range = @editor.selection._range
 
       return false if @_processPasteByClipboardApi(e)
+
+      pasteBinAnchor = $('<span>')
+      range.insertNode(pasteBinAnchor[0])
+      @_createPasteBin pasteBinAnchor
+      pasteBinAnchor.remove()
+      range.collapse(true)
+      @editor.selection.range range
 
       @editor.inputManager.throttledValueChanged.clear()
       @editor.inputManager.throttledSelectionChanged.clear()
@@ -43,9 +51,6 @@ class Clipboard extends SimpleModule
         @pasting = false
 
   _processPasteByClipboardApi: (e) ->
-    # clipboard api is buggy in MS Edge
-    return if @editor.util.browser.edge
-
     # paste file in chrome
     if e.originalEvent.clipboardData && e.originalEvent.clipboardData.items &&
         e.originalEvent.clipboardData.items.length > 0
@@ -65,12 +70,19 @@ class Clipboard extends SimpleModule
         @editor.uploader?.upload(imageFile, uploadOpt)
         return true
 
-  _getPasteContent: (callback) ->
+  _createPasteBin: (anchorNode) ->
+    anchorOffset = anchorNode.offset()
+    editorOffset  = @editor.el.offset()
     @_pasteBin = $ '<div contenteditable="true" />'
       .addClass 'simditor-paste-bin'
       .attr 'tabIndex', '-1'
+      .css({
+        top: anchorOffset.top - editorOffset.top
+        left: anchorOffset.left - editorOffset.left
+      })
       .appendTo @editor.el
 
+  _getPasteContent: (callback) ->
     state =
       html: @editor.body.html()
       caret: @editor.undoManager.caretPosition()
@@ -79,7 +91,7 @@ class Clipboard extends SimpleModule
 
     setTimeout =>
       @editor.hidePopover()
-      @editor.body.get(0).innerHTML = state.html
+      @editor.body.get(0).innerHTML = if DOMPurify then DOMPurify.sanitize(state.html) else state.html
       @editor.undoManager.caretPosition state.caret
       @editor.body.focus()
       @editor.selection.reset()
@@ -112,7 +124,7 @@ class Clipboard extends SimpleModule
 
     if !pasteContent
       return
-    
+
     if @_pastePlainText
       if $blockEl.is('table')
         lines = pasteContent.split('\n')
@@ -216,7 +228,7 @@ class Clipboard extends SimpleModule
     $node = $(node)
     return unless $node.length > 0
 
-    sizeMap = [ 
+    sizeMap = [
       '1.5em'
       '1.25em'
       '0.75em'

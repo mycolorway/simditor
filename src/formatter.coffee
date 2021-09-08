@@ -162,7 +162,7 @@ class Formatter extends SimpleModule
             $node.removeAttr(attr.name)
 
         @_cleanNodeStyles $node
-        
+
         if $node.is('span')
           if $node[0].attributes.length == 0
             $node.contents().first().unwrap()
