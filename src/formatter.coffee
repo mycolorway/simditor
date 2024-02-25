@@ -208,13 +208,12 @@ class Formatter extends SimpleModule
     styles = {}
     for style in styleStr.split(';')
       style = $.trim style
-      pair = style.split(':')
-
-      continue unless pair.length == 2
+      idx = style.indexOf(':')
+      pair = [style.slice(0, idx), style.slice(idx + 1)]
+      continue unless pair.length = 2
 
       if pair[0] == 'font-size' and pair[1].indexOf('px') > 0
         continue if parseInt(pair[1], 10) < 12
-
       styles[$.trim(pair[0])] = $.trim(pair[1]) if pair[0] in allowedStyles
 
     $node.css styles if Object.keys(styles).length > 0
